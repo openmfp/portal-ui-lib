@@ -2,27 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
-
-interface AuthTokenData {
-  expires_in: string;
-  access_token: string;
-}
-
-export interface AuthData {
-  accessTokenExpirationDate: number;
-  idToken: string;
-}
+import { AuthData, AuthTokenData } from '../model/env';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private authData!: AuthData;
-  // private githubAuthData: Record<string, GithubAuthData>;
 
-  constructor(private http: HttpClient) {
-    // this.githubAuthData = {};
-  }
+  constructor(private http: HttpClient) {}
 
   public async auth(code: string, state: string) {
     const response = await lastValueFrom(
@@ -99,21 +87,6 @@ export class AuthService {
       initials: initialsFirstName + initialsLastName,
     };
   }
-
-  // public getGithubAuthDataForDomain(domain: string): GithubAuthData {
-  //   return this.githubAuthData[domain];
-  // }
-  // public setGithubauthDataForDomain(
-  //   domain: string,
-  //   githubAuthData: GithubAuthData
-  // ) {
-  //   this.githubAuthData[domain] = githubAuthData;
-  // }
-  //
-  // public setGithubauthData(githubAuthData: Record<string, GithubAuthData>) {
-  //   this.githubAuthData = githubAuthData;
-  // }
-  //
 
   private processExpDate(expiresInMillis: string): number {
     const expiresIn = Number(expiresInMillis);

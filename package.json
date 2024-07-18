@@ -13,7 +13,8 @@
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
-    "jwt-decode": "^4.0.0"
+    "jwt-decode": "4.0.0",
+    "@luigi-project/plugin-auth-oauth2": "2.7.5"
   },
   "peerDependencies": {
     "@angular/common": "^17.3.0",
@@ -23,6 +24,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
+    "@luigi-project/plugin-auth-oauth2": "2.7.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

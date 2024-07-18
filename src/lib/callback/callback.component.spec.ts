@@ -1,17 +1,8 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { LuigiCoreService } from '../service/luigiCore.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AuthService } from '../services/auth.service';
 import { CallbackComponent } from './callback.component';
-import { I18nService } from '../service/i18n.service';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
-import { LogoutComponent } from '../logout/logout.component';
 import { Component, ViewChild } from '@angular/core';
 import {
   HttpClientTestingModule,
@@ -24,8 +15,14 @@ import {
 })
 class TestRootComponent {
   @ViewChild(RouterOutlet)
-  routerOutlet: RouterOutlet;
+  routerOutlet!: RouterOutlet;
 }
+
+@Component({
+  selector: '',
+  template: '',
+})
+class LogoutComponent {}
 
 describe('CallbackComponent', () => {
   let router: Router;
@@ -33,13 +30,15 @@ describe('CallbackComponent', () => {
   let rootFixture: ComponentFixture<TestRootComponent>;
   let rootComponent: TestRootComponent;
   let httpTestingController: HttpTestingController;
+  let authService: AuthService;
 
   beforeEach(() => {
+    authService = { auth: jest.fn() } as any as AuthService;
     TestBed.configureTestingModule({
       declarations: [CallbackComponent, TestRootComponent],
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes(
+        RouterModule.forRoot(
           [
             { path: '', component: TestRootComponent },
             { path: 'logout', component: LogoutComponent },
@@ -48,35 +47,22 @@ describe('CallbackComponent', () => {
           {}
         ),
       ],
-      providers: [LuigiCoreService, I18nService],
+      providers: [],
     })
-      .overrideProvider(ActivatedRoute, { useValue: Subscription })
+      .overrideProvider(AuthService, { useValue: authService })
       .compileComponents();
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    rootFixture = TestBed.createComponent(TestRootComponent); // [6]
-    rootComponent = rootFixture.componentInstance; //
+    rootFixture = TestBed.createComponent(TestRootComponent);
+    rootComponent = rootFixture.componentInstance;
 
     rootFixture.detectChanges();
-  });
-
-  beforeEach(() => {
-    const luigiCoreService = TestBed.inject(LuigiCoreService);
-    jest
-      .spyOn(luigiCoreService, 'ux')
-      .mockReturnValue({ hideAppLoadingIndicator: () => {} });
-    jest.spyOn(luigiCoreService, 'i18n').mockReturnValue({
-      getCurrentLocale: () => {
-        return '';
-      },
-    });
-
     router = TestBed.inject(Router);
     router.initialNavigation();
     location = TestBed.inject(Location);
   });
 
-  it('redirect to the login error if there is no code', async () => {
+  it('throws error and redirect to the logout with login error if there is no code', async () => {
     await router.navigate(['/callback']);
 
     const component = rootComponent.routerOutlet.component;
@@ -85,7 +71,21 @@ describe('CallbackComponent', () => {
     expect(location.path()).toBe('/logout?error=loginError');
   });
 
-  it('redirect to the login error if the state does not match', async () => {
+  it('redirect to the logout with login error if there is no code', async () => {
+    const state = btoa(encodeURI('http://localhost'));
+    await router.navigate(['/callback'], {
+      queryParams: {
+        state,
+      },
+    });
+
+    const component = rootComponent.routerOutlet.component;
+
+    expect(component).toBeTruthy();
+    expect(location.path()).toBe('/logout?error=loginError');
+  });
+
+  it('redirect to the logout with login error if the state does not match', async () => {
     await router.navigate(['/callback'], {
       queryParams: {
         code: 'foo',
@@ -95,29 +95,19 @@ describe('CallbackComponent', () => {
     expect(location.path()).toBe('/logout?error=loginError');
   });
 
-  it('redirect to home if everything went well', fakeAsync(() => {
-    const state = btoa(encodeURI('http://localhost'));
-    router.navigate(['/callback'], {
+  it('redirect to home if everything went well', async () => {
+    const state = btoa(encodeURI('http://localhost?p1=v1#hash'));
+    await router.navigate(['/callback'], {
       queryParams: {
         code: 'foo',
         state,
       },
     });
-    tick();
-    const authRequest = httpTestingController.expectOne(
-      `/rest/auth?code=foo&state=${state}`
-    );
-    authRequest.flush({
-      expires_in: '123123123',
-      access_token: 'adwd.dasdd.asdsad',
-    });
-    tick();
 
     const component = rootComponent.routerOutlet.component;
 
     expect(router.getCurrentNavigation()).toBe(null);
-
     expect(component).toBeTruthy();
-    expect(location.path()).toBe('/');
-  }));
+    expect(location.path()).toBe('?p1=v1');
+  });
 });
