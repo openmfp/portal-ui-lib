@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { I18nService } from './i18n.service';
+import { LuigiCoreService } from './luigi-core.service';
 
 describe('I18nService', () => {
   let i18nService: I18nService;
+  let luigiCoreServiceMock: LuigiCoreService;
   const translationTable = {
     de: {
       SOME_TEST_KEY: 'some test key',
@@ -13,11 +15,34 @@ describe('I18nService', () => {
   };
 
   beforeEach(() => {
+    luigiCoreServiceMock = {
+      i18n: jest.fn().mockReturnValue({
+        getCurrentLocale: jest.fn().mockReturnValue('de'),
+        addCurrentLocaleChangeListener: jest.fn(),
+      }),
+    } as unknown as LuigiCoreService;
+
+    TestBed.configureTestingModule({
+      providers: [
+        I18nService,
+        { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+      ],
+    });
+
     i18nService = TestBed.inject(I18nService);
   });
 
   it('should be created', () => {
     expect(i18nService).toBeTruthy();
+  });
+
+  it('afterInit', () => {
+    i18nService.afterInit();
+    expect(luigiCoreServiceMock.i18n().getCurrentLocale).toHaveBeenCalled();
+    expect(
+      luigiCoreServiceMock.i18n().addCurrentLocaleChangeListener
+    ).toHaveBeenCalled();
+    expect(i18nService.currentLanguage).toEqual('de');
   });
 
   it('findTranslation', () => {
@@ -48,7 +73,6 @@ describe('I18nService', () => {
     );
     expect(result).toEqual(undefined);
   });
-
   it('no translation when the key is not set', () => {
     const result = i18nService.findTranslation(
       'SOME_TEST_KEY_',
@@ -104,6 +128,12 @@ describe('I18nService', () => {
     expect(result).toEqual('some {test} key 2');
   });
 
+  it('no interpolation for no value', () => {
+    const interpolations = { asdf: 'tets' };
+    const result = i18nService.findInterpolations('', interpolations);
+    expect(result).toBeUndefined();
+  });
+
   it('addTranlsationFile', () => {
     const locale = 'en';
     const data = {
@@ -124,26 +154,24 @@ describe('I18nService', () => {
   });
 
   it('getTranslation', () => {
-    i18nService.translationTable = translationTable;
-    const spyFindTranslation = jest
-      .spyOn(i18nService, 'findTranslation')
-      .mockReturnValue('some test key');
+    spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
+    const spyFindTranslation = spyOn(
+      i18nService,
+      'findTranslation'
+    ).and.returnValue('some test key');
     const result = i18nService.getTranslation('SOME_TEST_KEY', undefined, 'de');
-
     expect(spyFindTranslation).toHaveBeenCalled();
     expect(result).toEqual('some test key');
   });
 
   it('getTranslationAsync', async () => {
-    i18nService.translationTable = translationTable;
-    jest.spyOn(i18nService, 'findTranslation').mockReturnValue('some test key');
-
+    spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
+    spyOn(i18nService, 'findTranslation').and.returnValue('some test key');
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
       undefined,
       'de'
     );
-
     expect(result).toEqual('some test key');
   });
 
@@ -155,20 +183,80 @@ describe('I18nService', () => {
         SOME_TEST_KEY3: 'some test key 3',
       },
     };
-    i18nService.fallbackLanguage = 'en';
-    i18nService.translationTable = fallbackTranslationTable;
+    spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
+    spyOn(i18nService, 'translationTable').and.returnValue(
+      fallbackTranslationTable
+    );
     i18nService.fetchTranslationFile = jest
       .fn()
       .mockResolvedValue('some test key 3');
-    jest
-      .spyOn(i18nService, 'findTranslation')
-      .mockReturnValue('some test key 3');
+    spyOn(i18nService, 'findTranslation').and.returnValues(
+      undefined,
+      'some test key 3'
+    );
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY3',
       undefined,
       'de'
     );
-
     expect(result).toEqual('some test key 3');
+  });
+
+  it('fetchTranslationFile', async () => {
+    const locale = 'de';
+    const mockData = { SOME_TEST_KEY: 'mocked translation' };
+    globalThis.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(mockData),
+      } as Response)
+    );
+    await i18nService.fetchTranslationFile(locale);
+
+    expect(i18nService.translationTable[locale]).toEqual(mockData);
+  });
+
+  it('fetchTranslationFile should handle fetch error', async () => {
+    const locale = 'de';
+    globalThis.fetch = jest.fn(() => Promise.reject('Fetch error'));
+    await i18nService.fetchTranslationFile(locale);
+    expect(i18nService.translationTable[locale]).toEqual({});
+  });
+
+  it('getTranslationAsync with fetch error', async () => {
+    const fallbackTranslationTable = {
+      en: {
+        SOME_TEST_KEY: 'some test key',
+      },
+    };
+    spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
+    spyOn(i18nService, 'translationTable').and.returnValue(
+      fallbackTranslationTable
+    );
+    globalThis.fetch = jest.fn(() => Promise.reject('Fetch error'));
+
+    const result = await i18nService.getTranslationAsync(
+      'SOME_TEST_KEY',
+      undefined,
+      'de'
+    );
+
+    expect(result).toEqual('SOME_TEST_KEY');
+  });
+
+  it('getTranslationAsync with fallback language', async () => {
+    i18nService.fallbackLanguage = 'en';
+    i18nService.translationTable = {
+      en: {
+        SOME_TEST_KEY: 'some test key',
+      },
+    };
+
+    const result = await i18nService.getTranslationAsync(
+      'SOME_TEST_KEY',
+      undefined,
+      'de'
+    );
+
+    expect(result).toEqual('some test key');
   });
 });

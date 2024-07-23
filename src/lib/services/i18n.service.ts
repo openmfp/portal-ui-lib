@@ -85,7 +85,7 @@ export class I18nService {
           result = this.findTranslation(
             key,
             this.translationTable,
-            this.currentLanguage,
+            this.fallbackLanguage,
             interpolations
           );
           res(result ? result : key);

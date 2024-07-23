@@ -23,9 +23,6 @@ export class EnvConfigService {
       this.authService.setAuthData(envConfig.authData);
     }
 
-    // if (envConfig.githubAuthData) {
-    //   this.authService.setGithubauthData(envConfig.githubAuthData);
-    // }
     return envConfigPromise;
   }
 }
