@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
 import { AuthData, AuthTokenData } from '../model/env';
+import { UserData, UserTokenData } from '../model/user';
 
 @Injectable({
   providedIn: 'root',
@@ -50,12 +51,12 @@ export class AuthService {
     return {};
   };
 
-  getUser() {
+  getUser(): UserTokenData {
     const auth = this.getAuthData();
     if (auth) {
       return this.parseJwt(auth.idToken);
     }
-    return {};
+    return {} as UserTokenData;
   }
 
   getUsername() {
@@ -68,8 +69,8 @@ export class AuthService {
     return mail;
   }
 
-  getUserInfo() {
-    const { first_name, last_name, mail, sub } = this.getUser();
+  getUserInfo(): UserData {
+    const { first_name, last_name, mail } = this.getUser();
     //handle undefined cases of first name or last name
     const initialsFirstName: string =
       typeof first_name === 'undefined' ? '' : first_name[0];
@@ -82,7 +83,7 @@ export class AuthService {
       name: `${firstName} ${lastName}`,
       email: mail,
       description: mail,
-      picture: `https://avatars.wdf.sap.corp/avatar/${sub}`,
+      picture: '',
       icon: false,
       initials: initialsFirstName + initialsLastName,
     };

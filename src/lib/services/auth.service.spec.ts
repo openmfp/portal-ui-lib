@@ -1,3 +1,4 @@
+import { UserTokenData } from '../model/user';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
@@ -119,7 +120,9 @@ describe('AuthService', () => {
 
   describe('getUsername', () => {
     it('should return the sub from the decoded token', () => {
-      jest.spyOn(service, 'getUser').mockReturnValue({ sub: 'user123' });
+      jest
+        .spyOn(service, 'getUser')
+        .mockReturnValue({ sub: 'user123' } as UserTokenData);
 
       const username = service.getUsername();
 
@@ -131,7 +134,7 @@ describe('AuthService', () => {
     it('should return the mail from the decoded token', () => {
       jest
         .spyOn(service, 'getUser')
-        .mockReturnValue({ mail: 'user@example.com' });
+        .mockReturnValue({ mail: 'user@example.com' } as UserTokenData);
 
       const email = service.getUserEmail();
 
@@ -154,7 +157,7 @@ describe('AuthService', () => {
         name: 'John Doe',
         email: 'john.doe@example.com',
         description: 'john.doe@example.com',
-        picture: 'https://avatars.wdf.sap.corp/avatar/user123',
+        picture: '',
         icon: false,
         initials: 'JD',
       });
@@ -164,7 +167,7 @@ describe('AuthService', () => {
       jest.spyOn(service, 'getUser').mockReturnValue({
         mail: 'john.doe@example.com',
         sub: 'user123',
-      });
+      } as UserTokenData);
 
       const userInfo = service.getUserInfo();
 
@@ -172,7 +175,7 @@ describe('AuthService', () => {
         name: ' ',
         email: 'john.doe@example.com',
         description: 'john.doe@example.com',
-        picture: 'https://avatars.wdf.sap.corp/avatar/user123',
+        picture: '',
         icon: false,
         initials: '',
       });

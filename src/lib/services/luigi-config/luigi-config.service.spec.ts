@@ -79,6 +79,9 @@ describe('LuigiConfigService', () => {
         featureToggles: {
           queryStringParam: 'ft',
         },
+        appLoadingIndicator: {
+          hideAutomatically: true,
+        },
       });
     });
   });
@@ -100,6 +103,9 @@ describe('LuigiConfigService', () => {
         responsiveNavigation: 'Fiori3',
         featureToggles: {
           queryStringParam: 'ft',
+        },
+        appLoadingIndicator: {
+          hideAutomatically: true,
         },
       });
 

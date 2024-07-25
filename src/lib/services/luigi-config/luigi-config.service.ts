@@ -15,7 +15,7 @@ export class LuigiConfigService {
   public async getLuigiConfiguration() {
     const envConfig: ClientEnvironment =
       await this.envConfigService.getEnvConfig();
-    const config = {
+    return {
       auth: this.authConfigService.getAuthConfig(
         envConfig.oauthServerUrl,
         envConfig.clientId
@@ -23,7 +23,6 @@ export class LuigiConfigService {
       routing: this.getRoutingConfig() as any,
       settings: this.getStaticSettingsConfig(),
     };
-    return config;
   }
 
   private getStaticSettingsConfig() {
@@ -42,6 +41,9 @@ export class LuigiConfigService {
       responsiveNavigation: 'Fiori3',
       featureToggles: {
         queryStringParam: 'ft',
+      },
+      appLoadingIndicator: {
+        hideAutomatically: true,
       },
     };
   }
