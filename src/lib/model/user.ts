@@ -11,5 +11,6 @@ export interface UserTokenData {
   first_name: string;
   last_name: string;
   mail: string;
+  email: string;
   sub: string;
 }
