@@ -1,6 +1,8 @@
 /*
- * Public API Surface of lib
+ * Public API Surface of ui-lib
  */
 
-export * from './lib/lib.service';
-export * from './lib/lib.component';
+export * from './lib/portal.module';
+export * from './lib/portal.component';
+
+export * from './lib/services';
