@@ -149,7 +149,7 @@ describe('AuthService', () => {
         last_name: 'Doe',
         mail: 'john.doe@example.com',
         sub: 'user123',
-      });
+      } as UserTokenData);
 
       const userInfo = service.getUserInfo();
 
