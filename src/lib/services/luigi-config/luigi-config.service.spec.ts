@@ -1,3 +1,4 @@
+import { CommunicationConfigService } from './communication-config.service';
 import { LuigiConfigService } from './luigi-config.service';
 import { EnvConfigService } from '../env-config.service';
 import { AuthConfigService } from './auth-config.service';
@@ -9,6 +10,7 @@ describe('LuigiConfigService', () => {
   let envConfigServiceMock: jest.Mocked<EnvConfigService>;
   let authConfigServiceMock: jest.Mocked<AuthConfigService>;
   let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
+  let communicationConfigServiceMock: jest.Mocked<CommunicationConfigService>;
 
   beforeEach(() => {
     envConfigServiceMock = {
@@ -23,10 +25,15 @@ describe('LuigiConfigService', () => {
       getInitialStaticSettingsConfig: jest.fn(),
     } as any;
 
+    communicationConfigServiceMock = {
+      getCommunicationConfig: jest.fn(),
+    } as any;
+
     service = new LuigiConfigService(
       envConfigServiceMock,
       authConfigServiceMock,
-      staticSettingsConfigServiceMock
+      staticSettingsConfigServiceMock,
+      communicationConfigServiceMock
     );
   });
 
@@ -49,10 +56,17 @@ describe('LuigiConfigService', () => {
         filed: 'filed',
       };
 
+      const mockCommunicationConfig = {
+        customMessagesListeners: { '43545': () => {} },
+      };
+
       envConfigServiceMock.getEnvConfig.mockResolvedValue(mockEnvConfig);
       authConfigServiceMock.getAuthConfig.mockReturnValue(mockAuthConfig);
       staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
         mockStaticSettings
+      );
+      communicationConfigServiceMock.getCommunicationConfig.mockReturnValue(
+        mockCommunicationConfig
       );
 
       const config = await service.getLuigiConfiguration();
@@ -70,6 +84,7 @@ describe('LuigiConfigService', () => {
         auth: mockAuthConfig,
         routing: expect.any(Object),
         settings: mockStaticSettings,
+        communication: mockCommunicationConfig,
       });
 
       // Check routing config
@@ -83,9 +98,9 @@ describe('LuigiConfigService', () => {
     });
   });
 
-  describe('getRoutingConfig', () => {
+  describe('getInitialRoutingConfig', () => {
     it('should return the correct routing configuration', () => {
-      const routingConfig = (service as any).getRoutingConfig();
+      const routingConfig = (service as any).getInitialRoutingConfig();
 
       expect(routingConfig).toEqual({
         useHashRouting: false,
