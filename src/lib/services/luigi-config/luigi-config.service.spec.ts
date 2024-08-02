@@ -3,6 +3,7 @@ import { LuigiConfigService } from './luigi-config.service';
 import { EnvConfigService } from '../env-config.service';
 import { AuthConfigService } from './auth-config.service';
 import { ClientEnvironment } from '../../model/env';
+import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 
 describe('LuigiConfigService', () => {
@@ -11,6 +12,7 @@ describe('LuigiConfigService', () => {
   let authConfigServiceMock: jest.Mocked<AuthConfigService>;
   let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
   let communicationConfigServiceMock: jest.Mocked<CommunicationConfigService>;
+  let routingConfigServiceMock: jest.Mocked<RoutingConfigService>;
 
   beforeEach(() => {
     envConfigServiceMock = {
@@ -29,9 +31,15 @@ describe('LuigiConfigService', () => {
       getCommunicationConfig: jest.fn(),
     } as any;
 
+    routingConfigServiceMock = {
+      getInitialRoutingConfig: jest.fn(),
+      getRoutingConfig: jest.fn(),
+    } as any;
+
     service = new LuigiConfigService(
       envConfigServiceMock,
       authConfigServiceMock,
+      routingConfigServiceMock,
       staticSettingsConfigServiceMock,
       communicationConfigServiceMock
     );
@@ -60,6 +68,13 @@ describe('LuigiConfigService', () => {
         customMessagesListeners: { '43545': () => {} },
       };
 
+      const mockRoutingConfig = {
+        useHashRouting: false,
+        showModalPathInUrl: false,
+        modalPathParam: 'modalPathParamDisabled',
+        skipRoutingForUrlPatterns: [/.*/],
+      };
+
       envConfigServiceMock.getEnvConfig.mockResolvedValue(mockEnvConfig);
       authConfigServiceMock.getAuthConfig.mockReturnValue(mockAuthConfig);
       staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
@@ -67,6 +82,9 @@ describe('LuigiConfigService', () => {
       );
       communicationConfigServiceMock.getCommunicationConfig.mockReturnValue(
         mockCommunicationConfig
+      );
+      routingConfigServiceMock.getInitialRoutingConfig.mockReturnValue(
+        mockRoutingConfig
       );
 
       const config = await service.getLuigiConfiguration();
@@ -82,32 +100,9 @@ describe('LuigiConfigService', () => {
 
       expect(config).toEqual({
         auth: mockAuthConfig,
-        routing: expect.any(Object),
+        routing: mockRoutingConfig,
         settings: mockStaticSettings,
         communication: mockCommunicationConfig,
-      });
-
-      // Check routing config
-      expect(config.routing).toEqual({
-        useHashRouting: false,
-        showModalPathInUrl: false,
-        modalPathParam: 'modalPathParamDisabled',
-        skipRoutingForUrlPatterns: [/.*/],
-        pageNotFoundHandler: expect.any(Function),
-      });
-    });
-  });
-
-  describe('getInitialRoutingConfig', () => {
-    it('should return the correct routing configuration', () => {
-      const routingConfig = (service as any).getInitialRoutingConfig();
-
-      expect(routingConfig).toEqual({
-        useHashRouting: false,
-        showModalPathInUrl: false,
-        modalPathParam: 'modalPathParamDisabled',
-        skipRoutingForUrlPatterns: [/.*/],
-        pageNotFoundHandler: expect.any(Function),
       });
     });
   });

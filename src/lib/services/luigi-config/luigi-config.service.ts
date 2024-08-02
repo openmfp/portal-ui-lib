@@ -7,6 +7,7 @@ import { ClientEnvironment } from '../../model/env';
 import { AuthConfigService } from './auth-config.service';
 import { EnvConfigService } from '../env-config.service';
 import { CommunicationConfigService } from './communication-config.service';
+import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 
 @Injectable({
@@ -16,6 +17,7 @@ export class LuigiConfigService {
   constructor(
     private envConfigService: EnvConfigService,
     private authConfigService: AuthConfigService,
+    private routingConfigService: RoutingConfigService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService,
     @Inject(LUIGI_COMMUNICATION_CONFIG_SERVICE_INJECTION_TOKEN)
@@ -30,20 +32,10 @@ export class LuigiConfigService {
         envConfig.oauthServerUrl,
         envConfig.clientId
       ),
-      routing: this.getInitialRoutingConfig(),
+      routing: this.routingConfigService.getInitialRoutingConfig(),
       communication: this.communicationConfigService.getCommunicationConfig(),
       settings:
         this.staticSettingsConfigService.getInitialStaticSettingsConfig(),
-    };
-  }
-
-  private getInitialRoutingConfig() {
-    return {
-      useHashRouting: false,
-      showModalPathInUrl: false,
-      modalPathParam: 'modalPathParamDisabled',
-      skipRoutingForUrlPatterns: [/.*/],
-      pageNotFoundHandler: () => {},
     };
   }
 }
