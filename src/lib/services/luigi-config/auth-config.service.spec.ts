@@ -1,5 +1,5 @@
 import { AuthConfigService } from './auth-config.service';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../portal/auth.service';
 import { StorageService } from '../storage.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';

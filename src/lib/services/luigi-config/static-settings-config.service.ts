@@ -1,3 +1,5 @@
+import { LuigiCoreService } from '../luigi-core.service';
+
 export interface StaticSettingsConfigService {
   getInitialStaticSettingsConfig(): Record<string, any>;
   getStaticSettingsConfig(): Record<string, any>;
@@ -6,16 +8,18 @@ export interface StaticSettingsConfigService {
 export class StaticSettingsConfigServiceImpl
   implements StaticSettingsConfigService
 {
-  constructor() {}
+  constructor(private luigiCoreService: LuigiCoreService) {}
 
   getInitialStaticSettingsConfig() {
-    const blankImg = 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAAC';
+    const logo = this.luigiCoreService.isFeatureToggleActive('mfp-logo')
+      ? 'assets/mfp_mark.svg'
+      : 'assets/ora-mark.svg';
 
     return {
       header: {
         title: 'OpenMFP Portal',
-        logo: blankImg,
-        favicon: blankImg,
+        logo: logo,
+        favicon: logo,
       },
       experimental: {
         btpToolLayout: true,

@@ -5,7 +5,7 @@ import {
 } from '../../injection-tokens';
 import { ClientEnvironment } from '../../model/env';
 import { AuthConfigService } from './auth-config.service';
-import { EnvConfigService } from '../env-config.service';
+import { EnvConfigService } from '../portal/env-config.service';
 import { CommunicationConfigService } from './communication-config.service';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';

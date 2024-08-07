@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services';
 import { CallbackComponent } from './callback.component';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';

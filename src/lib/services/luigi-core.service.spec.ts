@@ -46,7 +46,7 @@ describe('LuigiCoreService', () => {
   });
 
   it('should call setConfig with correct config', () => {
-    const config = { key: 'value' };
+    const config = { settings: 'value' };
     service.setConfig(config);
     expect(luigiMock.setConfig).toHaveBeenCalledWith(config);
   });

@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
 const luigi = (globalThis as any).Luigi;
 
+export interface LuigiConfig {
+  auth?: any;
+  routing?: any;
+  settings?: any;
+  lifecycleHooks?: any;
+  navigation?: any;
+  userSettings?: any;
+  globalSearch?: any;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -9,11 +19,11 @@ export class LuigiCoreService {
     return luigi.auth();
   }
 
-  setConfig(config: any) {
+  setConfig(config: LuigiConfig) {
     return luigi.setConfig(config);
   }
 
-  getConfig() {
+  getConfig(): LuigiConfig {
     return luigi.getConfig();
   }
 

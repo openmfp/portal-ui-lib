@@ -4,7 +4,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { of } from 'rxjs';
 import { LogoutComponent } from './logout.component';
 import { I18nService } from '../services/i18n.service';
-import { LuigiCoreService } from '../services/luigi-core.service';
+import { LuigiCoreService } from '../services';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
