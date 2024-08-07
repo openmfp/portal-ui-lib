@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { LuigiCoreService } from '../luigi-core.service';
 
 export interface StaticSettingsConfigService {
@@ -5,6 +6,9 @@ export interface StaticSettingsConfigService {
   getStaticSettingsConfig(): Record<string, any>;
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class StaticSettingsConfigServiceImpl
   implements StaticSettingsConfigService
 {
