@@ -28,7 +28,7 @@ export interface PortalModuleOptions {
   /** Service containing and providing the luigi communication configuration **/
   communicationConfigService?: Type<CommunicationConfigService>;
 
-  /** Service containing and providing the luigi communication configuration **/
+  /** Service providing local nodes merging services **/
   localNodesService?: Type<LocalNodesService>;
 }
 
