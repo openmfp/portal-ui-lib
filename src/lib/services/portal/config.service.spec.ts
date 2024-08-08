@@ -4,7 +4,7 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { PortalConfig } from '../../model/portal-config';
+import { PortalConfig } from '../../models/portal';
 import { RequestHeadersService } from '../request-headers.service';
 import { ConfigService } from './config.service';
 import { mock } from 'jest-mock-extended';

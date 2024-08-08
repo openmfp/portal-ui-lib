@@ -4,6 +4,7 @@ export interface ServiceProvider {
   nodes: LuigiNode[];
   config: Record<string, string>;
   installationData?: Record<string, string>;
+  isMandatoryExtension?: boolean;
   creationTimestamp: string;
 }
 

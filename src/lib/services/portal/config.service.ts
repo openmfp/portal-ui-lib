@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { EntityConfig, PortalConfig } from '../../model/portal-config';
+import { EntityConfig, PortalConfig } from '../../models/portal';
 import { RequestHeadersService } from '../request-headers.service';
 
 @Injectable({
