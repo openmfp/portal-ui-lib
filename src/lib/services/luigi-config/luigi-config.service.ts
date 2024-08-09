@@ -4,7 +4,7 @@ import { ClientEnvironment } from '../../model/env';
 import { AuthConfigService } from './auth-config.service';
 import { EnvConfigService } from '../env-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
-import { CustomMessageListeners } from './custom-message-listeners.service';
+import { CustomMessageListenersService } from './custom-message-listeners.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class LuigiConfigService {
   constructor(
     private envConfigService: EnvConfigService,
     private authConfigService: AuthConfigService,
-    private customMessageListeners: CustomMessageListeners,
+    private customMessageListenersService: CustomMessageListenersService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService
   ) {}
@@ -27,7 +27,7 @@ export class LuigiConfigService {
         envConfig.clientId
       ),
       routing: this.getInitialRoutingConfig(),
-      communication: this.customMessageListeners.messageListeners,
+      communication: this.customMessageListenersService.getMessageListeners(),
       settings:
         this.staticSettingsConfigService.getInitialStaticSettingsConfig(),
     };
