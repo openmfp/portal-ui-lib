@@ -36,7 +36,6 @@ export class LifecycleHooksConfigService {
         this.i18nService.afterInit();
 
         let childrenByEntity: Record<string, LuigiNode[]>;
-
         try {
           childrenByEntity =
             await this.luigiNodesService.retrieveChildrenByEntity();
