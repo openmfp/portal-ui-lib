@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { of } from 'rxjs';
 import { LogoutComponent } from './logout.component';
-import { I18nService } from '../services/i18n.service';
-import { LuigiCoreService } from '../services';
+import { I18nService } from '../../services/i18n.service';
+import { LuigiCoreService } from '../../services';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;

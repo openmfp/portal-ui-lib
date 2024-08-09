@@ -9,9 +9,9 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from './injection-tokens';
-import { LogoutComponent } from './logout/logout.component';
-import { LuigiComponent } from './luigi/luigi.component';
-import { CallbackComponent } from './callback/callback.component';
+import { LogoutComponent } from './components/logout/logout.component';
+import { LuigiComponent } from './components/luigi/luigi.component';
+import { CallbackComponent } from './components/callback/callback.component';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import {

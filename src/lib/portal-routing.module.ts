@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LogoutComponent } from './logout/logout.component';
-import { LuigiComponent } from './luigi/luigi.component';
-import { CallbackComponent } from './callback/callback.component';
+import { LogoutComponent } from './components/logout/logout.component';
+import { LuigiComponent } from './components/luigi/luigi.component';
+import { CallbackComponent } from './components/callback/callback.component';
 
 export const portalRouts: Routes = [
   { path: 'callback', component: CallbackComponent },
