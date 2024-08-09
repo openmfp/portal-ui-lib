@@ -3,14 +3,9 @@ import { LuigiCoreService } from '../luigi-core.service';
 
 describe('StaticSettingsConfigServiceImpl', () => {
   let service: StaticSettingsConfigServiceImpl;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
 
   beforeEach(() => {
-    luigiCoreServiceMock = {
-      isFeatureToggleActive: jest.fn(),
-    } as unknown as jest.Mocked<LuigiCoreService>;
-
-    service = new StaticSettingsConfigServiceImpl(luigiCoreServiceMock);
+    service = new StaticSettingsConfigServiceImpl();
   });
 
   it('should be created', () => {
@@ -18,9 +13,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
   });
 
   describe('getInitialStaticSettingsConfig', () => {
-    it('should return the correct configuration with MFP logo when feature toggle is active', () => {
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
-
+    it('should return the correct configuration with MFP logo', () => {
       const config = service.getInitialStaticSettingsConfig();
 
       expect(config).toEqual({
@@ -41,23 +34,6 @@ describe('StaticSettingsConfigServiceImpl', () => {
           hideAutomatically: true,
         },
       });
-
-      expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
-        'mfp-logo'
-      );
-    });
-
-    it('should return the correct configuration with ORA logo when feature toggle is inactive', () => {
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(false);
-
-      const config = service.getInitialStaticSettingsConfig();
-
-      expect(config.header.logo).toBe('assets/ora-mark.svg');
-      expect(config.header.favicon).toBe('assets/ora-mark.svg');
-
-      expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
-        'mfp-logo'
-      );
     });
   });
 
