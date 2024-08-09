@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import {
-  LUIGI_COMMUNICATION_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from './injection-tokens';
 import { LogoutComponent } from './logout/logout.component';
@@ -12,18 +12,17 @@ import { CallbackComponent } from './callback/callback.component';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import {
+  CustomMessageListener,
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
-  CommunicationConfigService,
-  CommunicationConfigServiceImpl,
 } from './services';
 
 export interface PortalModuleOptions {
   /** Service containing and providing the luigi settings configuration **/
   staticSettingsConfigService?: Type<StaticSettingsConfigService>;
 
-  /** Service containing and providing the luigi communication configuration **/
-  communicationConfigService?: Type<CommunicationConfigService>;
+  /** A set of class representing custom listeners **/
+  customMessageListeners?: Type<CustomMessageListener>[];
 }
 
 @NgModule({
@@ -38,10 +37,6 @@ export interface PortalModuleOptions {
       provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: StaticSettingsConfigServiceImpl,
     },
-    {
-      provide: LUIGI_COMMUNICATION_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CommunicationConfigServiceImpl,
-    },
   ],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],
@@ -49,6 +44,14 @@ export interface PortalModuleOptions {
 })
 export class PortalModule {
   static create(options: PortalModuleOptions): NgModule {
+    const customMessageListeners = (options.customMessageListeners || []).map(
+      (customMessageListenerClass) => ({
+        provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+        multi: true,
+        useClass: customMessageListenerClass,
+      })
+    );
+
     return {
       declarations: [
         LuigiComponent,
@@ -57,17 +60,12 @@ export class PortalModule {
         LogoutComponent,
       ],
       providers: [
+        ...customMessageListeners,
         {
           provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
           useClass:
             options.staticSettingsConfigService ||
             StaticSettingsConfigServiceImpl,
-        },
-        {
-          provide: LUIGI_COMMUNICATION_CONFIG_SERVICE_INJECTION_TOKEN,
-          useClass:
-            options.communicationConfigService ||
-            CommunicationConfigServiceImpl,
         },
       ],
       imports: [
