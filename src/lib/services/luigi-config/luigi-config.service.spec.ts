@@ -1,17 +1,17 @@
-import { CommunicationConfigService } from './communication-config.service';
 import { LuigiConfigService } from './luigi-config.service';
 import { EnvConfigService } from '../portal/env-config.service';
 import { AuthConfigService } from './auth-config.service';
 import { ClientEnvironment } from '../../model/env';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
+import { CustomMessageListenersService } from './custom-message-listeners.service';
 
 describe('LuigiConfigService', () => {
   let service: LuigiConfigService;
   let envConfigServiceMock: jest.Mocked<EnvConfigService>;
   let authConfigServiceMock: jest.Mocked<AuthConfigService>;
   let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
-  let communicationConfigServiceMock: jest.Mocked<CommunicationConfigService>;
+  let customMessageListenersMock: jest.Mocked<CustomMessageListenersService>;
   let routingConfigServiceMock: jest.Mocked<RoutingConfigService>;
 
   beforeEach(() => {
@@ -27,8 +27,8 @@ describe('LuigiConfigService', () => {
       getInitialStaticSettingsConfig: jest.fn(),
     } as any;
 
-    communicationConfigServiceMock = {
-      getCommunicationConfig: jest.fn(),
+    customMessageListenersMock = {
+      getMessageListeners: jest.fn(),
     } as any;
 
     routingConfigServiceMock = {
@@ -39,9 +39,9 @@ describe('LuigiConfigService', () => {
     service = new LuigiConfigService(
       envConfigServiceMock,
       authConfigServiceMock,
+      customMessageListenersMock,
       routingConfigServiceMock,
-      staticSettingsConfigServiceMock,
-      communicationConfigServiceMock
+      staticSettingsConfigServiceMock
     );
   });
 
@@ -51,6 +51,7 @@ describe('LuigiConfigService', () => {
 
   describe('getLuigiConfiguration', () => {
     it('should return the correct configuration', async () => {
+      // Arrange
       const mockEnvConfig: ClientEnvironment = {
         oauthServerUrl: 'https://example.com/oauth',
         clientId: 'test-client-id',
@@ -65,7 +66,7 @@ describe('LuigiConfigService', () => {
       };
 
       const mockCommunicationConfig = {
-        customMessagesListeners: { '43545': () => {} },
+        customMessagesListeners: { 'id-43545': () => {} },
       };
 
       const mockRoutingConfig = {
@@ -80,15 +81,17 @@ describe('LuigiConfigService', () => {
       staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
         mockStaticSettings
       );
-      communicationConfigServiceMock.getCommunicationConfig.mockReturnValue(
-        mockCommunicationConfig
-      );
+      jest
+        .spyOn(customMessageListenersMock, 'getMessageListeners')
+        .mockReturnValue(mockCommunicationConfig);
       routingConfigServiceMock.getInitialRoutingConfig.mockReturnValue(
         mockRoutingConfig
       );
 
+      // Act
       const config = await service.getLuigiConfiguration();
 
+      // Assert
       expect(envConfigServiceMock.getEnvConfig).toHaveBeenCalled();
       expect(
         staticSettingsConfigServiceMock.getInitialStaticSettingsConfig
