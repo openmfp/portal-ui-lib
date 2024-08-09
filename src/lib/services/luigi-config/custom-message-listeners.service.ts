@@ -3,11 +3,11 @@ import { Subject } from 'rxjs';
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
 import { CustomMessageListener } from './custom-message-listener';
 
-interface MessageListener {
+export interface MessageListener {
   (msg: any, mf: any, mfNodes: any): void;
 }
 
-interface MessageListeners {
+export interface MessageListeners {
   customMessagesListeners: Record<string, MessageListener>;
 }
 
