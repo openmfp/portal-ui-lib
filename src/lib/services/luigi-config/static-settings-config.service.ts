@@ -12,12 +12,10 @@ export interface StaticSettingsConfigService {
 export class StaticSettingsConfigServiceImpl
   implements StaticSettingsConfigService
 {
-  constructor(private luigiCoreService: LuigiCoreService) {}
+  constructor() {}
 
   getInitialStaticSettingsConfig() {
-    const logo = this.luigiCoreService.isFeatureToggleActive('mfp-logo')
-      ? 'assets/mfp_mark.svg'
-      : 'assets/ora-mark.svg';
+    const logo = 'assets/mfp_mark.svg';
 
     return {
       header: {
