@@ -41,6 +41,7 @@
     "@angular-eslint/template-parser": "17.5.2",
     "@angular/cli": "^17.3.8",
     "@angular/compiler-cli": "^17.3.0",
+    "@angular/localize": "17.3.11",
     "@briebug/jest-schematic": "^6.0.0",
     "@luigi-project/client": "2.14.1",
     "@luigi-project/client-support-angular": "2.14.1",

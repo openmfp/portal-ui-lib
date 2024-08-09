@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { LuigiCoreService } from '../luigi-core.service';
 
 export interface StaticSettingsConfigService {
   getInitialStaticSettingsConfig(): Record<string, any>;

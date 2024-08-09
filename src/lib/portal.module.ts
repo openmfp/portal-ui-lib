@@ -5,7 +5,9 @@ import { RouterOutlet } from '@angular/router';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+  LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from './injection-tokens';
 import { LogoutComponent } from './logout/logout.component';
 import { LuigiComponent } from './luigi/luigi.component';
@@ -19,6 +21,14 @@ import {
   LocalNodesService,
   NoopLocalNodesService,
 } from './services';
+import {
+  NoopUserSettingsConfigService,
+  UserSettingsConfigService,
+} from './services/luigi-config/user-settings-config.service';
+import {
+  GlobalSearchConfigService,
+  NoopGlobalSearchConfigService,
+} from './services/luigi-config/global-search-config.service';
 
 export interface PortalModuleOptions {
   /** Service containing and providing the luigi settings configuration **/
@@ -29,6 +39,12 @@ export interface PortalModuleOptions {
 
   /** Service providing local nodes merging services **/
   localNodesService?: Type<LocalNodesService>;
+
+  /** Service providing user setting specific configuration **/
+  userSettingsConfigService: Type<UserSettingsConfigService>;
+
+  /** Service providing global search configuration **/
+  globalSearchConfigService: Type<GlobalSearchConfigService>;
 }
 
 @NgModule({
@@ -42,6 +58,14 @@ export interface PortalModuleOptions {
     {
       provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: StaticSettingsConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopUserSettingsConfigService,
+    },
+    {
+      provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopGlobalSearchConfigService,
     },
     {
       provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
@@ -80,6 +104,16 @@ export class PortalModule {
         {
           provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
           useClass: options.localNodesService || NoopLocalNodesService,
+        },
+        {
+          provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.userSettingsConfigService || NoopUserSettingsConfigService,
+        },
+        {
+          provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.globalSearchConfigService || NoopGlobalSearchConfigService,
         },
       ],
       imports: [

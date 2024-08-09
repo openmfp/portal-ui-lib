@@ -6,6 +6,7 @@ import { EnvConfigService } from '../portal/env-config.service';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
+import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class LuigiConfigService {
     private authConfigService: AuthConfigService,
     private customMessageListenersService: CustomMessageListenersService,
     private routingConfigService: RoutingConfigService,
+    private lifecycleHooksConfigService: LifecycleHooksConfigService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService
   ) {}
@@ -32,6 +34,8 @@ export class LuigiConfigService {
       communication: this.customMessageListenersService.getMessageListeners(),
       settings:
         this.staticSettingsConfigService.getInitialStaticSettingsConfig(),
+      lifecycleHooks:
+        this.lifecycleHooksConfigService.getLifecycleHooksConfig(envConfig),
     };
   }
 }
