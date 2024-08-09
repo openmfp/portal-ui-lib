@@ -25,6 +25,8 @@
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
     "@luigi-project/plugin-auth-oauth2": "2.7.5",
+    "@luigi-project/client": "2.14.1",
+    "@luigi-project/client-support-angular": "2.14.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
@@ -40,6 +42,8 @@
     "@angular/cli": "^17.3.8",
     "@angular/compiler-cli": "^17.3.0",
     "@briebug/jest-schematic": "^6.0.0",
+    "@luigi-project/client": "2.14.1",
+    "@luigi-project/client-support-angular": "2.14.1",
     "@openmfp/config-prettier": "0.5.0",
     "@openmfp/eslint-config-typescript": "0.6.0",
     "@types/jest": "29.5.12",

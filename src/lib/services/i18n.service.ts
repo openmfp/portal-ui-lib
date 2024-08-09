@@ -67,7 +67,6 @@ export class I18nService {
       let result = this.getInternalTranslation(key, interpolations, locale);
       // fallback language
       if (!result) {
-        // @ts-ignore
         if (
           this.translationTable &&
           !this.translationTable[this.fallbackLanguage]
@@ -153,7 +152,6 @@ export class I18nService {
    */
   addTranslationFile(locale: string, data: Record<string, string>) {
     if (data && locale) {
-      // @ts-ignore
       this.translationTable[locale] = data;
     }
   }

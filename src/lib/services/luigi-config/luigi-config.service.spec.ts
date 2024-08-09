@@ -2,11 +2,13 @@ import { LuigiConfigService } from './luigi-config.service';
 import { EnvConfigService } from '../env-config.service';
 import { AuthConfigService } from './auth-config.service';
 import { ClientEnvironment } from '../../model/env';
+import { StaticSettingsConfigService } from './static-settings-config.service';
 
 describe('LuigiConfigService', () => {
   let service: LuigiConfigService;
   let envConfigServiceMock: jest.Mocked<EnvConfigService>;
   let authConfigServiceMock: jest.Mocked<AuthConfigService>;
+  let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
 
   beforeEach(() => {
     envConfigServiceMock = {
@@ -17,9 +19,14 @@ describe('LuigiConfigService', () => {
       getAuthConfig: jest.fn(),
     } as any;
 
+    staticSettingsConfigServiceMock = {
+      getInitialStaticSettingsConfig: jest.fn(),
+    } as any;
+
     service = new LuigiConfigService(
       envConfigServiceMock,
-      authConfigServiceMock
+      authConfigServiceMock,
+      staticSettingsConfigServiceMock
     );
   });
 
@@ -38,12 +45,22 @@ describe('LuigiConfigService', () => {
         use: 'oAuth2AuthCode',
       } as any;
 
+      const mockStaticSettings = {
+        filed: 'filed',
+      };
+
       envConfigServiceMock.getEnvConfig.mockResolvedValue(mockEnvConfig);
       authConfigServiceMock.getAuthConfig.mockReturnValue(mockAuthConfig);
+      staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
+        mockStaticSettings
+      );
 
       const config = await service.getLuigiConfiguration();
 
       expect(envConfigServiceMock.getEnvConfig).toHaveBeenCalled();
+      expect(
+        staticSettingsConfigServiceMock.getInitialStaticSettingsConfig
+      ).toHaveBeenCalled();
       expect(authConfigServiceMock.getAuthConfig).toHaveBeenCalledWith(
         mockEnvConfig.oauthServerUrl,
         mockEnvConfig.clientId
@@ -52,7 +69,7 @@ describe('LuigiConfigService', () => {
       expect(config).toEqual({
         auth: mockAuthConfig,
         routing: expect.any(Object),
-        settings: expect.any(Object),
+        settings: mockStaticSettings,
       });
 
       // Check routing config
@@ -63,56 +80,6 @@ describe('LuigiConfigService', () => {
         skipRoutingForUrlPatterns: [/.*/],
         pageNotFoundHandler: expect.any(Function),
       });
-
-      // Check settings config
-      expect(config.settings).toEqual({
-        header: {
-          title: 'OpenMFP Portal',
-          logo: expect.any(String),
-          favicon: expect.any(String),
-        },
-        experimental: {
-          btpToolLayout: true,
-        },
-        btpToolLayout: true,
-        responsiveNavigation: 'Fiori3',
-        featureToggles: {
-          queryStringParam: 'ft',
-        },
-        appLoadingIndicator: {
-          hideAutomatically: true,
-        },
-      });
-    });
-  });
-
-  describe('getStaticSettingsConfig', () => {
-    it('should return the correct static settings', () => {
-      const settings = (service as any).getStaticSettingsConfig();
-
-      expect(settings).toEqual({
-        header: {
-          title: 'OpenMFP Portal',
-          logo: expect.any(String),
-          favicon: expect.any(String),
-        },
-        experimental: {
-          btpToolLayout: true,
-        },
-        btpToolLayout: true,
-        responsiveNavigation: 'Fiori3',
-        featureToggles: {
-          queryStringParam: 'ft',
-        },
-        appLoadingIndicator: {
-          hideAutomatically: true,
-        },
-      });
-
-      // Check that logo and favicon are blank images
-      const blankImg = 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAAC';
-      expect(settings.header.logo).toBe(blankImg);
-      expect(settings.header.favicon).toBe(blankImg);
     });
   });
 

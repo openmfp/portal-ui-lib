@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth.service';
-// @ts-ignore
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 import { LuigiCoreService } from '../luigi-core.service';
 import { StorageService } from '../storage.service';

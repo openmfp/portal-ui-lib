@@ -1,6 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-// @ts-ignore
 import * as url from 'url';
 import { AuthService } from '../services';
 

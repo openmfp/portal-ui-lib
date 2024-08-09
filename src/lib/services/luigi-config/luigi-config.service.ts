@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { ClientEnvironment } from '../../model/env';
 import { AuthConfigService } from './auth-config.service';
 import { EnvConfigService } from '../env-config.service';
+import { StaticSettingsConfigService } from './static-settings-config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +11,9 @@ import { EnvConfigService } from '../env-config.service';
 export class LuigiConfigService {
   constructor(
     private envConfigService: EnvConfigService,
-    private authConfigService: AuthConfigService
+    private authConfigService: AuthConfigService,
+    @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
+    private staticSettingsConfigService: StaticSettingsConfigService
   ) {}
 
   public async getLuigiConfiguration() {
@@ -21,30 +25,8 @@ export class LuigiConfigService {
         envConfig.clientId
       ),
       routing: this.getRoutingConfig() as any,
-      settings: this.getStaticSettingsConfig(),
-    };
-  }
-
-  private getStaticSettingsConfig() {
-    const blankImg = 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAAC';
-
-    return {
-      header: {
-        title: 'OpenMFP Portal',
-        logo: blankImg,
-        favicon: blankImg,
-      },
-      experimental: {
-        btpToolLayout: true,
-      },
-      btpToolLayout: true,
-      responsiveNavigation: 'Fiori3',
-      featureToggles: {
-        queryStringParam: 'ft',
-      },
-      appLoadingIndicator: {
-        hideAutomatically: true,
-      },
+      settings:
+        this.staticSettingsConfigService.getInitialStaticSettingsConfig(),
     };
   }
 
