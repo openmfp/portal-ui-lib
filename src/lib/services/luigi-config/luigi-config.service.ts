@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { ClientEnvironment } from '../../model/env';
+import { ClientEnvironment } from '../../models/env';
 import { AuthConfigService } from './auth-config.service';
-import { EnvConfigService } from '../env-config.service';
+import { EnvConfigService } from '../portal/env-config.service';
+import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 
@@ -14,6 +15,7 @@ export class LuigiConfigService {
     private envConfigService: EnvConfigService,
     private authConfigService: AuthConfigService,
     private customMessageListenersService: CustomMessageListenersService,
+    private routingConfigService: RoutingConfigService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService
   ) {}
@@ -26,20 +28,10 @@ export class LuigiConfigService {
         envConfig.oauthServerUrl,
         envConfig.clientId
       ),
-      routing: this.getInitialRoutingConfig(),
+      routing: this.routingConfigService.getInitialRoutingConfig(),
       communication: this.customMessageListenersService.getMessageListeners(),
       settings:
         this.staticSettingsConfigService.getInitialStaticSettingsConfig(),
-    };
-  }
-
-  private getInitialRoutingConfig() {
-    return {
-      useHashRouting: false,
-      showModalPathInUrl: false,
-      modalPathParam: 'modalPathParamDisabled',
-      skipRoutingForUrlPatterns: [/.*/],
-      pageNotFoundHandler: () => {},
     };
   }
 }

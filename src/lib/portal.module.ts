@@ -3,6 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import {
+  LOCAL_NODES_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from './injection-tokens';
@@ -15,6 +16,8 @@ import {
   CustomMessageListener,
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
+  LocalNodesService,
+  NoopLocalNodesService,
 } from './services';
 
 export interface PortalModuleOptions {
@@ -23,6 +26,9 @@ export interface PortalModuleOptions {
 
   /** A set of class representing custom listeners **/
   customMessageListeners?: Type<CustomMessageListener>[];
+
+  /** Service providing local nodes merging services **/
+  localNodesService?: Type<LocalNodesService>;
 }
 
 @NgModule({
@@ -36,6 +42,10 @@ export interface PortalModuleOptions {
     {
       provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: StaticSettingsConfigServiceImpl,
+    },
+    {
+      provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLocalNodesService,
     },
   ],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
@@ -66,6 +76,10 @@ export class PortalModule {
           useClass:
             options.staticSettingsConfigService ||
             StaticSettingsConfigServiceImpl,
+        },
+        {
+          provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+          useClass: options.localNodesService || NoopLocalNodesService,
         },
       ],
       imports: [

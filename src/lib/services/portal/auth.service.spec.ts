@@ -1,8 +1,8 @@
-import { UserTokenData } from '../model/user';
+import { UserTokenData } from '../../models/user';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
-import { AuthTokenData, AuthData } from '../model/env';
+import { AuthTokenData, AuthData } from '../../models/env';
 import { jwtDecode } from 'jwt-decode';
 
 jest.mock('jwt-decode');
