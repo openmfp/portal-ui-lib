@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PortalConfig, ServiceProvider } from '../../model/portal-config';
+import { PortalConfig, ServiceProvider } from '../../models/portal';
 import { ConfigService } from './config.service';
 
 @Injectable({
