@@ -1,7 +1,7 @@
 import { LuigiConfigService } from './luigi-config.service';
-import { EnvConfigService } from '../env-config.service';
+import { EnvConfigService } from '../portal/env-config.service';
 import { AuthConfigService } from './auth-config.service';
-import { ClientEnvironment } from '../../model/env';
+import { ClientEnvironment } from '../../models/env';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';

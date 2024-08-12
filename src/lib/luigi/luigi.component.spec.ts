@@ -1,7 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { LuigiComponent } from './luigi.component';
-import { LuigiConfigService } from '../services/luigi-config/luigi-config.service';
-import { LuigiCoreService, AuthService } from '../services';
+import { LuigiCoreService, AuthService, LuigiConfigService } from '../services';
 
 describe('LuigiComponent', () => {
   let component: LuigiComponent;

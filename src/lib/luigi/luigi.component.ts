@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services';
-import { LuigiConfigService } from '../services/luigi-config/luigi-config.service';
-import { LuigiCoreService } from '../services';
+import { LuigiCoreService, LuigiConfigService } from '../services';
 
 @Component({
   template: '',

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { ClientEnvironment } from '../../model/env';
+import { ClientEnvironment } from '../../models/env';
 import { AuthConfigService } from './auth-config.service';
-import { EnvConfigService } from '../env-config.service';
+import { EnvConfigService } from '../portal/env-config.service';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
