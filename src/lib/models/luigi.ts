@@ -33,6 +33,7 @@ export interface PortalLuigiNodeExtensions {
   defineEntity?: EntityDefinition;
   globalNav?: boolean | string;
   order?: string;
+  dxpOrder?: string;
   navSlot?: string;
   defineSlot?: string;
 }

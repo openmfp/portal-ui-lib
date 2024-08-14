@@ -1,7 +1,8 @@
-import { Inject, NgModule, Type } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -115,6 +116,7 @@ export interface PortalModuleOptions {
 
 @NgModule({
   declarations: [
+    ErrorComponent,
     LuigiComponent,
     PortalComponent,
     CallbackComponent,

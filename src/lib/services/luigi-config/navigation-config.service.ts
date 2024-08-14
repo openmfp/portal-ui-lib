@@ -100,8 +100,12 @@ export class NavigationConfigService {
     };
   }
 
-  private setFeatureToggles(frameConfig) {
-    const featureToggles = frameConfig.featureToggles;
+  private setFeatureToggles(portalConfig: PortalConfig) {
+    const featureToggles = portalConfig.featureToggles;
+    if (!featureToggles) {
+      return;
+    }
+
     for (const featureToggleName of Object.keys(featureToggles)) {
       if (featureToggles[featureToggleName]) {
         this.luigiCoreService.setFeatureToggle(featureToggleName);

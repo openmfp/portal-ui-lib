@@ -14,8 +14,8 @@ export class NodeSortingService {
 
   nodeComparison(a: LuigiNode, b: LuigiNode) {
     // set default order to the end if not defined
-    a.order = a.order || '999';
-    b.order = b.order || '999';
+    a.order = a.dxpOrder || a.order || '999';
+    b.order = b.dxpOrder || b.order || '999';
 
     if (a.order < b.order) {
       return -1;
