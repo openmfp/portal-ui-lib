@@ -214,6 +214,7 @@ describe('NodeSortingService', () => {
 
     it('should append provided nodes after a given slot node', async () => {
       const slotNode = entityDefinitionNode1.children[1];
+      slotNode.category = { label: 'cat2' };
 
       service.appendChildrenToSlot(entityDefinitionNode1.children, slotNode, [
         { label: 'n1' },
@@ -223,7 +224,9 @@ describe('NodeSortingService', () => {
       expect(entityDefinitionNode1.children[0].label).toEqual('firstnode');
       expect(entityDefinitionNode1.children[1]).toBe(slotNode);
       expect(entityDefinitionNode1.children[2].label).toEqual('n1');
+      expect(entityDefinitionNode1.children[2].category).toEqual('cat2');
       expect(entityDefinitionNode1.children[3].label).toEqual('n2');
+      expect(entityDefinitionNode1.children[3].category).toEqual('cat2');
       expect(entityDefinitionNode1.children[4].label).toEqual('secondnode');
     });
 
