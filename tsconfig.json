@@ -9,7 +9,7 @@
     "declaration": false,
     "outDir": "./dist/out-tsc",
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "paths": {
       "lib": ["./dist/lib"]
     },
@@ -21,6 +21,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "useDefineForClassFields": false,
+    "suppressImplicitAnyIndexErrors": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

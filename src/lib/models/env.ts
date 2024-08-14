@@ -11,5 +11,6 @@ export interface AuthData {
 export interface ClientEnvironment {
   oauthServerUrl: string;
   clientId: string;
+  validWebcomponentUrls?: string;
   authData: AuthTokenData;
 }
