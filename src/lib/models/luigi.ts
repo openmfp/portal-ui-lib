@@ -45,11 +45,6 @@ export interface LuigiNodeCategory {
   icon?: string;
 }
 
-export interface LuigiNodeContext extends Record<string, any> {
-  serviceProviderConfig?: any;
-  helpContext?: HelpContext;
-}
-
 export interface HelpContext {
   displayName?: string;
   issueTracker?: {
@@ -88,7 +83,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   loadingIndicator?: { enabled: boolean };
   compound?: any;
   category?: LuigiNodeCategory | string;
-  context?: LuigiNodeContext;
+  context?: Record<string, any>;
   visibleForFeatureToggles?: string[];
   statusBadge?: LuigiStatusBadge;
   onNodeActivation?: (node: LuigiNode) => boolean;

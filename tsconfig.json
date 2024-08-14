@@ -21,7 +21,6 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "useDefineForClassFields": false,
-    "suppressImplicitAnyIndexErrors": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
