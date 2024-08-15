@@ -24,7 +24,6 @@ export class LuigiNodeExtendedContextServiceImpl
     const portalConfig = await this.configService.getPortalConfig();
     return {
       userid: this.authService.getUsername(),
-      // @ts-ignore
       frameContext: portalConfig.frameContext,
       portalContext: portalConfig.portalContext,
       tenantid: portalConfig.tenantId,
