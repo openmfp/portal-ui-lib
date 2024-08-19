@@ -10,9 +10,12 @@ import {
   LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { ClientEnvironment } from '../../models/env';
-import { HelpContext, LuigiNode } from '../../models/luigi';
-import { PortalConfig } from '../../models/portal';
+import {
+  ClientEnvironment,
+  HelpContext,
+  LuigiNode,
+  PortalConfig,
+} from '../../models';
 import { matchesJMESPath } from '../../utilities/jmespath';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
@@ -83,7 +86,7 @@ export class NavigationConfigService {
       appSwitcher: this.appSwitcherConfigService.getAppSwitcher(luigiNodes),
       globalContext:
         this.navigationGlobalContextConfigService.getGlobalContext(),
-      profile: this.userProfileConfigService.getProfile(),
+      profile: await this.userProfileConfigService.getProfile(),
       addNavHrefs: true,
       contextSwitcher: undefined,
       nodeAccessibilityResolver: this.luigiNodesService.nodePolicyResolver,

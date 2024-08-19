@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LuigiIntent, LuigiNode } from '../../models/luigi';
+import { LuigiIntent, LuigiNode } from '../../models';
 
 @Injectable({
   providedIn: 'root',

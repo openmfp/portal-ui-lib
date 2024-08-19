@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { AuthService } from '../portal/auth.service';
+import { Inject, Injectable } from '@angular/core';
+import { LOCAL_STORAGE_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { AuthService } from '../portal';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 import { LuigiCoreService } from '../luigi-core.service';
-import { StorageService } from '../storage.service';
+import { LocalStorageService } from '../storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,8 @@ import { StorageService } from '../storage.service';
 export class AuthConfigService {
   constructor(
     private authService: AuthService,
-    private storageService: StorageService,
+    @Inject(LOCAL_STORAGE_SERVICE_INJECTION_TOKEN)
+    private storageService: LocalStorageService,
     private luigiCoreService: LuigiCoreService
   ) {}
 

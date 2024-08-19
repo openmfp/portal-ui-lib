@@ -1,10 +1,10 @@
-import { StorageService } from './storage.service';
+import { NoopLocalStorageService } from './storage.service';
 
 describe('StorageService', () => {
-  let service: StorageService;
+  let service: NoopLocalStorageService;
 
   beforeEach(() => {
-    service = new StorageService();
+    service = new NoopLocalStorageService();
   });
 
   it('should be created', () => {

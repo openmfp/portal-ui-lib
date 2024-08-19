@@ -1,10 +1,11 @@
-import { NgModule, Type } from '@angular/core';
+import { Inject, NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+  LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -72,6 +73,10 @@ import {
   NodeAccessHandlingService,
   NoopNodeAccessHandlingService,
 } from './services/luigi-nodes/node-access-handling.service';
+import {
+  LocalStorageService,
+  NoopLocalStorageService,
+} from './services/storage.service';
 
 export interface PortalModuleOptions {
   /** Service containing and providing the luigi settings configuration **/
@@ -112,6 +117,9 @@ export interface PortalModuleOptions {
 
   /** **/
   nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
+
+  /** **/
+  localStorageService?: Type<LocalStorageService>;
 }
 
 @NgModule({
@@ -123,6 +131,10 @@ export interface PortalModuleOptions {
     LogoutComponent,
   ],
   providers: [
+    {
+      provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLocalStorageService,
+    },
     {
       provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
       useClass: NoopNodeAccessHandlingService,
@@ -199,6 +211,10 @@ export class PortalModule {
       ],
       providers: [
         ...customMessageListeners,
+        {
+          provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+          useClass: options.localStorageService || NoopLocalStorageService,
+        },
         {
           provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
           useClass:

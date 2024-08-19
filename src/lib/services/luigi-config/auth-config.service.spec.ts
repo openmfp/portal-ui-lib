@@ -1,6 +1,6 @@
 import { AuthConfigService } from './auth-config.service';
 import { AuthService } from '../portal/auth.service';
-import { StorageService } from '../storage.service';
+import { LocalStorageService } from '../storage.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 
@@ -9,7 +9,7 @@ jest.mock('@luigi-project/plugin-auth-oauth2');
 describe('AuthConfigService', () => {
   let service: AuthConfigService;
   let authServiceMock: jest.Mocked<AuthService>;
-  let storageServiceMock: jest.Mocked<StorageService>;
+  let storageServiceMock: jest.Mocked<LocalStorageService>;
   let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
 
   beforeEach(() => {

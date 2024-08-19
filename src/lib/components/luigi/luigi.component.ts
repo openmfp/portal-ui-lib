@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services';
+import { AuthService } from '../../services/portal';
 import { LuigiCoreService, LuigiConfigService } from '../../services';
 
 @Component({

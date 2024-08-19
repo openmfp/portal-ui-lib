@@ -1,4 +1,4 @@
-import { LuigiNode } from '../../models/luigi';
+import { LuigiNode } from '../../models';
 
 export interface LocalNodesService {
   replaceServerNodesWithLocalOnes(
