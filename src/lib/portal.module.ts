@@ -1,4 +1,4 @@
-import { Inject, NgModule, Type } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
@@ -32,51 +32,29 @@ import {
   StaticSettingsConfigServiceImpl,
   LocalNodesService,
   NoopLocalNodesService,
-} from './services';
-import {
   AppSwitcherConfigService,
   NoopAppSwitcherConfigService,
-} from './services/luigi-config/app-switcher-config.service';
-import {
   LuigiBreadcrumbConfigService,
   NoopLuigiBreadcrumbConfigService,
-} from './services/luigi-config/luigi-breadcrumb-config.service';
-import {
   NavigationGlobalContextConfigService,
   NavigationGlobalContextConfigServiceImpl,
-} from './services/luigi-config/navigation-global-context-config.service';
-import {
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
-} from './services/luigi-config/node-change-hook-config.service';
-import {
   NoopUserProfileConfigService,
   UserProfileConfigService,
-} from './services/luigi-config/user-profile-config.service';
-import {
   NoopUserSettingsConfigService,
   UserSettingsConfigService,
-} from './services/luigi-config/user-settings-config.service';
-import {
   GlobalSearchConfigService,
   NoopGlobalSearchConfigService,
-} from './services/luigi-config/global-search-config.service';
-import {
   CustomGlobalNodesService,
   CustomGlobalNodesServiceImpl,
-} from './services/luigi-nodes/custom-global-nodes.service';
-import {
   LuigiNodeExtendedContextService,
   LuigiNodeExtendedContextServiceImpl,
-} from './services/luigi-nodes/luigi-node-extended-context.service';
-import {
   NodeAccessHandlingService,
   NoopNodeAccessHandlingService,
-} from './services/luigi-nodes/node-access-handling.service';
-import {
   LocalStorageService,
   NoopLocalStorageService,
-} from './services/storage.service';
+} from './services';
 
 export interface PortalModuleOptions {
   /** Service containing and providing the luigi settings configuration **/
