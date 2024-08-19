@@ -16,6 +16,7 @@ export * from './luigi-config/node-change-hook-config.service';
 export * from './luigi-config/navigation-global-context-config.service';
 
 export * from './luigi-nodes/local-nodes.service';
+export * from './luigi-nodes/luigi-nodes.service';
 export * from './luigi-nodes/luigi-node-extended-context.service';
 export * from './luigi-nodes/custom-global-nodes.service';
 export * from './luigi-nodes/node-access-handling.service';
