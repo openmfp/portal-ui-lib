@@ -1,4 +1,4 @@
-import { NgModule, Type } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
@@ -171,7 +171,7 @@ export interface PortalModuleOptions {
   bootstrap: [PortalComponent],
 })
 export class PortalModule {
-  static create(options: PortalModuleOptions): NgModule {
+  static create(options: PortalModuleOptions): any {
     const customMessageListeners = (options.customMessageListeners || []).map(
       (customMessageListenerClass) => ({
         provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -187,6 +187,7 @@ export class PortalModule {
         CallbackComponent,
         LogoutComponent,
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         ...customMessageListeners,
         {
