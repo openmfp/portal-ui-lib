@@ -16,10 +16,10 @@ import {
   LuigiNode,
   PortalConfig,
 } from '../../models';
-import { matchesJMESPath } from '../../utilities/jmespath';
+import { matchesJMESPath } from '../../utilities';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
-import { ConfigService } from '../portal/config.service';
+import { ConfigService } from '../portal';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
 import { CustomGlobalNodesService } from '../luigi-nodes/custom-global-nodes.service';
 import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
@@ -431,7 +431,7 @@ export class NavigationConfigService {
       child.context = child.context || {};
       child.context.entityContext = entityContext;
       child.onNodeActivation = this.nodeUtilsService.retrieveHelpContext(
-        this.ctx.helpContext
+        this.ctx
       );
     });
     return this.nodeSortingService.sortNodes(
