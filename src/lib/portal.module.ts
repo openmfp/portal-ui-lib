@@ -1,7 +1,15 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule, Type } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  EnvironmentProviders,
+  ModuleWithProviders,
+  NgModule,
+  NO_ERRORS_SCHEMA,
+  Provider,
+  Type,
+} from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet, Routes } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
@@ -24,7 +32,7 @@ import {
   LuigiComponent,
   CallbackComponent,
 } from './components';
-import { PortalRoutingModule } from './portal-routing.module';
+import { PortalRoutingModule, portalRouts } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import {
   CustomMessageListener,
@@ -57,6 +65,17 @@ import {
 } from './services';
 
 export interface PortalModuleOptions {
+  routes?: Routes;
+
+  /* A set of external declarations of angular components*/
+  declarations?: Array<Type<any> | any[]>;
+
+  /* A set of providers to be additionally declared */
+  providers?: Array<Provider | EnvironmentProviders>;
+
+  /* A set of modules to be additionally imported */
+  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+
   /** Service containing and providing the luigi settings configuration **/
   staticSettingsConfigService?: Type<StaticSettingsConfigService>;
 
@@ -166,6 +185,7 @@ export interface PortalModuleOptions {
       useValue: [],
     },
   ],
+  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],
   bootstrap: [PortalComponent],
@@ -186,8 +206,9 @@ export class PortalModule {
         PortalComponent,
         CallbackComponent,
         LogoutComponent,
+        ...(options.declarations || []),
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         ...customMessageListeners,
         {
@@ -259,12 +280,14 @@ export class PortalModule {
           useClass:
             options.globalSearchConfigService || NoopGlobalSearchConfigService,
         },
+        ...(options.providers || []),
       ],
       imports: [
-        PortalRoutingModule,
+        RouterModule.forRoot((options.routes || []).concat(portalRouts)),
         BrowserModule,
         RouterOutlet,
         HttpClientModule,
+        ...(options.imports || []),
       ],
       exports: [PortalComponent],
       bootstrap: [PortalComponent],
