@@ -20,7 +20,7 @@ describe('NodeUtilsService', () => {
 
   describe('retrieveHelpContext', () => {
     it('should set the helpContext on the node and return true', () => {
-      const helpContext: HelpContext = { displayName: 'Test Help' };
+      const helpContext = { helpContext: { displayName: 'Test Help' } };
       const node: LuigiNode = { context: {} };
 
       const result = service.retrieveHelpContext(helpContext)(node);
