@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule, RouterOutlet, Routes } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
@@ -65,8 +65,6 @@ import {
 } from './services';
 
 export interface PortalModuleOptions {
-  routes?: Routes;
-
   /* A set of external declarations of angular components*/
   declarations?: Array<Type<any> | any[]>;
 
@@ -91,31 +89,31 @@ export interface PortalModuleOptions {
   /** Service providing global search configuration **/
   globalSearchConfigService?: Type<GlobalSearchConfigService>;
 
-  /** **/
+  /** Service providing luigi app switcher configuration **/
   appSwitcherConfigService?: Type<AppSwitcherConfigService>;
 
-  /** **/
+  /** Service providing luigi navigation global context configuration **/
   navigationGlobalContextConfigService?: Type<NavigationGlobalContextConfigService>;
 
-  /** **/
+  /** Service providing luigi node extended context configuration **/
   luigiNodeExtendedContextService?: Type<LuigiNodeExtendedContextService>;
 
-  /** **/
+  /** Service providing custom global level nodes **/
   customGlobalNodesService?: Type<CustomGlobalNodesService>;
 
-  /** **/
+  /** Service providing luigi user profile configuration **/
   userProfileConfigService?: Type<UserProfileConfigService>;
 
-  /** **/
+  /** Service providing luigi breadcrumb configuration **/
   luigiBreadcrumbConfigService?: Type<LuigiBreadcrumbConfigService>;
 
-  /** **/
+  /** Service providing custom global level nodes **/
   nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
 
-  /** **/
+  /** Service handling every node access policies **/
   nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
 
-  /** **/
+  /** Service handling local storage manipulations **/
   localStorageService?: Type<LocalStorageService>;
 }
 
@@ -202,11 +200,11 @@ export class PortalModule {
 
     return {
       declarations: [
+        ...(options.declarations || []),
         LuigiComponent,
         PortalComponent,
         CallbackComponent,
         LogoutComponent,
-        ...(options.declarations || []),
       ],
       schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -283,11 +281,11 @@ export class PortalModule {
         ...(options.providers || []),
       ],
       imports: [
-        RouterModule.forRoot((options.routes || []).concat(portalRouts)),
+        ...(options.imports || []),
+        PortalRoutingModule,
         BrowserModule,
         RouterOutlet,
         HttpClientModule,
-        ...(options.imports || []),
       ],
       exports: [PortalComponent],
       bootstrap: [PortalComponent],
