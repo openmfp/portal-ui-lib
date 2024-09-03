@@ -32,7 +32,7 @@ import {
   LuigiComponent,
   CallbackComponent,
 } from './components';
-import { PortalRoutingModule, portalRouts } from './portal-routing.module';
+import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import {
   CustomMessageListener,
