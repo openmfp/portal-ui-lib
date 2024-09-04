@@ -4,6 +4,7 @@ import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { GlobalSearchConfigService } from './global-search-config.service';
+import { NavigationConfigService } from './navigation-config.service';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
@@ -12,8 +13,7 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { LuigiNode } from '../../models/luigi';
-import { ClientEnvironment } from '../../models/env';
+import { LuigiNode, ClientEnvironment } from '../../models';
 
 @Injectable({ providedIn: 'root' })
 export class LifecycleHooksConfigService {
@@ -22,6 +22,7 @@ export class LifecycleHooksConfigService {
     private luigiNodesService: LuigiNodesService,
     private luigiCoreService: LuigiCoreService,
     private routingConfigService: RoutingConfigService,
+    private navigationConfigService: NavigationConfigService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService,
     @Inject(LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
@@ -55,6 +56,10 @@ export class LifecycleHooksConfigService {
               childrenByEntity
             ),
           globalSearch: this.globalSearchConfigService.getGlobalSearchConfig(),
+          navigation: await this.navigationConfigService.getNavigationConfig(
+            childrenByEntity,
+            envConfig
+          ),
         };
 
         this.luigiCoreService.ux().hideAppLoadingIndicator();

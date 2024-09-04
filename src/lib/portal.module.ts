@@ -1,17 +1,37 @@
-import { NgModule, Type } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  EnvironmentProviders,
+  ModuleWithProviders,
+  NgModule,
+  NO_ERRORS_SCHEMA,
+  Provider,
+  Type,
+} from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+  LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+  LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from './injection-tokens';
-import { LogoutComponent } from './components/logout/logout.component';
-import { LuigiComponent } from './components/luigi/luigi.component';
-import { CallbackComponent } from './components/callback/callback.component';
+import {
+  LogoutComponent,
+  LuigiComponent,
+  CallbackComponent,
+} from './components';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import {
@@ -20,17 +40,40 @@ import {
   StaticSettingsConfigServiceImpl,
   LocalNodesService,
   NoopLocalNodesService,
-} from './services';
-import {
+  AppSwitcherConfigService,
+  NoopAppSwitcherConfigService,
+  LuigiBreadcrumbConfigService,
+  NoopLuigiBreadcrumbConfigService,
+  NavigationGlobalContextConfigService,
+  NavigationGlobalContextConfigServiceImpl,
+  NodeChangeHookConfigService,
+  NodeChangeHookConfigServiceImpl,
+  NoopUserProfileConfigService,
+  UserProfileConfigService,
   NoopUserSettingsConfigService,
   UserSettingsConfigService,
-} from './services/luigi-config/user-settings-config.service';
-import {
   GlobalSearchConfigService,
   NoopGlobalSearchConfigService,
-} from './services/luigi-config/global-search-config.service';
+  CustomGlobalNodesService,
+  CustomGlobalNodesServiceImpl,
+  LuigiNodeExtendedContextService,
+  LuigiNodeExtendedContextServiceImpl,
+  NodeAccessHandlingService,
+  NoopNodeAccessHandlingService,
+  LocalStorageService,
+  NoopLocalStorageService,
+} from './services';
 
 export interface PortalModuleOptions {
+  /* A set of external declarations of angular components*/
+  declarations?: Array<Type<any> | any[]>;
+
+  /* A set of providers to be additionally declared */
+  providers?: Array<Provider | EnvironmentProviders>;
+
+  /* A set of modules to be additionally imported */
+  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+
   /** Service containing and providing the luigi settings configuration **/
   staticSettingsConfigService?: Type<StaticSettingsConfigService>;
 
@@ -41,20 +84,84 @@ export interface PortalModuleOptions {
   localNodesService?: Type<LocalNodesService>;
 
   /** Service providing user setting specific configuration **/
-  userSettingsConfigService: Type<UserSettingsConfigService>;
+  userSettingsConfigService?: Type<UserSettingsConfigService>;
 
   /** Service providing global search configuration **/
-  globalSearchConfigService: Type<GlobalSearchConfigService>;
+  globalSearchConfigService?: Type<GlobalSearchConfigService>;
+
+  /** Service providing luigi app switcher configuration **/
+  appSwitcherConfigService?: Type<AppSwitcherConfigService>;
+
+  /** Service providing luigi navigation global context configuration **/
+  navigationGlobalContextConfigService?: Type<NavigationGlobalContextConfigService>;
+
+  /** Service providing luigi node extended context configuration **/
+  luigiNodeExtendedContextService?: Type<LuigiNodeExtendedContextService>;
+
+  /** Service providing custom global level nodes **/
+  customGlobalNodesService?: Type<CustomGlobalNodesService>;
+
+  /** Service providing luigi user profile configuration **/
+  userProfileConfigService?: Type<UserProfileConfigService>;
+
+  /** Service providing luigi breadcrumb configuration **/
+  luigiBreadcrumbConfigService?: Type<LuigiBreadcrumbConfigService>;
+
+  /** Service providing custom global level nodes **/
+  nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
+
+  /** Service handling every node access policies **/
+  nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
+
+  /** Service handling local storage manipulations **/
+  localStorageService?: Type<LocalStorageService>;
 }
 
 @NgModule({
   declarations: [
+    ErrorComponent,
     LuigiComponent,
     PortalComponent,
     CallbackComponent,
     LogoutComponent,
   ],
   providers: [
+    {
+      provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLocalStorageService,
+    },
+    {
+      provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+      useClass: NoopNodeAccessHandlingService,
+    },
+    {
+      provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+      useClass: NodeChangeHookConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLuigiBreadcrumbConfigService,
+    },
+    {
+      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopUserProfileConfigService,
+    },
+    {
+      provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+      useClass: CustomGlobalNodesServiceImpl,
+    },
+    {
+      provide: LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
+      useClass: LuigiNodeExtendedContextServiceImpl,
+    },
+    {
+      provide: LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NavigationGlobalContextConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopAppSwitcherConfigService,
+    },
     {
       provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: StaticSettingsConfigServiceImpl,
@@ -71,13 +178,18 @@ export interface PortalModuleOptions {
       provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
       useClass: NoopLocalNodesService,
     },
+    {
+      provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+      useValue: [],
+    },
   ],
+  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],
   bootstrap: [PortalComponent],
 })
 export class PortalModule {
-  static create(options: PortalModuleOptions): NgModule {
+  static create(options: PortalModuleOptions): any {
     const customMessageListeners = (options.customMessageListeners || []).map(
       (customMessageListenerClass) => ({
         provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -88,13 +200,64 @@ export class PortalModule {
 
     return {
       declarations: [
+        ...(options.declarations || []),
         LuigiComponent,
         PortalComponent,
         CallbackComponent,
         LogoutComponent,
       ],
+      schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         ...customMessageListeners,
+        {
+          provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+          useClass: options.localStorageService || NoopLocalStorageService,
+        },
+        {
+          provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.nodeAccessHandlingService || NoopNodeAccessHandlingService,
+        },
+        {
+          provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.nodeChangeHookConfigService ||
+            NodeChangeHookConfigServiceImpl,
+        },
+        {
+          provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.luigiBreadcrumbConfigService ||
+            NoopLuigiBreadcrumbConfigService,
+        },
+        {
+          provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.userProfileConfigService || NoopUserProfileConfigService,
+        },
+        {
+          provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.customGlobalNodesService || CustomGlobalNodesServiceImpl,
+        },
+        {
+          provide: LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.luigiNodeExtendedContextService ||
+            LuigiNodeExtendedContextServiceImpl,
+        },
+        {
+          provide:
+            LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.navigationGlobalContextConfigService ||
+            NavigationGlobalContextConfigServiceImpl,
+        },
+        {
+          provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.appSwitcherConfigService || NoopAppSwitcherConfigService,
+        },
         {
           provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
           useClass:
@@ -115,8 +278,10 @@ export class PortalModule {
           useClass:
             options.globalSearchConfigService || NoopGlobalSearchConfigService,
         },
+        ...(options.providers || []),
       ],
       imports: [
+        ...(options.imports || []),
         PortalRoutingModule,
         BrowserModule,
         RouterOutlet,

@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { lastValueFrom } from 'rxjs';
-import { AuthData, AuthTokenData } from '../../models/env';
-import { UserData, UserTokenData } from '../../models/user';
+import { AuthData, AuthTokenData, UserData, UserTokenData } from '../../models';
 
 @Injectable({
   providedIn: 'root',

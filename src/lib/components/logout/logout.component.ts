@@ -4,7 +4,6 @@ import { I18nService } from '../../services/i18n.service';
 import { LuigiCoreService } from '../../services';
 
 @Component({
-  selector: 'app-logout',
   templateUrl: './logout.component.html',
   styleUrls: ['./logout.component.scss'],
 })

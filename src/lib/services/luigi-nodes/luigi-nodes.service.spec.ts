@@ -3,9 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock } from 'jest-mock-extended';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { RouterModule } from '@angular/router';
-import { ServiceProviderService } from '../portal/service-provider.service';
-import { ServiceProvider } from '../../models/portal';
-import { EntityDefinition, LuigiNode } from '../../models/luigi';
+import { ServiceProviderService } from '../portal';
+import { ServiceProvider, EntityDefinition, LuigiNode } from '../../models';
 import {
   LocalNodesService,
   NoopLocalNodesService,

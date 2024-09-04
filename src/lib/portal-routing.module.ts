@@ -1,10 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LogoutComponent } from './components/logout/logout.component';
-import { LuigiComponent } from './components/luigi/luigi.component';
-import { CallbackComponent } from './components/callback/callback.component';
+import {
+  LogoutComponent,
+  LuigiComponent,
+  CallbackComponent,
+} from './components';
+import { ErrorComponent } from './components/error/error.component';
 
-export const portalRouts: Routes = [
+const portalRouts: Routes = [
+  { path: 'error-handling', component: ErrorComponent },
   { path: 'callback', component: CallbackComponent },
   { path: 'logout', component: LogoutComponent },
   { path: '', component: LuigiComponent },
