@@ -18,6 +18,7 @@ import {
 } from '../../models';
 import { matchesJMESPath } from '../../utilities';
 import { LuigiCoreService } from '../luigi-core.service';
+import { CommonGlobalLuigiNodesService } from '../luigi-nodes/common-global-luigi-nodes.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { ConfigService } from '../portal';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
@@ -44,6 +45,7 @@ export class NavigationConfigService {
     private luigiNodesService: LuigiNodesService,
     private intentNavigationService: IntentNavigationService,
     private nodeSortingService: NodeSortingService,
+    private commonGlobalLuigiNodesService: CommonGlobalLuigiNodesService,
     @Inject(LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN)
     private nodeAccessHandlingService: NodeAccessHandlingService,
     @Inject(LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN)
@@ -73,7 +75,7 @@ export class NavigationConfigService {
     );
 
     const portalConfig = await this.configService.getPortalConfig();
-    this.setFeatureToggles(portalConfig);
+    this.luigiCoreService.setFeatureToggles(portalConfig.featureToggles);
     const luigiNodes = await this.nodesFn(
       childrenByEntity,
       portalConfig,
@@ -103,19 +105,6 @@ export class NavigationConfigService {
     };
   }
 
-  private setFeatureToggles(portalConfig: PortalConfig) {
-    const featureToggles = portalConfig.featureToggles;
-    if (!featureToggles) {
-      return;
-    }
-
-    for (const featureToggleName of Object.keys(featureToggles)) {
-      if (featureToggles[featureToggleName]) {
-        this.luigiCoreService.setFeatureToggle(featureToggleName);
-      }
-    }
-  }
-
   private buildViewGroups(nodes: LuigiNode[]) {
     const viewGroups = {};
     nodes.forEach((node) => {
@@ -141,6 +130,7 @@ export class NavigationConfigService {
       ...(childrenByEntity['global.bottom'] || []),
       ...(childrenByEntity['global.topnav'] || []),
       ...(await this.customGlobalNodesService.getCustomGlobalNodes(this.ctx)),
+      this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
     ];
 
     globalNodes.forEach((node) => {
@@ -171,26 +161,7 @@ export class NavigationConfigService {
       node.context = { ...nodeLuigiContext, ...ctx };
     });
 
-    globalNodes.push(this.getContentNotFoundGlobalNode());
     return globalNodes;
-  }
-
-  private getContentNotFoundGlobalNode(): LuigiNode {
-    return {
-      pathSegment: 'error',
-      label: 'Content not found',
-      hideFromNav: true,
-      children: [
-        {
-          pathSegment: ':id',
-          hideSideNav: true,
-          viewUrl: '/error-handling#:id',
-          context: { id: ':id' },
-          loadingIndicator: { enabled: false },
-          showBreadcrumbs: false,
-        },
-      ],
-    };
   }
 
   applyEntityChildrenRecursively(

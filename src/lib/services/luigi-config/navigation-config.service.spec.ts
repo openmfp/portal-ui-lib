@@ -1,12 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import { ClientEnvironment } from '../../models/env';
-import { EntityDefinition, LuigiNode } from '../../models/luigi';
-import { PortalConfig, ServiceProvider } from '../../models/portal';
+import {
+  ClientEnvironment,
+  EntityDefinition,
+  LuigiNode,
+  PortalConfig,
+  ServiceProvider,
+} from '../../models';
 import { PortalModule } from '../../portal.module';
-import { ConfigService } from '../portal/config.service';
-import { EnvConfigService } from '../portal/env-config.service';
-import { ServiceProviderService } from '../portal/service-provider.service';
+import {
+  ConfigService,
+  EnvConfigService,
+  ServiceProviderService,
+} from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { NavigationConfigService } from './navigation-config.service';

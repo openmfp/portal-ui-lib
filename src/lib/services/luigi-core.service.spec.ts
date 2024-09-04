@@ -142,4 +142,49 @@ describe('LuigiCoreService', () => {
       .getActiveFeatureToggleList.mockReturnValue(['activeFeature']);
     expect(service.isFeatureToggleActive('activeFeature')).toBe(true);
   });
+
+  describe('setFeatureToggles', () => {
+    it('should call setFeatureToggle for each true feature toggle', () => {
+      const featureToggles = {
+        feature1: true,
+        feature2: false,
+        feature3: true,
+      };
+      service.setFeatureToggle = jest.fn();
+
+      service.setFeatureToggles(featureToggles);
+
+      expect(service.setFeatureToggle).toHaveBeenCalledTimes(2);
+      expect(service.setFeatureToggle).toHaveBeenCalledWith('feature1');
+      expect(service.setFeatureToggle).toHaveBeenCalledWith('feature3');
+    });
+
+    it('should not call setFeatureToggle for false feature toggles', () => {
+      const featureToggles = {
+        feature1: false,
+        feature2: false,
+      };
+      service.setFeatureToggle = jest.fn();
+
+      service.setFeatureToggles(featureToggles);
+
+      expect(service.setFeatureToggle).not.toHaveBeenCalled();
+    });
+
+    it('should handle an empty object', () => {
+      service.setFeatureToggle = jest.fn();
+
+      service.setFeatureToggles({});
+
+      expect(service.setFeatureToggle).not.toHaveBeenCalled();
+    });
+
+    it('should handle undefined input', () => {
+      service.setFeatureToggle = jest.fn();
+
+      service.setFeatureToggles(undefined);
+
+      expect(service.setFeatureToggle).not.toHaveBeenCalled();
+    });
+  });
 });
