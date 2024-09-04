@@ -27,7 +27,7 @@ describe('matchesJMESPath', () => {
             component: {},
           },
         },
-        'entityContext.component.annotations."argocd.dxp.sap.com/application-selector" == null'
+        'entityContext.component.annotations."example.com/application-selector" == null'
       )
     ).toEqual(true);
     expect(console.warn).not.toHaveBeenCalled();
