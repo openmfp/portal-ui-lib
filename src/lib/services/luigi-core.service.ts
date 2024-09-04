@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { PortalConfig } from '../models';
 const luigi = (globalThis as any).Luigi;
 
 export interface LuigiConfig {
@@ -83,6 +84,18 @@ export class LuigiCoreService {
 
   setFeatureToggle(featureToggleName: string) {
     luigi.featureToggles().setFeatureToggle(featureToggleName);
+  }
+
+  setFeatureToggles(featureToggles: Record<string, boolean>) {
+    if (!featureToggles) {
+      return;
+    }
+
+    for (const featureToggleName of Object.keys(featureToggles)) {
+      if (featureToggles[featureToggleName]) {
+        this.setFeatureToggle(featureToggleName);
+      }
+    }
   }
 
   isFeatureToggleActive(ft: string): boolean {

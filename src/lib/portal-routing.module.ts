@@ -7,7 +7,7 @@ import {
 } from './components';
 import { ErrorComponent } from './components/error/error.component';
 
-export const portalRouts: Routes = [
+const portalRouts: Routes = [
   { path: 'error-handling', component: ErrorComponent },
   { path: 'callback', component: CallbackComponent },
   { path: 'logout', component: LogoutComponent },

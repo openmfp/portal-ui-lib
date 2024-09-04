@@ -1,10 +1,19 @@
-import { NgModule, Type } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  EnvironmentProviders,
+  ModuleWithProviders,
+  NgModule,
+  NO_ERRORS_SCHEMA,
+  Provider,
+  Type,
+} from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+  LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -31,49 +40,40 @@ import {
   StaticSettingsConfigServiceImpl,
   LocalNodesService,
   NoopLocalNodesService,
-} from './services';
-import {
   AppSwitcherConfigService,
   NoopAppSwitcherConfigService,
-} from './services/luigi-config/app-switcher-config.service';
-import {
   LuigiBreadcrumbConfigService,
   NoopLuigiBreadcrumbConfigService,
-} from './services/luigi-config/luigi-breadcrumb-config.service';
-import {
   NavigationGlobalContextConfigService,
   NavigationGlobalContextConfigServiceImpl,
-} from './services/luigi-config/navigation-global-context-config.service';
-import {
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
-} from './services/luigi-config/node-change-hook-config.service';
-import {
   NoopUserProfileConfigService,
   UserProfileConfigService,
-} from './services/luigi-config/user-profile-config.service';
-import {
   NoopUserSettingsConfigService,
   UserSettingsConfigService,
-} from './services/luigi-config/user-settings-config.service';
-import {
   GlobalSearchConfigService,
   NoopGlobalSearchConfigService,
-} from './services/luigi-config/global-search-config.service';
-import {
   CustomGlobalNodesService,
   CustomGlobalNodesServiceImpl,
-} from './services/luigi-nodes/custom-global-nodes.service';
-import {
   LuigiNodeExtendedContextService,
   LuigiNodeExtendedContextServiceImpl,
-} from './services/luigi-nodes/luigi-node-extended-context.service';
-import {
   NodeAccessHandlingService,
   NoopNodeAccessHandlingService,
-} from './services/luigi-nodes/node-access-handling.service';
+  LocalStorageService,
+  NoopLocalStorageService,
+} from './services';
 
 export interface PortalModuleOptions {
+  /* A set of external declarations of angular components*/
+  declarations?: Array<Type<any> | any[]>;
+
+  /* A set of providers to be additionally declared */
+  providers?: Array<Provider | EnvironmentProviders>;
+
+  /* A set of modules to be additionally imported */
+  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+
   /** Service containing and providing the luigi settings configuration **/
   staticSettingsConfigService?: Type<StaticSettingsConfigService>;
 
@@ -89,29 +89,32 @@ export interface PortalModuleOptions {
   /** Service providing global search configuration **/
   globalSearchConfigService?: Type<GlobalSearchConfigService>;
 
-  /** **/
+  /** Service providing luigi app switcher configuration **/
   appSwitcherConfigService?: Type<AppSwitcherConfigService>;
 
-  /** **/
+  /** Service providing luigi navigation global context configuration **/
   navigationGlobalContextConfigService?: Type<NavigationGlobalContextConfigService>;
 
-  /** **/
+  /** Service providing luigi node extended context configuration **/
   luigiNodeExtendedContextService?: Type<LuigiNodeExtendedContextService>;
 
-  /** **/
+  /** Service providing custom global level nodes **/
   customGlobalNodesService?: Type<CustomGlobalNodesService>;
 
-  /** **/
+  /** Service providing luigi user profile configuration **/
   userProfileConfigService?: Type<UserProfileConfigService>;
 
-  /** **/
+  /** Service providing luigi breadcrumb configuration **/
   luigiBreadcrumbConfigService?: Type<LuigiBreadcrumbConfigService>;
 
-  /** **/
+  /** Service providing custom global level nodes **/
   nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
 
-  /** **/
+  /** Service handling every node access policies **/
   nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
+
+  /** Service handling local storage manipulations **/
+  localStorageService?: Type<LocalStorageService>;
 }
 
 @NgModule({
@@ -123,6 +126,10 @@ export interface PortalModuleOptions {
     LogoutComponent,
   ],
   providers: [
+    {
+      provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLocalStorageService,
+    },
     {
       provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
       useClass: NoopNodeAccessHandlingService,
@@ -176,12 +183,13 @@ export interface PortalModuleOptions {
       useValue: [],
     },
   ],
+  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],
   bootstrap: [PortalComponent],
 })
 export class PortalModule {
-  static create(options: PortalModuleOptions): NgModule {
+  static create(options: PortalModuleOptions): any {
     const customMessageListeners = (options.customMessageListeners || []).map(
       (customMessageListenerClass) => ({
         provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -192,13 +200,19 @@ export class PortalModule {
 
     return {
       declarations: [
+        ...(options.declarations || []),
         LuigiComponent,
         PortalComponent,
         CallbackComponent,
         LogoutComponent,
       ],
+      schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         ...customMessageListeners,
+        {
+          provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+          useClass: options.localStorageService || NoopLocalStorageService,
+        },
         {
           provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
           useClass:
@@ -264,8 +278,10 @@ export class PortalModule {
           useClass:
             options.globalSearchConfigService || NoopGlobalSearchConfigService,
         },
+        ...(options.providers || []),
       ],
       imports: [
+        ...(options.imports || []),
         PortalRoutingModule,
         BrowserModule,
         RouterOutlet,

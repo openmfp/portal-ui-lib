@@ -1,6 +1,6 @@
 import { NodeUtilsService } from './node-utils.service';
 import { LuigiCoreService } from '../luigi-core.service';
-import { HelpContext, LuigiNode } from '../../models/luigi';
+import { HelpContext, LuigiNode } from '../../models';
 
 describe('NodeUtilsService', () => {
   let service: NodeUtilsService;
@@ -20,13 +20,13 @@ describe('NodeUtilsService', () => {
 
   describe('retrieveHelpContext', () => {
     it('should set the helpContext on the node and return true', () => {
-      const helpContext: HelpContext = { displayName: 'Test Help' };
+      const context = { helpContext: { displayName: 'Test Help' } };
       const node: LuigiNode = { context: {} };
 
-      const result = service.retrieveHelpContext(helpContext)(node);
+      const result = service.retrieveHelpContext(context)(node);
 
       expect(result).toBe(true);
-      expect(node.context.helpContext).toEqual(helpContext);
+      expect(node.context.helpContext).toEqual(context.helpContext);
     });
   });
 

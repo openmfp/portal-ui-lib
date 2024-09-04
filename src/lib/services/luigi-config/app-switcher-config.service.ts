@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LuigiNode } from '../../models/luigi';
+import { LuigiNode } from '../../models';
 
 export interface AppSwitcherConfigService {
   getAppSwitcher(luigiNodes: LuigiNode[]);

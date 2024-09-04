@@ -13,8 +13,7 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { LuigiNode } from '../../models/luigi';
-import { ClientEnvironment } from '../../models/env';
+import { LuigiNode, ClientEnvironment } from '../../models';
 
 @Injectable({ providedIn: 'root' })
 export class LifecycleHooksConfigService {

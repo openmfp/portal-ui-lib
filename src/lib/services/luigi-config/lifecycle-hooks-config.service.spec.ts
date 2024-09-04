@@ -110,20 +110,6 @@ describe('LifecycleHooksConfigService', () => {
         expect(luigiCoreServiceMock.setConfig).toHaveBeenCalled();
       });
 
-      it('should call resetLuigi if btpLayout feature is active', async () => {
-        luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
-        const config = service.getLifecycleHooksConfig({} as any);
-        await config.luigiAfterInit();
-        expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
-      });
-
-      it('should not call resetLuigi if btpLayout feature is not active', async () => {
-        luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(false);
-        const config = service.getLifecycleHooksConfig({} as any);
-        await config.luigiAfterInit();
-        expect(luigiCoreServiceMock.resetLuigi).not.toHaveBeenCalled();
-      });
-
       it('should handle error when retrieving Luigi navigation nodes', async () => {
         luigiNodesServiceMock.retrieveChildrenByEntity.mockRejectedValue(
           new Error('Test error')

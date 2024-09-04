@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HelpContext, LuigiNode } from '../../models/luigi';
+import { HelpContext, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 
 @Injectable({ providedIn: 'root' })
 export class NodeUtilsService {
   constructor(private luigiCoreService: LuigiCoreService) {}
 
-  retrieveHelpContext(helpContext: HelpContext) {
+  retrieveHelpContext(ctx: { helpContext: HelpContext }) {
     return (node: LuigiNode) => {
-      node.context.helpContext = helpContext;
+      node.context.helpContext = ctx.helpContext;
       return true;
     };
   }
