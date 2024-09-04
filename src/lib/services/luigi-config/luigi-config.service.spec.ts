@@ -5,6 +5,7 @@ import { ClientEnvironment } from '../../models/env';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
+import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 
 describe('LuigiConfigService', () => {
   let service: LuigiConfigService;
@@ -13,6 +14,7 @@ describe('LuigiConfigService', () => {
   let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
   let customMessageListenersMock: jest.Mocked<CustomMessageListenersService>;
   let routingConfigServiceMock: jest.Mocked<RoutingConfigService>;
+  let lifecycleHooksConfigServiceMock: jest.Mocked<LifecycleHooksConfigService>;
 
   beforeEach(() => {
     envConfigServiceMock = {
@@ -36,11 +38,16 @@ describe('LuigiConfigService', () => {
       getRoutingConfig: jest.fn(),
     } as any;
 
+    lifecycleHooksConfigServiceMock = {
+      getLifecycleHooksConfig: jest.fn(),
+    } as any;
+
     service = new LuigiConfigService(
       envConfigServiceMock,
       authConfigServiceMock,
       customMessageListenersMock,
       routingConfigServiceMock,
+      lifecycleHooksConfigServiceMock,
       staticSettingsConfigServiceMock
     );
   });
@@ -69,6 +76,10 @@ describe('LuigiConfigService', () => {
         customMessagesListeners: { 'id-43545': () => {} },
       };
 
+      const mockLifecycleHooks = {
+        luigiAfterInit: null,
+      };
+
       const mockRoutingConfig = {
         useHashRouting: false,
         showModalPathInUrl: false,
@@ -78,12 +89,15 @@ describe('LuigiConfigService', () => {
 
       envConfigServiceMock.getEnvConfig.mockResolvedValue(mockEnvConfig);
       authConfigServiceMock.getAuthConfig.mockReturnValue(mockAuthConfig);
+      lifecycleHooksConfigServiceMock.getLifecycleHooksConfig.mockReturnValue(
+        mockLifecycleHooks
+      );
       staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
         mockStaticSettings
       );
-      jest
-        .spyOn(customMessageListenersMock, 'getMessageListeners')
-        .mockReturnValue(mockCommunicationConfig);
+      customMessageListenersMock.getMessageListeners.mockReturnValue(
+        mockCommunicationConfig
+      );
       routingConfigServiceMock.getInitialRoutingConfig.mockReturnValue(
         mockRoutingConfig
       );
@@ -106,6 +120,7 @@ describe('LuigiConfigService', () => {
         routing: mockRoutingConfig,
         settings: mockStaticSettings,
         communication: mockCommunicationConfig,
+        lifecycleHooks: mockLifecycleHooks,
       });
     });
   });

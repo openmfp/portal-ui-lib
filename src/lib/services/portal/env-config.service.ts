@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ClientEnvironment } from '../../models/env';
+import { ClientEnvironment } from '../../models';
 import { AuthService } from './auth.service';
 import { lastValueFrom } from 'rxjs';
 

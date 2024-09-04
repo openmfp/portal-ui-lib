@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ServiceProviderService } from '../portal/service-provider.service';
+import { ServiceProviderService } from '../portal';
 import { LocalNodesService } from './local-nodes.service';
-import { EntityDefinition, LuigiNode } from '../../models/luigi';
+import { EntityDefinition, LuigiNode, ServiceProvider } from '../../models';
 import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { ServiceProvider } from '../../models/portal';
 
 @Injectable({
   providedIn: 'root',

@@ -1,10 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { I18nService } from '../services/i18n.service';
-import { LuigiCoreService } from '../services';
+import { I18nService } from '../../services/i18n.service';
+import { LuigiCoreService } from '../../services';
 
 @Component({
-  selector: 'app-logout',
   templateUrl: './logout.component.html',
   styleUrls: ['./logout.component.scss'],
 })

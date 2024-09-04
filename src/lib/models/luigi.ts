@@ -13,9 +13,65 @@ export interface LuigiStatusBadge {
   type: string;
 }
 
+export interface LuigiNodeIFramePermissions {
+  allow?: string[];
+  sandbox?: string[];
+}
+
+export interface LuigiUserSetting {
+  type: string;
+  label?: string;
+  style?: string;
+  options?: string[];
+  isEditable?: boolean;
+}
+
+export interface LuigiUserSettingsGroup {
+  label?: string;
+  sublabel?: string;
+  title?: string;
+  icon?: string;
+  viewUrl?: string;
+  settings?: Record<string, LuigiUserSetting>;
+}
+
+export interface LuigiUserSettingsConfig {
+  groups: Record<string, LuigiUserSettingsGroup>;
+}
+
+export interface LuigiNodeIFramePermissions {
+  allow?: string[];
+  sandbox?: string[];
+}
+
 export interface PortalLuigiNodeExtensions {
+  _userSettingsConfig?: LuigiUserSettingsConfig;
+  _preloadUrl?: string;
+  _requiredIFramePermissionsForViewGroup?: LuigiNodeIFramePermissions;
+  // internal navigation ordering
+  _portalDirectChildren?: LuigiNode[];
+  _intentMappings?: LuigiIntent[];
+  _entityRelativePaths?: Record<string, any>;
+  _entityRootChild?: boolean;
+  hideFromBreadcrumb?: boolean;
+  breadcrumbBadge?: BreadcrumbBadge;
   entityType?: string;
   requiredPolicies?: string[];
+  visibleForEntityContext?: Record<string, any>; // experimental/deprecated
+  visibleForContext?: string; // experimental
+  visibleForPlugin?: boolean; // experimental
+  configurationMissing?: string; // experimental
+  networkVisibility?: NetworkVisibility; //experimental
+  isMissingMandatoryData?: boolean; // experimental
+  defineEntity?: EntityDefinition;
+  globalNav?: boolean | string;
+  order?: string;
+  dxpOrder?: string;
+  navSlot?: string;
+  defineSlot?: string;
+  configurationHint?: string; // experimental
+  configurationLink?: string; // experimental
+  requiredIFramePermissions?: LuigiNodeIFramePermissions;
 }
 
 export interface LuigiNodeCategory {
@@ -26,14 +82,84 @@ export interface LuigiNodeCategory {
   icon?: string;
 }
 
-export interface LuigiNodeContext extends Record<string, any> {
-  serviceProviderConfig?: any;
+export interface HelpContext {
+  displayName?: string;
+  issueTracker?: {
+    url: string;
+  };
+  feedbackTracker?: {
+    url: string;
+  };
+  stackSearch?: {
+    tags: string[];
+  };
+  documentation?: {
+    url: string;
+  };
+}
+
+export interface LuigiIntent {
+  baseEntityId?: string;
+  relativePath?: string;
+  semanticObject: string;
+  action: string;
+  pathSegment?: string;
+}
+
+export interface LuigiBadgeCounter {
+  label: string;
+  count: () => Promise<number | string> | number | string;
 }
 
 export interface LuigiNode extends PortalLuigiNodeExtensions {
+  testId?: string;
   pathSegment?: string;
+  viewUrl?: string;
+  viewGroup?: string;
   label?: string;
+  icon?: string;
+  link?: string;
+  navHeader?: any;
+  hideFromNav?: boolean;
+  hideSideNav?: boolean;
+  virtualTree?: boolean;
+  initialRoute?: any;
+  openNodeInModal?: any;
+  navigationContext?: string;
+  showBreadcrumbs?: boolean;
+  loadingIndicator?: { enabled: boolean };
+  compound?: any;
+  badgeCounter?: LuigiBadgeCounter;
   category?: LuigiNodeCategory | string;
-  context?: LuigiNodeContext;
+  context?: Record<string, any>;
+  visibleForFeatureToggles?: string[];
   statusBadge?: LuigiStatusBadge;
+  onNodeActivation?: (node: LuigiNode) => boolean;
+  children?:
+    | LuigiNode[]
+    | { (context?: any): Promise<LuigiNode[]> }
+    | { (context?: any): LuigiNode[] };
 }
+
+export enum NetworkVisibility {
+  INTERNAL = 'internal',
+  INTERNET = 'internet',
+}
+
+export interface BreadcrumbBadge {
+  text: string;
+  colorSchema?: BreadcrumbBadgeColorSchema;
+  hint?: string;
+}
+
+export type BreadcrumbBadgeColorSchema =
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '10';
