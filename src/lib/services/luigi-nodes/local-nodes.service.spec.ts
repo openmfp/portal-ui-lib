@@ -1,5 +1,5 @@
 import { NoopLocalNodesService } from './local-nodes.service';
-import { LuigiNode } from '../../models/luigi';
+import { LuigiNode } from '../../models';
 
 describe('NoopLocalNodesService', () => {
   let service: NoopLocalNodesService;

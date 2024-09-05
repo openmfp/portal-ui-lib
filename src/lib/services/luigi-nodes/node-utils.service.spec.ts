@@ -1,6 +1,6 @@
 import { NodeUtilsService } from './node-utils.service';
 import { LuigiCoreService } from '../luigi-core.service';
-import { HelpContext, LuigiNode } from '../../models';
+import { LuigiNode } from '../../models';
 
 describe('NodeUtilsService', () => {
   let service: NodeUtilsService;
@@ -9,6 +9,7 @@ describe('NodeUtilsService', () => {
   beforeEach(() => {
     mockLuigiCoreService = {
       isFeatureToggleActive: jest.fn(),
+      getGlobalContext: jest.fn(),
     } as unknown as jest.Mocked<LuigiCoreService>;
 
     service = new NodeUtilsService(mockLuigiCoreService);
@@ -22,6 +23,7 @@ describe('NodeUtilsService', () => {
     it('should set the helpContext on the node and return true', () => {
       const context = { helpContext: { displayName: 'Test Help' } };
       const node: LuigiNode = { context: {} };
+      mockLuigiCoreService.getGlobalContext.mockReturnValue(context);
 
       const result = service.retrieveGlobalHelpContext()(node);
 
