@@ -78,6 +78,10 @@ export class LuigiCoreService {
     return luigi.globalSearch();
   }
 
+  getGlobalContext() {
+    return luigi.getGlobalContext();
+  }
+
   routing() {
     return luigi.routing();
   }

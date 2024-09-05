@@ -29,7 +29,7 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       };
       const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).toHaveBeenCalledWith(
         '/initial-route'
@@ -43,7 +43,7 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       };
       const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
     });
@@ -55,7 +55,7 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       };
       const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
     });
@@ -69,7 +69,7 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       } as LuigiNode & { _virtualTree: boolean };
       const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
     });

@@ -23,7 +23,7 @@ describe('NodeUtilsService', () => {
       const context = { helpContext: { displayName: 'Test Help' } };
       const node: LuigiNode = { context: {} };
 
-      const result = service.retrieveHelpContext(context)(node);
+      const result = service.retrieveGlobalHelpContext()(node);
 
       expect(result).toBe(true);
       expect(node.context.helpContext).toEqual(context.helpContext);

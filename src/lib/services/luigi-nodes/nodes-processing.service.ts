@@ -23,10 +23,6 @@ import { NodeUtilsService } from './node-utils.service';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
-  private ctx: {
-    helpContext: HelpContext;
-  } = { helpContext: null };
-
   constructor(
     private configService: ConfigService,
     private luigiNodesService: LuigiNodesService,
@@ -50,7 +46,7 @@ export class NodesProcessingService {
       ...(childrenByEntity['global'] || []),
       ...(childrenByEntity['global.bottom'] || []),
       ...(childrenByEntity['global.topnav'] || []),
-      ...(await this.customGlobalNodesService.getCustomGlobalNodes(this.ctx)),
+      ...(await this.customGlobalNodesService.getCustomGlobalNodes()),
       this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
     ];
 
@@ -322,9 +318,8 @@ export class NodesProcessingService {
     children.forEach((child) => {
       child.context = child.context || {};
       child.context.entityContext = entityContext;
-      child.onNodeActivation = this.nodeUtilsService.retrieveHelpContext(
-        this.ctx
-      );
+      child.onNodeActivation =
+        this.nodeUtilsService.retrieveGlobalHelpContext();
     });
     return this.nodeSortingService.sortNodes(
       children

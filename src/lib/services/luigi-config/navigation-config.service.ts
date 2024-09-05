@@ -3,6 +3,7 @@ import {
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { ClientEnvironment, LuigiNode } from '../../models';
@@ -14,6 +15,7 @@ import { AppSwitcherConfigService } from './app-switcher-config.service';
 import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiBreadcrumbConfigService } from './luigi-breadcrumb-config.service';
 import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
+import { NodeChangeHookConfigService } from './node-change-hook-config.service';
 import { UserProfileConfigService } from './user-profile-config.service';
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +33,8 @@ export class NavigationConfigService {
     private appSwitcherConfigService: AppSwitcherConfigService,
     @Inject(LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN)
     private navigationGlobalContextConfigService: NavigationGlobalContextConfigService,
+    @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
+    private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService
   ) {}
 
@@ -64,11 +68,7 @@ export class NavigationConfigService {
       validWebcomponentUrls: envConfig.validWebcomponentUrls,
       intentMapping: this.intentNavigationService.buildIntentMappings(allNodes),
       nodeChangeHook: function (prevNode, nextNode) {
-        this.nodeChangeHookConfigService.nodeChangeHook(
-          prevNode,
-          nextNode,
-          this.ctx
-        );
+        this.nodeChangeHookConfigService.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
       breadcrumbs: this.luigiBreadcrumbConfigService.getBreadcrumbsConfig(),
     };
