@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '../portal/auth.service';
+import { AuthService } from '../portal';
 
 export interface NavigationGlobalContextConfigService {
   getGlobalContext();

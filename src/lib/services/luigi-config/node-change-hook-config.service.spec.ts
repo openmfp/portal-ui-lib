@@ -1,6 +1,6 @@
 import { NodeChangeHookConfigServiceImpl } from './node-change-hook-config.service';
 import { LuigiCoreService } from '../luigi-core.service';
-import { HelpContext, LuigiNode } from '../../models/luigi';
+import { HelpContext, LuigiNode } from '../../models';
 
 describe('NodeChangeHookConfigServiceImpl', () => {
   let service: NodeChangeHookConfigServiceImpl;
@@ -27,9 +27,8 @@ describe('NodeChangeHookConfigServiceImpl', () => {
         initialRoute: '/initial-route',
         virtualTree: true,
       };
-      const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).toHaveBeenCalledWith(
         '/initial-route'
@@ -41,9 +40,8 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       const nextNode: LuigiNode = {
         virtualTree: true,
       };
-      const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
     });
@@ -53,9 +51,8 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       const nextNode: LuigiNode = {
         initialRoute: '/initial-route',
       };
-      const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
     });
@@ -69,7 +66,7 @@ describe('NodeChangeHookConfigServiceImpl', () => {
       } as LuigiNode & { _virtualTree: boolean };
       const ctx = { helpContext: {} as HelpContext };
 
-      service.nodeChangeHook(prevNode, nextNode, ctx);
+      service.nodeChangeHook(prevNode, nextNode);
 
       expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
     });

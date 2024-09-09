@@ -1,15 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HelpContext, LuigiNode } from '../../models/luigi';
+import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 
 export interface NodeChangeHookConfigService {
-  nodeChangeHook(
-    prevNode: LuigiNode,
-    nextNode: LuigiNode,
-    ctx: {
-      helpContext: HelpContext;
-    }
-  );
+  nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode);
 }
 
 @Injectable({ providedIn: 'root' })
@@ -18,13 +12,7 @@ export class NodeChangeHookConfigServiceImpl
 {
   constructor(private luigiCoreService: LuigiCoreService) {}
 
-  nodeChangeHook(
-    prevNode: LuigiNode,
-    nextNode: LuigiNode,
-    ctx: {
-      helpContext: HelpContext;
-    }
-  ) {
+  nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode) {
     if (
       nextNode.initialRoute &&
       nextNode.virtualTree &&

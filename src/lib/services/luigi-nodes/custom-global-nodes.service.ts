@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HelpContext, LuigiNode } from '../../models/luigi';
+import { LuigiNode } from '../../models';
 
 export interface CustomGlobalNodesService {
-  getCustomGlobalNodes(ctx: { helpContext: HelpContext }): Promise<LuigiNode[]>;
+  getCustomGlobalNodes(): Promise<LuigiNode[]>;
 }
 
 @Injectable({ providedIn: 'root' })
 export class CustomGlobalNodesServiceImpl implements CustomGlobalNodesService {
-  async getCustomGlobalNodes(ctx: {
-    helpContext: HelpContext;
-  }): Promise<LuigiNode[]> {
+  async getCustomGlobalNodes(): Promise<LuigiNode[]> {
     return [];
   }
 }

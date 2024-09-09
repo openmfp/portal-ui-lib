@@ -20,9 +20,6 @@ export class RequestHeadersService {
       if (params['language']) {
         language = params['language'];
       }
-      if (params['sap-language']) {
-        language = params['sap-language'];
-      }
     });
     if (!authData?.idToken) {
       throw new Error(
