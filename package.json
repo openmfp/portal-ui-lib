@@ -4,9 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && npm run postbuild",
+    "build": "ng build",
     "build:watch": "mkdirp dist && nodemon --ignore dist --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build && cd dist && yalc publish --push --sig\"",
-    "postbuild": "rm -f dist/.npmignore",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
