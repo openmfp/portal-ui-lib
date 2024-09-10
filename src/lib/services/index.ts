@@ -21,5 +21,4 @@ export * from './luigi-nodes/luigi-node-extended-context.service';
 export * from './luigi-nodes/custom-global-nodes.service';
 export * from './luigi-nodes/node-access-handling.service';
 export * from './luigi-nodes/node-utils.service';
-
 export * from './portal';
