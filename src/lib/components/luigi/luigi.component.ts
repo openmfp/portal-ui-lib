@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/portal';
+import { AuthService } from '../../services';
 import { LuigiCoreService, LuigiConfigService } from '../../services';
 
 @Component({
@@ -18,6 +18,7 @@ export class LuigiComponent {
         this.luigiCoreService
           .auth()
           .store.setAuthData(this.authService.getAuthData());
+        this.luigiCoreService.auth().store.setNewlyAuthorized();
       })
       .catch((e: Error) =>
         console.error(`Luigi Component init failed: ${e.toString()}`)

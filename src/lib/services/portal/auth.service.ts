@@ -1,16 +1,31 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { lastValueFrom } from 'rxjs';
-import { AuthData, AuthTokenData, UserData, UserTokenData } from '../../models';
+import { lastValueFrom, Observable, Subject } from 'rxjs';
+import {
+  AuthData,
+  AuthEvent,
+  AuthTokenData,
+  UserData,
+  UserTokenData,
+} from '../../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private authEventSubject = new Subject<AuthEvent>();
   private authData!: AuthData;
 
   constructor(private http: HttpClient) {}
+
+  get authEvents(): Observable<AuthEvent> {
+    return this.authEventSubject.asObservable();
+  }
+
+  public authEvent(event: AuthEvent) {
+    this.authEventSubject.next(event);
+  }
 
   public async auth(code: string, state: string) {
     const response = await lastValueFrom(

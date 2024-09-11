@@ -13,7 +13,7 @@ import { RouterOutlet } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-  LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+  LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -60,8 +60,8 @@ import {
   LuigiNodeExtendedContextServiceImpl,
   NodeAccessHandlingService,
   NoopNodeAccessHandlingService,
-  LocalStorageService,
-  NoopLocalStorageService,
+  LuigiAuthEventsCallbacksService,
+  NoopLuigiAuthEventsCallbacksService,
 } from './services';
 
 export interface PortalModuleOptions {
@@ -113,8 +113,8 @@ export interface PortalModuleOptions {
   /** Service handling every node access policies **/
   nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
 
-  /** Service handling local storage manipulations **/
-  localStorageService?: Type<LocalStorageService>;
+  /** Service handling luigi authentication events **/
+  luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
 }
 
 @NgModule({
@@ -127,8 +127,8 @@ export interface PortalModuleOptions {
   ],
   providers: [
     {
-      provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
-      useClass: NoopLocalStorageService,
+      provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLuigiAuthEventsCallbacksService,
     },
     {
       provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
@@ -210,8 +210,10 @@ export class PortalModule {
       providers: [
         ...customMessageListeners,
         {
-          provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
-          useClass: options.localStorageService || NoopLocalStorageService,
+          provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.luigiAuthEventsCallbacksService ||
+            NoopLuigiAuthEventsCallbacksService,
         },
         {
           provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,

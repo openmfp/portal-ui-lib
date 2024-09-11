@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
-import { LOCAL_STORAGE_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { AuthService } from '../portal';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
-import { LuigiCoreService } from '../luigi-core.service';
-import { LocalStorageService } from '../storage.service';
+import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { AuthEvent } from '../../models';
+import { LuigiAuthEventsCallbacksService } from '../luigi-auth-events-callbacks.service';
+import { AuthService } from '../portal';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +11,8 @@ import { LocalStorageService } from '../storage.service';
 export class AuthConfigService {
   constructor(
     private authService: AuthService,
-    @Inject(LOCAL_STORAGE_SERVICE_INJECTION_TOKEN)
-    private storageService: LocalStorageService,
-    private luigiCoreService: LuigiCoreService
+    @Inject(LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN)
+    private luigiAuthEventsCallbacksService: LuigiAuthEventsCallbacksService
   ) {}
 
   public getAuthConfig(oauthServerUrl: string, clientId: string) {
@@ -52,24 +51,32 @@ export class AuthConfigService {
       },
       disableAutoLogin: false,
       events: {
-        onAuthExpired: () => {
-          this.storageService.clearLocalStorage();
-          sessionStorage.setItem(
-            'portal.relogin.url',
-            window.location.pathname +
-              window.location.search +
-              window.location.hash
+        onAuthSuccessful: (settings, authData) => {
+          this.authService.authEvent(AuthEvent.AUTH_SUCCESSFUL);
+          this.luigiAuthEventsCallbacksService.onAuthSuccessful(
+            settings,
+            authData
           );
         },
-        onAuthExpireSoon: () => {
-          this.luigiCoreService.showAlert({
-            text: 'Login session expires soon',
-            type: 'warning',
-          });
+        onAuthError: (settings, err) => {
+          this.authService.authEvent(AuthEvent.AUTH_ERROR);
+          this.luigiAuthEventsCallbacksService.onAuthError(settings, err);
         },
-        onLogout: () => {
-          this.storageService.clearLocalStorage();
-          return true;
+        onAuthExpired: (settings) => {
+          this.authService.authEvent(AuthEvent.AUTH_EXPIRED);
+          this.luigiAuthEventsCallbacksService.onAuthExpired(settings);
+        },
+        onLogout: (settings) => {
+          this.authService.authEvent(AuthEvent.LOGOUT);
+          this.luigiAuthEventsCallbacksService.onLogout(settings);
+        },
+        onAuthExpireSoon: (settings) => {
+          this.authService.authEvent(AuthEvent.AUTH_EXPIRE_SOON);
+          this.luigiAuthEventsCallbacksService.onAuthExpireSoon(settings);
+        },
+        onAuthConfigError: (settings, err) => {
+          this.authService.authEvent(AuthEvent.AUTH_CONFIG_ERROR);
+          this.luigiAuthEventsCallbacksService.onAuthConfigError(settings, err);
         },
       },
     };
