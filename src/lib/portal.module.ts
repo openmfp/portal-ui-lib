@@ -1,10 +1,4 @@
-import {
-  EnvironmentProviders,
-  ModuleWithProviders,
-  NgModule,
-  Provider,
-  Type,
-} from '@angular/core';
+import { ModuleWithProviders, NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
