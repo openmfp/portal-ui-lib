@@ -114,13 +114,67 @@ export interface PortalModuleOptions {
     CallbackComponent,
     LogoutComponent,
   ],
+  providers: [
+    {
+      provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLuigiAuthEventsCallbacksService,
+    },
+    {
+      provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+      useClass: NoopNodeAccessHandlingService,
+    },
+    {
+      provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+      useClass: NodeChangeHookConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLuigiBreadcrumbConfigService,
+    },
+    {
+      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopUserProfileConfigService,
+    },
+    {
+      provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+      useClass: CustomGlobalNodesServiceImpl,
+    },
+    {
+      provide: LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
+      useClass: LuigiNodeExtendedContextServiceImpl,
+    },
+    {
+      provide: LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NavigationGlobalContextConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopAppSwitcherConfigService,
+    },
+    {
+      provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: StaticSettingsConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopUserSettingsConfigService,
+    },
+    {
+      provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: NoopGlobalSearchConfigService,
+    },
+    {
+      provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLocalNodesService,
+    },
+  ],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],
   bootstrap: [PortalComponent],
 })
 export class PortalModule {
   static forRoot(
-    options: PortalModuleOptions
+    options: PortalModuleOptions = {}
   ): ModuleWithProviders<PortalModule> {
     const customMessageListeners = (options.customMessageListeners || []).map(
       (customMessageListenerClass) => ({

@@ -20,8 +20,20 @@ class EntityCustomMessageListener implements CustomMessageListener {
 }
 
 describe('PortalModule', () => {
+  it('should create portal module without undefined configuration options', () => {
+    const module = PortalModule.forRoot();
+
+    expect(module).not.toBeFalsy();
+  });
+
+  it('should create portal module without empty configuration options', () => {
+    const module = PortalModule.forRoot({});
+
+    expect(module).not.toBeFalsy();
+  });
+
   it('should add custom message listeners when provided', () => {
-    const module = PortalModule.create({
+    const module = PortalModule.forRoot({
       customMessageListeners: [
         ProjectCustomMessageListener,
         EntityCustomMessageListener,
