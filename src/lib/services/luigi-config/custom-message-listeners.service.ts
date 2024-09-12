@@ -34,6 +34,9 @@ export class CustomMessageListenersService {
   public getMessageListeners(): MessageListeners {
     const result: MessageListeners = { customMessagesListeners: {} };
     for (const listener of this.listeners) {
+      if (!listener) {
+        continue;
+      }
       const obj = {
         [listener.messageId()]: (msg, mf, mfNodes) => {
           listener.onCustomMessageReceived(msg, mf, mfNodes);
