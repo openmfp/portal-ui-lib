@@ -1,25 +1,29 @@
 import { TestBed } from '@angular/core/testing';
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { CustomMessageListener } from './custom-message-listener';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 
 describe('CustomMessageListenersService', () => {
   let customMessageListenersService: CustomMessageListenersService;
 
+  const projChanged$ = new Subject<void>();
   const projectCreatedListener: CustomMessageListener = {
     messageId(): string {
       return 'ProjectCreatedListener';
     },
-    changed: new Subject<void>(),
+    changed$: projChanged$,
+    changed: projChanged$.asObservable(),
     onCustomMessageReceived: jest.fn(),
   };
 
+  const customChanged$ = new Subject<void>();
   const entityChangedListener: CustomMessageListener = {
     messageId(): string {
       return 'EntityChangedListener';
     },
-    changed: new Subject<void>(),
+    changed$: customChanged$,
+    changed: customChanged$.asObservable(),
     onCustomMessageReceived: jest.fn(),
   };
 
@@ -94,6 +98,7 @@ describe('CustomMessageListenersService', () => {
       {},
       []
     );
+
     projectCreatedListener['changed$'].next();
   });
 

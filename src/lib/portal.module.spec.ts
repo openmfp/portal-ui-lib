@@ -7,7 +7,8 @@ class ProjectCustomMessageListener implements CustomMessageListener {
   messageId(): string {
     return 'ProjectCreatedListener';
   }
-  changed = new Subject<void>();
+  changed$ = new Subject<void>();
+  changed = this.changed$.asObservable();
   onCustomMessageReceived = jest.fn();
 }
 
@@ -15,7 +16,8 @@ class EntityCustomMessageListener implements CustomMessageListener {
   messageId(): string {
     return 'EntityChangedListener';
   }
-  changed = new Subject<void>();
+  changed$ = new Subject<void>();
+  changed = this.changed$.asObservable();
   onCustomMessageReceived = jest.fn();
 }
 
