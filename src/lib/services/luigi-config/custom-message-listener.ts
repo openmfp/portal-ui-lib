@@ -9,7 +9,7 @@ export interface CustomMessageListener {
    * The custom message id the listener is registered for.
    */
   messageId(): string;
-  changed$: Subject<void>;
+  changed$?: Subject<void>;
   changed?: Observable<void>;
 
   /**
