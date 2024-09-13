@@ -94,13 +94,16 @@ describe('CustomMessageListenersService', () => {
       {},
       []
     );
-    projectCreatedListener.changed.next();
+    projectCreatedListener['changed$'].next();
   });
 
   it('should not emit a change when the listener does not emit a change', () => {
     const messageListeners =
       customMessageListenersService.getMessageListeners();
-    const changeSpy = jest.spyOn(customMessageListenersService.changed, 'next');
+    const changeSpy = jest.spyOn(
+      customMessageListenersService['changed$'],
+      'next'
+    );
 
     messageListeners.customMessagesListeners['ProjectCreatedListener'](
       {},

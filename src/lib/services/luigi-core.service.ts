@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { PortalConfig } from '../models';
 const luigi = (globalThis as any).Luigi;
 
 export interface LuigiConfig {
