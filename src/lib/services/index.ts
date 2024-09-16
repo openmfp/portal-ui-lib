@@ -1,5 +1,5 @@
 export * from './luigi-core.service';
-export * from './storage.service';
+export * from './luigi-auth-events-callbacks.service';
 export * from './i18n.service';
 export * from './request-headers.service';
 

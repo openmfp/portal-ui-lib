@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import * as url from 'url';
-import { AuthService } from '../../services/portal';
+import { AuthService } from '../../services';
 
 @Component({
   template: '',

@@ -1,19 +1,11 @@
-import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  EnvironmentProviders,
-  ModuleWithProviders,
-  NgModule,
-  NO_ERRORS_SCHEMA,
-  Provider,
-  Type,
-} from '@angular/core';
+import { ModuleWithProviders, NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
   LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-  LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
+  LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -60,20 +52,11 @@ import {
   LuigiNodeExtendedContextServiceImpl,
   NodeAccessHandlingService,
   NoopNodeAccessHandlingService,
-  LocalStorageService,
-  NoopLocalStorageService,
+  LuigiAuthEventsCallbacksService,
+  NoopLuigiAuthEventsCallbacksService,
 } from './services';
 
 export interface PortalModuleOptions {
-  /* A set of external declarations of angular components*/
-  declarations?: Array<Type<any> | any[]>;
-
-  /* A set of providers to be additionally declared */
-  providers?: Array<Provider | EnvironmentProviders>;
-
-  /* A set of modules to be additionally imported */
-  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
-
   /** Service containing and providing the luigi settings configuration **/
   staticSettingsConfigService?: Type<StaticSettingsConfigService>;
 
@@ -113,8 +96,8 @@ export interface PortalModuleOptions {
   /** Service handling every node access policies **/
   nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
 
-  /** Service handling local storage manipulations **/
-  localStorageService?: Type<LocalStorageService>;
+  /** Service handling luigi authentication events **/
+  luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
 }
 
 @NgModule({
@@ -127,8 +110,8 @@ export interface PortalModuleOptions {
   ],
   providers: [
     {
-      provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
-      useClass: NoopLocalStorageService,
+      provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+      useClass: NoopLuigiAuthEventsCallbacksService,
     },
     {
       provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
@@ -180,16 +163,18 @@ export interface PortalModuleOptions {
     },
     {
       provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
-      useValue: [],
+      multi: true,
+      useValue: null,
     },
   ],
-  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],
   bootstrap: [PortalComponent],
 })
 export class PortalModule {
-  static create(options: PortalModuleOptions): any {
+  static forRoot(
+    options: PortalModuleOptions = {}
+  ): ModuleWithProviders<PortalModule> {
     const customMessageListeners = (options.customMessageListeners || []).map(
       (customMessageListenerClass) => ({
         provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -199,19 +184,14 @@ export class PortalModule {
     );
 
     return {
-      declarations: [
-        ...(options.declarations || []),
-        LuigiComponent,
-        PortalComponent,
-        CallbackComponent,
-        LogoutComponent,
-      ],
-      schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
+      ngModule: PortalModule,
       providers: [
         ...customMessageListeners,
         {
-          provide: LOCAL_STORAGE_SERVICE_INJECTION_TOKEN,
-          useClass: options.localStorageService || NoopLocalStorageService,
+          provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+          useClass:
+            options.luigiAuthEventsCallbacksService ||
+            NoopLuigiAuthEventsCallbacksService,
         },
         {
           provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
@@ -278,17 +258,7 @@ export class PortalModule {
           useClass:
             options.globalSearchConfigService || NoopGlobalSearchConfigService,
         },
-        ...(options.providers || []),
       ],
-      imports: [
-        ...(options.imports || []),
-        PortalRoutingModule,
-        BrowserModule,
-        RouterOutlet,
-        HttpClientModule,
-      ],
-      exports: [PortalComponent],
-      bootstrap: [PortalComponent],
     };
   }
 }

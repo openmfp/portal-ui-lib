@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject, take } from 'rxjs';
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
 import { CustomMessageListener } from './custom-message-listener';
 
@@ -20,12 +20,15 @@ export interface MessageListeners {
   providedIn: 'root',
 })
 export class CustomMessageListenersService {
-  public changed: Subject<void> = new Subject<void>();
+  private changed$: Subject<string> = new Subject<string>();
+  public changed: Observable<string> = this.changed$.asObservable();
 
   constructor(
     @Inject(LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN)
     private listeners: CustomMessageListener[]
-  ) {}
+  ) {
+    this.listeners = (listeners || []).filter((l) => !!l);
+  }
 
   /**
    * An object containing the property 'customMessageListeners' in which the message-id and listener assignments are made.
@@ -36,10 +39,10 @@ export class CustomMessageListenersService {
     for (const listener of this.listeners) {
       const obj = {
         [listener.messageId()]: (msg, mf, mfNodes) => {
-          listener.onCustomMessageReceived(msg, mf, mfNodes);
-          listener.changed?.subscribe(() => {
-            this.changed.next();
+          listener.changed?.pipe(take(1)).subscribe(() => {
+            this.changed$.next(listener.messageId());
           });
+          listener.onCustomMessageReceived(msg, mf, mfNodes);
         },
       };
       Object.assign(result.customMessagesListeners, obj);

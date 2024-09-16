@@ -2,14 +2,15 @@
  * A representation of a custom message listener and the custom message the listener listens on.
  * See also {@link https://docs.luigi-project.io/docs/communication/?section=luigi-client-to-luigi-core}
  */
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export interface CustomMessageListener {
   /**
    * The custom message id the listener is registered for.
    */
   messageId(): string;
-  changed?: Subject<void>;
+  changed$?: Subject<void>;
+  changed?: Observable<void>;
 
   /**
    * The callback to be executed when the custom message is send by Luigi.

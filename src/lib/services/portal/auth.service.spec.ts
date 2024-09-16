@@ -1,8 +1,12 @@
-import { UserTokenData } from '../../models/user';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
-import { AuthTokenData, AuthData } from '../../models/env';
+import { Observable, of, take, toArray } from 'rxjs';
+import {
+  AuthTokenData,
+  AuthData,
+  UserTokenData,
+  AuthEvent,
+} from '../../models';
 import { jwtDecode } from 'jwt-decode';
 
 jest.mock('jwt-decode');
@@ -179,6 +183,87 @@ describe('AuthService', () => {
         icon: false,
         initials: '',
       });
+    });
+  });
+
+  describe('authEvents', () => {
+    it('should return an Observable', () => {
+      expect(service.authEvents).toBeInstanceOf(Observable);
+    });
+
+    it('should emit auth events when authEvent is called', (done) => {
+      const expectedEvents = [AuthEvent.AUTH_SUCCESSFUL, AuthEvent.AUTH_ERROR];
+
+      service.authEvents.pipe(take(2), toArray()).subscribe((events) => {
+        expect(events).toEqual(expectedEvents);
+        done();
+      });
+
+      service.authEvent(AuthEvent.AUTH_SUCCESSFUL);
+      service.authEvent(AuthEvent.AUTH_ERROR);
+    });
+
+    it('should not emit events before authEvent is called', (done) => {
+      let emitted = false;
+
+      service.authEvents.pipe(take(1)).subscribe(() => {
+        emitted = true;
+      });
+
+      setTimeout(() => {
+        expect(emitted).toBe(false);
+        done();
+      }, 100);
+    });
+  });
+
+  describe('authEvent', () => {
+    it('should emit the provided AuthEvent', (done) => {
+      const testEvent = AuthEvent.AUTH_EXPIRED;
+
+      service.authEvents.pipe(take(1)).subscribe((event) => {
+        expect(event).toBe(testEvent);
+        done();
+      });
+
+      service.authEvent(testEvent);
+    });
+
+    it('should emit multiple events in the order they are called', (done) => {
+      const expectedEvents = [
+        AuthEvent.AUTH_SUCCESSFUL,
+        AuthEvent.AUTH_EXPIRE_SOON,
+        AuthEvent.AUTH_EXPIRED,
+      ];
+
+      service.authEvents.pipe(take(3), toArray()).subscribe((events) => {
+        expect(events).toEqual(expectedEvents);
+        done();
+      });
+
+      expectedEvents.forEach((event) => service.authEvent(event));
+    });
+  });
+
+  describe('Multiple subscribers', () => {
+    it('should emit events to all subscribers', (done) => {
+      const testEvent = AuthEvent.AUTH_SUCCESSFUL;
+      let subscriber1Received = false;
+      let subscriber2Received = false;
+
+      service.authEvents.pipe(take(1)).subscribe((event) => {
+        expect(event).toBe(testEvent);
+        subscriber1Received = true;
+        if (subscriber2Received) done();
+      });
+
+      service.authEvents.pipe(take(1)).subscribe((event) => {
+        expect(event).toBe(testEvent);
+        subscriber2Received = true;
+        if (subscriber1Received) done();
+      });
+
+      service.authEvent(testEvent);
     });
   });
 });

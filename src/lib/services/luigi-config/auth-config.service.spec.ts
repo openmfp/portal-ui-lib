@@ -1,56 +1,42 @@
+import { TestBed } from '@angular/core/testing';
 import { AuthConfigService } from './auth-config.service';
-import { AuthService } from '../portal/auth.service';
-import { LocalStorageService } from '../storage.service';
-import { LuigiCoreService } from '../luigi-core.service';
-import oAuth2 from '@luigi-project/plugin-auth-oauth2';
-
-jest.mock('@luigi-project/plugin-auth-oauth2');
+import { AuthService } from '../portal';
+import { LuigiAuthEventsCallbacksService } from '../luigi-auth-events-callbacks.service';
+import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { AuthEvent, UserData } from '../../models';
 
 describe('AuthConfigService', () => {
   let service: AuthConfigService;
   let authServiceMock: jest.Mocked<AuthService>;
-  let storageServiceMock: jest.Mocked<LocalStorageService>;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
+  let luigiAuthEventsCallbacksServiceMock: jest.Mocked<LuigiAuthEventsCallbacksService>;
 
   beforeEach(() => {
     authServiceMock = {
       getUserInfo: jest.fn(),
+      authEvent: jest.fn(),
     } as any;
 
-    storageServiceMock = {
-      clearLocalStorage: jest.fn(),
+    luigiAuthEventsCallbacksServiceMock = {
+      onAuthSuccessful: jest.fn(),
+      onAuthError: jest.fn(),
+      onAuthExpired: jest.fn(),
+      onLogout: jest.fn(),
+      onAuthExpireSoon: jest.fn(),
+      onAuthConfigError: jest.fn(),
     } as any;
 
-    luigiCoreServiceMock = {
-      showAlert: jest.fn(),
-    } as any;
+    TestBed.configureTestingModule({
+      providers: [
+        AuthConfigService,
+        { provide: AuthService, useValue: authServiceMock },
+        {
+          provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+          useValue: luigiAuthEventsCallbacksServiceMock,
+        },
+      ],
+    });
 
-    service = new AuthConfigService(
-      authServiceMock,
-      storageServiceMock,
-      luigiCoreServiceMock
-    );
-
-    // Create a new object with configurable properties
-    (window as any).location = {
-      assign: jest.fn(),
-      replace: jest.fn(),
-      reload: jest.fn(),
-      hash: '',
-      host: 'localhost',
-      hostname: 'localhost',
-      href: 'http://localhost',
-      origin: 'http://localhost',
-      pathname: '/',
-      port: '',
-      protocol: 'http:',
-      search: '',
-    };
-
-    // Mock global fetch
-    window.fetch = jest.fn(() =>
-      Promise.resolve({ ok: true } as Response)
-    ) as jest.Mock;
+    service = TestBed.inject(AuthConfigService);
   });
 
   it('should be created', () => {
@@ -58,81 +44,135 @@ describe('AuthConfigService', () => {
   });
 
   describe('getAuthConfig', () => {
-    const oauthServerUrl = 'https://example.com/oauth';
-    const clientId = 'test-client-id';
+    it('should return the correct auth config', () => {
+      const oauthServerUrl = 'https://example.com/oauth';
+      const clientId = 'test-client-id';
 
-    it('should return correct auth config', () => {
       const config = service.getAuthConfig(oauthServerUrl, clientId);
 
       expect(config.use).toBe('oAuth2AuthCode');
       expect(config.storage).toBe('none');
-      expect(config.oAuth2AuthCode.idpProvider).toBe(oAuth2);
+      expect(config.disableAutoLogin).toBe(false);
       expect(config.oAuth2AuthCode.authorizeUrl).toBe(oauthServerUrl);
       expect(config.oAuth2AuthCode.oAuthData.client_id).toBe(clientId);
     });
 
     it('should handle userInfoFn correctly', async () => {
-      const mockUserInfo = {
+      const userInfo = {
         name: 'Test User',
         picture: 'https://example.com/pic.jpg',
-      } as any;
-      authServiceMock.getUserInfo.mockReturnValue(mockUserInfo);
+      } as UserData;
+      authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
-      const config = service.getAuthConfig(oauthServerUrl, clientId);
-      const userInfo = await config.oAuth2AuthCode.userInfoFn();
+      const config = service.getAuthConfig('https://example.com', 'client-id');
+      const userInfoFn = config.oAuth2AuthCode.userInfoFn;
 
-      expect(authServiceMock.getUserInfo).toHaveBeenCalled();
-      expect(userInfo).toEqual(mockUserInfo);
-      expect(window.fetch).toHaveBeenCalledWith(
-        mockUserInfo.picture,
+      global.fetch = jest.fn().mockResolvedValue({ ok: true });
+
+      const result = await userInfoFn();
+
+      expect(result).toEqual(userInfo);
+      expect(global.fetch).toHaveBeenCalledWith(
+        userInfo.picture,
         expect.any(Object)
       );
     });
 
     it('should handle userInfoFn when fetch fails', async () => {
-      const mockUserInfo = {
+      const userPicture = 'https://example.com/pic.jpg';
+      const userInfo = {
         name: 'Test User',
-        picture: 'https://example.com/pic.jpg',
-      } as any;
-      authServiceMock.getUserInfo.mockReturnValue(mockUserInfo);
-      (window.fetch as jest.Mock).mockRejectedValueOnce(
-        new Error('Fetch failed')
-      );
+        picture: userPicture,
+      } as UserData;
+      authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
-      const config = service.getAuthConfig(oauthServerUrl, clientId);
-      const userInfo = await config.oAuth2AuthCode.userInfoFn();
+      const config = service.getAuthConfig('https://example.com', 'client-id');
+      const userInfoFn = config.oAuth2AuthCode.userInfoFn;
 
-      expect(authServiceMock.getUserInfo).toHaveBeenCalled();
-      expect(userInfo).toEqual({ ...mockUserInfo, picture: '' });
-    });
+      global.fetch = jest.fn().mockRejectedValue(new Error('Fetch failed'));
 
-    it('should handle onAuthExpired event', () => {
-      const config = service.getAuthConfig(oauthServerUrl, clientId);
+      const result = await userInfoFn();
 
-      config.events.onAuthExpired();
-
-      expect(storageServiceMock.clearLocalStorage).toHaveBeenCalled();
-      expect(sessionStorage.getItem('portal.relogin.url')).toEqual(
-        expect.any(String)
+      expect(result).toEqual({ ...userInfo, picture: '' });
+      expect(global.fetch).toHaveBeenCalledWith(
+        userPicture,
+        expect.any(Object)
       );
     });
+  });
 
-    it('should handle onAuthExpireSoon event', () => {
-      const config = service.getAuthConfig(oauthServerUrl, clientId);
-      config.events.onAuthExpireSoon();
+  describe('auth events', () => {
+    let config: ReturnType<typeof service.getAuthConfig>;
+    const testSettings = {};
+    const testAuthData = {};
+    const testError = new Error('Test error');
 
-      expect(luigiCoreServiceMock.showAlert).toHaveBeenCalledWith({
-        text: 'Login session expires soon',
-        type: 'warning',
-      });
+    beforeEach(() => {
+      config = service.getAuthConfig('https://example.com', 'client-id');
     });
 
-    it('should handle onLogout event', () => {
-      const config = service.getAuthConfig(oauthServerUrl, clientId);
-      const result = config.events.onLogout();
+    it('should handle onAuthSuccessful', () => {
+      config.events.onAuthSuccessful(testSettings, testAuthData);
 
-      expect(storageServiceMock.clearLocalStorage).toHaveBeenCalled();
-      expect(result).toBe(true);
+      expect(authServiceMock.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_SUCCESSFUL
+      );
+      expect(
+        luigiAuthEventsCallbacksServiceMock.onAuthSuccessful
+      ).toHaveBeenCalledWith(testSettings, testAuthData);
+    });
+
+    it('should handle onAuthError', () => {
+      config.events.onAuthError(testSettings, testError);
+
+      expect(authServiceMock.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_ERROR
+      );
+      expect(
+        luigiAuthEventsCallbacksServiceMock.onAuthError
+      ).toHaveBeenCalledWith(testSettings, testError);
+    });
+
+    it('should handle onAuthExpired', () => {
+      config.events.onAuthExpired(testSettings);
+
+      expect(authServiceMock.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_EXPIRED
+      );
+      expect(
+        luigiAuthEventsCallbacksServiceMock.onAuthExpired
+      ).toHaveBeenCalledWith(testSettings);
+    });
+
+    it('should handle onLogout', () => {
+      config.events.onLogout(testSettings);
+
+      expect(authServiceMock.authEvent).toHaveBeenCalledWith(AuthEvent.LOGOUT);
+      expect(luigiAuthEventsCallbacksServiceMock.onLogout).toHaveBeenCalledWith(
+        testSettings
+      );
+    });
+
+    it('should handle onAuthExpireSoon', () => {
+      config.events.onAuthExpireSoon(testSettings);
+
+      expect(authServiceMock.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_EXPIRE_SOON
+      );
+      expect(
+        luigiAuthEventsCallbacksServiceMock.onAuthExpireSoon
+      ).toHaveBeenCalledWith(testSettings);
+    });
+
+    it('should handle onAuthConfigError', () => {
+      config.events.onAuthConfigError(testSettings, testError);
+
+      expect(authServiceMock.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_CONFIG_ERROR
+      );
+      expect(
+        luigiAuthEventsCallbacksServiceMock.onAuthConfigError
+      ).toHaveBeenCalledWith(testSettings, testError);
     });
   });
 });
