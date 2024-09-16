@@ -15,6 +15,7 @@ const luigiMock = {
   i18n: jest.fn(),
   globalSearch: jest.fn(),
   routing: jest.fn(),
+  sendCustomMessage: jest.fn(),
   featureToggles: jest.fn().mockReturnValue({
     setFeatureToggle: jest.fn(),
     getActiveFeatureToggleList: jest.fn().mockReturnValue([]),
@@ -122,6 +123,12 @@ describe('LuigiCoreService', () => {
   it('should call routing', () => {
     service.routing();
     expect(luigiMock.routing).toHaveBeenCalled();
+  });
+
+  it('should call sendCustomMessage', () => {
+    const msg = { id: 'id-1' };
+    service.sendCustomMessage(msg);
+    expect(luigiMock.sendCustomMessage).toHaveBeenCalledWith(msg);
   });
 
   it('should call setFeatureToggle with correct featureToggleName', () => {

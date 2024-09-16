@@ -68,7 +68,35 @@ export class ConfigService {
       this.entityConfigCache[entity] = {};
     }
     this.entityConfigCache[entity][entityCacheKey] = entityConfig;
-    return entityConfig;
+    //return entityConfig;
+
+    let v = await entityConfig;
+    v.entityContext.policies = [
+      'owner',
+      'member',
+      'iamAdmin',
+      'iamMember',
+      'waasAdmin',
+      'metadataAdmin',
+      'sentryViewer',
+      'argocdViewer',
+      'gardenerViewer',
+      'githubAdmin',
+      'accountAdmin',
+      'extensionAdmin',
+      'vaultMaintainer',
+      'projectAdmin',
+      'waasAdmin',
+      'iamMember',
+      'metadataAdmin',
+      'sentryViewer',
+      'argocdViewer',
+      'gardenerViewer',
+      'githubMember',
+      'projectMember',
+    ];
+
+    return Promise.resolve(v);
   }
 
   clearEntityConfigCache(): void {

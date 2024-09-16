@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CustomMessageListener } from './custom-message-listener';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 
@@ -15,7 +15,7 @@ describe('CustomMessageListenersService', () => {
     changed$: projChanged$,
     changed: projChanged$.asObservable(),
     onCustomMessageReceived: jest.fn(),
-  };
+  } as CustomMessageListener;
 
   const customChanged$ = new Subject<void>();
   const entityChangedListener: CustomMessageListener = {
@@ -25,7 +25,7 @@ describe('CustomMessageListenersService', () => {
     changed$: customChanged$,
     changed: customChanged$.asObservable(),
     onCustomMessageReceived: jest.fn(),
-  };
+  } as CustomMessageListener;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -83,23 +83,6 @@ describe('CustomMessageListenersService', () => {
       testMf,
       testMfNodes
     );
-  });
-
-  it('should emit a change when the listener emits a change', (done) => {
-    const messageListeners =
-      customMessageListenersService.getMessageListeners();
-
-    customMessageListenersService.changed.subscribe(() => {
-      done();
-    });
-
-    messageListeners.customMessagesListeners['ProjectCreatedListener'](
-      {},
-      {},
-      []
-    );
-
-    projectCreatedListener['changed$'].next();
   });
 
   it('should not emit a change when the listener does not emit a change', () => {

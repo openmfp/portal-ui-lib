@@ -11,6 +11,10 @@ export interface LuigiConfig {
   globalSearch?: any;
 }
 
+export interface LuigiCustomMessage {
+  id: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -33,6 +37,10 @@ export class LuigiCoreService {
 
   unloadConfig() {
     return luigi.unload();
+  }
+
+  sendCustomMessage(customMessage: LuigiCustomMessage) {
+    return luigi.sendCustomMessage(customMessage);
   }
 
   configChanged(scope?: string) {

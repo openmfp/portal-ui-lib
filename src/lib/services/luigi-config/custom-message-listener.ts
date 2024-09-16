@@ -9,8 +9,6 @@ export interface CustomMessageListener {
    * The custom message id the listener is registered for.
    */
   messageId(): string;
-  changed$?: Subject<void>;
-  changed?: Observable<void>;
 
   /**
    * The callback to be executed when the custom message is send by Luigi.
