@@ -1,19 +1,6 @@
 import { Injectable } from '@angular/core';
+import { LuigiConfig, LuigiCustomMessage } from '../models';
 const luigi = (globalThis as any).Luigi;
-
-export interface LuigiConfig {
-  auth?: any;
-  routing?: any;
-  settings?: any;
-  lifecycleHooks?: any;
-  navigation?: any;
-  userSettings?: any;
-  globalSearch?: any;
-}
-
-export interface LuigiCustomMessage {
-  id: string;
-}
 
 @Injectable({
   providedIn: 'root',

@@ -1,3 +1,17 @@
+export interface LuigiConfig {
+  auth?: any;
+  routing?: any;
+  settings?: any;
+  lifecycleHooks?: any;
+  navigation?: any;
+  userSettings?: any;
+  globalSearch?: any;
+}
+
+export interface LuigiCustomMessage {
+  id: string;
+}
+
 export interface EntityDefinition {
   id: string;
   dynamicFetchId?: string;
