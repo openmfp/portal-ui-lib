@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Context } from '@luigi-project/client';
-import { ClientEnvironment } from '../../models/env';
-import { LuigiNode } from '../../models/luigi';
-import { PortalConfig } from '../../models/portal';
+import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
 
 export interface NodeAccessHandlingService {
   nodeAccessHandling(
     ctx: Context,
     node: LuigiNode,
-    frameConfig: PortalConfig,
+    portalConfig: PortalConfig,
     clientEnvironment: ClientEnvironment
   ): LuigiNode;
 }

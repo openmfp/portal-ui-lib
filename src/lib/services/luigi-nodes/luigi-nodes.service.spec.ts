@@ -158,11 +158,11 @@ describe('LuigiNodesService', () => {
           },
         ]
       );
-      const spyInstanceForTenant = jest.spyOn(
+      const spyInstanceGetRawConfigs = jest.spyOn(
         serviceProviderService,
-        'getRawConfigsForTenant'
+        'getRawConfigs'
       );
-      spyInstanceForTenant.mockReturnValue(configServiceResponse);
+      spyInstanceGetRawConfigs.mockReturnValue(configServiceResponse);
 
       const spyInstanceForProject = jest.spyOn(
         serviceProviderService,
@@ -174,11 +174,11 @@ describe('LuigiNodesService', () => {
       localNodeServiceSpy.mockReturnValue(Promise.resolve([]));
     });
 
-    it('should handle errors when retrieving tenant nodes', async () => {
+    it('should handle errors when retrieving nodes', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn');
-      const errorMessage = 'Failed to retrieve tenant nodes';
+      const errorMessage = 'Failed to retrieve nodes';
       const serviceProviderServiceSpy = jest
-        .spyOn(serviceProviderService, 'getRawConfigsForTenant')
+        .spyOn(serviceProviderService, 'getRawConfigs')
         .mockRejectedValue(new Error(errorMessage));
 
       try {
@@ -186,7 +186,7 @@ describe('LuigiNodesService', () => {
       } catch (e) {
         expect(serviceProviderServiceSpy).toHaveBeenCalled();
         expect(consoleWarnSpy).toHaveBeenCalledWith(
-          'Could not retrieve tenant nodes, error: ',
+          'Could not retrieve nodes, error: ',
           expect.any(Error)
         );
       }
@@ -239,7 +239,7 @@ describe('LuigiNodesService', () => {
         ];
 
         const serviceProviderServiceSpy = jest
-          .spyOn(serviceProviderService, 'getRawConfigsForTenant')
+          .spyOn(serviceProviderService, 'getRawConfigs')
           .mockResolvedValue(serviceProviders);
 
         const childrenByEntity = await service.retrieveChildrenByEntity();

@@ -51,7 +51,6 @@ describe('ConfigService', () => {
       // Arrange
       const response = {
         providers: [],
-        tenantId: 'sometenant',
       };
 
       // Act
@@ -63,7 +62,6 @@ describe('ConfigService', () => {
       // Assert
       expect(testRequest.request.method).toBe('GET');
       expect(config.providers).toEqual(response.providers);
-      expect(config.tenantId).toEqual(response.tenantId);
     });
 
     it('should handle 403 error', async () => {

@@ -17,11 +17,10 @@ describe('ServiceProviderService', () => {
     configService = TestBed.inject(ConfigService);
   });
 
-  describe('getRawConfigsForTenant', () => {
+  describe('getRawConfigs', () => {
     const response = {
       providers: [],
-      tenantId: '123',
-      frameContext: {},
+      portalContext: {},
       featureToggles: {},
     };
 
@@ -33,7 +32,7 @@ describe('ServiceProviderService', () => {
 
     it('should get the luigi nodes', async () => {
       // Act
-      const configPromise = service.getRawConfigsForTenant();
+      const configPromise = service.getRawConfigs();
 
       // Assert
       expect(getFrameConfigSpy).toHaveBeenCalled();

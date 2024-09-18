@@ -371,7 +371,7 @@ export class NodesProcessingService {
       node = node.parent;
     }
 
-    addToAll('tenant', ctx.tenantid);
+    // addToAll('tenant', ctx.tenantid);
     addToAll('user', ctx.userid);
 
     return contextForEntityConfig;

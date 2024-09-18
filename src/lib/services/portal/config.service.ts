@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { EntityConfig, PortalConfig } from '../../models/portal';
+import { EntityConfig, PortalConfig } from '../../models';
 import { RequestHeadersService } from '../request-headers.service';
 
 @Injectable({
@@ -68,35 +68,7 @@ export class ConfigService {
       this.entityConfigCache[entity] = {};
     }
     this.entityConfigCache[entity][entityCacheKey] = entityConfig;
-    //return entityConfig;
-
-    let v = await entityConfig;
-    v.entityContext.policies = [
-      'owner',
-      'member',
-      'iamAdmin',
-      'iamMember',
-      'waasAdmin',
-      'metadataAdmin',
-      'sentryViewer',
-      'argocdViewer',
-      'gardenerViewer',
-      'githubAdmin',
-      'accountAdmin',
-      'extensionAdmin',
-      'vaultMaintainer',
-      'projectAdmin',
-      'waasAdmin',
-      'iamMember',
-      'metadataAdmin',
-      'sentryViewer',
-      'argocdViewer',
-      'gardenerViewer',
-      'githubMember',
-      'projectMember',
-    ];
-
-    return Promise.resolve(v);
+    return entityConfig;
   }
 
   clearEntityConfigCache(): void {

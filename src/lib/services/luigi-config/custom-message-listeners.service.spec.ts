@@ -85,23 +85,6 @@ describe('CustomMessageListenersService', () => {
     );
   });
 
-  it('should not emit a change when the listener does not emit a change', () => {
-    const messageListeners =
-      customMessageListenersService.getMessageListeners();
-    const changeSpy = jest.spyOn(
-      customMessageListenersService['changed$'],
-      'next'
-    );
-
-    messageListeners.customMessagesListeners['ProjectCreatedListener'](
-      {},
-      {},
-      []
-    );
-
-    expect(changeSpy).not.toHaveBeenCalled();
-  });
-
   function listeners(): string[] {
     return Object.keys(
       customMessageListenersService.getMessageListeners()
