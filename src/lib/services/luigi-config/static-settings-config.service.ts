@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { mfpMarkSvg } from '../../data';
 
 export interface StaticSettingsConfigService {
   getInitialStaticSettingsConfig(): Record<string, any>;
@@ -14,7 +15,7 @@ export class StaticSettingsConfigServiceImpl
   constructor() {}
 
   getInitialStaticSettingsConfig() {
-    const logo = 'assets/mfp_mark.svg';
+    const logo = mfpMarkSvg;
 
     return {
       header: {
