@@ -142,9 +142,9 @@ export class LuigiNodesService {
 
   private async retrieveAndMergeNodes(): Promise<LuigiNode[]> {
     const rawConfigsPromise = this.serviceProviderService
-      .getRawConfigsForTenant()
+      .getRawConfigs()
       .catch((e) => {
-        console.warn('Could not retrieve tenant nodes, error: ', e);
+        console.warn('Could not retrieve nodes, error: ', e);
         throw e;
       });
 

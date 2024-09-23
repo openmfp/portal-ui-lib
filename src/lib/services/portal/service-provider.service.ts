@@ -12,10 +12,10 @@ export class ServiceProviderService {
     this.configService.clearEntityConfigCache();
   }
 
-  async getRawConfigsForTenant(): Promise<ServiceProvider[]> {
+  async getRawConfigs(): Promise<ServiceProvider[]> {
     return this.configService
       .getPortalConfig()
-      .then((frameConfig: PortalConfig) => frameConfig.providers || []);
+      .then((portalConfig: PortalConfig) => portalConfig.providers || []);
   }
 
   async getRawConfigsForEntity(

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LuigiNode, LuigiNodeCategory } from '../../models/luigi';
+import { LuigiNode, LuigiNodeCategory } from '../../models';
 @Injectable({
   providedIn: 'root',
 })
