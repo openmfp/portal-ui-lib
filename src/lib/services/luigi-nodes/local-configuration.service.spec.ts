@@ -5,23 +5,22 @@ import { LocalConfigurationService } from './local-configuration.service';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
-import { NoopLuigiDataConfigService } from './luigi-data-config.service';
-import { LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { PortalLuigiDataConfigService } from './luigi-data-config.service';
 
 describe('LocalConfigurationService', () => {
   let service: LocalConfigurationService;
-  let mockLuigiDataConfigService: MockProxy<NoopLuigiDataConfigService>;
+  let mockLuigiDataConfigService: MockProxy<PortalLuigiDataConfigService>;
   let luigiCoreService: LuigiCoreService;
   let mockDevModeSettingsService: MockProxy<DevModeSettingsService>;
 
   beforeEach(() => {
     mockDevModeSettingsService = mock<DevModeSettingsService>();
-    mockLuigiDataConfigService = mock<NoopLuigiDataConfigService>();
+    mockLuigiDataConfigService = mock<PortalLuigiDataConfigService>();
     TestBed.configureTestingModule({
       providers: [
         DevModeSettingsService,
         {
-          provide: LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN,
+          provide: PortalLuigiDataConfigService,
           useValue: mockLuigiDataConfigService,
         },
       ],

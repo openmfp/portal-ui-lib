@@ -9,7 +9,7 @@ export interface LuigiDataConfigService {
   ): Promise<LuigiNode[]>;
 }
 
-export class NoopLuigiDataConfigService implements LuigiDataConfigService {
+export class PortalLuigiDataConfigService implements LuigiDataConfigService {
   async getLuigiDataFromConfigurations(configs: Config[], language: string): Promise<LuigiNode[]> {
     return [];
   }

@@ -1,15 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NoopLuigiDataConfigService } from './luigi-data-config.service';
+import { PortalLuigiDataConfigService } from './luigi-data-config.service';
 
 describe('LuigiDataConfigService', () => {
-  let service: NoopLuigiDataConfigService;
+  let service: PortalLuigiDataConfigService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [NoopLuigiDataConfigService],
+      providers: [PortalLuigiDataConfigService],
     });
-    service = TestBed.inject(NoopLuigiDataConfigService);
+    service = TestBed.inject(PortalLuigiDataConfigService);
   });
 
   it('should be created', () => {

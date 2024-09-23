@@ -18,7 +18,6 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN,
 } from './injection-tokens';
 import {
   LogoutComponent,
@@ -32,7 +31,6 @@ import {
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
   LocalNodesService,
-  NoopLocalNodesService,
   AppSwitcherConfigService,
   NoopAppSwitcherConfigService,
   LuigiBreadcrumbConfigService,
@@ -55,9 +53,8 @@ import {
   NoopNodeAccessHandlingService,
   LuigiAuthEventsCallbacksService,
   NoopLuigiAuthEventsCallbacksService,
-  NoopLuigiDataConfigService
+  NoopLocalNodesService
 } from './services';
-import { LuigiDataConfigService } from './services/luigi-nodes/luigi-data-config.service';
 
 export interface PortalModuleOptions {
   /** Service containing and providing the luigi settings configuration **/
@@ -68,9 +65,6 @@ export interface PortalModuleOptions {
 
   /** Service providing local nodes merging services **/
   localNodesService?: Type<LocalNodesService>;
-
-  /** Service providing luigi configuration **/
-  luigiDataConfigService?: Type<LuigiDataConfigService>
 
   /** Service providing user setting specific configuration **/
   userSettingsConfigService?: Type<UserSettingsConfigService>;
@@ -253,10 +247,6 @@ export class PortalModule {
         {
           provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
           useClass: options.localNodesService || NoopLocalNodesService,
-        },
-        {
-          provide: LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN,
-          useClass: options.luigiDataConfigService || NoopLuigiDataConfigService,
         },
         {
           provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,

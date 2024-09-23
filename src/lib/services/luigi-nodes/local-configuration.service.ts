@@ -1,20 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
 import { LocalNodesService } from './local-nodes.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
-import { LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { LuigiDataConfigService } from './luigi-data-config.service';
+import { PortalLuigiDataConfigService } from './luigi-data-config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalConfigurationService implements LocalNodesService {
   constructor(
-    @Inject(LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN)
-    private luigiDataConfigService: LuigiDataConfigService,
+    private luigiDataConfigService: PortalLuigiDataConfigService,
     private luigiCoreService: LuigiCoreService,
     private devModeSettingsService: DevModeSettingsService,
   ) {}
