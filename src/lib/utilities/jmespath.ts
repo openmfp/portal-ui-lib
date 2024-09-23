@@ -29,7 +29,7 @@ function logJMESException(
 ): void {
   console.warn(
     'Error while evaluating JMESPath expression.',
-    'Please check your visibleForContext or configurationMissing key in your CDM.',
+    'Please check your visibleForContext or configurationMissing key in your Configuration.',
     '\n',
     '\n',
     'Context:',

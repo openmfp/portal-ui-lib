@@ -4,7 +4,6 @@ import { merge } from 'lodash';
 import { LocalNodesService } from './local-nodes.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
-import { DevModeSettings } from './dev-mode/dev-mode-settings';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { LUIGI_DATA_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiDataConfigService } from './luigi-data-config.service';
@@ -42,16 +41,6 @@ export class LocalConfigurationService implements LocalNodesService {
       console.warn(`failed to retrieve local luigi config`, e);
       return [];
     }
-  }
-
-  public async getNodesFromCdm(
-    devModeCdmSettings: DevModeSettings,
-    language: any,
-  ) {
-    return await this.luigiDataConfigService.getLuigiDataFromConfigurations(
-      devModeCdmSettings.configs,
-      language,
-    );
   }
 
   public async replaceServerNodesWithLocalOnes(
