@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ClientEnvironment } from '../../models/env';
-import { AuthService } from '../portal/auth.service';
-import { ConfigService } from '../portal/config.service';
+import { ClientEnvironment } from '../../models';
+import { AuthService, ConfigService } from '../portal';
 
 export interface LuigiNodeExtendedContextService {
   createLuigiNodeContext(
@@ -24,9 +23,7 @@ export class LuigiNodeExtendedContextServiceImpl
     const portalConfig = await this.configService.getPortalConfig();
     return {
       userid: this.authService.getUsername(),
-      frameContext: portalConfig.frameContext,
       portalContext: portalConfig.portalContext,
-      tenantid: portalConfig.tenantId,
     };
   }
 }

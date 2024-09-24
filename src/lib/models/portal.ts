@@ -15,8 +15,6 @@ export interface EntityConfig {
 
 export interface PortalConfig {
   providers: ServiceProvider[];
-  tenantId: string;
   portalContext: Record<string, any>;
-  frameContext: Record<string, any>;
   featureToggles: Record<string, boolean>;
 }

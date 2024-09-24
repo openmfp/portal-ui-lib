@@ -1,15 +1,6 @@
 import { Injectable } from '@angular/core';
+import { LuigiConfig, LuigiCustomMessage } from '../models';
 const luigi = (globalThis as any).Luigi;
-
-export interface LuigiConfig {
-  auth?: any;
-  routing?: any;
-  settings?: any;
-  lifecycleHooks?: any;
-  navigation?: any;
-  userSettings?: any;
-  globalSearch?: any;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +24,10 @@ export class LuigiCoreService {
 
   unloadConfig() {
     return luigi.unload();
+  }
+
+  sendCustomMessage(customMessage: LuigiCustomMessage) {
+    return luigi.sendCustomMessage(customMessage);
   }
 
   configChanged(scope?: string) {

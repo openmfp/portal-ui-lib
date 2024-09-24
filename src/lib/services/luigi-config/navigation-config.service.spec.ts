@@ -55,7 +55,7 @@ describe('NavigationConfigService', () => {
     luigiCoreService.resetLuigi = jest.fn();
 
     jest
-      .spyOn(serviceProviderService, 'getRawConfigsForTenant')
+      .spyOn(serviceProviderService, 'getRawConfigs')
       .mockResolvedValue(serviceProviders);
 
     const entityConfig = { providers: [], entityContext: {} };

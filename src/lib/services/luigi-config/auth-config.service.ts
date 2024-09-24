@@ -32,19 +32,19 @@ export class AuthConfigService {
         accessTokenExpiringNotificationTime: 60,
         expirationCheckInterval: 5,
         userInfoFn: () => {
-          const uinfo = this.authService.getUserInfo();
+          const userInfo = this.authService.getUserInfo();
 
           return new Promise((resolve) => {
-            fetch(uinfo.picture, {
+            fetch(userInfo.picture, {
               method: 'HEAD',
               mode: 'no-cors',
             })
               .then(() => {
-                resolve(uinfo);
+                resolve(userInfo);
               })
               .catch(() => {
-                uinfo.picture = '';
-                resolve(uinfo);
+                userInfo.picture = '';
+                resolve(userInfo);
               });
           });
         },

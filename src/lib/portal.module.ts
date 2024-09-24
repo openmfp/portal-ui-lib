@@ -161,11 +161,6 @@ export interface PortalModuleOptions {
       provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
       useClass: NoopLocalNodesService,
     },
-    {
-      provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
-      multi: true,
-      useValue: null,
-    },
   ],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
   exports: [PortalComponent],

@@ -47,7 +47,7 @@ describe('NodesProcessingService', () => {
     luigiCoreService.resetLuigi = jest.fn();
 
     jest
-      .spyOn(serviceProviderService, 'getRawConfigsForTenant')
+      .spyOn(serviceProviderService, 'getRawConfigs')
       .mockResolvedValue(serviceProviders);
 
     const entityConfig = { providers: [], entityContext: {} };
@@ -70,7 +70,6 @@ describe('NodesProcessingService', () => {
       .spyOn(luigiNodesService, 'retrieveAndMergeEntityChildren')
       .mockResolvedValue([]);
 
-    const tenantid = 'myTenant';
     const myentityId = 'someid';
     const userid = 'user';
     const entityNode: LuigiNode = {
@@ -89,7 +88,7 @@ describe('NodesProcessingService', () => {
     // Act
     await service.entityChildrenProvider(
       entityNode,
-      { myentityId, tenantid, userid },
+      { myentityId, userid },
       childrenByEntity,
       undefined,
       undefined,
@@ -106,7 +105,7 @@ describe('NodesProcessingService', () => {
       },
       childrenByEntity.myentity,
       entityName,
-      { tenant: tenantid, myentity: myentityId, user: userid }
+      { myentity: myentityId, user: userid }
     );
   });
 
@@ -116,7 +115,6 @@ describe('NodesProcessingService', () => {
       .spyOn(luigiNodesService, 'retrieveAndMergeEntityChildren')
       .mockResolvedValue([]);
 
-    const tenantid = 'myTenant';
     const userid = 'user';
 
     const entityNode: LuigiNode = {
@@ -148,7 +146,6 @@ describe('NodesProcessingService', () => {
         mysubentityId: 'someid',
         myparententityId: 'parentid',
         mygrandparententityId: 'opa',
-        tenantid,
         userid,
       },
       {},
@@ -172,7 +169,6 @@ describe('NodesProcessingService', () => {
         mygrandparententity: 'opa',
         mysubentity: 'someid',
         user: userid,
-        tenant: tenantid,
       }
     );
   });
