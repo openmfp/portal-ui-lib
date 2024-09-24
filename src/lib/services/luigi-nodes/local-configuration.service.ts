@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { merge } from 'lodash';
 import { LocalNodesService } from './local-nodes.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { PortalLuigiDataConfigService } from './luigi-data-config.service';
+import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalConfigurationService implements LocalNodesService {
   constructor(
+    @Inject(LOCAL_NODES_SERVICE_INJECTION_TOKEN)
+    private localNodesService: LocalNodesService,
     private luigiDataConfigService: PortalLuigiDataConfigService,
     private luigiCoreService: LuigiCoreService,
     private devModeSettingsService: DevModeSettingsService,
@@ -23,7 +26,7 @@ export class LocalConfigurationService implements LocalNodesService {
     try {
       const devModeSettings =
         await this.devModeSettingsService.getDevModeSettings();
-      const nodes =
+      let nodes =
         await this.luigiDataConfigService.getLuigiDataFromConfigurations(
           devModeSettings.configs,
           language,
@@ -34,6 +37,11 @@ export class LocalConfigurationService implements LocalNodesService {
         node.context.serviceProviderConfig =
           devModeSettings.serviceProviderConfig;
       });
+
+      if(nodes.length === 0) {
+        nodes = await this.localNodesService.getLocalNodes();
+      }
+
       return nodes;
     } catch (e) {
       console.warn(`failed to retrieve local luigi config`, e);
