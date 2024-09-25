@@ -1,16 +1,21 @@
 # Configuration
 
-## Overview
+This document shows you how to create the configuration `content-configuration.json` file for your application.
+It also describes the various parameters the file may contain.
+In general this file contains any [Luigi configuration](#luigi-standard-configuration-parameters) values but also and [portal specific configuration](portal-specific-configuration-parameters) values.
 
-This document shows you how to create the configuration `content-configuration.json` file for your Extension. It also describes  the various parameters the file may contain.
+## The Content Configuration File and Portal Extensions
 
-## Configuration file
+To create a micro frontend that is displayed in the portal, you need to create a `content-configuration.json` configuration file that contains [Luigi](https://luigi-project.io/) and Portal configuration.
 
-To create a Portal micro frontend, you need to create a `content-configuration.json` configuration file that contains [Luigi](https://luigi-project.io/) and Portal configuration.
+This file is picked up by the deployed portal server at runtime therefore the file needs to be reachable from the domain the portal server is deployed on.
+The registration to the portal happens through the portals Extension mechanism.
+Technically an Extension is a Custom Resource Definition of Kuberenetes.
+Its a dedicated resource in the Kuberentes cluster and this resource contains the URL to the `content-configuration.json` file of your application.
 
-This file is picked up by the deployed app-frame at runtime therefore the file needs to be reachable via the internet.
-The registration to the main portal happens through the custom resource definition which should contain a URL to the `content-configuration.json`.
-The `content-configuration.json` should have the following structure:
+## The Content Configuration File Contents
+
+The `content-configuration.json` has the following structure:
 
 ```Json
 {
@@ -72,7 +77,7 @@ The `content-configuration.json` should have the following structure:
  }
 ```
 
-Example:
+Here is another example with actual values:
 
 ```JSON
 {
@@ -207,7 +212,7 @@ Example:
 }
 ```
 
-### Luigi navigation parameters
+### Luigi Standard Configuration Parameters
 
 The property `LuigiNavConfig.vizConfig` in the `content-configuration.json` example above defines the navigation entries.
 
@@ -230,7 +235,7 @@ The `userSettings` config allows to open a user settings dialog.
 -  `groups` contains different categories for user settings, e.g. Account, Theming, etc.
    For more information, read the [Luigi user settings documentation](https://docs.luigi-project.io/docs/user-settings).
 
-### Portal Specific Parameters
+### Portal Specific Configuration Parameters
 
 Further Portal specific parameters are supported on node level:
 
