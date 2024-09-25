@@ -1,12 +1,12 @@
-# PortalUiLib
+# Portal UI Library
 
-This project helps you to set up your angular project consuming luigi configuration and ui library
+This library helps you to set up your angular project consuming [Luigi](https://luigi-project.io/) configuration.
 
 Main features of this library are:
 
-* Provide a dynamic Luigi configuration consumption
-* Authentication capabilities with Auth Server
-* Dynamic development capabilities - embed your local MicroFrontend into a running luigi frame.
+* Enable dynamic Luigi configuration consumption in a microfrontend.
+* Provide authentication capabilities with Auth Server
+* Dynamic development capabilities by embedding your locally running microfrontend into a Luigi frame.
 
 ## Table of Contents
 - [Getting started](#Getting-started)
@@ -20,12 +20,14 @@ Main features of this library are:
 
 # Getting started
 
-## Import the module and bootstrap component
+## Import the PortalModule and Bootstrap the PortalComponent
 
-The Portal module: `PortalModule.forRoot(portalOptions)`
+First you have to import the `PortalModule` and bootstrap the `PortalComponent` in your `AppModule`.
+To do this, there is the `PortalModule.forRoot(portalOptions)` method which takes the `PortalModuleOptions` object as an argument.
+It is important to note that the `PortalModule` should be imported after any routing module (e.g. `AppRoutingModule)`.
 
-Bootstrapping the app: `bootstrap: [PortalComponent]`
-
+To bootstrap the component, you have to add it to the `bootstrap` array in the `AppModule`.
+The result may look like this:
 
 ```ts
 import { PortalComponent, PortalModule, PortalModuleOptions } from '@openmfp/portal-ui-lib';
@@ -56,18 +58,19 @@ export class AppModule {
 }
 ```
 
-Remember to put any routing module (like in the example `AppRoutingModule`) before `PortalModule` import
-(because it contains wildcard route mapping '**', matching any URL, being before other routes will consume all provided)
 
-## Implement custom services with portal options
+## Implement the Custom Service
+
+There are two types of services that are considered: Services that provide Luigi configuration (aka. Configuration Services) and services that provide or extend functionality (aka. Functional Services).
+For each service there is a corresponding interface that you have to implement.
+Afterwards you provide your specific implementation in the `AppModule` by placing it in the `portalOptions` object and thus make it available to the `PortalModule`.
 
 ### Configuration services
 
-#### staticSettingsConfigService
+#### The staticSettingsConfigService option
 
-In order to customize the [Luigi general settings](https://docs.luigi-project.io/docs/general-settings) and override the defaults,
-the `staticSettingsConfigService` option should be provided with the `StaticSettingsConfigService` implementation,
-constructing and returning the configuration object according to the mentioned Luigi documentation.
+With this you can customize [Luigis general settings](https://docs.luigi-project.io/docs/general-settings) and override any defaults.
+Make sure to return a valid Luigi configuration object.
 
 ```ts
 export class StaticSettingsConfigServiceImpl
@@ -103,12 +106,11 @@ export class StaticSettingsConfigServiceImpl
 }
 ```
 
-The `getInitialStaticSettingsConfig` is called while constructing the Luigi initial config object, whereas the `getStaticSettingsConfig`
-while [Luigi lifecycle hook luigiAfterInit](https://docs.luigi-project.io/docs/lifecycle-hooks?section=luigiafterinit) which
-adds additional setup to the root of the Luigi configuration object.
+The `getInitialStaticSettingsConfig()` method is called while constructing the Luigi initial config object.
+The `getStaticSettingsConfig()` is called while [Luigi lifecycle hook luigiAfterInit](https://docs.luigi-project.io/docs/lifecycle-hooks?section=luigiafterinit).
+The latter adds additional setup to the root of the Luigi configuration object.
 
-
-Setting the options:
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalModuleOptions = {
@@ -117,9 +119,10 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
-#### userSettingsConfigService
+#### The userSettingsConfigService option
 
-The option `userSettingsConfigService` adds possibility of setting the [Luigi user settings and a corresponding userSettingGroups configuration](https://docs.luigi-project.io/docs/user-settings?section=user-settings)
+With this you can define the [Luigi user settings and a corresponding userSettingGroups configuration](https://docs.luigi-project.io/docs/user-settings?section=user-settings)
+Make sure to return a valid Luigi configuration object.
 
 ```ts
 export class UserSettingsConfigServiceImpl implements UserSettingsConfigService {
@@ -138,7 +141,7 @@ export class UserSettingsConfigServiceImpl implements UserSettingsConfigService 
 }
 ```
 
-Setting the options:
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalModuleOptions = {
@@ -147,11 +150,10 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
-#### globalSearchConfigService
+#### The globalSearchConfigService option
 
-With the option `globalSearchConfigService` there is a possibility to provide implementation of the `GlobalSearchConfigService`
-to be able to use the [Luigi global search element](https://docs.luigi-project.io/docs/global-search)
-with provided configuration and events handlers.
+With this you have the possibility configure [Luigis global search element](https://docs.luigi-project.io/docs/global-search) with provided configuration and events handlers.
+Make sure to return a valid Luigi configuration object.
 
 ```ts
 export class GlobalSearchConfigServiceImpl implements GlobalSearchConfigService {
@@ -178,7 +180,7 @@ export class GlobalSearchConfigServiceImpl implements GlobalSearchConfigService 
 }
 ```
 
-Setting the options:
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalModuleOptions = {
@@ -187,10 +189,10 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
-#### luigiBreadcrumbConfigService
+#### The luigiBreadcrumbConfigService option
 
-With the option `luigiBreadcrumbConfigService` there is a possibility to add with the implementation
-of the `GlobalSearchConfigService` interface the [Luigi breadcrumbs to your application](https://docs.luigi-project.io/docs/navigation-advanced?section=breadcrumbs)
+This enables you to define [Luigi breadcrumbs for your application](https://docs.luigi-project.io/docs/navigation-advanced?section=breadcrumbs)
+Make sure to return a valid Luigi configuration object.
 
 
 ```ts
@@ -213,7 +215,7 @@ export class LuigiBreadcrumbConfigServiceImpl implements LuigiBreadcrumbConfigSe
 }
 ```
 
-Setting the options:
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalModuleOptions = {
@@ -222,12 +224,10 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
+#### The userProfileConfigService option
 
-#### userProfileConfigService
-
-With the option `userProfileConfigService` there is a possibility to add with the implementation
-of the `UserProfileConfigService` interface the [Luigi user profile](https://docs.luigi-project.io/docs/navigation-advanced?section=profile)
-
+This option allows you to define the [Luigi user profile](https://docs.luigi-project.io/docs/navigation-advanced?section=profile).
+Make sure to return a valid Luigi configuration object.
 
 ```ts
 export class UserProfileConfigServiceImpl implements UserProfileConfigService
@@ -250,7 +250,7 @@ export class UserProfileConfigServiceImpl implements UserProfileConfigService
 }
 ```
 
-Setting the options:
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalModuleOptions = {
@@ -261,12 +261,10 @@ const portalOptions: PortalModuleOptions = {
 
 ### Functional services
 
-#### luigiAuthEventsCallbacksService
+#### The luigiAuthEventsCallbacksService option
 
-The service provided for this option has to implement the interface `LuigiAuthEventsCallbacksService` which provides callback functionality
-that is being called in response to the provides by Luigi authentication life cycle [events](https://docs.luigi-project.io/docs/authorization-events)
-
-The example to execute some actions in response to authentication events:
+This option allows you to provide a service that listens to [Luigi authorization events](https://docs.luigi-project.io/docs/authorization-events)
+Make sure to return a valid Luigi configuration object.
 
 ```ts
 export class LuigiAuthEventsCallbacksServiceImpl
@@ -283,7 +281,8 @@ export class LuigiAuthEventsCallbacksServiceImpl
     }
 }
 ```
-Setting the options:
+
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 
@@ -293,9 +292,29 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
-#### customMessageListeners
+#### The customMessageListeners option
 
-The `customMessageListeners` option should contain an array of custom message listeners implementing the interface `CustomMessageListener`
+With this option it is possible to define listeners for [Luigi custom messages](https://docs.luigi-project.io/docs/communication?section=custom-messages).
+
+Custom messages are sent from any part of your application to Luigi and then routed to any other micro frontend application in the same application.
+A custom message is sent by using Luigis `sendCustomMessage({ id: 'unique.message.id'});` method (see also the following example).
+```ts
+import { inject, Injectable } from '@angular/core';
+import { LuigiCoreService } from '@openmfp/portal-ui-lib';
+
+@Injectable({ providedIn: 'root' })
+export class MessageService {
+  private luigiCoreService: LuigiCoreService = inject(LuigiCoreService);
+
+  public sendMessage() {
+    this.luigiCoreService.sendCustomMessage({ id: 'unique.message.id' });
+  }
+}
+```
+In order to react on such a message in your micro frontend, you have to provide a custom message listener.
+You have to specify the corresponding message id you want to listen to.
+If there is a match, the callback function `onCustomMessageReceived()` will be called.
+Make sure to return a valid Luigi configuration object.
 
 ```ts
 export class CustomMessageListenerImpl
@@ -315,35 +334,18 @@ export class CustomMessageListenerImpl
 }
 ```
 
-once the application calls `sendCustomMessage({ id: 'unique.message.id'});`
-the callback function `onCustomMessageReceived` of `CustomMessageListenerImpl` will be executed.
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
-import { inject, Injectable } from '@angular/core';
-import { LuigiCoreService } from '@openmfp/portal-ui-lib';
-
-@Injectable({ providedIn: 'root' })
-export class MessageService {
-  private luigiCoreService: LuigiCoreService = inject(LuigiCoreService);
-
-  public sendMessage() {
-    this.luigiCoreService.sendCustomMessage({ id: 'unique.message.id' });
-  }
-}
-```
-
-Setting the options:
-
-```
 const portalOptions: PortalModuleOptions = {
     customMessageListeners: [CustomMessageListenerImpl, CustomMessageListenerImpl2, ...],
     // ... other portal module options
 }
 ```
 
-#### customGlobalNodesService
+#### The customGlobalNodesService option
 
-The option `customGlobalNodesService` adds possibility to define and add the custom global level Luigi nodes to the portal.
+This option adds the possibility to define and add the global level Luigi nodes to your application.
 
 ```ts
 import { LuigiNode, CustomGlobalNodesService } from '@openmfp/portal-ui-lib';
@@ -379,7 +381,7 @@ export class CustomGlobalNodesServiceImpl implements CustomGlobalNodesService {
 }
 ```
 
-Setting the options:
+In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalModuleOptions = {
@@ -388,15 +390,18 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
-# Local Extension development
+# Local Application Development
 
-In order to set up a local instance of your Extension see the [local setup](./readme-local-setup.md) for more information.
+You can set up a local instance of your application.
+This allows you to thoroughly test your application before you release it to production.
+Please follow our [local setup guide](./readme-local-setup.md) for this task
 
 # Library development
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build` to build the project.
+The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 
