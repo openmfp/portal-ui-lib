@@ -15,7 +15,7 @@ Main features of this library are:
     - [Configuration services](###Configuration-services)
     - [Functional services](###Functional-services)
 - [Local Extension development](#Local-Extension-development)
-- [Development](#Library-development)
+- [Library development](#Library-development)
 
 
 # Getting started

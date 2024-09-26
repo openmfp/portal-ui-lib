@@ -39,7 +39,7 @@ To use this feature, you need to set the local storage key `dev-mode-settings` o
 You can set these values easily from the console on the portal domain by opening your web console (press F12) and find the `Console` tab.
 Then you can place your settings via this JavaScript snipped:
 
-```js 
+```ts
 localStorage.setItem("dev-mode-settings", JSON.stringify({
     isActive: true,
     cdm: [
@@ -53,15 +53,34 @@ localStorage.setItem("dev-mode-settings", JSON.stringify({
 }));
 ```
 
-Note that by setting `isActive` to true, you also can use this feature on the non development deployments like integration or production.
+Note that by setting `isActive` to true, you also can use this feature on any deployment environment within your organization.
 
 You can provide as many `content-configuration.json` in two ways:
 * Provide it via the `url` field. The URL must be accessible from the portal domain and it must serve a valid content configuration
 * Provide it via the `data` field. Here you place your content configuration content inline.
 
 
-The values in `serviceProviderConfig` field will be added to the Luigi context in the `serviceProviderConfig` field, 
-just as the `extensionConfig` values in the ExtensionClass would.
+The values in `serviceProviderConfig` field will be added to every Luigi node's context in the `serviceProviderConfig` field, 
+below the example ot the outcome of setting this field on a Luigi node:
+
+```
+{
+    "label": "Overview",
+    "entityType": "global.topnav",
+    "viewUrl": "/overview",
+    "pathSegment": "overview",
+    "context": {
+      "serviceProviderConfig": {
+        "key1": "value1",
+        "key2": "value2"
+      }
+      // ... other luigi node context properties
+    } 
+    // ... other luigi node properties
+}
+
+```
+
 
 After setting the local storage entry, you need to reload (press F5) the page for your changes to take effect.
 
