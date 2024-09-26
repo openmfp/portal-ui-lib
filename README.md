@@ -10,14 +10,14 @@ Main features of this library are:
 
 ## Table of Contents
 - [Getting started](#Getting-started)
-  - [Configure the project](##Configure-the-project) 
-  - [Import the module and bootstrap component](##Import-the-module-and-bootstrap-component)
-  - [Update index.html file](##Update-index.html-file-of-the-project)
-  - [Implement custom services with portal options](##Implement-custom-services-with-portal-options)
-    - [Configuration services](###Configuration-services)
-    - [Functional services](###Functional-services)
-  - [Start your project ](##Start-your-project)
-- [Local Extension development](#Local-Extension-development)
+  - [Configure the project](#Configure-the-project) 
+  - [Import the PortalModule and Bootstrap the PortalComponent](#Import-the-PortalModule-and-Bootstrap-the-PortalComponent)
+  - [Update index.html file](#Update-index-file-of-the-project)
+  - [Implement the Custom Service](#Implement-the-Custom-Service)
+    - [Configuration services](#Configuration-services)
+    - [Functional services](#Functional-services)
+  - [Start your project](#Start-your-project)
+- [Local Application Development](#Local-Application-Development)
 - [Library development](#Library-development)
 
 
@@ -40,8 +40,6 @@ into the project assets, as shown below:
   // ... the rest of the angular.json configuration
   
   "assets": [
-    "src/favicon.ico",
-    "src/assets",
     {
       "glob": "**",
       "input": "node_modules/@luigi-project/core",
@@ -92,7 +90,7 @@ export class AppModule {
 }
 ```
 
-## Update index.html file of the project
+## Update index file of the project
 
 The next step in order to have the portal working is to update the `index.html` file with the inclusion of: 
 - the `/luigi-core/luigi.js` script, 
@@ -104,13 +102,13 @@ Below is an example:
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>App</title>
-    <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/luigi-core/luigi_horizon.css" />
-</head>
+    <head>
+        <meta charset="utf-8">
+        <title>App</title>
+        <base href="/">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/luigi-core/luigi_horizon.css" />
+    </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <script src="/luigi-core/luigi.js"></script>
@@ -475,9 +473,12 @@ const portalOptions: PortalModuleOptions = {
 }
 ```
 
-## Start your project 
+## Start your project
 
-
+After finishing all the required steps you might want to check your integration with the library and run your local application.
+In order to do that, firstly you need to run the local server part of the portal, please follow the instruction provided here [TODO LINK TO PORTAL-SERVER-LIB README]
+Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port 
+should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
 # Local Application Development
 
