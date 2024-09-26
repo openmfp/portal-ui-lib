@@ -365,6 +365,7 @@ export class LuigiAuthEventsCallbacksServiceImpl
 In your `AppModule` you can provide your custom implementation like so:
 
 ```ts
+
 const portalOptions: PortalModuleOptions = {
     luigiAuthEventsCallbacksService: LuigiAuthEventsCallbacksServiceImpl,
     // ... other portal module options
