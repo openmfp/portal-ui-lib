@@ -12,7 +12,7 @@ Main features of this library are:
 - [Getting started](#Getting-started)
   - [Configure the project](#Configure-the-project) 
   - [Import the PortalModule and Bootstrap the PortalComponent](#Import-the-PortalModule-and-Bootstrap-the-PortalComponent)
-  - [Update index.html file](#Update-index-file-of-the-project)
+  - [Update index.html file](#Update-index-html-file-of-the-project)
   - [Implement the Custom Service](#Implement-the-Custom-Service)
     - [Configuration services](#Configuration-services)
     - [Functional services](#Functional-services)
@@ -90,7 +90,7 @@ export class AppModule {
 }
 ```
 
-## Update index file of the project
+## Update index html file of the project
 
 The next step in order to have the portal working is to update the `index.html` file with the inclusion of: 
 - the `/luigi-core/luigi.js` script, 
