@@ -477,7 +477,8 @@ const portalOptions: PortalModuleOptions = {
 ## Start your project
 
 After finishing all the required steps you might want to check your integration with the library and run your local application.
-In order to do that, firstly you need to run the local server part of the portal, please follow the instruction provided here [TODO LINK TO PORTAL-SERVER-LIB README]
+In order to do that, firstly you need to run the local server part of the portal, 
+please follow the instruction provided [here](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library)
 Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port 
 should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
