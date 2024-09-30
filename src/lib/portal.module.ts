@@ -54,6 +54,8 @@ import {
   LuigiAuthEventsCallbacksService,
   NoopLuigiAuthEventsCallbacksService,
   NoopLocalNodesService,
+  LocalConfigurationService,
+  PortalLuigiDataConfigService,
 } from './services';
 
 export interface PortalModuleOptions {
@@ -109,6 +111,8 @@ export interface PortalModuleOptions {
     LogoutComponent,
   ],
   providers: [
+    LocalConfigurationService,
+    PortalLuigiDataConfigService,
     {
       provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
       useClass: NoopLuigiAuthEventsCallbacksService,

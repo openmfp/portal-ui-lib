@@ -1,46 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
 import { LocalNodesService } from './local-nodes.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { PortalLuigiDataConfigService } from './luigi-data-config.service';
-import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalConfigurationService implements LocalNodesService {
   constructor(
-    @Inject(LOCAL_NODES_SERVICE_INJECTION_TOKEN)
-    private localNodesService: LocalNodesService,
     private luigiDataConfigService: PortalLuigiDataConfigService,
-    private luigiCoreService: LuigiCoreService,
     private devModeSettingsService: DevModeSettingsService,
   ) {}
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
-    const language = this.luigiCoreService.i18n().getCurrentLocale();
-
     try {
       const devModeSettings =
         await this.devModeSettingsService.getDevModeSettings();
-      let nodes =
-        await this.luigiDataConfigService.getLuigiDataFromConfigurations(
-          devModeSettings.configs,
-          language,
-        );
+      const nodes =
+        await this.luigiDataConfigService.getLuigiDataFromConfigurations();
 
       nodes.forEach((node) => {
         node.context = node.context || {};
         node.context.serviceProviderConfig =
           devModeSettings.serviceProviderConfig;
       });
-
-      if(nodes.length === 0) {
-        nodes = await this.localNodesService.getLocalNodes();
-      }
 
       return nodes;
     } catch (e) {
