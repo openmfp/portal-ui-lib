@@ -1,11 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
-import { LocalNodesService } from './local-nodes.service';
-import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
-import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
-import { PortalLuigiDataConfigService } from './luigi-data-config.service';
+import { DevModeSettingsService } from '../luigi-nodes/dev-mode/dev-mode-settings.service';
+import { PortalLuigiDataConfigService } from '../luigi-nodes/luigi-data-config.service';
+
+export interface LocalNodesService {
+  replaceServerNodesWithLocalOnes(
+    serverLuigiNodes: LuigiNode[],
+    currentEntities: string[]
+  ): Promise<LuigiNode[]>;
+
+  getLocalNodes(): Promise<LuigiNode[]>;
+}
 
 @Injectable({
   providedIn: 'root',

@@ -2,17 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { LocalConfigurationService } from './local-configuration.service';
-import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
+import { DevModeSettingsService } from '../luigi-nodes/dev-mode/dev-mode-settings.service';
 import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
-import { PortalLuigiDataConfigService } from './luigi-data-config.service';
-import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { LocalNodesService } from './local-nodes.service';
+import { PortalLuigiDataConfigService } from '../luigi-nodes/luigi-data-config.service';
 
 describe('LocalConfigurationService', () => {
   let service: LocalConfigurationService;
   let mockLuigiDataConfigService: MockProxy<PortalLuigiDataConfigService>;
-  let mockLocalNodesService: MockProxy<LocalNodesService>;
   let luigiCoreService: LuigiCoreService;
   let mockDevModeSettingsService: MockProxy<DevModeSettingsService>;
 
@@ -22,10 +19,6 @@ describe('LocalConfigurationService', () => {
     TestBed.configureTestingModule({
       providers: [
         DevModeSettingsService,
-        {
-          provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-          useValue: mockLocalNodesService,
-        },
         {
           provide: PortalLuigiDataConfigService,
           useValue: mockLuigiDataConfigService,
