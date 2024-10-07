@@ -14,22 +14,28 @@ export class PortalLuigiDataConfigService {
 
   async getLuigiDataFromConfigurations(devModeSettings: DevModeSettings): Promise<LuigiNode[]> {
     const language = this.luigiCoreService.i18n().getCurrentLocale();
+    let configurations: Record<any, any>[] = [];
 
-    const configurations: Record<any, any>[] = await Promise.allSettled(
-    devModeSettings.configs.map(async (config) => {
-      let configuration: Record<any, any> = config.data;
-      if (!configuration) {
-        const response = await lastValueFrom(this.http.get(config.url));
-        configuration = response;
-      }
-      return configuration;
-    }));
+    if(devModeSettings.configs.length > 0) {
+      configurations = await Promise.allSettled(
+        devModeSettings.configs.map(async (config) => {
+          let configuration: Record<any, any> = config.data;
+          if (!configuration) {
+            const response = await lastValueFrom(this.http.get(config.url));
+            configuration = response;
+          }
+          return configuration;
+        })
+      );
+    }
 
     return await lastValueFrom(
-      this.http.get<LuigiNode[]>(`/rest/localnodes`,{ ...{params: {
+      this.http.get<LuigiNode[]>(`/rest/localnodes`,
+        { ...{ params: {
         language,
         contentConfigurations:JSON.stringify(configurations)
-      }}})
+      }}}
+    )
     )
   }
 }
