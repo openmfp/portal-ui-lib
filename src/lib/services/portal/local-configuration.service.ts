@@ -28,7 +28,7 @@ export class LocalConfigurationService implements LocalNodesService {
       const devModeSettings =
         await this.devModeSettingsService.getDevModeSettings();
       const nodes =
-        await this.luigiDataConfigService.getLuigiDataFromConfigurations();
+        await this.luigiDataConfigService.getLuigiDataFromConfigurations(devModeSettings);
 
       nodes.forEach((node) => {
         node.context = node.context || {};
