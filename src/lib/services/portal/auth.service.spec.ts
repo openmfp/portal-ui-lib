@@ -30,7 +30,8 @@ describe('AuthService', () => {
   describe('auth', () => {
     it('should make a POST request and set auth data', async () => {
       const mockResponse: AuthTokenData = {
-        access_token: 'mock_token',
+        access_token: 'mock_access_token',
+        id_token: 'mock_id_token',
         expires_in: '3600',
       };
       httpClientMock.post.mockReturnValue(of(mockResponse));
@@ -43,7 +44,7 @@ describe('AuthService', () => {
       );
       expect(service.getAuthData()).toEqual({
         accessTokenExpirationDate: expect.any(Number),
-        idToken: 'mock_token',
+        idToken: 'mock_id_token',
       });
     });
   });
@@ -52,6 +53,7 @@ describe('AuthService', () => {
     it('should set and get auth data correctly', () => {
       const mockAuthTokenData: AuthTokenData = {
         access_token: 'mock_token',
+        id_token: 'mock_id_token',
         expires_in: '3600',
       };
 
@@ -60,7 +62,7 @@ describe('AuthService', () => {
 
       expect(authData).toEqual({
         accessTokenExpirationDate: expect.any(Number),
-        idToken: 'mock_token',
+        idToken: 'mock_id_token',
       });
     });
   });
@@ -108,7 +110,11 @@ describe('AuthService', () => {
       (jwtDecode as jest.Mock).mockImplementationOnce(() => {
         throw new Error('Invalid token');
       });
-      service.setAuthData({ access_token: 'test_token', expires_in: '3600' });
+      service.setAuthData({
+        access_token: 'test_token',
+        id_token: 'mock_id_token',
+        expires_in: '3600',
+      });
 
       expect(service.getUser()).toEqual(null);
     });
