@@ -21,6 +21,4 @@ const portalRouts: Routes = [
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],
   exports: [RouterModule],
 })
-export class PortalRoutingModule {
-  constructor() {}
-}
+export class PortalRoutingModule {}
