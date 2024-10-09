@@ -1,9 +1,12 @@
+import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services';
 import { LuigiCoreService, LuigiConfigService } from '../../services';
 
 @Component({
   template: '',
+  standalone: true,
 })
 export class LuigiComponent {
   constructor(

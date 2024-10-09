@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { EntityDefinition, LuigiNode, ServiceProvider } from '../../models';
-import { PortalModule } from '../../portal.module';
+import { portalConfig } from '../../portal.config';
 import { ConfigService, ServiceProviderService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from './luigi-nodes.service';
@@ -30,9 +30,7 @@ describe('NodesProcessingService', () => {
   ];
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [PortalModule],
-    }).compileComponents();
+    TestBed.configureTestingModule(portalConfig()).compileComponents();
 
     service = TestBed.inject(NodesProcessingService);
     luigiCoreService = TestBed.inject(LuigiCoreService);

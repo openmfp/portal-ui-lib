@@ -6,7 +6,7 @@ import {
   PortalConfig,
   ServiceProvider,
 } from '../../models';
-import { PortalModule } from '../../portal.module';
+import { portalConfig } from '../../portal.config';
 import {
   ConfigService,
   EnvConfigService,
@@ -38,9 +38,7 @@ describe('NavigationConfigService', () => {
   ];
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [PortalModule],
-    }).compileComponents();
+    TestBed.configureTestingModule(portalConfig()).compileComponents();
 
     service = TestBed.inject(NavigationConfigService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
