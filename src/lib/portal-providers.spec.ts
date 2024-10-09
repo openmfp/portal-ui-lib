@@ -1,4 +1,4 @@
-import { importPortalProviders, PortalOptions } from './portal.config';
+import { importPortalProviders, PortalOptions } from './portal-providers';
 import * as core from '@angular/core';
 import * as http from '@angular/common/http';
 import * as tokens from './injection-tokens';
