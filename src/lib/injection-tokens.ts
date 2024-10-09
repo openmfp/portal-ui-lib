@@ -1,5 +1,3 @@
-import { LuigiAuthEventsCallbacksService } from './services/luigi-auth-events-callbacks.service';
-
 export const LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN =
   'OPENMFP_LUIGI_STATIC_SETTINGS_CONFIG_SERVICE';
 export const LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN =
