@@ -39,8 +39,8 @@ describe('LocalNodesConfigService', () => {
     const expectedResponse = [];
 
     // Act
-    const getLuigiDataFromConfigurationsPromise = service.getLuigiNodesFromConfigurations([]);
-    const testRequest = httpTestingController.expectOne('/rest/localnodes?language=en&contentConfigurations=%5B%5D');
+    const getLuigiDataFromConfigurationsPromise = service.getLuigiNodesFromConfigurations([{}]);
+    const testRequest = httpTestingController.expectOne('/rest/localnodes?language=en&contentConfigurations=%5B%7B%7D%5D');
     testRequest.flush(expectedResponse);
     const response = await getLuigiDataFromConfigurationsPromise;
 

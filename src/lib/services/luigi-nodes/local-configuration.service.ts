@@ -33,11 +33,12 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       const luigiNodes =
         await this.luigiConfigService.getLuigiNodesFromConfigurations(configurations);
 
+      if(luigiNodes)
         luigiNodes.forEach((node) => {
-        node.context = node.context || {};
-        node.context.serviceProviderConfig =
+          node.context = node.context || {};
+          node.context.serviceProviderConfig =
           devModeSettings.serviceProviderConfig;
-      });
+        });
 
       return luigiNodes;
     } catch (e) {
@@ -155,10 +156,9 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
   }
 
   private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]> {
-    let configurations: Record<any, any>[] = [];
-
+    const result : any[] = [];
     if(devModeSettings.configs.length > 0) {
-      configurations = await Promise.allSettled(
+      const configurations: Record<any, any>[] = await Promise.allSettled(
         devModeSettings.configs.map((config) => {
           let configuration: Record<any, any> = config.data;
           if (!configuration) {
@@ -168,7 +168,12 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
           return configuration;
         })
       );
+      configurations.forEach(cc=>{
+        if(cc.value) {
+          result.push(cc.value);
+        }
+      })
     }
-    return configurations;
+    return result;
   }
 }

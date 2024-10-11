@@ -61,7 +61,7 @@ describe('LocalConfigurationServiceImpl', () => {
       mockDevModeSettingsService.getDevModeSettings.mockReturnValue(
         Promise.resolve({
           serviceProviderConfig: {},
-          configs: [{ url: 'sap.com' }],
+          configs: [{ data: {} }],
         }),
       );
 
@@ -78,7 +78,7 @@ describe('LocalConfigurationServiceImpl', () => {
         serviceProviderConfig: {
           a: 'b',
         },
-        configs: [{ url: 'sap.com' }],
+        configs: [{ data: {} }],
       });
 
       const localNodes = await service.getLocalNodes();

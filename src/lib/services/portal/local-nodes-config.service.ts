@@ -11,15 +11,19 @@ export class LocalNodesConfigService {
   constructor(private http: HttpClient, private luigiCoreService: LuigiCoreService) {}
 
   async getLuigiNodesFromConfigurations(configurations: Record<any, any>[]): Promise<LuigiNode[]> {
-    const language = this.luigiCoreService.i18n().getCurrentLocale();
+    if(configurations.length === 0)
+      return null;
 
+    const language = this.luigiCoreService.i18n().getCurrentLocale();
     return await lastValueFrom(
-      this.http.get<LuigiNode[]>(`/rest/localnodes`,
-        { ...{ params: {
-        language,
-        contentConfigurations:JSON.stringify(configurations)
-      }}}
-    )
+      this.http.get<LuigiNode[]>(`/rest/localnodes`, {
+        params:
+          {
+            language,
+            contentConfigurations:JSON.stringify(configurations)
+          }
+        }
+      )
     )
   }
 }
