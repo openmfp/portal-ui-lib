@@ -2,24 +2,27 @@
 import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
 import { LuigiNode } from '../../models';
-import { DevModeSettingsService } from '../luigi-nodes/dev-mode/dev-mode-settings.service';
-import { PortalLuigiDataConfigService } from '../luigi-nodes/luigi-data-config.service';
+import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
+import { LocalNodesConfigService } from '../portal/local-nodes-config.service';
+import { DevModeSettings } from './dev-mode/dev-mode-settings';
+import { HttpClient } from '@angular/common/http';
 
-export interface LocalNodesService {
+export interface LocalConfigurationService {
   replaceServerNodesWithLocalOnes(
     serverLuigiNodes: LuigiNode[],
     currentEntities: string[]
   ): Promise<LuigiNode[]>;
-
   getLocalNodes(): Promise<LuigiNode[]>;
+  getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]>;
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class LocalConfigurationService implements LocalNodesService {
+export class LocalConfigurationServiceImpl implements LocalConfigurationService {
   constructor(
-    private luigiDataConfigService: PortalLuigiDataConfigService,
+    private http: HttpClient,
+    private luigiConfigService: LocalNodesConfigService,
     private devModeSettingsService: DevModeSettingsService,
   ) {}
 
@@ -27,20 +30,39 @@ export class LocalConfigurationService implements LocalNodesService {
     try {
       const devModeSettings =
         await this.devModeSettingsService.getDevModeSettings();
-      const nodes =
-        await this.luigiDataConfigService.getLuigiDataFromConfigurations(devModeSettings);
+      const configurations = await this.getLocalConfigurations(devModeSettings);
+      const luigiNodes =
+        await this.luigiConfigService.getLuigiNodesFromConfigurations(configurations);
 
-      nodes.forEach((node) => {
+        luigiNodes.forEach((node) => {
         node.context = node.context || {};
         node.context.serviceProviderConfig =
           devModeSettings.serviceProviderConfig;
       });
 
-      return nodes;
+      return luigiNodes;
     } catch (e) {
       console.warn(`failed to retrieve local luigi config`, e);
       return [];
     }
+  }
+
+  async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]> {
+    let configurations: Record<any, any>[] = [];
+
+    if(devModeSettings.configs.length > 0) {
+      configurations = await Promise.allSettled(
+        devModeSettings.configs.map((config) => {
+          let configuration: Record<any, any> = config.data;
+          if (!configuration) {
+            const response = this.http.get(config.url);
+            configuration = response;
+          }
+          return configuration;
+        })
+      );
+    }
+    return configurations;
   }
 
   public async replaceServerNodesWithLocalOnes(

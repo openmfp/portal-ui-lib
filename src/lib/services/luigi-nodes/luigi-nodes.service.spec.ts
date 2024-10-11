@@ -3,29 +3,30 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock } from 'jest-mock-extended';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { RouterModule } from '@angular/router';
-import { LocalConfigurationService, LocalNodesService, ServiceProviderService } from '../portal';
 import { ServiceProvider, EntityDefinition, LuigiNode } from '../../models';
-import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ServiceProviderService } from '../portal';
+import { LocalConfigurationServiceImpl } from './local-configuration.service';
 
 describe('LuigiNodesService', () => {
   let service: LuigiNodesService;
   let serviceProviderService: ServiceProviderService;
-  let localNodesService: LocalConfigurationService;
+  let localConfigurationService: LocalConfigurationServiceImpl;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-          useValue: localNodesService,
+          provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+          useValue: localConfigurationService,
         },
       ],
       imports: [HttpClientTestingModule, RouterModule.forRoot([])],
     });
     service = TestBed.inject(LuigiNodesService);
     serviceProviderService = TestBed.inject(ServiceProviderService);
-    localNodesService = TestBed.inject(LocalConfigurationService);
+    localConfigurationService = TestBed.inject(LocalConfigurationServiceImpl);
   });
 
   it('should be created', () => {
@@ -166,7 +167,7 @@ describe('LuigiNodesService', () => {
       );
       spyInstanceForProject.mockReturnValue(configServiceResponse);
 
-      localNodeServiceSpy = jest.spyOn(localNodesService, 'getLocalNodes');
+      localNodeServiceSpy = jest.spyOn(localConfigurationService, 'getLocalNodes');
       localNodeServiceSpy.mockReturnValue(Promise.resolve([]));
     });
 

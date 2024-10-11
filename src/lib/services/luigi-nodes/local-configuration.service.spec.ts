@@ -1,26 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { LocalConfigurationService } from './local-configuration.service';
-import { DevModeSettingsService } from '../luigi-nodes/dev-mode/dev-mode-settings.service';
+import { LocalConfigurationServiceImpl } from './local-configuration.service';
+import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
-import { PortalLuigiDataConfigService } from '../luigi-nodes/luigi-data-config.service';
+import { LocalNodesConfigService } from '../portal/local-nodes-config.service';
 
-describe('LocalConfigurationService', () => {
-  let service: LocalConfigurationService;
-  let mockLuigiDataConfigService: MockProxy<PortalLuigiDataConfigService>;
+describe('LocalConfigurationServiceImpl', () => {
+  let service: LocalConfigurationServiceImpl;
+  let mockLuigiDataConfigService: MockProxy<LocalNodesConfigService>;
   let luigiCoreService: LuigiCoreService;
   let mockDevModeSettingsService: MockProxy<DevModeSettingsService>;
 
   beforeEach(() => {
     mockDevModeSettingsService = mock<DevModeSettingsService>();
-    mockLuigiDataConfigService = mock<PortalLuigiDataConfigService>();
+    mockLuigiDataConfigService = mock<LocalNodesConfigService>();
     TestBed.configureTestingModule({
       providers: [
         DevModeSettingsService,
         {
-          provide: PortalLuigiDataConfigService,
+          provide: LocalNodesConfigService,
           useValue: mockLuigiDataConfigService,
         },
       ],
@@ -29,7 +29,7 @@ describe('LocalConfigurationService', () => {
       .overrideProvider(DevModeSettingsService, {
         useValue: mockDevModeSettingsService,
       });
-    service = TestBed.inject(LocalConfigurationService);
+    service = TestBed.inject(LocalConfigurationServiceImpl);
     luigiCoreService = TestBed.inject(LuigiCoreService);
   });
 
@@ -44,7 +44,7 @@ describe('LocalConfigurationService', () => {
     beforeEach(() => {
       getLuigiDataFromConfigurationsSpy = jest.spyOn(
         mockLuigiDataConfigService,
-        'getLuigiDataFromConfigurations',
+        'getLuigiNodesFromConfigurations',
       );
       i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
       i18nSpy.mockReturnValue({

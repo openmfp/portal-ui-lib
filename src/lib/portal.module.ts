@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import {
-  LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -30,7 +30,7 @@ import {
   CustomMessageListener,
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
-  LocalNodesService,
+  LocalConfigurationService,
   AppSwitcherConfigService,
   NoopAppSwitcherConfigService,
   LuigiBreadcrumbConfigService,
@@ -53,7 +53,7 @@ import {
   NoopNodeAccessHandlingService,
   LuigiAuthEventsCallbacksService,
   NoopLuigiAuthEventsCallbacksService,
-  LocalConfigurationService,
+  LocalConfigurationServiceImpl,
 } from './services';
 
 export interface PortalModuleOptions {
@@ -64,7 +64,7 @@ export interface PortalModuleOptions {
   customMessageListeners?: Type<CustomMessageListener>[];
 
   /** Service providing local nodes merging services **/
-  localNodesService?: Type<LocalNodesService>;
+  localConfigurationService?: Type<LocalConfigurationService>;
 
   /** Service providing user setting specific configuration **/
   userSettingsConfigService?: Type<UserSettingsConfigService>;
@@ -158,8 +158,8 @@ export interface PortalModuleOptions {
       useClass: NoopGlobalSearchConfigService,
     },
     {
-      provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-      useClass: LocalConfigurationService,
+      provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+      useClass: LocalConfigurationServiceImpl,
     },
   ],
   imports: [PortalRoutingModule, BrowserModule, RouterOutlet, HttpClientModule],
@@ -240,8 +240,8 @@ export class PortalModule {
             StaticSettingsConfigServiceImpl,
         },
         {
-          provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-          useClass: options.localNodesService || LocalConfigurationService,
+          provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+          useClass: options.localConfigurationService || LocalConfigurationServiceImpl,
         },
         {
           provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,

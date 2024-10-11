@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PortalLuigiDataConfigService } from './luigi-data-config.service';
+import { LocalNodesConfigService } from './local-nodes-config.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { DevModeSettings } from './dev-mode/dev-mode-settings';
+import { DevModeSettings } from '../luigi-nodes/dev-mode/dev-mode-settings';
 import { LuigiCoreService } from '../luigi-core.service';
 
-describe('LuigiDataConfigService', () => {
-  let service: PortalLuigiDataConfigService;
+describe('LocalNodesConfigService', () => {
+  let service: LocalNodesConfigService;
   let httpTestingController: HttpTestingController;
   let luigiCoreService: LuigiCoreService;
   let i18nSpy;
@@ -19,7 +19,7 @@ describe('LuigiDataConfigService', () => {
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(PortalLuigiDataConfigService);
+    service = TestBed.inject(LocalNodesConfigService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
 
     i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
@@ -34,16 +34,12 @@ describe('LuigiDataConfigService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get the localnodes', async () => {
+  it('should get the luigi nodes from configurations', async () => {
     // Arrange
     const expectedResponse = [];
-    const devModeSettings: DevModeSettings = {
-      configs: [],
-      serviceProviderConfig: {}
-    };
 
     // Act
-    const getLuigiDataFromConfigurationsPromise = service.getLuigiDataFromConfigurations(devModeSettings);
+    const getLuigiDataFromConfigurationsPromise = service.getLuigiNodesFromConfigurations([]);
     const testRequest = httpTestingController.expectOne('/rest/localnodes?language=en&contentConfigurations=%5B%5D');
     testRequest.flush(expectedResponse);
     const response = await getLuigiDataFromConfigurationsPromise;
