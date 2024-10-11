@@ -13,7 +13,6 @@ export interface LocalConfigurationService {
     currentEntities: string[]
   ): Promise<LuigiNode[]>;
   getLocalNodes(): Promise<LuigiNode[]>;
-  getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]>;
 }
 
 @Injectable({
@@ -45,24 +44,6 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       console.warn(`failed to retrieve local luigi config`, e);
       return [];
     }
-  }
-
-  async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]> {
-    let configurations: Record<any, any>[] = [];
-
-    if(devModeSettings.configs.length > 0) {
-      configurations = await Promise.allSettled(
-        devModeSettings.configs.map((config) => {
-          let configuration: Record<any, any> = config.data;
-          if (!configuration) {
-            const response = this.http.get(config.url);
-            configuration = response;
-          }
-          return configuration;
-        })
-      );
-    }
-    return configurations;
   }
 
   public async replaceServerNodesWithLocalOnes(
@@ -171,5 +152,23 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       localNode.pathSegment === node.pathSegment &&
       localNode.entityType === node.entityType
     );
+  }
+
+  private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]> {
+    let configurations: Record<any, any>[] = [];
+
+    if(devModeSettings.configs.length > 0) {
+      configurations = await Promise.allSettled(
+        devModeSettings.configs.map((config) => {
+          let configuration: Record<any, any> = config.data;
+          if (!configuration) {
+            const response = this.http.get(config.url).toPromise();
+            configuration = response;
+          }
+          return configuration;
+        })
+      );
+    }
+    return configurations;
   }
 }
