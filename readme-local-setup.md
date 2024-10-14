@@ -44,6 +44,7 @@ localStorage.setItem("dev-mode-settings", JSON.stringify({
     isActive: true,
     cdm: [
         {url:"http://localhost:4200/assets/content-configuration.json"},
+        {url:"http://localhost:4500/assets/content-configuration.json"},
         {data:{ /*... full content-configuration.json ...*/ }}
      ],
     serviceProviderConfig: {
