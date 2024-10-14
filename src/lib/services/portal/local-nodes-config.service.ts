@@ -16,12 +16,9 @@ export class LocalNodesConfigService {
 
     const language = this.luigiCoreService.i18n().getCurrentLocale();
     return await lastValueFrom(
-      this.http.get<LuigiNode[]>(`/rest/localnodes`, {
-        params:
-          {
-            language,
-            contentConfigurations:JSON.stringify(configurations)
-          }
+      this.http.post<LuigiNode[]>(`/rest/localnodes`, {
+          language,
+          contentConfigurations:JSON.stringify(configurations)
         }
       )
     )
