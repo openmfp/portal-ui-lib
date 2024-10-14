@@ -171,7 +171,7 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       );
       configurations.forEach(cc=>{
         if(cc.value) {
-          result.push(cc.value);
+          result.push({...cc.value, devUrl: devModeSettings.devUrl} as ContentConfiguration);
         }
       })
     }
