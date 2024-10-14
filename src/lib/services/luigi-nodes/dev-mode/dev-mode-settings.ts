@@ -4,6 +4,7 @@ export interface Config {
   data?: Record<any, any>;
 }
 export interface DevModeSettings {
+  devUrl?: string;
   configs: Config[];
   serviceProviderConfig: Record<string, string>;
 }

@@ -12,6 +12,7 @@ export class DevModeSettingsService {
     const { developmentInstance } = await this.envConfigService.getEnvConfig();
 
     let resultingDevModeSettings = {
+      devUrl: 'http://localhost:4200',
       isActive: developmentInstance, // in dev mode always look for external configuration
       configs: [
         {

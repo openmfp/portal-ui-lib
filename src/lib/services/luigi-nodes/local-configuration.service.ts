@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
-import { LuigiNode } from '../../models';
+import { ContentConfiguration, LuigiNode } from '../../models';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { LocalNodesConfigService } from '../portal/local-nodes-config.service';
 import { DevModeSettings } from './dev-mode/dev-mode-settings';
 import { HttpClient } from '@angular/common/http';
+import { lastValueFrom } from 'rxjs';
 
 export interface LocalConfigurationService {
   replaceServerNodesWithLocalOnes(
@@ -155,14 +156,14 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
     );
   }
 
-  private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<Record<any, any>[]> {
+  private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<ContentConfiguration[]> {
     const result : any[] = [];
     if(devModeSettings.configs.length > 0) {
       const configurations: Record<any, any>[] = await Promise.allSettled(
         devModeSettings.configs.map((config) => {
           let configuration: Record<any, any> = config.data;
           if (!configuration) {
-            const response = this.http.get(config.url).toPromise();
+            const response = lastValueFrom(this.http.get(config.url));
             configuration = response;
           }
           return configuration;
