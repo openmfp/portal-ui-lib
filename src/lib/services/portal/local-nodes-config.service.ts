@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { LuigiNode } from "../../models";
+import { ContentConfiguration, LuigiNode } from "../../models";
 import { lastValueFrom } from "rxjs";
 import { Injectable } from "@angular/core";
 import { LuigiCoreService } from "../luigi-core.service";
@@ -10,7 +10,7 @@ import { LuigiCoreService } from "../luigi-core.service";
 export class LocalNodesConfigService {
   constructor(private http: HttpClient, private luigiCoreService: LuigiCoreService) {}
 
-  async getLuigiNodesFromConfigurations(contentConfigurations: Record<any, any>[]): Promise<LuigiNode[]> {
+  async getLuigiNodesFromConfigurations(contentConfigurations: ContentConfiguration[]): Promise<LuigiNode[]> {
     if(contentConfigurations.length === 0)
       return null;
 
