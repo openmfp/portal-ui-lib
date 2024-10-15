@@ -44,6 +44,7 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
+      devUrl: "http://localhost:4200",
       configs: [
         {
           url: 'http://localhost:4200/assets/content-configuration-global.json',
@@ -84,6 +85,7 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
+      devUrl: "http://localhost:4200",
       configs: [
         {
           url: 'http://localhost:4200/assets/content-configuration-global.json',
@@ -101,6 +103,7 @@ describe('DevModeSettingsService', () => {
     window.localStorage.setItem(
       DEV_MODE_SETTINGS_KEY,
       JSON.stringify({
+        devUrl: "http://localhost:4200",
         configs: [
           { url: 'http://localhost:4200/assets/content-configuration.json' },
         ],
@@ -111,6 +114,7 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
+      devUrl: "http://localhost:4200",
       configs: [
         { url: 'http://localhost:4200/assets/content-configuration.json' },
       ],

@@ -39,13 +39,17 @@ describe('LocalNodesConfigService', () => {
     const expectedResponse = [];
 
     // Act
-    const getLuigiDataFromConfigurationsPromise = service.getLuigiNodesFromConfigurations([{}]);
-    const testRequest = httpTestingController.expectOne('/rest/localnodes?language=en&contentConfigurations=%5B%7B%7D%5D');
+    const getLuigiDataFromConfigurationsPromise = service.getLuigiNodesFromConfigurations([{
+      name: 'test',
+      creationTimestamp: '',
+      luigiConfigFragment: null
+    }]);
+    const testRequest = httpTestingController.expectOne('/rest/localnodes');
     testRequest.flush(expectedResponse);
     const response = await getLuigiDataFromConfigurationsPromise;
 
     // Assert
     expect(response).toBe(expectedResponse);
-    expect(testRequest.request.method).toBe('GET');
+    expect(testRequest.request.method).toBe('POST');
   });
 });
