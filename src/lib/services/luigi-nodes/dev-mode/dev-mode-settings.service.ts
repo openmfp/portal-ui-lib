@@ -6,7 +6,7 @@ export const DEV_MODE_SETTINGS_KEY = 'dev-mode-settings';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeSettingsService {
-  constructor(private envConfigService: EnvConfigService) {}
+  constructor(private envConfigService: EnvConfigService) { }
 
   async getDevModeSettings(): Promise<DevModeSettings> {
     const { developmentInstance } = await this.envConfigService.getEnvConfig();
@@ -21,7 +21,6 @@ export class DevModeSettingsService {
           url: 'http://localhost:4200/assets/content-configuration.json',
         },
       ],
-      devUrl: 'http://localhost:4200',
       serviceProviderConfig: {},
     };
 
@@ -49,16 +48,15 @@ export class DevModeSettingsService {
     }
 
     if (!resultingDevModeSettings.isActive) {
-      return Promise.resolve({
+      return {
         configs: [],
         serviceProviderConfig: {},
-      });
+      };
     }
 
-    return Promise.resolve({
-      devUrl: resultingDevModeSettings.devUrl,
+    return {
       configs: resultingDevModeSettings.configs,
       serviceProviderConfig: resultingDevModeSettings.serviceProviderConfig,
-    });
+    };
   }
 }

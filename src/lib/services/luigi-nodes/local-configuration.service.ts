@@ -24,7 +24,7 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
     private http: HttpClient,
     private luigiConfigService: LocalNodesConfigService,
     private devModeSettingsService: DevModeSettingsService,
-  ) {}
+  ) { }
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     try {
@@ -34,11 +34,11 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       const luigiNodes =
         await this.luigiConfigService.getLuigiNodesFromConfigurations(configurations);
 
-      if(luigiNodes)
+      if (luigiNodes)
         luigiNodes.forEach((node) => {
           node.context = node.context || {};
           node.context.serviceProviderConfig =
-          devModeSettings.serviceProviderConfig;
+            devModeSettings.serviceProviderConfig;
         });
 
       return luigiNodes;
@@ -67,8 +67,7 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
     );
 
     console.debug(
-      `Found '${serverLuigiNodes.length}' server nodes. Found '${
-        localLuigiNodes.length
+      `Found '${serverLuigiNodes.length}' server nodes. Found '${localLuigiNodes.length
       }' local luigi nodes. The entities of the server node are:${[
         ...new Set(
           serverLuigiNodes.map((n) =>
@@ -110,8 +109,7 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
     }
 
     console.debug(
-      `Added ${
-        nodesToAdd.length
+      `Added ${nodesToAdd.length
       } local nodes to the luigi config for ${currentEntities.join(',')}`,
     );
     return filteredServerNodes.concat(nodesToAdd);
@@ -157,23 +155,17 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
   }
 
   private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<ContentConfiguration[]> {
-    const result : any[] = [];
-    if(devModeSettings.configs.length > 0) {
-      const configurations: Record<any, any>[] = await Promise.allSettled(
-        devModeSettings.configs.map((config) => {
-          let configuration: Record<any, any> = config.data;
-          if (!configuration) {
-            const response = lastValueFrom(this.http.get(config.url));
-            configuration = response;
-          }
-          return configuration;
-        })
-      );
-      configurations.forEach(cc=>{
-        if(cc.value) {
-          result.push({...cc.value, devUrl: devModeSettings.devUrl} as ContentConfiguration);
+    const result: ContentConfiguration[] = [];
+    if (devModeSettings.configs.length > 0) {
+      await Promise.allSettled(devModeSettings.configs.map((config) => {
+        if (config.data) {
+          result.push(config.data);
+        } else if (config.url) {
+          return lastValueFrom(this.http.get<ContentConfiguration>(config.url))
+            .then(r => result.push({ ...r, devUrl: config.url }));
         }
-      })
+        return null;
+      }))
     }
     return result;
   }

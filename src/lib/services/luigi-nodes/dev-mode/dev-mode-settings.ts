@@ -1,10 +1,11 @@
+import { ContentConfiguration } from "../../../models";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Config {
   url?: string;
-  data?: Record<any, any>;
+  data?: ContentConfiguration;
 }
 export interface DevModeSettings {
-  devUrl?: string;
   configs: Config[];
   serviceProviderConfig: Record<string, string>;
 }

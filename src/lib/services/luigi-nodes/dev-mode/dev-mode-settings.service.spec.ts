@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { DEV_MODE_SETTINGS_KEY, DevModeSettingsService } from './dev-mode-settings.service';
@@ -44,7 +43,6 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
-      devUrl: "http://localhost:4200",
       configs: [
         {
           url: 'http://localhost:4200/assets/content-configuration-global.json',
@@ -85,7 +83,6 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
-      devUrl: "http://localhost:4200",
       configs: [
         {
           url: 'http://localhost:4200/assets/content-configuration-global.json',
@@ -103,7 +100,6 @@ describe('DevModeSettingsService', () => {
     window.localStorage.setItem(
       DEV_MODE_SETTINGS_KEY,
       JSON.stringify({
-        devUrl: "http://localhost:4200",
         configs: [
           { url: 'http://localhost:4200/assets/content-configuration.json' },
         ],
@@ -114,7 +110,6 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
-      devUrl: "http://localhost:4200",
       configs: [
         { url: 'http://localhost:4200/assets/content-configuration.json' },
       ],

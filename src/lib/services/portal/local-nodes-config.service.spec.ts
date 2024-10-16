@@ -1,9 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-
 import { LocalNodesConfigService } from './local-nodes-config.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { DevModeSettings } from '../luigi-nodes/dev-mode/dev-mode-settings';
 import { LuigiCoreService } from '../luigi-core.service';
 
 describe('LocalNodesConfigService', () => {
