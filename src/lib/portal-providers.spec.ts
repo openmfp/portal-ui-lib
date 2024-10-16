@@ -1,4 +1,4 @@
-import { importPortalProviders, PortalOptions } from './portal-providers';
+import { providePortal, PortalOptions } from './portal-providers';
 import * as core from '@angular/core';
 import * as http from '@angular/common/http';
 import * as tokens from './injection-tokens';
@@ -41,7 +41,7 @@ jest.mock('@angular/router', () => ({
   provideRouter: jest.fn(),
 }));
 
-describe('importPortalProviders', () => {
+describe('Provide Portal', () => {
   let mockMakeEnvironmentProviders: jest.Mock;
 
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe('importPortalProviders', () => {
       customMessageListeners: [MockCustomListener1, MockCustomListener2],
     };
 
-    importPortalProviders(options);
+    providePortal(options);
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 
@@ -78,7 +78,7 @@ describe('importPortalProviders', () => {
   });
 
   it('should not set any custom message listeners providers when not provided', () => {
-    importPortalProviders({});
+    providePortal({});
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 
@@ -92,7 +92,7 @@ describe('importPortalProviders', () => {
   });
 
   it('should set default services when custom services are not provided', () => {
-    importPortalProviders({});
+    providePortal({});
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 
@@ -144,7 +144,7 @@ describe('importPortalProviders', () => {
       nodeChangeHookConfigService: CustomNodeChangeHookService,
     };
 
-    importPortalProviders(options);
+    providePortal(options);
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 
@@ -165,7 +165,7 @@ describe('importPortalProviders', () => {
   });
 
   it('should include core Angular providers', () => {
-    importPortalProviders({});
+    providePortal({});
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 

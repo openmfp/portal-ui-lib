@@ -99,7 +99,7 @@ export interface PortalOptions {
   luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
 }
 
-export function importPortalProviders(
+export function providePortal(
   options: PortalOptions = {}
 ): EnvironmentProviders {
   const customMessageListeners = (options.customMessageListeners || []).map(
