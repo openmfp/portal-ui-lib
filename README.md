@@ -10,15 +10,47 @@ Main features of this library are:
 
 ## Table of Contents
 - [Getting started](#Getting-started)
-  - [Import the module and bootstrap component](##Import-the-module-and-bootstrap-component)
-  - [Implement custom services with portal options](##Implement-custom-services-with-portal-options)
-    - [Configuration services](###Configuration-services)
-    - [Functional services](###Functional-services)
-- [Local Extension development](#Local-Extension-development)
+  - [Configure the project](#Configure-the-project) 
+  - [Import the PortalModule and Bootstrap the PortalComponent](#Import-the-PortalModule-and-Bootstrap-the-PortalComponent)
+  - [Update index.html file](#Update-index-html-file-of-the-project)
+  - [Implement the Custom Service](#Implement-the-Custom-Service)
+    - [Configuration services](#Configuration-services)
+    - [Functional services](#Functional-services)
+  - [Start your project](#Start-your-project)
+- [Local Application Development](#Local-Application-Development)
 - [Library development](#Library-development)
 
 
 # Getting started
+
+## Configure the project
+
+### Dependencies
+
+Besides putting the `@openmfp/portal-ui-lib` dependency into the `package.json` be sure as well to include the `@luigi-project/core`
+and `@luigi-project/plugin-auth-oauth2` in proper versions (along with any other dependency required).
+
+### Angular configuration
+
+Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project 
+into the project assets, as shown below:
+
+```
+{
+  // ... the rest of the angular.json configuration
+  
+  "assets": [
+    {
+      "glob": "**",
+      "input": "node_modules/@luigi-project/core",
+      "output": "/luigi-core"
+    }
+    // ... other configured assets
+  ]
+  
+}
+```
+
 
 ## Import the PortalModule and Bootstrap the PortalComponent
 
@@ -58,6 +90,34 @@ export class AppModule {
 }
 ```
 
+## Update index html file of the project
+
+The next step in order to have the portal working is to update the `index.html` file with the inclusion of: 
+- the `/luigi-core/luigi.js` script, 
+- the `/luigi-core/luigi_horizon.css` styles,
+- and placing the  `<app-portal></app-portal>` html tag inside the html body.
+
+Below is an example:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>App</title>
+        <base href="/">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/luigi-core/luigi_horizon.css" />
+    </head>
+    <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <script src="/luigi-core/luigi.js"></script>
+        <app-portal></app-portal>
+    </body>
+</html>
+```
+
+
 
 ## Implement the Custom Service
 
@@ -73,6 +133,8 @@ With this you can customize [Luigis general settings](https://docs.luigi-project
 Make sure to return a valid Luigi configuration object.
 
 ```ts
+import { StaticSettingsConfigService } from '@openmfp/portal-ui-lib';
+
 export class StaticSettingsConfigServiceImpl
     implements StaticSettingsConfigService
 {
@@ -125,6 +187,8 @@ With this you can define the [Luigi user settings and a corresponding userSettin
 Make sure to return a valid Luigi configuration object.
 
 ```ts
+import { UserSettingsConfigService, LuigiNode } from '@openmfp/portal-ui-lib';
+
 export class UserSettingsConfigServiceImpl implements UserSettingsConfigService {
 
     async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
@@ -156,6 +220,8 @@ With this you have the possibility configure [Luigis global search element](http
 Make sure to return a valid Luigi configuration object.
 
 ```ts
+import { GlobalSearchConfigService} from '@openmfp/portal-ui-lib';
+
 export class GlobalSearchConfigServiceImpl implements GlobalSearchConfigService {
 
     getGlobalSearchConfig() {
@@ -196,6 +262,15 @@ Make sure to return a valid Luigi configuration object.
 
 
 ```ts
+import {
+  LuigiBreadcrumbConfigService,
+  LuigiBreadcrumb,
+  NodeItem,
+  LuigiNode,
+  BreadcrumbBadge,
+} from '@openmfp/portal-ui-lib';
+
+
 export class LuigiBreadcrumbConfigServiceImpl implements LuigiBreadcrumbConfigService
 {
     getBreadcrumbsConfig(): LuigiBreadcrumb {
@@ -230,6 +305,9 @@ This option allows you to define the [Luigi user profile](https://docs.luigi-pro
 Make sure to return a valid Luigi configuration object.
 
 ```ts
+import { UserProfileConfigService, UserProfile } from '@openmfp/portal-ui-lib';
+
+
 export class UserProfileConfigServiceImpl implements UserProfileConfigService
 {
     async getProfile(): Promise<UserProfile> {
@@ -267,6 +345,8 @@ This option allows you to provide a service that listens to [Luigi authorization
 Make sure to return a valid Luigi configuration object.
 
 ```ts
+import { LuigiAuthEventsCallbacksService } from '@openmfp/portal-ui-lib';
+
 export class LuigiAuthEventsCallbacksServiceImpl
     implements LuigiAuthEventsCallbacksService {
 
@@ -298,6 +378,7 @@ With this option it is possible to define listeners for [Luigi custom messages](
 
 Custom messages are sent from any part of your application to Luigi and then routed to any other micro frontend application in the same application.
 A custom message is sent by using Luigis `sendCustomMessage({ id: 'unique.message.id'});` method (see also the following example).
+
 ```ts
 import { inject, Injectable } from '@angular/core';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
@@ -311,12 +392,15 @@ export class MessageService {
   }
 }
 ```
+
 In order to react on such a message in your micro frontend, you have to provide a custom message listener.
 You have to specify the corresponding message id you want to listen to.
 If there is a match, the callback function `onCustomMessageReceived()` will be called.
 Make sure to return a valid Luigi configuration object.
 
 ```ts
+import { CustomMessageListener } from '@openmfp/portal-ui-lib';
+
 export class CustomMessageListenerImpl
     implements CustomMessageListener
 {
@@ -389,6 +473,14 @@ const portalOptions: PortalModuleOptions = {
     // ... other portal module options
 }
 ```
+
+## Start your project
+
+After finishing all the required steps you might want to check your integration with the library and run your local application.
+In order to do that, firstly you need to run the local server part of the portal, 
+please follow the instruction provided [here](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library)
+Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port 
+should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
 # Local Application Development
 
