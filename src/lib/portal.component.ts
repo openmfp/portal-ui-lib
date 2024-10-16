@@ -6,6 +6,4 @@ import { Component, ViewEncapsulation } from '@angular/core';
   styleUrls: ['./portal.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
 })
-export class PortalComponent {
-  constructor() {}
-}
+export class PortalComponent {}
