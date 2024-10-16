@@ -54,10 +54,10 @@ into the project assets, as shown below:
 
 ## Import the Portal providers and Bootstrap the app with PortalComponent
 
-First you have to import the `importPortalProviders` and bootstrap the `PortalComponent` in your `main.ts` file.
-To do this call `importPortalProviders(portalOptions)` method, which takes the `PortalOptions` object as an argument,
+First you have to import the `providePortal` and bootstrap the `PortalComponent` in your `main.ts` file.
+To do this call `providePortal(portalOptions)` method, which takes the `PortalOptions` object as an argument,
 inside the providers section of the application configuration.
-It is important to note that the `importPortalProviders(portalOptions)` should be imported after any app specific
+It is important to note that the `providePortal(portalOptions)` should be imported after any app specific
 routing providers (e.g. `provideRouter(appRoutes)`).
 
 The result may look like this:
@@ -67,7 +67,7 @@ import { importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import {
-  importPortalProviders,
+  providePortal,
   PortalComponent,
   PortalOptions,
 } from '@openmfp/portal-ui-lib';
@@ -81,7 +81,7 @@ bootstrapApplication(PortalComponent, {
   providers: [
       provideRouter(appRoutes), 
       importProvidersFrom(AnyRequiredModule),
-      importPortalProviders(portalOptions),
+      providePortal(portalOptions),
        
       // ... any ohter providers imports
     ]
@@ -123,7 +123,7 @@ Below is an example:
 
 There are two types of services that are considered: Services that provide Luigi configuration (aka. Configuration Services) and services that provide or extend functionality (aka. Functional Services).
 For each service there is a corresponding interface that you have to implement.
-Afterward you provide your specific implementation in the `importPortalProviders(portalOptions)` by placing it in the `portalOptions` object and thus make it available to the `Portal`.
+Afterward you provide your specific implementation in the `providePortal(portalOptions)` by placing it in the `portalOptions` object and thus make it available to the `Portal`.
 
 ### Configuration services
 

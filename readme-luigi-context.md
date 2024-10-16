@@ -1,6 +1,6 @@
 # Luigi Context
 
-The Luigi context contains information about the current context such as the user ID or api urls.
+The [Luigi context](https://docs.luigi-project.io/docs/navigation-advanced?section=contexts) contains information about the current context such as the user ID or api urls.
 
 ## Portal Context
 
