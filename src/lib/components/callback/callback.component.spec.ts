@@ -11,6 +11,8 @@ import {
 
 @Component({
   selector: 'app-test-root-component',
+  standalone: true,
+  imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
 })
 class TestRootComponent {
@@ -21,6 +23,7 @@ class TestRootComponent {
 @Component({
   selector: '',
   template: '',
+  standalone: true,
 })
 class LogoutComponent {}
 
@@ -35,7 +38,6 @@ describe('CallbackComponent', () => {
   beforeEach(() => {
     authService = { auth: jest.fn() } as any as AuthService;
     TestBed.configureTestingModule({
-      declarations: [CallbackComponent, TestRootComponent],
       imports: [
         HttpClientTestingModule,
         RouterModule.forRoot(

@@ -4,6 +4,7 @@ import { LuigiCoreService, LuigiConfigService } from '../../services';
 
 @Component({
   template: '',
+  standalone: true,
 })
 export class LuigiComponent {
   constructor(

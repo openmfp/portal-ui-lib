@@ -3,8 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { of } from 'rxjs';
 import { LogoutComponent } from './logout.component';
-import { I18nService } from '../../services/i18n.service';
-import { LuigiCoreService } from '../../services';
+import { LuigiCoreService, I18nService } from '../../services';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
@@ -30,7 +29,6 @@ describe('LogoutComponent', () => {
     } as any;
 
     TestBed.configureTestingModule({
-      declarations: [LogoutComponent],
       providers: [
         { provide: ActivatedRoute, useValue: mockRoute },
         { provide: Router, useValue: mockRouter },
