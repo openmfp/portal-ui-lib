@@ -34,6 +34,8 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       const luigiNodes =
         await this.luigiConfigService.getLuigiNodesFromConfigurations(configurations);
 
+      console.log(configurations);
+
       if (luigiNodes)
         luigiNodes.forEach((node) => {
           node.context = node.context || {};
@@ -155,18 +157,31 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
   }
 
   private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<ContentConfiguration[]> {
-    const result: ContentConfiguration[] = [];
-    if (devModeSettings.configs.length > 0) {
-      await Promise.allSettled(devModeSettings.configs.map((config) => {
-        if (config.data) {
-          result.push(config.data);
-        } else if (config.url) {
-          return lastValueFrom(this.http.get<ContentConfiguration>(config.url))
-            .then(r => result.push({ ...r, devUrl: config.url }));
-        }
-        return null;
-      }))
-    }
+    let result = devModeSettings.configs
+      .filter((config) => config.data)
+      .map((config) => config.data);
+
+    const retrievedFromHost = (
+      await Promise.allSettled(
+        devModeSettings.configs
+          .filter((config) => config.url)
+          .map((config) =>
+            lastValueFrom(
+              this.http.get<ContentConfiguration>(config.url)
+            ).then((contentConfiguration: ContentConfiguration) => ({
+              ...contentConfiguration,
+              devUrl: config.url,
+            }) as ContentConfiguration
+            )
+          )
+      )
+    ).filter(
+      (result): result is PromiseFulfilledResult<ContentConfiguration> =>
+        result.status === 'fulfilled'
+    )
+      .map((result) => result.value);
+
+    result = result.concat(retrievedFromHost);
     return result;
   }
 }

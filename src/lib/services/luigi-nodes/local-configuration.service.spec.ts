@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
-import { LuigiNode } from '../../models';
+import { ContentConfiguration, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesConfigService } from '../portal/local-nodes-config.service';
 
@@ -61,7 +61,13 @@ describe('LocalConfigurationServiceImpl', () => {
       mockDevModeSettingsService.getDevModeSettings.mockReturnValue(
         Promise.resolve({
           serviceProviderConfig: {},
-          configs: [{ data: {} }],
+          configs: [{
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {}
+            } as ContentConfiguration
+          }],
         }),
       );
 
@@ -78,7 +84,13 @@ describe('LocalConfigurationServiceImpl', () => {
         serviceProviderConfig: {
           a: 'b',
         },
-        configs: [{ data: {} }],
+        configs: [{
+          data: {
+            name: '',
+            creationTimestamp: '',
+            luigiConfigFragment: {}
+          } as ContentConfiguration
+        }],
       });
 
       const localNodes = await service.getLocalNodes();
