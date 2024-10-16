@@ -6,7 +6,7 @@ import {
   PortalConfig,
   ServiceProvider,
 } from '../../models';
-import { PortalModule } from '../../portal.module';
+import { providePortal } from '../../portal-providers';
 import {
   ConfigService,
   EnvConfigService,
@@ -39,7 +39,7 @@ describe('NavigationConfigService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [PortalModule],
+      providers: [providePortal()],
     }).compileComponents();
 
     service = TestBed.inject(NavigationConfigService);
