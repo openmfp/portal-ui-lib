@@ -10,8 +10,8 @@ Main features of this library are:
 
 ## Table of Contents
 - [Getting started](#Getting-started)
-  - [Configure the project](#Configure-the-project) 
-  - [Import the PortalModule and Bootstrap the PortalComponent](#Import-the-PortalModule-and-Bootstrap-the-PortalComponent)
+  - [Configure the project](#Configure-the-project)
+  - [Import the Portal providers and Bootstrap the app with PortalComponent](#Import-the-Portal-providers-and-Bootstrap-the-app-with-PortalComponent)
   - [Update index.html file](#Update-index-html-file-of-the-project)
   - [Implement the Custom Service](#Implement-the-Custom-Service)
     - [Configuration services](#Configuration-services)
@@ -32,7 +32,7 @@ and `@luigi-project/plugin-auth-oauth2` in proper versions (along with any other
 
 ### Angular configuration
 
-Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project 
+Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project
 into the project assets, as shown below:
 
 ```
@@ -52,48 +52,47 @@ into the project assets, as shown below:
 ```
 
 
-## Import the PortalModule and Bootstrap the PortalComponent
+## Import the Portal providers and Bootstrap the app with PortalComponent
 
-First you have to import the `PortalModule` and bootstrap the `PortalComponent` in your `AppModule`.
-To do this, there is the `PortalModule.forRoot(portalOptions)` method which takes the `PortalModuleOptions` object as an argument.
-It is important to note that the `PortalModule` should be imported after any routing module (e.g. `AppRoutingModule)`.
+First you have to import the `providePortal` and bootstrap the `PortalComponent` in your `main.ts` file.
+To do this call `providePortal(portalOptions)` method, which takes the `PortalOptions` object as an argument,
+inside the providers section of the application configuration.
+It is important to note that the `providePortal(portalOptions)` should be imported after any app specific
+routing providers (e.g. `provideRouter(appRoutes)`).
 
-To bootstrap the component, you have to add it to the `bootstrap` array in the `AppModule`.
 The result may look like this:
 
 ```ts
-import { PortalComponent, PortalModule, PortalModuleOptions } from '@openmfp/portal-ui-lib';
+import { importProvidersFrom } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import {
+  providePortal,
+  PortalComponent,
+  PortalOptions,
+} from '@openmfp/portal-ui-lib';
+import { appRoutes } from './app/app-routes';
 
-const portalOptions: PortalModuleOptions = {
-    // ... portal module options
+const portalOptions: PortalOptions = {
+    // ... portal options
 }
 
-@NgModule({
-    declarations: [
-        HelpCenterComponent,
-        // ... any required components
-    ],
-    imports: [
-        ApolloModule,
-        FormsModule,
-        AppRoutingModule,
-        // ... any required imports
-        PortalModule.forRoot(portalOptions),
-    ],
-    providers: [
-        HelpCenterService,
-        // ... any required services
-    ],
-    bootstrap: [PortalComponent],
-})
-export class AppModule {
-}
+bootstrapApplication(PortalComponent, {
+  providers: [
+      provideRouter(appRoutes), 
+      importProvidersFrom(AnyRequiredModule),
+      providePortal(portalOptions),
+       
+      // ... any ohter providers imports
+    ]
+  }
+);
 ```
 
 ## Update index html file of the project
 
-The next step in order to have the portal working is to update the `index.html` file with the inclusion of: 
-- the `/luigi-core/luigi.js` script, 
+The next step in order to have the portal working is to update the `index.html` file with the inclusion of:
+- the `/luigi-core/luigi.js` script,
 - the `/luigi-core/luigi_horizon.css` styles,
 - and placing the  `<app-portal></app-portal>` html tag inside the html body.
 
@@ -121,9 +120,10 @@ Below is an example:
 
 ## Implement the Custom Service
 
+
 There are two types of services that are considered: Services that provide Luigi configuration (aka. Configuration Services) and services that provide or extend functionality (aka. Functional Services).
 For each service there is a corresponding interface that you have to implement.
-Afterwards you provide your specific implementation in the `AppModule` by placing it in the `portalOptions` object and thus make it available to the `PortalModule`.
+Afterward you provide your specific implementation in the `providePortal(portalOptions)` by placing it in the `portalOptions` object and thus make it available to the `Portal`.
 
 ### Configuration services
 
@@ -136,35 +136,35 @@ Make sure to return a valid Luigi configuration object.
 import { StaticSettingsConfigService } from '@openmfp/portal-ui-lib';
 
 export class StaticSettingsConfigServiceImpl
-    implements StaticSettingsConfigService
+        implements StaticSettingsConfigService
 {
-    constructor() {}
+  constructor() {}
 
-    getInitialStaticSettingsConfig() {
-        const logo = 'assets/my-logo.svg';
+  getInitialStaticSettingsConfig() {
+    const logo = 'assets/my-logo.svg';
 
-        return {
-            header: {
-                title: 'My App',
-                logo: logo,
-                favicon: logo,
-            },
-            appLoadingIndicator: {
-                hideAutomatically: false,
-            },
-            // ... the rest of the configuration 
-        };
+    return {
+      header: {
+        title: 'My App',
+        logo: logo,
+        favicon: logo,
+      },
+      appLoadingIndicator: {
+        hideAutomatically: false,
+      },
+      // ... the rest of the configuration 
+    };
+  }
+
+  getStaticSettingsConfig() {
+    return {
+      ...this.getInitialStaticSettingsConfig(),
+      appLoadingIndicator: {
+        hideAutomatically: true,
+      },
+      // ... the rest of the configuration 
     }
-
-    getStaticSettingsConfig() {
-        return {
-            ...this.getInitialStaticSettingsConfig(),
-            appLoadingIndicator: {
-                hideAutomatically: true,
-            },
-            // ... the rest of the configuration 
-        }
-    }
+  }
 }
 ```
 
@@ -172,12 +172,12 @@ The `getInitialStaticSettingsConfig()` method is called while constructing the L
 The `getStaticSettingsConfig()` is called while [Luigi lifecycle hook luigiAfterInit](https://docs.luigi-project.io/docs/lifecycle-hooks?section=luigiafterinit).
 The latter adds additional setup to the root of the Luigi configuration object.
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    staticSettingsConfigService: StaticSettingsConfigServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  staticSettingsConfigService: StaticSettingsConfigServiceImpl,
+  // ... other portal options
 }
 ```
 
@@ -191,26 +191,26 @@ import { UserSettingsConfigService, LuigiNode } from '@openmfp/portal-ui-lib';
 
 export class UserSettingsConfigServiceImpl implements UserSettingsConfigService {
 
-    async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
-        return {
-            userSettingsDialog: {
-                dialogHeader: 'User Settings',
-            },
-            userSettingGroups: {
-                // ...the rest of the configuration  
-            }
-            // ...the rest of the configuration  
-        }
+  async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
+    return {
+      userSettingsDialog: {
+        dialogHeader: 'User Settings',
+      },
+      userSettingGroups: {
+        // ...the rest of the configuration  
+      }
+      // ...the rest of the configuration  
     }
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    userSettingsConfigService: UserSettingsConfigServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  userSettingsConfigService: UserSettingsConfigServiceImpl,
+  // ... other portal options
 }
 ```
 
@@ -224,34 +224,34 @@ import { GlobalSearchConfigService} from '@openmfp/portal-ui-lib';
 
 export class GlobalSearchConfigServiceImpl implements GlobalSearchConfigService {
 
-    getGlobalSearchConfig() {
-        return {
-            searchFieldCentered: true,
-            searchProvider: {
-                onEnter: () => {
-                    // ... handler implementation
-                },
-                onSearchBtnClick: () => {
-                    // ... handler implementation
-                },
-                onEscape: () => {
-                    // ... handler implementation
-                },
-                
-                // ...the rest of the configuration
-            },
-            // ...the rest of the configuration
-        };
-    }
+  getGlobalSearchConfig() {
+    return {
+      searchFieldCentered: true,
+      searchProvider: {
+        onEnter: () => {
+          // ... handler implementation
+        },
+        onSearchBtnClick: () => {
+          // ... handler implementation
+        },
+        onEscape: () => {
+          // ... handler implementation
+        },
+
+        // ...the rest of the configuration
+      },
+      // ...the rest of the configuration
+    };
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    globalSearchConfigService: GlobalSearchConfigServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  globalSearchConfigService: GlobalSearchConfigServiceImpl,
+  // ... other portal options
 }
 ```
 
@@ -273,29 +273,29 @@ import {
 
 export class LuigiBreadcrumbConfigServiceImpl implements LuigiBreadcrumbConfigService
 {
-    getBreadcrumbsConfig(): LuigiBreadcrumb {
-        return  {
-            autoHide: true,
-            omitRoot: false,
-            pendingItemLabel: '...',
-            renderer: (
-                containerElement: HTMLElement,
-                nodeItems: NodeItem[],
-                clickHandler,
-            ) => {
-                // ... renderer implementation
-            },
-        };
-    }
+  getBreadcrumbsConfig(): LuigiBreadcrumb {
+    return  {
+      autoHide: true,
+      omitRoot: false,
+      pendingItemLabel: '...',
+      renderer: (
+              containerElement: HTMLElement,
+              nodeItems: NodeItem[],
+              clickHandler,
+      ) => {
+        // ... renderer implementation
+      },
+    };
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    luigiBreadcrumbConfigService: LuigiBreadcrumbConfigServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  luigiBreadcrumbConfigService: LuigiBreadcrumbConfigServiceImpl,
+  // ... other portal options
 }
 ```
 
@@ -310,30 +310,30 @@ import { UserProfileConfigService, UserProfile } from '@openmfp/portal-ui-lib';
 
 export class UserProfileConfigServiceImpl implements UserProfileConfigService
 {
-    async getProfile(): Promise<UserProfile> {
-        return {
-            logout: {
-                label: 'Sign out',
-                icon: 'log',
-            },
-            items: [
-                {
-                    label: 'Overview',
-                    icon: 'overview',
-                    link: `/users/overview`,
-                },
-            ],
-        };
-    }
+  async getProfile(): Promise<UserProfile> {
+    return {
+      logout: {
+        label: 'Sign out',
+        icon: 'log',
+      },
+      items: [
+        {
+          label: 'Overview',
+          icon: 'overview',
+          link: `/users/overview`,
+        },
+      ],
+    };
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    userProfileConfigService: UserProfileConfigServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  userProfileConfigService: UserProfileConfigServiceImpl,
+  // ... other portal options
 }
 ```
 
@@ -348,27 +348,27 @@ Make sure to return a valid Luigi configuration object.
 import { LuigiAuthEventsCallbacksService } from '@openmfp/portal-ui-lib';
 
 export class LuigiAuthEventsCallbacksServiceImpl
-    implements LuigiAuthEventsCallbacksService {
+        implements LuigiAuthEventsCallbacksService {
 
-    onAuthSuccessful(settings: any, authData: any) {
-        concole.log('User succesfully authenticated.');
-    }
+  onAuthSuccessful(settings: any, authData: any) {
+    concole.log('User succesfully authenticated.');
+  }
 
-    // ...
+  // ...
 
-    onLogout(settings: any) {
-        concole.log('User succesfully logged out.');
-    }
+  onLogout(settings: any) {
+    concole.log('User succesfully logged out.');
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
 
-const portalOptions: PortalModuleOptions = {
-    luigiAuthEventsCallbacksService: LuigiAuthEventsCallbacksServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  luigiAuthEventsCallbacksService: LuigiAuthEventsCallbacksServiceImpl,
+  // ... other portal options
 }
 ```
 
@@ -402,28 +402,28 @@ Make sure to return a valid Luigi configuration object.
 import { CustomMessageListener } from '@openmfp/portal-ui-lib';
 
 export class CustomMessageListenerImpl
-    implements CustomMessageListener
+        implements CustomMessageListener
 {
-    messageId(): string {
-        return `unique.message.id`;
-    }
+  messageId(): string {
+    return `unique.message.id`;
+  }
 
-    onCustomMessageReceived(
-        customMessage: string,
-        mfObject: any,
-        mfNodesObject: any,
-    ): void {
-        // ... logic to be executed
-    }
+  onCustomMessageReceived(
+          customMessage: string,
+          mfObject: any,
+          mfNodesObject: any,
+  ): void {
+    // ... logic to be executed
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    customMessageListeners: [CustomMessageListenerImpl, CustomMessageListenerImpl2, ...],
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  customMessageListeners: [CustomMessageListenerImpl, CustomMessageListenerImpl2, ...],
+  // ... other portal options
 }
 ```
 
@@ -436,50 +436,50 @@ import { LuigiNode, CustomGlobalNodesService } from '@openmfp/portal-ui-lib';
 
 export class CustomGlobalNodesServiceImpl implements CustomGlobalNodesService {
 
-    async getCustomGlobalNodes(): Promise<LuigiNode[]> {
-        return [
-            this.createGlobalNode1(),
-            this.createGlobalNode2(),
-            // ...other globaL nodes
-        ];
-    }
+  async getCustomGlobalNodes(): Promise<LuigiNode[]> {
+    return [
+      this.createGlobalNode1(),
+      this.createGlobalNode2(),
+      // ...other globaL nodes
+    ];
+  }
 
-    private async createGlobalNode1(): LuigiNode {
-        return {
-            label: 'Global 1',
-            entityType: 'global.topnav',
-            link: '/global_1',
-            // ... other luigi node properties
-        };
-    }
+  private async createGlobalNode1(): LuigiNode {
+    return {
+      label: 'Global 1',
+      entityType: 'global.topnav',
+      link: '/global_1',
+      // ... other luigi node properties
+    };
+  }
 
-    private createGlobalNode2(): LuigiNode {
-        return {
-            label: 'Global 2',
-            entityType: 'global.topnav',
-            viewUrl: '/global_2',
-            pathSegment: 'global_2',
-            // ... other luigi node properties
-        };
-    }
+  private createGlobalNode2(): LuigiNode {
+    return {
+      label: 'Global 2',
+      entityType: 'global.topnav',
+      viewUrl: '/global_2',
+      pathSegment: 'global_2',
+      // ... other luigi node properties
+    };
+  }
 }
 ```
 
-In your `AppModule` you can provide your custom implementation like so:
+In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
-const portalOptions: PortalModuleOptions = {
-    customGlobalNodesService: CustomGlobalNodesServiceImpl,
-    // ... other portal module options
+const portalOptions: PortalOptions = {
+  customGlobalNodesService: CustomGlobalNodesServiceImpl,
+  // ... other portal options
 }
 ```
 
 ## Start your project
 
 After finishing all the required steps you might want to check your integration with the library and run your local application.
-In order to do that, firstly you need to run the local server part of the portal, 
+In order to do that, firstly you need to run the local server part of the portal,
 please follow the instruction provided [here](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library)
-Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port 
+Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port
 should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
 # Local Application Development
