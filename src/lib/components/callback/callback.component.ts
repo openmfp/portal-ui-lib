@@ -6,6 +6,7 @@ import { AuthService } from '../../services';
 @Component({
   template: '',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: true,
 })
 export class CallbackComponent {
   constructor(

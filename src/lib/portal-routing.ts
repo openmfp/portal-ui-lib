@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import {
   LogoutComponent,
   LuigiComponent,
@@ -7,18 +6,10 @@ import {
 } from './components';
 import { ErrorComponent } from './components/error/error.component';
 
-const portalRouts: Routes = [
+export const portalRouts: Routes = [
   { path: 'error-handling', component: ErrorComponent },
   { path: 'callback', component: CallbackComponent },
   { path: 'logout', component: LogoutComponent },
   { path: '', component: LuigiComponent },
   { path: '**', component: LuigiComponent },
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(portalRouts)],
-  exports: [RouterModule],
-})
-export class PortalRoutingModule {
-  constructor() {}
-}

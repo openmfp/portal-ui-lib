@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { I18nService } from '../../services/i18n.service';
-import { LuigiCoreService } from '../../services';
+import { I18nService, LuigiCoreService } from '../../services';
 
 @Component({
   templateUrl: './logout.component.html',
   styleUrls: ['./logout.component.scss'],
+  standalone: true,
 })
 export class LogoutComponent implements OnInit {
   headline: string = '';
