@@ -16,10 +16,7 @@ export class LuigiComponent {
       .getLuigiConfiguration()
       .then((config) => {
         this.luigiCoreService.setConfig(config);
-        this.luigiCoreService
-          .auth()
-          .store.setAuthData(this.authService.getAuthData());
-        this.luigiCoreService.auth().store.setNewlyAuthorized();
+        this.luigiCoreService.setAuthData(this.authService.getAuthData());
       })
       .catch((e: Error) =>
         console.error(`Luigi Component init failed: ${e.toString()}`)

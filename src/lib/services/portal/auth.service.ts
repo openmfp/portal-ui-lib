@@ -38,6 +38,14 @@ export class AuthService {
     this.setAuthData(response);
   }
 
+  public async refresh() {
+    const response = await lastValueFrom(
+      this.http.post<AuthTokenData>(`/rest/auth/refresh`, {})
+    );
+
+    this.setAuthData(response);
+  }
+
   public setAuthData(authTokenData: AuthTokenData): void {
     this.authData = {
       accessTokenExpirationDate: this.processExpDate(authTokenData.expires_in),
@@ -103,8 +111,8 @@ export class AuthService {
     };
   }
 
-  private processExpDate(expiresInMillis: string): number {
-    const expiresIn = Number(expiresInMillis);
+  private processExpDate(expiresInSeconds: string): number {
+    const expiresIn = Number(expiresInSeconds);
     return new Date().getTime() + expiresIn * 1000;
   }
 }
