@@ -34,8 +34,6 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
       const luigiNodes =
         await this.luigiConfigService.getLuigiNodesFromConfigurations(configurations);
 
-      console.log(configurations);
-
       if (luigiNodes)
         luigiNodes.forEach((node) => {
           node.context = node.context || {};
