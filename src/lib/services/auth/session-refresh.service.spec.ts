@@ -16,6 +16,7 @@ describe('SessionRefreshService', () => {
 
     authServiceMock = {
       authEvents: authEventsSubject.asObservable(),
+      authEvent: jest.fn(),
       refresh: jest.fn().mockResolvedValue(undefined),
       getAuthData: jest.fn().mockReturnValue({ token: 'mock-token' }),
     } as any;
@@ -58,6 +59,9 @@ describe('SessionRefreshService', () => {
 
       setTimeout(() => {
         expect(authServiceMock.refresh).toHaveBeenCalled();
+        expect(authServiceMock.authEvent).toHaveBeenCalledWith(
+          AuthEvent.AUTH_REFRESHED
+        );
         expect(luigiCoreServiceMock.setAuthData).toHaveBeenCalled();
         expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
         done();

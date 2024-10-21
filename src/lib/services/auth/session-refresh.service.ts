@@ -33,6 +33,7 @@ export class SessionRefreshService {
       .subscribe({
         next: async () => {
           await this.authService.refresh();
+          this.authService.authEvent(AuthEvent.AUTH_REFRESHED);
           this.luigiCoreService.setAuthData(this.authService.getAuthData());
           this.luigiCoreService.resetLuigi();
         },
