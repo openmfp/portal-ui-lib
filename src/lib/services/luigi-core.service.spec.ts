@@ -1,5 +1,14 @@
 const luigiMock = {
-  auth: jest.fn(),
+  auth: jest.fn().mockReturnValue({
+    store: {
+      setAuthData: jest.fn(),
+      getAuthData: jest.fn().mockReturnValue({
+        accessTokenExpirationDate: 34,
+        idToken: 'id_token_mock',
+      }),
+      setNewlyAuthorized: jest.fn(),
+    },
+  }),
   setConfig: jest.fn(),
   getConfig: jest.fn(),
   getConfigValue: jest.fn(),
@@ -25,6 +34,7 @@ const luigiMock = {
 (globalThis as any).Luigi = luigiMock;
 
 import { TestBed } from '@angular/core/testing';
+import { AuthData } from '../models';
 import { LuigiCoreService } from './luigi-core.service';
 
 describe('LuigiCoreService', () => {
@@ -41,9 +51,21 @@ describe('LuigiCoreService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call auth', () => {
-    service.auth();
+  it('should call setAuthData and setNewlyAuthorized', () => {
+    const authData = {} as AuthData;
+    service.setAuthData(authData);
+
     expect(luigiMock.auth).toHaveBeenCalled();
+    expect(luigiMock.auth().store.setAuthData).toHaveBeenCalledWith(authData);
+    expect(luigiMock.auth().store.setNewlyAuthorized).toHaveBeenCalled();
+  });
+
+  it('should call getAuthData', () => {
+    const authData = service.getAuthData();
+
+    expect(luigiMock.auth).toHaveBeenCalled();
+    expect(luigiMock.auth().store.getAuthData).toHaveBeenCalled();
+    expect(luigiMock.auth().store.getAuthData()).toEqual(authData);
   });
 
   it('should call setConfig with correct config', () => {
