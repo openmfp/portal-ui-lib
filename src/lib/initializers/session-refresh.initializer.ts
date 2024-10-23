@@ -7,7 +7,7 @@ import {
   SessionRefreshService,
 } from '../services';
 
-export function initializeAutomaticSessionRefresh(
+function initializeAutomaticSessionRefresh(
   sessionRefreshService: SessionRefreshService,
   authService: AuthService,
   luigiCoreService: LuigiCoreService

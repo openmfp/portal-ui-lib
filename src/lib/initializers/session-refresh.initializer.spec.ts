@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { APP_INITIALIZER } from '@angular/core';
 import { Subject } from 'rxjs';
 import { AuthEvent } from '../models';
@@ -6,17 +7,14 @@ import {
   LuigiCoreService,
   SessionRefreshService,
 } from '../services';
-import {
-  provideSessionRefresh,
-  initializeAutomaticSessionRefresh,
-} from './session-refresh.initializer';
+import { provideSessionRefresh } from './session-refresh.initializer';
 
 describe('Session Refresh Provider', () => {
-  // Setup mocked services and types
   let authServiceMock: jest.Mocked<AuthService>;
   let sessionRefreshServiceMock: jest.Mocked<SessionRefreshService>;
   let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
   let authEventsSubject: Subject<AuthEvent>;
+  let initializerFn: Function;
 
   beforeEach(() => {
     // Create a new Subject for auth events
@@ -34,6 +32,20 @@ describe('Session Refresh Provider', () => {
     luigiCoreServiceMock = {
       isFeatureToggleActive: jest.fn().mockReturnValue(true),
     } as any;
+
+    // Configure TestBed with the provider and mocked services
+    TestBed.configureTestingModule({
+      providers: [
+        provideSessionRefresh(),
+        { provide: SessionRefreshService, useValue: sessionRefreshServiceMock },
+        { provide: AuthService, useValue: authServiceMock },
+        { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+      ],
+    });
+
+    // Get the initializer function from the provider
+    const initializers = TestBed.inject(APP_INITIALIZER);
+    initializerFn = initializers[initializers.length - 1];
   });
 
   afterEach(() => {
@@ -41,35 +53,21 @@ describe('Session Refresh Provider', () => {
   });
 
   describe('provideSessionRefresh', () => {
-    it('should return a provider with correct configuration', () => {
+    it('should provide APP_INITIALIZER', () => {
       const provider = provideSessionRefresh();
-
-      expect(provider).toEqual({
-        provide: APP_INITIALIZER,
-        useFactory: initializeAutomaticSessionRefresh,
-        multi: true,
-        deps: [SessionRefreshService, AuthService, LuigiCoreService],
-      });
+      expect(provider.provide).toBe(APP_INITIALIZER);
+      expect(provider.multi).toBe(true);
+      expect(provider.deps).toEqual([
+        SessionRefreshService,
+        AuthService,
+        LuigiCoreService,
+      ]);
     });
   });
 
-  describe('initializeAutomaticSessionRefresh', () => {
-    let initFn: () => void;
-
-    beforeEach(() => {
-      initFn = initializeAutomaticSessionRefresh(
-        sessionRefreshServiceMock,
-        authServiceMock,
-        luigiCoreServiceMock
-      );
-    });
-
+  describe('Session refresh initialization', () => {
     it('should subscribe and handle AUTH_EXPIRE_SOON event when feature is enabled', async () => {
-      // Arrange
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
-
       // Act
-      initFn();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
 
       // Wait for async operations
@@ -83,11 +81,7 @@ describe('Session Refresh Provider', () => {
     });
 
     it('should subscribe and handle AUTH_EXPIRED event when feature is enabled', async () => {
-      // Arrange
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
-
       // Act
-      initFn();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
 
       // Wait for async operations
@@ -102,7 +96,6 @@ describe('Session Refresh Provider', () => {
 
     it('should not call refresh for other auth events', async () => {
       // Act
-      initFn();
       authEventsSubject.next(AuthEvent.AUTH_REFRESHED);
 
       // Wait for async operations
@@ -117,7 +110,7 @@ describe('Session Refresh Provider', () => {
       luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(false);
 
       // Act
-      initFn();
+      initializerFn();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
 
       // Wait for async operations
@@ -134,7 +127,7 @@ describe('Session Refresh Provider', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Act
-      initFn();
+      initializerFn();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
 
       // Wait for async operations
@@ -147,11 +140,7 @@ describe('Session Refresh Provider', () => {
     });
 
     it('should maintain subscription for multiple events when feature is enabled', async () => {
-      // Arrange
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
-
       // Act
-      initFn();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       await new Promise(process.nextTick);
       authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
@@ -168,7 +157,6 @@ describe('Session Refresh Provider', () => {
         .mockReturnValueOnce(false);
 
       // Act
-      initFn();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       await new Promise(process.nextTick);
       authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
@@ -183,7 +171,7 @@ describe('Session Refresh Provider', () => {
 
     it('should complete subscription when subject is completed', async () => {
       // Act
-      initFn();
+      initializerFn();
       authEventsSubject.complete();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
 
