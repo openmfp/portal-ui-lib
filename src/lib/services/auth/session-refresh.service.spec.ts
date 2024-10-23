@@ -1,31 +1,32 @@
 import { TestBed } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
-import { SessionRefreshService } from './session-refresh.service';
 import { AuthService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
-import { AuthEvent } from '../../models';
+import { SessionRefreshService } from './session-refresh.service';
+import { AuthData, AuthEvent } from '../../models';
 
 describe('SessionRefreshService', () => {
   let service: SessionRefreshService;
-  let authServiceMock: jest.Mocked<AuthService>;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
-  let authEventsSubject: Subject<AuthEvent>;
+  let authService: jest.Mocked<AuthService>;
+  let luigiCoreService: jest.Mocked<LuigiCoreService>;
+
+  // Mock data
+  const mockAuthData = {
+    accessTokenExpirationDate: 90,
+    idToken: 'mock-id-token',
+  } as AuthData;
 
   beforeEach(() => {
-    authEventsSubject = new Subject<AuthEvent>();
-
-    authServiceMock = {
-      authEvents: authEventsSubject.asObservable(),
-      authEvent: jest.fn(),
+    // Create mock services
+    const authServiceMock = {
       refresh: jest.fn().mockResolvedValue(undefined),
-      getAuthData: jest.fn().mockReturnValue({ token: 'mock-token' }),
-    } as any;
+      authEvent: jest.fn(),
+      getAuthData: jest.fn().mockReturnValue(mockAuthData),
+    };
 
-    luigiCoreServiceMock = {
-      isFeatureToggleActive: jest.fn().mockReturnValue(true),
+    const luigiCoreServiceMock = {
       setAuthData: jest.fn(),
       resetLuigi: jest.fn(),
-    } as any;
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -35,7 +36,12 @@ describe('SessionRefreshService', () => {
       ],
     });
 
+    // Get instances
     service = TestBed.inject(SessionRefreshService);
+    authService = TestBed.inject(AuthService) as jest.Mocked<AuthService>;
+    luigiCoreService = TestBed.inject(
+      LuigiCoreService
+    ) as jest.Mocked<LuigiCoreService>;
   });
 
   it('should be created', () => {
@@ -43,69 +49,68 @@ describe('SessionRefreshService', () => {
   });
 
   describe('refresh', () => {
-    it('should not subscribe if already subscribed', () => {
-      authServiceMock.authEvents.subscribe = jest.fn();
+    it('should successfully refresh the session', async () => {
+      // Act
+      await service.refresh();
 
-      service.refresh();
-      service.refresh();
-
-      expect(authServiceMock.authEvents.subscribe).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(authService.refresh).toHaveBeenCalledTimes(1);
+      expect(authService.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_REFRESHED
+      );
+      expect(authService.getAuthData).toHaveBeenCalledTimes(1);
+      expect(luigiCoreService.setAuthData).toHaveBeenCalledWith(mockAuthData);
+      expect(luigiCoreService.resetLuigi).toHaveBeenCalledTimes(1);
     });
 
-    it('should subscribe to authEvents and filter relevant events', (done) => {
-      service.refresh();
+    it('should propagate errors from authService.refresh', async () => {
+      // Arrange
+      const error = new Error('Refresh failed');
+      authService.refresh.mockRejectedValueOnce(error);
 
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-
-      setTimeout(() => {
-        expect(authServiceMock.refresh).toHaveBeenCalled();
-        expect(authServiceMock.authEvent).toHaveBeenCalledWith(
-          AuthEvent.AUTH_REFRESHED
-        );
-        expect(luigiCoreServiceMock.setAuthData).toHaveBeenCalled();
-        expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
-        done();
-      });
+      // Act & Assert
+      await expect(service.refresh()).rejects.toThrow('Refresh failed');
+      expect(authService.authEvent).not.toHaveBeenCalled();
+      expect(luigiCoreService.setAuthData).not.toHaveBeenCalled();
+      expect(luigiCoreService.resetLuigi).not.toHaveBeenCalled();
     });
 
-    it('should not refresh if feature toggle is off', (done) => {
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(false);
-      service.refresh();
+    it('should execute operations in the correct order', async () => {
+      // Arrange
+      const executionOrder: string[] = [];
 
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-
-      setTimeout(() => {
-        expect(authServiceMock.refresh).not.toHaveBeenCalled();
-        expect(luigiCoreServiceMock.setAuthData).not.toHaveBeenCalled();
-        expect(luigiCoreServiceMock.resetLuigi).not.toHaveBeenCalled();
-        done();
+      authService.refresh.mockImplementation(async () => {
+        executionOrder.push('refresh');
       });
-    });
 
-    it('should handle AUTH_EXPIRED event', (done) => {
-      service.refresh();
-
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
-
-      setTimeout(() => {
-        expect(authServiceMock.refresh).toHaveBeenCalled();
-        expect(luigiCoreServiceMock.setAuthData).toHaveBeenCalled();
-        expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
-        done();
+      authService.authEvent.mockImplementation(() => {
+        executionOrder.push('authEvent');
       });
-    });
 
-    it('should not react to unrelated auth events', (done) => {
-      service.refresh();
-
-      authEventsSubject.next(AuthEvent.AUTH_SUCCESSFUL);
-
-      setTimeout(() => {
-        expect(authServiceMock.refresh).not.toHaveBeenCalled();
-        expect(luigiCoreServiceMock.setAuthData).not.toHaveBeenCalled();
-        expect(luigiCoreServiceMock.resetLuigi).not.toHaveBeenCalled();
-        done();
+      authService.getAuthData.mockImplementation(() => {
+        executionOrder.push('getAuthData');
+        return mockAuthData;
       });
+
+      luigiCoreService.setAuthData.mockImplementation(() => {
+        executionOrder.push('setAuthData');
+      });
+
+      luigiCoreService.resetLuigi.mockImplementation(() => {
+        executionOrder.push('resetLuigi');
+      });
+
+      // Act
+      await service.refresh();
+
+      // Assert
+      expect(executionOrder).toEqual([
+        'refresh',
+        'authEvent',
+        'getAuthData',
+        'setAuthData',
+        'resetLuigi',
+      ]);
     });
   });
 });
