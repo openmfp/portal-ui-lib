@@ -29,7 +29,7 @@ function initializeAutomaticSessionRefresh(
           try {
             await sessionRefreshService.refresh();
           } catch (error) {
-            console.error(`Error executing session refresh: ${error}`);
+            console.error('Error executing session refresh: ', error);
           }
         },
       });

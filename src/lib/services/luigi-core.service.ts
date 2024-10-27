@@ -105,7 +105,7 @@ export class LuigiCoreService {
     luigi.auth().store.removeAuthData();
   }
 
-  getAuthData(): AuthData {
-    return luigi.auth()?.store?.getAuthData();
+  getAuthData(): AuthData | undefined {
+    return luigi.auth().store.getAuthData();
   }
 }
