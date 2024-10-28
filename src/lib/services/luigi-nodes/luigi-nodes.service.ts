@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ServiceProviderService } from '../portal';
-import { LocalNodesService } from './local-nodes.service';
 import { EntityDefinition, LuigiNode, ServiceProvider } from '../../models';
-import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { LocalConfigurationService } from './local-configuration.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +11,8 @@ import { LOCAL_NODES_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 export class LuigiNodesService {
   constructor(
     private serviceProviderService: ServiceProviderService,
-    @Inject(LOCAL_NODES_SERVICE_INJECTION_TOKEN)
-    private localNodesService: LocalNodesService
+    @Inject(LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN)
+    private localConfigurationService: LocalConfigurationService
   ) {}
 
   private getChildrenByEntity(
@@ -39,7 +39,7 @@ export class LuigiNodesService {
     serverLuigiNodes: LuigiNode[],
     currentEntities: string[]
   ): Promise<LuigiNode[]> {
-    return await this.localNodesService.replaceServerNodesWithLocalOnes(
+    return await this.localConfigurationService.replaceServerNodesWithLocalOnes(
       serverLuigiNodes,
       currentEntities
     );
