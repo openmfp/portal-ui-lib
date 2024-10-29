@@ -50,7 +50,7 @@
     "@openmfp/eslint-config-typescript": "0.6.0",
     "@types/jest": "29.5.12",
     "@types/jmespath": "0.15.2",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "apollo-angular": "^7.0.0",
