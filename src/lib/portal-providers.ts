@@ -8,7 +8,7 @@ import {
 import { provideRouter, RouteReuseStrategy } from '@angular/router';
 import { provideSessionRefresh } from './initializers/session-refresh.initializer';
 import {
-  LOCAL_NODES_SERVICE_INJECTION_TOKEN,
+  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -31,7 +31,7 @@ import {
   CustomGlobalNodesServiceImpl,
   CustomMessageListener,
   GlobalSearchConfigService,
-  LocalNodesService,
+  LocalConfigurationService,
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
   LuigiNodeExtendedContextService,
@@ -43,7 +43,6 @@ import {
   NodeChangeHookConfigServiceImpl,
   NoopAppSwitcherConfigService,
   NoopGlobalSearchConfigService,
-  NoopLocalNodesService,
   NoopLuigiAuthEventsCallbacksService,
   NoopLuigiBreadcrumbConfigService,
   NoopNodeAccessHandlingService,
@@ -53,6 +52,7 @@ import {
   StaticSettingsConfigServiceImpl,
   UserProfileConfigService,
   UserSettingsConfigService,
+  LocalConfigurationServiceImpl,
 } from './services';
 import { SessionRefreshService } from './services/auth/session-refresh.service';
 import { CustomReuseStrategy } from './utilities';
@@ -64,8 +64,8 @@ export interface PortalOptions {
   /** A set of class representing custom listeners **/
   customMessageListeners?: Type<CustomMessageListener>[];
 
-  /** Service providing local nodes merging services **/
-  localNodesService?: Type<LocalNodesService>;
+  /** Service providing local configuration services **/
+  localConfigurationService?: Type<LocalConfigurationService>;
 
   /** Service providing user setting specific configuration **/
   userSettingsConfigService?: Type<UserSettingsConfigService>;
@@ -174,8 +174,8 @@ export function providePortal(
         options.staticSettingsConfigService || StaticSettingsConfigServiceImpl,
     },
     {
-      provide: LOCAL_NODES_SERVICE_INJECTION_TOKEN,
-      useClass: options.localNodesService || NoopLocalNodesService,
+      provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+      useClass: options.localConfigurationService || LocalConfigurationServiceImpl,
     },
     {
       provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
