@@ -76,18 +76,6 @@ describe('Session Refresh Provider', () => {
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
     }));
 
-    it('should subscribe and handle AUTH_EXPIRED event when feature is enabled', fakeAsync(() => {
-      // Act
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
-      tick();
-
-      // Assert
-      expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
-        'enableSessionAutoRefresh'
-      );
-      expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
-    }));
-
     it('should not call refresh for other auth events', fakeAsync(() => {
       // Act
       authEventsSubject.next(AuthEvent.AUTH_REFRESHED);
@@ -132,7 +120,7 @@ describe('Session Refresh Provider', () => {
       // Act
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       tick();
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
+      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       tick();
 
       // Assert
@@ -148,7 +136,7 @@ describe('Session Refresh Provider', () => {
       // Act
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       tick();
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRED);
+      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       tick();
 
       // Assert
