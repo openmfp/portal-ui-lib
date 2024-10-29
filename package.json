@@ -13,7 +13,7 @@
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
-    "@luigi-project/plugin-auth-oauth2": "2.7.5",
+    "@luigi-project/plugin-auth-oauth2": "2.17.0",
     "jwt-decode": "4.0.0"
   },
   "peerDependencies": {
@@ -26,7 +26,7 @@
     "@angular/router": "^17.3.0",
     "@luigi-project/client": "^2.14.2",
     "@luigi-project/client-support-angular": "^2.14.2",
-    "@luigi-project/plugin-auth-oauth2": "2.7.5",
+    "@luigi-project/plugin-auth-oauth2": "2.17.0",
     "apollo-angular": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -44,8 +44,8 @@
     "@angular/compiler-cli": "^17.3.0",
     "@angular/localize": "17.3.11",
     "@briebug/jest-schematic": "^6.0.0",
-    "@luigi-project/client": "2.14.1",
-    "@luigi-project/client-support-angular": "2.14.1",
+    "@luigi-project/client": "2.17.0",
+    "@luigi-project/client-support-angular": "2.17.0",
     "@openmfp/config-prettier": "0.5.0",
     "@openmfp/eslint-config-typescript": "0.6.0",
     "@types/jest": "29.5.12",
