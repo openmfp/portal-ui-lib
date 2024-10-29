@@ -62,7 +62,7 @@
     "jmespath": "0.16.0",
     "mkdirp": "^3.0.1",
     "ng-packagr": "^17.3.0",
-    "nodemon": "3.1.4",
+    "nodemon": "3.1.7",
     "prettier": "^3.3.2",
     "rimraf": "5.0.8",
     "ts-jest": "29.1.1",
