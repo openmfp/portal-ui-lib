@@ -72,7 +72,10 @@ export class LuigiCoreService {
     return luigi.getGlobalContext();
   }
 
-  setGlobalContext(globalContext: Record<string, any>, preventUpdate: boolean) {
+  setGlobalContext(
+    globalContext: Record<string, any>,
+    preventUpdate: boolean = false
+  ) {
     luigi.setGlobalContext(globalContext, preventUpdate);
   }
 

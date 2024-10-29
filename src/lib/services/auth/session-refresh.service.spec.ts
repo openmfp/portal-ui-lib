@@ -22,6 +22,8 @@ describe('SessionRefreshService', () => {
 
   beforeEach(() => {
     // Create mock services
+    (window as any).IDP = { setTokenExpireSoonAction: jest.fn() };
+
     const authServiceMock = {
       refresh: jest.fn().mockResolvedValue(undefined),
       authEvent: jest.fn(),
@@ -81,7 +83,9 @@ describe('SessionRefreshService', () => {
         globalCtx,
         true
       );
-      expect(luigiCoreService.resetLuigi).toHaveBeenCalledTimes(1);
+      expect(
+        (window as any).IDP.setTokenExpireSoonAction
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('should propagate errors from authService.refresh', async () => {
@@ -128,8 +132,8 @@ describe('SessionRefreshService', () => {
         executionOrder.push('setGlobalContext');
       });
 
-      luigiCoreService.resetLuigi.mockImplementation(() => {
-        executionOrder.push('resetLuigi');
+      (window as any).IDP.setTokenExpireSoonAction.mockImplementation(() => {
+        executionOrder.push('setTokenExpireSoonAction');
       });
 
       // Act
@@ -143,7 +147,7 @@ describe('SessionRefreshService', () => {
         'setAuthData',
         'getGlobalContext',
         'setGlobalContext',
-        'resetLuigi',
+        'setTokenExpireSoonAction',
       ]);
     });
   });

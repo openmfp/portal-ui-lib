@@ -22,6 +22,6 @@ export class SessionRefreshService {
       this.navigationGlobalContextConfigService.getGlobalContext(),
       true
     );
-    this.luigiCoreService.resetLuigi();
+    (window as any).IDP.setTokenExpireSoonAction();
   }
 }

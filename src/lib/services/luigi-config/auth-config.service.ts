@@ -20,7 +20,12 @@ export class AuthConfigService {
       use: 'oAuth2AuthCode',
       storage: 'none',
       oAuth2AuthCode: {
-        idpProvider: oAuth2,
+        idpProvider: class extends oAuth2 {
+          constructor(settings = {}) {
+            super(settings);
+            (window as any).IDP = this;
+          }
+        },
         authorizeUrl: oauthServerUrl,
         logoutUrl: '/rest/logout',
         oAuthData: {
