@@ -42,7 +42,7 @@ Then you can place your settings via this JavaScript snipped:
 ```ts
 localStorage.setItem("dev-mode-settings", JSON.stringify({
     isActive: true,
-    cdm: [
+    configs: [
         {url:"http://localhost:4200/assets/content-configuration.json"},
         {url:"http://localhost:4500/assets/content-configuration.json"},
         {data:{ /*... full content-configuration.json ...*/ }}

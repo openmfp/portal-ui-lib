@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthService } from '../portal';
 
 export interface NavigationGlobalContextConfigService {
-  getGlobalContext();
+  getGlobalContext(): Record<string, any>;
 }
 
 @Injectable({ providedIn: 'root' })
