@@ -19,7 +19,9 @@ export class SessionRefreshService {
     this.authService.authEvent(AuthEvent.AUTH_REFRESHED);
     this.luigiCoreService.setAuthData(this.authService.getAuthData());
     this.luigiCoreService.setGlobalContext(
-      this.navigationGlobalContextConfigService.getGlobalContext()
+      this.navigationGlobalContextConfigService.getGlobalContext(),
+      true
     );
+    this.luigiCoreService.resetLuigi();
   }
 }

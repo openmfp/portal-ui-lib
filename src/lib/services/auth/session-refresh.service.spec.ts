@@ -77,7 +77,11 @@ describe('SessionRefreshService', () => {
         navigationGlobalContextConfigServiceMock.getGlobalContext
       ).toHaveBeenCalledTimes(1);
       expect(luigiCoreService.setGlobalContext).toHaveBeenCalledTimes(1);
-      expect(luigiCoreService.setGlobalContext).toHaveBeenCalledWith(globalCtx);
+      expect(luigiCoreService.setGlobalContext).toHaveBeenCalledWith(
+        globalCtx,
+        true
+      );
+      expect(luigiCoreService.resetLuigi).toHaveBeenCalledTimes(1);
     });
 
     it('should propagate errors from authService.refresh', async () => {
@@ -124,6 +128,10 @@ describe('SessionRefreshService', () => {
         executionOrder.push('setGlobalContext');
       });
 
+      luigiCoreService.resetLuigi.mockImplementation(() => {
+        executionOrder.push('resetLuigi');
+      });
+
       // Act
       await service.refresh();
 
@@ -135,6 +143,7 @@ describe('SessionRefreshService', () => {
         'setAuthData',
         'getGlobalContext',
         'setGlobalContext',
+        'resetLuigi',
       ]);
     });
   });

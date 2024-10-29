@@ -72,12 +72,8 @@ export class LuigiCoreService {
     return luigi.getGlobalContext();
   }
 
-  setGlobalContext(globalContext: Record<string, any>) {
-    luigi.setGlobalContext(globalContext);
-  }
-
-  setInGlobalContext(data: Record<string, any>) {
-    luigi.setGlobalContext({ ...luigi.getGlobalContext(), ...data });
+  setGlobalContext(globalContext: Record<string, any>, preventUpdate: boolean) {
+    luigi.setGlobalContext(globalContext, preventUpdate);
   }
 
   routing() {
@@ -115,9 +111,5 @@ export class LuigiCoreService {
 
   getAuthData(): AuthData | undefined {
     return luigi.auth().store.getAuthData();
-  }
-
-  updateContextValues() {
-    luigi.updateContextValues({ t: 17 });
   }
 }

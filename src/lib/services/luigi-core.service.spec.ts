@@ -9,6 +9,8 @@ const luigiMock = {
       setNewlyAuthorized: jest.fn(),
     },
   }),
+  getGlobalContext: jest.fn(),
+  setGlobalContext: jest.fn(),
   setConfig: jest.fn(),
   getConfig: jest.fn(),
   getConfigValue: jest.fn(),
@@ -72,6 +74,17 @@ describe('LuigiCoreService', () => {
     const config = { settings: 'value' };
     service.setConfig(config);
     expect(luigiMock.setConfig).toHaveBeenCalledWith(config);
+  });
+
+  it('should call getGlobalContext', () => {
+    service.getGlobalContext();
+    expect(luigiMock.getGlobalContext).toHaveBeenCalled();
+  });
+
+  it('should call setGlobalContext', () => {
+    const ctx = {};
+    service.setGlobalContext(ctx, true);
+    expect(luigiMock.setGlobalContext).toHaveBeenCalledWith(ctx, true);
   });
 
   it('should call getConfig', () => {
