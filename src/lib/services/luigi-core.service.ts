@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
-import { LuigiConfig, LuigiCustomMessage } from '../models';
+import { AuthData, LuigiConfig, LuigiCustomMessage } from '../models';
 const luigi = (globalThis as any).Luigi;
 
 @Injectable({
   providedIn: 'root',
 })
 export class LuigiCoreService {
-  auth() {
-    return luigi.auth();
-  }
-
   setConfig(config: LuigiConfig) {
     return luigi.setConfig(config);
   }
@@ -76,6 +72,13 @@ export class LuigiCoreService {
     return luigi.getGlobalContext();
   }
 
+  setGlobalContext(
+    globalContext: Record<string, any>,
+    preventUpdate: boolean = false
+  ) {
+    luigi.setGlobalContext(globalContext, preventUpdate);
+  }
+
   routing() {
     return luigi.routing();
   }
@@ -98,5 +101,18 @@ export class LuigiCoreService {
 
   isFeatureToggleActive(ft: string): boolean {
     return luigi.featureToggles().getActiveFeatureToggleList().includes(ft);
+  }
+
+  setAuthData(authData: AuthData) {
+    luigi.auth().store.setAuthData(authData);
+    luigi.auth().store.setNewlyAuthorized();
+  }
+
+  removeAuthData() {
+    luigi.auth().store.removeAuthData();
+  }
+
+  getAuthData(): AuthData | undefined {
+    return luigi.auth().store.getAuthData();
   }
 }

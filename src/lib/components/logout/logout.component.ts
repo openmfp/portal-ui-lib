@@ -51,7 +51,7 @@ export class LogoutComponent implements OnInit {
           await this.i18nService.getTranslationAsync('SIGN_IN_ERROR_HINT');
         break;
       case 'invalidToken':
-        this.luigiCoreService.auth().store.removeAuthData();
+        this.luigiCoreService.removeAuthData();
         this.headline = await this.i18nService.getTranslationAsync(
           'INVALID_TOKEN_ERROR'
         );

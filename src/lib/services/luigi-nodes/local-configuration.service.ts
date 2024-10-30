@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
 import { ContentConfiguration, LuigiNode } from '../../models';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
-import { LocalNodesConfigService } from '../portal/local-nodes-config.service';
+import { LocalNodesConfigService } from '../portal';
 import { DevModeSettings } from './dev-mode/dev-mode-settings';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
@@ -19,12 +18,14 @@ export interface LocalConfigurationService {
 @Injectable({
   providedIn: 'root',
 })
-export class LocalConfigurationServiceImpl implements LocalConfigurationService {
+export class LocalConfigurationServiceImpl
+  implements LocalConfigurationService
+{
   constructor(
     private http: HttpClient,
     private luigiConfigService: LocalNodesConfigService,
-    private devModeSettingsService: DevModeSettingsService,
-  ) { }
+    private devModeSettingsService: DevModeSettingsService
+  ) {}
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     try {
@@ -32,7 +33,9 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
         await this.devModeSettingsService.getDevModeSettings();
       const configurations = await this.getLocalConfigurations(devModeSettings);
       const luigiNodes =
-        await this.luigiConfigService.getLuigiNodesFromConfigurations(configurations);
+        await this.luigiConfigService.getLuigiNodesFromConfigurations(
+          configurations
+        );
 
       if (luigiNodes)
         luigiNodes.forEach((node) => {
@@ -50,10 +53,10 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
 
   public async replaceServerNodesWithLocalOnes(
     serverLuigiNodes: LuigiNode[],
-    currentEntities: string[],
+    currentEntities: string[]
   ): Promise<LuigiNode[]> {
     console.debug(
-      `Processing local nodes for the entities ${currentEntities.join(',')}`,
+      `Processing local nodes for the entities ${currentEntities.join(',')}`
     );
     const localNodes = await this.getLocalNodes();
 
@@ -63,36 +66,35 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
 
     const localLuigiNodes = this.extendContextOfLocalNodes(
       localNodes,
-      serverLuigiNodes,
+      serverLuigiNodes
     );
 
     console.debug(
-      `Found '${serverLuigiNodes.length}' server nodes. Found '${localLuigiNodes.length
+      `Found '${serverLuigiNodes.length}' server nodes. Found '${
+        localLuigiNodes.length
       }' local luigi nodes. The entities of the server node are:${[
         ...new Set(
           serverLuigiNodes.map((n) =>
-            this.stripCompoundFromEntity(n.entityType),
-          ),
+            this.stripCompoundFromEntity(n.entityType)
+          )
         ),
       ].join(',')}
       The entities of local nodes are: ${[
         ...new Set(
-          localLuigiNodes.map((n) =>
-            this.stripCompoundFromEntity(n.entityType),
-          ),
+          localLuigiNodes.map((n) => this.stripCompoundFromEntity(n.entityType))
         ),
-      ].join(',')}`,
+      ].join(',')}`
     );
 
     const filteredServerNodes = serverLuigiNodes.filter(
       (node) =>
         !localLuigiNodes.some((localNode) =>
-          this.localNodeMatchesServerNode(localNode, node),
-        ),
+          this.localNodeMatchesServerNode(localNode, node)
+        )
     );
 
     console.debug(
-      `${filteredServerNodes.length} server nodes have no matching local nodes`,
+      `${filteredServerNodes.length} server nodes have no matching local nodes`
     );
 
     const nodesToAdd = localLuigiNodes.filter((n) => {
@@ -103,14 +105,15 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
 
     if (!nodesToAdd.length) {
       console.debug(
-        `Found no local nodes for the entities: ${currentEntities.join(',')}`,
+        `Found no local nodes for the entities: ${currentEntities.join(',')}`
       );
       return filteredServerNodes;
     }
 
     console.debug(
-      `Added ${nodesToAdd.length
-      } local nodes to the luigi config for ${currentEntities.join(',')}`,
+      `Added ${
+        nodesToAdd.length
+      } local nodes to the luigi config for ${currentEntities.join(',')}`
     );
     return filteredServerNodes.concat(nodesToAdd);
   }
@@ -127,17 +130,17 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
 
   private extendContextOfLocalNodes(
     localLuigiNodes: LuigiNode[],
-    serverLuigiNodes: LuigiNode[],
+    serverLuigiNodes: LuigiNode[]
   ): LuigiNode[] {
     localLuigiNodes.forEach((localNode) => {
       const matchingServerNode = serverLuigiNodes.find((serverNode) =>
-        this.localNodeMatchesServerNode(localNode, serverNode),
+        this.localNodeMatchesServerNode(localNode, serverNode)
       );
       if (matchingServerNode && matchingServerNode.context) {
         localNode.context = merge(
           {},
           matchingServerNode.context,
-          localNode.context,
+          localNode.context
         );
       }
     });
@@ -146,7 +149,7 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
 
   private localNodeMatchesServerNode(
     localNode: LuigiNode,
-    node: LuigiNode,
+    node: LuigiNode
   ): boolean {
     return (
       localNode.pathSegment === node.pathSegment &&
@@ -154,7 +157,9 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
     );
   }
 
-  private async getLocalConfigurations(devModeSettings: DevModeSettings): Promise<ContentConfiguration[]> {
+  private async getLocalConfigurations(
+    devModeSettings: DevModeSettings
+  ): Promise<ContentConfiguration[]> {
     let result = devModeSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
@@ -164,19 +169,20 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
         devModeSettings.configs
           .filter((config) => config.url)
           .map((config) =>
-            lastValueFrom(
-              this.http.get<ContentConfiguration>(config.url)
-            ).then((contentConfiguration: ContentConfiguration) => ({
-              ...contentConfiguration,
-              devUrl: config.url,
-            }) as ContentConfiguration
+            lastValueFrom(this.http.get<ContentConfiguration>(config.url)).then(
+              (contentConfiguration: ContentConfiguration) =>
+                ({
+                  ...contentConfiguration,
+                  devUrl: config.url,
+                }) as ContentConfiguration
             )
           )
       )
-    ).filter(
-      (result): result is PromiseFulfilledResult<ContentConfiguration> =>
-        result.status === 'fulfilled'
     )
+      .filter(
+        (result): result is PromiseFulfilledResult<ContentConfiguration> =>
+          result.status === 'fulfilled'
+      )
       .map((result) => result.value);
 
     result = result.concat(retrievedFromHost);
