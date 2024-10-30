@@ -54,7 +54,6 @@ import {
   UserSettingsConfigService,
   LocalConfigurationServiceImpl,
 } from './services';
-import { SessionRefreshService } from './services/auth/session-refresh.service';
 import { CustomReuseStrategy } from './utilities';
 
 export interface PortalOptions {
@@ -175,7 +174,8 @@ export function providePortal(
     },
     {
       provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-      useClass: options.localConfigurationService || LocalConfigurationServiceImpl,
+      useClass:
+        options.localConfigurationService || LocalConfigurationServiceImpl,
     },
     {
       provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,

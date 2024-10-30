@@ -22,6 +22,9 @@ export class SessionRefreshService {
       this.navigationGlobalContextConfigService.getGlobalContext(),
       true
     );
+    // Luigi executes the TokenExpireSoon only once and afterwards removes an interval which checks expiration.
+    // We need to bring it back with the below call in order to be able to receive next TokenExpireSoon event.
+    // Once the matter is adjusted on Luigi we can remove the below code.
     (window as any).IDP.setTokenExpireSoonAction();
   }
 }

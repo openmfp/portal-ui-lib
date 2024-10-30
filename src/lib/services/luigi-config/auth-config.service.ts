@@ -20,6 +20,9 @@ export class AuthConfigService {
       use: 'oAuth2AuthCode',
       storage: 'none',
       oAuth2AuthCode: {
+        // Luigi executes the TokenExpireSoon only once and afterwards removes an interval which checks expiration.
+        // We need to bring it back, with the below code we hold a reference to oAuth2 class, in order to be able to call setTokenExpireSoonAction.
+        // Once the matter is adjusted on Luigi we can bring it bact to 'idpProvider: oAuth2,'
         idpProvider: class extends oAuth2 {
           constructor(settings = {}) {
             super(settings);
