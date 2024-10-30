@@ -37,6 +37,50 @@ describe('LocalConfigurationServiceImpl', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('replaceServerNodesWithLocalOnes', () => {
+    const serverLuigiNodesTest = [
+      {pathSegment:'/path', entityType:'typeA', label: "A", context: {}},
+      {pathSegment:'/path', entityType:'typeB', label: "B", context: {}},
+    ];
+
+    let getLocalNodesSpy;
+    beforeEach(() => {
+      getLocalNodesSpy = jest.spyOn(
+        service,
+        'getLocalNodes',
+      );
+    });
+
+    it('should return modified nodes', async () => {
+      const localNode = {pathSegment:'/path', entityType:'typeA', label: "C", context: {}};
+      getLocalNodesSpy.mockResolvedValue([localNode]);
+      const localNodes = await service.replaceServerNodesWithLocalOnes(
+        serverLuigiNodesTest,
+        ['typeA','typeB']);
+
+      expect(localNodes).toContain(localNode);
+    });
+
+    it('should return serverLuigiNodes when localNodes is []', async () => {
+      getLocalNodesSpy.mockResolvedValue([]);
+      const localNodes = await service.replaceServerNodesWithLocalOnes(
+        serverLuigiNodesTest,
+        ['typeA','typeB']);
+
+      expect(localNodes).toEqual(serverLuigiNodesTest);
+    });
+
+    it('should return serverLuigiNodes when localNodes is null', async () => {
+      getLocalNodesSpy.mockResolvedValue(null);
+      const localNodes = await service.replaceServerNodesWithLocalOnes(
+        serverLuigiNodesTest,
+        ['typeA','typeB']);
+
+      expect(localNodes).toEqual(serverLuigiNodesTest);
+    });
+
+  })
+
   describe('getNodes', () => {
     let getLuigiDataFromConfigurationsSpy;
     let i18nSpy;

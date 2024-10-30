@@ -57,7 +57,7 @@ export class LocalConfigurationServiceImpl implements LocalConfigurationService 
     );
     const localNodes = await this.getLocalNodes();
 
-    if (localNodes.length == 0) {
+    if (!localNodes || localNodes.length == 0) {
       return serverLuigiNodes;
     }
 
