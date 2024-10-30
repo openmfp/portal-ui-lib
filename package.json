@@ -42,7 +42,7 @@
     "@angular-eslint/template-parser": "17.5.3",
     "@angular/cli": "^17.3.8",
     "@angular/compiler-cli": "^17.3.0",
-    "@angular/localize": "17.3.12",
+    "@angular/localize": "17.3.11",
     "@briebug/jest-schematic": "^6.0.0",
     "@luigi-project/client": "2.17.0",
     "@luigi-project/client-support-angular": "2.17.0",
@@ -66,7 +66,7 @@
     "prettier": "^3.3.2",
     "rimraf": "6.0.1",
     "ts-jest": "29.2.5",
-    "typescript": "~5.6.0",
+    "typescript": "~5.4.5",
     "yalc": "1.0.0-pre.53"
   }
 }
