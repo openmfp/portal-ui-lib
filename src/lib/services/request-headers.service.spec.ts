@@ -19,12 +19,8 @@ describe('RequestHeadersService', () => {
     luigiCoreService = TestBed.inject(LuigiCoreService);
     route = TestBed.inject(ActivatedRoute);
 
-    getLuigiCoreAuthSpy = jest.spyOn(luigiCoreService, 'auth');
-    getLuigiCoreAuthSpy.mockReturnValue({
-      store: {
-        getAuthData: () => ({ idToken: 'some_idtoken' }),
-      },
-    });
+    getLuigiCoreAuthSpy = jest.spyOn(luigiCoreService, 'getAuthData');
+    getLuigiCoreAuthSpy.mockReturnValue({ idToken: 'some_idtoken' });
 
     i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
     i18nSpy.mockReturnValue({

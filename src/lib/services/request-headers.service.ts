@@ -14,7 +14,7 @@ export class RequestHeadersService {
 
   public createOptionsWithAuthHeader() {
     let language = this.luigiCoreService.i18n().getCurrentLocale();
-    const authData = this.luigiCoreService.auth()?.store?.getAuthData();
+    const authData = this.luigiCoreService.getAuthData();
 
     this.route.queryParams.subscribe((params) => {
       if (params['language']) {

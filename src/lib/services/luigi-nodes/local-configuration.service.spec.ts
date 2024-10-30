@@ -5,7 +5,7 @@ import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { ContentConfiguration, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
-import { LocalNodesConfigService } from '../portal/local-nodes-config.service';
+import { LocalNodesConfigService } from '../portal';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
@@ -25,10 +25,9 @@ describe('LocalConfigurationServiceImpl', () => {
         },
       ],
       imports: [HttpClientTestingModule],
-    })
-      .overrideProvider(DevModeSettingsService, {
-        useValue: mockDevModeSettingsService,
-      });
+    }).overrideProvider(DevModeSettingsService, {
+      useValue: mockDevModeSettingsService,
+    });
     service = TestBed.inject(LocalConfigurationServiceImpl);
     luigiCoreService = TestBed.inject(LuigiCoreService);
   });
@@ -44,7 +43,7 @@ describe('LocalConfigurationServiceImpl', () => {
     beforeEach(() => {
       getLuigiDataFromConfigurationsSpy = jest.spyOn(
         mockLuigiDataConfigService,
-        'getLuigiNodesFromConfigurations',
+        'getLuigiNodesFromConfigurations'
       );
       i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
       i18nSpy.mockReturnValue({
@@ -61,14 +60,16 @@ describe('LocalConfigurationServiceImpl', () => {
       mockDevModeSettingsService.getDevModeSettings.mockReturnValue(
         Promise.resolve({
           serviceProviderConfig: {},
-          configs: [{
-            data: {
-              name: '',
-              creationTimestamp: '',
-              luigiConfigFragment: {}
-            } as ContentConfiguration
-          }],
-        }),
+          configs: [
+            {
+              data: {
+                name: '',
+                creationTimestamp: '',
+                luigiConfigFragment: {},
+              } as ContentConfiguration,
+            },
+          ],
+        })
       );
 
       const localNodes = await service.getLocalNodes();
@@ -84,13 +85,15 @@ describe('LocalConfigurationServiceImpl', () => {
         serviceProviderConfig: {
           a: 'b',
         },
-        configs: [{
-          data: {
-            name: '',
-            creationTimestamp: '',
-            luigiConfigFragment: {}
-          } as ContentConfiguration
-        }],
+        configs: [
+          {
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
       });
 
       const localNodes = await service.getLocalNodes();

@@ -33,9 +33,7 @@ describe('LuigiComponent', () => {
     } as any);
 
     // Set up auth mock
-    luigiCoreServiceMock.auth.mockReturnValue({
-      store: { setAuthData: jest.fn() },
-    });
+    luigiCoreServiceMock.setAuthData = jest.fn();
 
     // Create component instance
     component = new LuigiComponent(
@@ -75,9 +73,7 @@ describe('LuigiComponent', () => {
     tick();
 
     expect(authServiceMock.getAuthData).toHaveBeenCalled();
-    expect(luigiCoreServiceMock.auth().store.setAuthData).toHaveBeenCalledWith(
-      mockAuthData
-    );
+    expect(luigiCoreServiceMock.setAuthData).toHaveBeenCalledWith(mockAuthData);
   }));
 
   it('should log error when getLuigiConfiguration rejects', fakeAsync(() => {
