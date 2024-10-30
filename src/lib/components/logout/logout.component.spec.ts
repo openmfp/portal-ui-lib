@@ -13,15 +13,13 @@ describe('LogoutComponent', () => {
   let mockLuigiCoreService: LuigiCoreService;
   let mockRef: ChangeDetectorRef;
   let mockI18nService: I18nService;
-  let removeAuthDataMock: any;
 
   beforeEach(waitForAsync(() => {
     mockRoute = { queryParams: of({ error: 'tokenExpired' }) } as any;
     mockRouter = { navigate: jest.fn() } as any;
-    removeAuthDataMock = jest.fn();
     mockLuigiCoreService = {
+      removeAuthData: jest.fn(),
       ux: jest.fn(() => ({ hideAppLoadingIndicator: jest.fn() })),
-      auth: jest.fn(() => ({ store: { removeAuthData: removeAuthDataMock } })),
     } as any;
     mockRef = { detectChanges: jest.fn() } as any;
     mockI18nService = {
@@ -115,7 +113,6 @@ describe('LogoutComponent', () => {
     await component.ngOnInit();
     expect(component.headline).toBe('test translation'); // assuming translation for INVALID_TOKEN_ERROR is 'test translation'
     expect(component.hint).toBe('test translation'); // assuming translation for INVALID_TOKEN_ERROR_HINT is 'test translation'
-    expect(mockLuigiCoreService.auth).toHaveBeenCalled();
-    expect(removeAuthDataMock).toHaveBeenCalled();
+    expect(mockLuigiCoreService.removeAuthData).toHaveBeenCalled();
   });
 });
