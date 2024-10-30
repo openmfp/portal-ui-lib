@@ -3,6 +3,8 @@ export * from './luigi-auth-events-callbacks.service';
 export * from './i18n.service';
 export * from './request-headers.service';
 
+export * from './auth/session-refresh.service';
+
 export * from './luigi-config/luigi-config.service';
 export * from './luigi-config/static-settings-config.service';
 export * from './luigi-config/custom-message-listener';

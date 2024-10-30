@@ -16,6 +16,7 @@ Main features of this library are:
   - [Implement the Custom Service](#Implement-the-Custom-Service)
     - [Configuration services](#Configuration-services)
     - [Functional services](#Functional-services)
+  - [Listen and react to Authentication Events](#Listen-and-react-to-Authentication-Events)
   - [Start your project](#Start-your-project)
 - [Local Application Development](#Local-Application-Development)
 - [Library development](#Library-development)
@@ -473,6 +474,47 @@ const portalOptions: PortalOptions = {
   // ... other portal options
 }
 ```
+
+## Listen and react to Authentication Events
+
+There are following Authentication Events, to which the library consuming application can subscribe and react upon, in case required.
+
+```ts
+export enum AuthEvent {
+  AUTH_SUCCESSFUL = 'AuthSuccessful',
+  AUTH_ERROR = 'AuthError',
+  AUTH_EXPIRED = 'AuthExpired',
+  AUTH_REFRESHED = 'AuthRefreshed',
+  AUTH_EXPIRE_SOON = 'AuthExpireSoon',
+  AUTH_CONFIG_ERROR = 'AuthConfigError',
+  LOGOUT = 'Logout',
+}
+```
+Below is an example of reacting to `AuthEvent.AUTH_SUCCESSFUL` 
+
+```ts
+import { AuthEvent, AuthService } from '@openmfp/portal-ui-lib';
+import { filter } from 'rxjs';
+import { MyService } from '../services';
+
+export function actWhenUserAuthSuccedsful(
+    myService: MyService,
+    authService: AuthService,
+): () => void {
+  return () => {
+    authService.authEvents
+      .pipe(
+        filter((event: AuthEvent) => event === AuthEvent.AUTH_SUCCESSFUL),
+      )
+      .subscribe({
+        next: (event: AuthEvent) => {
+          myService.act();
+        },
+      });
+  };
+}
+```
+
 
 ## Start your project
 
