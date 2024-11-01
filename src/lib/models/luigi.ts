@@ -49,7 +49,7 @@ export interface LuigiUserSettingsGroup {
   settings?: Record<string, LuigiUserSetting>;
 }
 
-export interface LuigiUserSettingsConfig {
+export interface LuigiUserSettings {
   groups: Record<string, LuigiUserSettingsGroup>;
 }
 
@@ -59,7 +59,7 @@ export interface LuigiNodeIFramePermissions {
 }
 
 export interface PortalLuigiNodeExtensions {
-  _userSettingsConfig?: LuigiUserSettingsConfig;
+  _userSettingsConfig?: LuigiUserSettings;
   _preloadUrl?: string;
   _requiredIFramePermissionsForViewGroup?: LuigiNodeIFramePermissions;
   // internal navigation ordering

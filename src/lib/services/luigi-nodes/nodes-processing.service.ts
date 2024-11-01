@@ -7,7 +7,6 @@ import {
 } from '../../injection-tokens';
 import {
   ClientEnvironment,
-  HelpContext,
   LuigiNode,
   PortalConfig,
 } from '../../models';
@@ -35,7 +34,7 @@ export class NodesProcessingService {
     @Inject(LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN)
     private luigiNodeExtendedContextService: LuigiNodeExtendedContextService,
     private nodeUtilsService: NodeUtilsService
-  ) {}
+  ) { }
 
   async processNodes(
     childrenByEntity: Record<string, LuigiNode[]>,

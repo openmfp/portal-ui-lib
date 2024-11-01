@@ -15,11 +15,7 @@ function initializeAutomaticSessionRefresh(
   return () => {
     authService.authEvents
       .pipe(
-        filter((event: AuthEvent) => {
-          return [AuthEvent.AUTH_EXPIRE_SOON, AuthEvent.AUTH_EXPIRED].includes(
-            event
-          );
-        }),
+        filter((event: AuthEvent) => event === AuthEvent.AUTH_EXPIRE_SOON),
         filter(() =>
           luigiCoreService.isFeatureToggleActive('enableSessionAutoRefresh')
         )
@@ -29,7 +25,7 @@ function initializeAutomaticSessionRefresh(
           try {
             await sessionRefreshService.refresh();
           } catch (error) {
-            console.error(`Error executing session refresh: ${error}`);
+            console.error('Error executing session refresh: ', error);
           }
         },
       });

@@ -1,4 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
+import { LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { NavigationGlobalContextConfigService } from '../luigi-config/navigation-global-context-config.service';
 import { AuthService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
 import { SessionRefreshService } from './session-refresh.service';
@@ -8,6 +11,8 @@ describe('SessionRefreshService', () => {
   let service: SessionRefreshService;
   let authService: jest.Mocked<AuthService>;
   let luigiCoreService: jest.Mocked<LuigiCoreService>;
+  let navigationGlobalContextConfigServiceMock: jest.Mocked<NavigationGlobalContextConfigService> =
+    mock();
 
   // Mock data
   const mockAuthData = {
@@ -17,22 +22,26 @@ describe('SessionRefreshService', () => {
 
   beforeEach(() => {
     // Create mock services
+    (window as any).IDP = { setTokenExpireSoonAction: jest.fn() };
+
     const authServiceMock = {
       refresh: jest.fn().mockResolvedValue(undefined),
       authEvent: jest.fn(),
       getAuthData: jest.fn().mockReturnValue(mockAuthData),
     };
 
-    const luigiCoreServiceMock = {
-      setAuthData: jest.fn(),
-      resetLuigi: jest.fn(),
-    };
+    const luigiCoreServiceMock = mock<LuigiCoreService>();
 
     TestBed.configureTestingModule({
       providers: [
         SessionRefreshService,
         { provide: AuthService, useValue: authServiceMock },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+        {
+          provide:
+            LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+          useValue: navigationGlobalContextConfigServiceMock,
+        },
       ],
     });
 
@@ -50,6 +59,12 @@ describe('SessionRefreshService', () => {
 
   describe('refresh', () => {
     it('should successfully refresh the session', async () => {
+      //Arrange
+      const globalCtx = {};
+      navigationGlobalContextConfigServiceMock.getGlobalContext.mockReturnValue(
+        globalCtx
+      );
+
       // Act
       await service.refresh();
 
@@ -60,7 +75,17 @@ describe('SessionRefreshService', () => {
       );
       expect(authService.getAuthData).toHaveBeenCalledTimes(1);
       expect(luigiCoreService.setAuthData).toHaveBeenCalledWith(mockAuthData);
-      expect(luigiCoreService.resetLuigi).toHaveBeenCalledTimes(1);
+      expect(
+        navigationGlobalContextConfigServiceMock.getGlobalContext
+      ).toHaveBeenCalledTimes(1);
+      expect(luigiCoreService.setGlobalContext).toHaveBeenCalledTimes(1);
+      expect(luigiCoreService.setGlobalContext).toHaveBeenCalledWith(
+        globalCtx,
+        true
+      );
+      expect(
+        (window as any).IDP.setTokenExpireSoonAction
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('should propagate errors from authService.refresh', async () => {
@@ -72,7 +97,7 @@ describe('SessionRefreshService', () => {
       await expect(service.refresh()).rejects.toThrow('Refresh failed');
       expect(authService.authEvent).not.toHaveBeenCalled();
       expect(luigiCoreService.setAuthData).not.toHaveBeenCalled();
-      expect(luigiCoreService.resetLuigi).not.toHaveBeenCalled();
+      expect(luigiCoreService.setGlobalContext).not.toHaveBeenCalled();
     });
 
     it('should execute operations in the correct order', async () => {
@@ -96,8 +121,19 @@ describe('SessionRefreshService', () => {
         executionOrder.push('setAuthData');
       });
 
-      luigiCoreService.resetLuigi.mockImplementation(() => {
-        executionOrder.push('resetLuigi');
+      navigationGlobalContextConfigServiceMock.getGlobalContext.mockImplementation(
+        () => {
+          executionOrder.push('getGlobalContext');
+          return null;
+        }
+      );
+
+      luigiCoreService.setGlobalContext.mockImplementation(() => {
+        executionOrder.push('setGlobalContext');
+      });
+
+      (window as any).IDP.setTokenExpireSoonAction.mockImplementation(() => {
+        executionOrder.push('setTokenExpireSoonAction');
       });
 
       // Act
@@ -109,7 +145,9 @@ describe('SessionRefreshService', () => {
         'authEvent',
         'getAuthData',
         'setAuthData',
-        'resetLuigi',
+        'getGlobalContext',
+        'setGlobalContext',
+        'setTokenExpireSoonAction',
       ]);
     });
   });
