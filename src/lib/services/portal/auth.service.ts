@@ -40,7 +40,7 @@ export class AuthService {
 
   public async refresh() {
     const response = await lastValueFrom(
-      this.http.get<AuthTokenData>(`/rest/auth/refresh`)
+      this.http.get<AuthTokenData>('/rest/auth/refresh')
     );
 
     this.setAuthData(response);
