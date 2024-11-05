@@ -38,12 +38,13 @@ export class AuthService {
     this.setAuthData(response);
   }
 
-  public async refresh() {
+  public async refresh(): Promise<AuthTokenData | undefined> {
     const response = await lastValueFrom(
       this.http.get<AuthTokenData>('/rest/auth/refresh')
     );
 
     this.setAuthData(response);
+    return response;
   }
 
   private setAuthData(authTokenData: AuthTokenData): void {
