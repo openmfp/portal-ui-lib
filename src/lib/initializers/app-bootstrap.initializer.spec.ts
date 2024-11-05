@@ -43,7 +43,8 @@ describe('provideBootstrap', () => {
       await initFn();
 
       expect(consoleError).toHaveBeenCalledWith(
-        `Error bootstrapping the app: 'Failed to refresh'`
+        'Error bootstrapping the app:',
+        error
       );
       consoleError.mockRestore();
     });
