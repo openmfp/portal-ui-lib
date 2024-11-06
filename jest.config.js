@@ -10,6 +10,7 @@ module.exports = {
       branches: 80,
       functions: 90,
       lines: 95,
+      statements: -40,
     },
   },
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],
