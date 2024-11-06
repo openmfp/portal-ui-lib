@@ -5,5 +5,12 @@ module.exports = {
     '^lodash-es(.*)': 'lodash',
   },
   collectCoverage: true,
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 90,
+      lines: 95,
+    },
+  },
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],
 };
