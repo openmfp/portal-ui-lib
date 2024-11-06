@@ -17,6 +17,7 @@ Main features of this library are:
     - [Configuration services](#Configuration-services)
     - [Functional services](#Functional-services)
   - [Listen and react to Authentication Events](#Listen-and-react-to-Authentication-Events)
+  - [Configure proxy for backend rest calls](#Configure-proxy-for-backend-rest-calls)
   - [Start your project](#Start-your-project)
 - [Local Application Development](#Local-Application-Development)
 - [Library development](#Library-development)
@@ -512,6 +513,46 @@ export function actWhenUserAuthSuccedsful(
         },
       });
   };
+}
+```
+
+## Configure proxy for backend rest calls
+
+The library executes rest calls `"/rest/**"` against backend running with the library [portal-servet-lib](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library).
+In order for the calls to reach your backend the `proxy.config.json` needs to be provided, 
+with the target reaching the place where the backend is running `"target": "http://localhost:3000"`.
+
+```json
+{
+  "/rest/**": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}
+```
+
+The proxy file needs to be indicated in the file `angular.json` section `serve`:
+
+```json
+ {       
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.config.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "build:production"
+            },
+            "development": {
+              "browserTarget": "build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+
 }
 ```
 
