@@ -40,6 +40,18 @@ describe('LocalNodesConfigService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should return null if called with empty configurations', async () => {
+    // Arrange
+    const expectedResponse = [];
+
+    // Act
+    const getLuigiDataFromConfigurations =
+      await service.getLuigiNodesFromConfigurations([]);
+
+    // Assert
+    expect(getLuigiDataFromConfigurations).toBeNull();
+  });
+
   it('should get the luigi nodes from configurations', async () => {
     // Arrange
     const expectedResponse = [];
