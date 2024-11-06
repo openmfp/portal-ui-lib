@@ -68,8 +68,5 @@
     "ts-jest": "29.2.5",
     "typescript": "~5.5.4",
     "yalc": "1.0.0-pre.53"
-  },
-  "babel" : {
-    "ignore": ["src/lib/data/mfp-mark.ts"]
   }
 }
