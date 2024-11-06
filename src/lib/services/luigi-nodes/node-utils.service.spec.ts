@@ -2,7 +2,7 @@ import { NodeUtilsService } from './node-utils.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
 
-describe.skip('NodeUtilsService', () => {
+describe('NodeUtilsService', () => {
   let service: NodeUtilsService;
   let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
 

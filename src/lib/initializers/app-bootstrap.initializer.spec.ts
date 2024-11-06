@@ -3,7 +3,7 @@ import { AuthService } from '../services';
 import { provideBootstrap } from './app-bootstrap.initializer';
 import Mocked = jest.Mocked;
 
-describe.skip('provideBootstrap', () => {
+describe('provideBootstrap', () => {
   const authServiceMock = {
     refresh: jest.fn(),
   } as any as Mocked<AuthService>;
