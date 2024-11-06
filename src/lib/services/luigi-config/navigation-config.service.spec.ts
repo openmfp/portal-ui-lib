@@ -1,11 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import {
-  ClientEnvironment,
-  LuigiNode,
-  PortalConfig,
-  ServiceProvider,
-} from '../../models';
+import { ClientEnvironment, PortalConfig, ServiceProvider } from '../../models';
 import { providePortal } from '../../portal-providers';
 import {
   ConfigService,
@@ -15,27 +10,20 @@ import {
 import { LuigiCoreService } from '../luigi-core.service';
 import { NavigationConfigService } from './navigation-config.service';
 
+jest.mock('../../initializers', () => ({
+  ...jest.requireActual('../../initializers'),
+  provideBootstrap: jest.fn().mockReturnValue({
+    provide: 'PR',
+    useFactory: () => console.log('HERE'),
+  }),
+}));
+
 describe('NavigationConfigService', () => {
   let service: NavigationConfigService;
   let luigiCoreService: LuigiCoreService;
   let configService: ConfigService;
   let envConfigService: EnvConfigService;
   let serviceProviderService: ServiceProviderService;
-
-  const homeChildren: LuigiNode[] = [
-    {
-      label: 'home1',
-      pathSegment: '',
-      viewUrl: '',
-    },
-  ];
-  const projectChildren: LuigiNode[] = [
-    {
-      label: 'project1',
-      pathSegment: '',
-      viewUrl: '',
-    },
-  ];
 
   beforeEach(() => {
     TestBed.configureTestingModule({
