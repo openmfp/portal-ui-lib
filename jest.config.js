@@ -5,6 +5,7 @@ module.exports = {
     '^lodash-es(.*)': 'lodash',
   },
   collectCoverage: true,
+  setupFilesAfterEnv: ['<rootDir>/jest-global-mocks.ts'],
   // coverageThreshold: {
   //   global: {
   //     // branches: 80,
