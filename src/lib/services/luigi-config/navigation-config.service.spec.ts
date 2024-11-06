@@ -10,14 +10,6 @@ import {
 import { LuigiCoreService } from '../luigi-core.service';
 import { NavigationConfigService } from './navigation-config.service';
 
-jest.mock('../../initializers', () => ({
-  ...jest.requireActual('../../initializers'),
-  provideBootstrap: jest.fn().mockReturnValue({
-    provide: 'PR',
-    useFactory: () => console.log('HERE'),
-  }),
-}));
-
 describe('NavigationConfigService', () => {
   let service: NavigationConfigService;
   let luigiCoreService: LuigiCoreService;
