@@ -38,15 +38,20 @@ export class AuthService {
     this.setAuthData(response);
   }
 
-  public async refresh() {
+  public async refresh(): Promise<AuthTokenData | undefined> {
     const response = await lastValueFrom(
-      this.http.post<AuthTokenData>(`/rest/auth/refresh`, {})
+      this.http.get<AuthTokenData>('/rest/auth/refresh')
     );
 
     this.setAuthData(response);
+    return response;
   }
 
-  public setAuthData(authTokenData: AuthTokenData): void {
+  private setAuthData(authTokenData: AuthTokenData): void {
+    if (!authTokenData) {
+      return;
+    }
+
     this.authData = {
       accessTokenExpirationDate: this.processExpDate(authTokenData.expires_in),
       idToken: authTokenData.id_token,

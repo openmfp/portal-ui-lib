@@ -15,7 +15,12 @@ export class SessionRefreshService {
   ) {}
 
   async refresh() {
-    await this.authService.refresh();
+    const isRefreshed = await this.authService.refresh();
+
+    if (!isRefreshed) {
+      return;
+    }
+
     this.authService.authEvent(AuthEvent.AUTH_REFRESHED);
     this.luigiCoreService.setAuthData(this.authService.getAuthData());
     this.luigiCoreService.setGlobalContext(

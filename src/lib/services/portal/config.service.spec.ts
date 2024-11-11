@@ -1,7 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import {
-  HttpClientTestingModule,
   HttpTestingController,
+  provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { PortalConfig } from '../../models';
@@ -15,7 +16,8 @@ describe('ConfigService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterModule.forRoot([])],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [RouterModule.forRoot([])],
     });
     service = TestBed.inject(ConfigService);
     httpTestingController = TestBed.inject(HttpTestingController);

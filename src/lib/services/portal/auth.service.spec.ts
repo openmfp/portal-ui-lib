@@ -18,6 +18,7 @@ describe('AuthService', () => {
   beforeEach(() => {
     httpClientMock = {
       post: jest.fn(),
+      get: jest.fn(),
     } as any;
 
     service = new AuthService(httpClientMock);
@@ -49,6 +50,35 @@ describe('AuthService', () => {
     });
   });
 
+  describe('refresh', () => {
+    it('should make a GET request and set auth data', async () => {
+      const mockResponse: AuthTokenData = {
+        access_token: 'mock_access_token',
+        id_token: 'mock_id_token',
+        expires_in: '3600',
+      };
+      httpClientMock.get.mockReturnValue(of(mockResponse));
+
+      await service.refresh();
+
+      expect(httpClientMock.get).toHaveBeenCalledWith('/rest/auth/refresh');
+      expect(service.getAuthData()).toEqual({
+        accessTokenExpirationDate: expect.any(Number),
+        idToken: 'mock_id_token',
+      });
+    });
+
+    it('should make a GET request and not set auth data', async () => {
+      const mockResponse: AuthTokenData = undefined;
+      httpClientMock.get.mockReturnValue(of(mockResponse));
+
+      await service.refresh();
+
+      expect(httpClientMock.get).toHaveBeenCalledWith('/rest/auth/refresh');
+      expect(service.getAuthData()).toBeUndefined();
+    });
+  });
+
   describe('setAuthData and getAuthData', () => {
     it('should set and get auth data correctly', () => {
       const mockAuthTokenData: AuthTokenData = {
@@ -57,7 +87,7 @@ describe('AuthService', () => {
         expires_in: '3600',
       };
 
-      service.setAuthData(mockAuthTokenData);
+      service['setAuthData'](mockAuthTokenData);
       const authData = service.getAuthData();
 
       expect(authData).toEqual({
@@ -110,7 +140,7 @@ describe('AuthService', () => {
       (jwtDecode as jest.Mock).mockImplementationOnce(() => {
         throw new Error('Invalid token');
       });
-      service.setAuthData({
+      service['setAuthData']({
         access_token: 'test_token',
         id_token: 'mock_id_token',
         expires_in: '3600',

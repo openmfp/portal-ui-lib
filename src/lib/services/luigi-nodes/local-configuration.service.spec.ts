@@ -1,5 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
@@ -23,8 +23,8 @@ describe('LocalConfigurationServiceImpl', () => {
           provide: LocalNodesConfigService,
           useValue: mockLuigiDataConfigService,
         },
+        provideHttpClient(),
       ],
-      imports: [HttpClientTestingModule],
     }).overrideProvider(DevModeSettingsService, {
       useValue: mockDevModeSettingsService,
     });
@@ -38,24 +38,27 @@ describe('LocalConfigurationServiceImpl', () => {
 
   describe('replaceServerNodesWithLocalOnes', () => {
     const serverLuigiNodesTest = [
-      {pathSegment:'/path', entityType:'typeA', label: "A", context: {}},
-      {pathSegment:'/path', entityType:'typeB', label: "B", context: {}},
+      { pathSegment: '/path', entityType: 'typeA', label: 'A', context: {} },
+      { pathSegment: '/path', entityType: 'typeB', label: 'B', context: {} },
     ];
 
     let getLocalNodesSpy;
     beforeEach(() => {
-      getLocalNodesSpy = jest.spyOn(
-        service,
-        'getLocalNodes',
-      );
+      getLocalNodesSpy = jest.spyOn(service, 'getLocalNodes');
     });
 
     it('should return modified nodes', async () => {
-      const localNode = {pathSegment:'/path', entityType:'typeA', label: "C", context: {}};
+      const localNode = {
+        pathSegment: '/path',
+        entityType: 'typeA',
+        label: 'C',
+        context: {},
+      };
       getLocalNodesSpy.mockResolvedValue([localNode]);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['typeA','typeB']);
+        ['typeA', 'typeB']
+      );
 
       expect(localNodes).toContain(localNode);
     });
@@ -64,7 +67,8 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy.mockResolvedValue([]);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['typeA','typeB']);
+        ['typeA', 'typeB']
+      );
 
       expect(localNodes).toEqual(serverLuigiNodesTest);
     });
@@ -73,12 +77,12 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy.mockResolvedValue(null);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['typeA','typeB']);
+        ['typeA', 'typeB']
+      );
 
       expect(localNodes).toEqual(serverLuigiNodesTest);
     });
-
-  })
+  });
 
   describe('getNodes', () => {
     let getLuigiDataFromConfigurationsSpy;

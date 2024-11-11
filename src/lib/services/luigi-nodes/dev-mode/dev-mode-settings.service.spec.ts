@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { DEV_MODE_SETTINGS_KEY, DevModeSettingsService } from './dev-mode-settings.service';
+import {
+  DEV_MODE_SETTINGS_KEY,
+  DevModeSettingsService,
+} from './dev-mode-settings.service';
 import { EnvConfigService } from '../../portal';
 
 describe('DevModeSettingsService', () => {
@@ -13,7 +14,7 @@ describe('DevModeSettingsService', () => {
     envConfigMock = mock<EnvConfigService>();
     TestBed.configureTestingModule({
       providers: [DevModeSettingsService, EnvConfigService],
-      imports: [HttpClientTestingModule],
+      imports: [],
     }).overrideProvider(EnvConfigService, {
       useValue: envConfigMock,
     });
@@ -59,7 +60,7 @@ describe('DevModeSettingsService', () => {
       DEV_MODE_SETTINGS_KEY,
       JSON.stringify({
         serviceProviderConfig: { a: 'b' },
-      }),
+      })
     );
     const devModeSettings = await service.getDevModeSettings();
 
@@ -77,7 +78,7 @@ describe('DevModeSettingsService', () => {
       JSON.stringify({
         isActive: true,
         serviceProviderConfig: { a: 'b' },
-      }),
+      })
     );
     const devModeSettings = await service.getDevModeSettings();
 
@@ -104,7 +105,7 @@ describe('DevModeSettingsService', () => {
           { url: 'http://localhost:4200/assets/content-configuration.json' },
         ],
         serviceProviderConfig: { a: 'b' },
-      }),
+      })
     );
     const devModeSettings = await service.getDevModeSettings();
 

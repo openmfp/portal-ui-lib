@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { mock } from 'jest-mock-extended';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { RouterModule } from '@angular/router';
 import { ServiceProvider, EntityDefinition, LuigiNode } from '../../models';
 import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { ServiceProviderService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 
@@ -21,8 +20,9 @@ describe('LuigiNodesService', () => {
           provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
           useValue: localConfigurationService,
         },
+        provideHttpClient(),
       ],
-      imports: [HttpClientTestingModule, RouterModule.forRoot([])],
+      imports: [RouterModule.forRoot([])],
     });
     service = TestBed.inject(LuigiNodesService);
     serviceProviderService = TestBed.inject(ServiceProviderService);
@@ -167,7 +167,10 @@ describe('LuigiNodesService', () => {
       );
       spyInstanceForProject.mockReturnValue(configServiceResponse);
 
-      localNodeServiceSpy = jest.spyOn(localConfigurationService, 'getLocalNodes');
+      localNodeServiceSpy = jest.spyOn(
+        localConfigurationService,
+        'getLocalNodes'
+      );
       localNodeServiceSpy.mockReturnValue(Promise.resolve([]));
     });
 
