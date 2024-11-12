@@ -4,10 +4,6 @@ import { CallbackComponent } from './callback.component';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
 
 @Component({
   selector: 'app-test-root-component',
@@ -32,14 +28,12 @@ describe('CallbackComponent', () => {
   let location: Location;
   let rootFixture: ComponentFixture<TestRootComponent>;
   let rootComponent: TestRootComponent;
-  let httpTestingController: HttpTestingController;
   let authService: AuthService;
 
   beforeEach(() => {
     authService = { auth: jest.fn() } as any as AuthService;
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         RouterModule.forRoot(
           [
             { path: '', component: TestRootComponent },
@@ -49,12 +43,10 @@ describe('CallbackComponent', () => {
           {}
         ),
       ],
-      providers: [],
     })
       .overrideProvider(AuthService, { useValue: authService })
       .compileComponents();
 
-    httpTestingController = TestBed.inject(HttpTestingController);
     rootFixture = TestBed.createComponent(TestRootComponent);
     rootComponent = rootFixture.componentInstance;
 

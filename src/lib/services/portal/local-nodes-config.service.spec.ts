@@ -1,6 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { LocalNodesConfigService } from './local-nodes-config.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { LuigiCoreService } from '../luigi-core.service';
 
@@ -12,8 +16,12 @@ describe('LocalNodesConfigService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LuigiCoreService],
-      imports: [HttpClientTestingModule, RouterModule.forRoot([])],
+      providers: [
+        LuigiCoreService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+      imports: [RouterModule.forRoot([])],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -32,16 +40,31 @@ describe('LocalNodesConfigService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should return null if called with empty configurations', async () => {
+    // Arrange
+    const expectedResponse = [];
+
+    // Act
+    const getLuigiDataFromConfigurations =
+      await service.getLuigiNodesFromConfigurations([]);
+
+    // Assert
+    expect(getLuigiDataFromConfigurations).toBeNull();
+  });
+
   it('should get the luigi nodes from configurations', async () => {
     // Arrange
     const expectedResponse = [];
 
     // Act
-    const getLuigiDataFromConfigurationsPromise = service.getLuigiNodesFromConfigurations([{
-      name: 'test',
-      creationTimestamp: '',
-      luigiConfigFragment: null
-    }]);
+    const getLuigiDataFromConfigurationsPromise =
+      service.getLuigiNodesFromConfigurations([
+        {
+          name: 'test',
+          creationTimestamp: '',
+          luigiConfigFragment: null,
+        },
+      ]);
     const testRequest = httpTestingController.expectOne('/rest/localnodes');
     testRequest.flush(expectedResponse);
     const response = await getLuigiDataFromConfigurationsPromise;

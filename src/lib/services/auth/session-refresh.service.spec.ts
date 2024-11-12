@@ -5,14 +5,13 @@ import { NavigationGlobalContextConfigService } from '../luigi-config/navigation
 import { AuthService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
 import { SessionRefreshService } from './session-refresh.service';
-import { AuthData, AuthEvent } from '../../models';
+import { AuthData, AuthEvent, AuthTokenData } from '../../models';
 
 describe('SessionRefreshService', () => {
   let service: SessionRefreshService;
   let authService: jest.Mocked<AuthService>;
   let luigiCoreService: jest.Mocked<LuigiCoreService>;
-  let navigationGlobalContextConfigServiceMock: jest.Mocked<NavigationGlobalContextConfigService> =
-    mock();
+  let navigationGlobalContextConfigServiceMock: jest.Mocked<NavigationGlobalContextConfigService>;
 
   // Mock data
   const mockAuthData = {
@@ -21,6 +20,8 @@ describe('SessionRefreshService', () => {
   } as AuthData;
 
   beforeEach(() => {
+    navigationGlobalContextConfigServiceMock = mock();
+
     // Create mock services
     (window as any).IDP = { setTokenExpireSoonAction: jest.fn() };
 
@@ -64,6 +65,7 @@ describe('SessionRefreshService', () => {
       navigationGlobalContextConfigServiceMock.getGlobalContext.mockReturnValue(
         globalCtx
       );
+      authService.refresh.mockResolvedValue({} as AuthTokenData);
 
       // Act
       await service.refresh();
@@ -88,6 +90,35 @@ describe('SessionRefreshService', () => {
       ).toHaveBeenCalledTimes(1);
     });
 
+    it('should not successfully refresh the session', async () => {
+      //Arrange
+      const globalCtx = {};
+      navigationGlobalContextConfigServiceMock.getGlobalContext.mockReturnValue(
+        globalCtx
+      );
+      authService.refresh.mockResolvedValue(null);
+
+      // Act
+      await service.refresh();
+
+      // Assert
+      expect(authService.refresh).toHaveBeenCalled();
+      expect(authService.authEvent).not.toHaveBeenCalledWith(
+        AuthEvent.AUTH_REFRESHED
+      );
+      expect(authService.getAuthData).not.toHaveBeenCalled();
+      expect(luigiCoreService.setAuthData).not.toHaveBeenCalledWith(
+        mockAuthData
+      );
+      expect(
+        navigationGlobalContextConfigServiceMock.getGlobalContext
+      ).not.toHaveBeenCalled();
+      expect(luigiCoreService.setGlobalContext).not.toHaveBeenCalled();
+      expect(
+        (window as any).IDP.setTokenExpireSoonAction
+      ).not.toHaveBeenCalled();
+    });
+
     it('should propagate errors from authService.refresh', async () => {
       // Arrange
       const error = new Error('Refresh failed');
@@ -106,6 +137,7 @@ describe('SessionRefreshService', () => {
 
       authService.refresh.mockImplementation(async () => {
         executionOrder.push('refresh');
+        return {} as AuthTokenData;
       });
 
       authService.authEvent.mockImplementation(() => {

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { ServiceProviderService } from './service-provider.service';
 import { ConfigService } from './config.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ServiceProviderService', () => {
   let service: ServiceProviderService;
@@ -11,7 +11,8 @@ describe('ServiceProviderService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterModule.forRoot([])],
+      providers: [provideHttpClient()],
+      imports: [RouterModule.forRoot([])],
     });
     service = TestBed.inject(ServiceProviderService);
     configService = TestBed.inject(ConfigService);

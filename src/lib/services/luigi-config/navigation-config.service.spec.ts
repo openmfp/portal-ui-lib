@@ -1,11 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import {
-  ClientEnvironment,
-  LuigiNode,
-  PortalConfig,
-  ServiceProvider,
-} from '../../models';
+import { ClientEnvironment, PortalConfig, ServiceProvider } from '../../models';
 import { providePortal } from '../../portal-providers';
 import {
   ConfigService,
@@ -21,21 +16,6 @@ describe('NavigationConfigService', () => {
   let configService: ConfigService;
   let envConfigService: EnvConfigService;
   let serviceProviderService: ServiceProviderService;
-
-  const homeChildren: LuigiNode[] = [
-    {
-      label: 'home1',
-      pathSegment: '',
-      viewUrl: '',
-    },
-  ];
-  const projectChildren: LuigiNode[] = [
-    {
-      label: 'project1',
-      pathSegment: '',
-      viewUrl: '',
-    },
-  ];
 
   beforeEach(() => {
     TestBed.configureTestingModule({
