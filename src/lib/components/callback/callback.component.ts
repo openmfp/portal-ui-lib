@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import * as url from 'url';
-import { AuthService } from '../../services';
+import { AuthService, LoginEventService, LoginEventType } from '../../services';
 
 @Component({
   template: '',
@@ -12,7 +12,8 @@ export class CallbackComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private loginEventService: LoginEventService
   ) {
     this.route.queryParams.subscribe((queryParams) => {
       const code = queryParams['code'];
@@ -22,7 +23,8 @@ export class CallbackComponent {
   }
 
   private async navigateToLogoutWithLoginError() {
-    await this.router.navigate(['/logout'], {
+    this.loginEventService.loginEvent({
+      type: LoginEventType.LOGOUT_TRIGGERED,
       queryParams: { error: 'loginError' },
     });
   }
@@ -36,7 +38,6 @@ export class CallbackComponent {
       }
 
       await this.authService.auth(code, state);
-
       return this.router.navigate(
         [appStateUrl.pathname],
         this.createNavigationParams(appStateUrl)

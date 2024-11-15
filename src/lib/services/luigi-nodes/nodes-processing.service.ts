@@ -5,11 +5,7 @@ import {
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import {
-  ClientEnvironment,
-  LuigiNode,
-  PortalConfig,
-} from '../../models';
+import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
 import { matchesJMESPath } from '../../utilities';
 import { ConfigService } from '../portal';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
@@ -34,7 +30,7 @@ export class NodesProcessingService {
     @Inject(LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN)
     private luigiNodeExtendedContextService: LuigiNodeExtendedContextService,
     private nodeUtilsService: NodeUtilsService
-  ) { }
+  ) {}
 
   async processNodes(
     childrenByEntity: Record<string, LuigiNode[]>,
@@ -235,7 +231,7 @@ export class NodesProcessingService {
         console.warn('No entity node!'); //TODO: check if needed or assured before
         resolve(createChildrenList(directChildren));
       } else {
-        const entityId = ctx[entityIdContextKey];
+        const entityId = ctx && ctx[entityIdContextKey];
         const staticChildren = [
           ...(directChildren || []),
           ...(childrenByEntity[entityTypeId] || []),
@@ -336,7 +332,7 @@ export class NodesProcessingService {
 
   private visibleForContext(ctx: any, node: LuigiNode): boolean {
     // visibleForEntityContext is deprecated
-    if (!isMatch(ctx.entityContext, node.visibleForEntityContext)) {
+    if (!isMatch(ctx?.entityContext, node.visibleForEntityContext)) {
       return false;
     }
 
@@ -364,13 +360,13 @@ export class NodesProcessingService {
         contextForEntityConfig.set(node.defineEntity.dynamicFetchId, {});
         addToAll(
           node.defineEntity.dynamicFetchId,
-          ctx[node.defineEntity.contextKey]
+          ctx && ctx[node.defineEntity.contextKey]
         );
       }
       node = node.parent;
     }
 
-    addToAll('user', ctx.userid);
+    addToAll('user', ctx && ctx.userid);
     return contextForEntityConfig;
   }
 }

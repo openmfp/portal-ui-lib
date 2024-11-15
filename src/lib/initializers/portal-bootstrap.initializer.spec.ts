@@ -1,6 +1,6 @@
 import { APP_INITIALIZER } from '@angular/core';
 import { AuthService } from '../services';
-import { provideBootstrap } from './app-bootstrap.initializer';
+import { provideBootstrap } from './portal-bootstrap.initializer';
 import Mocked = jest.Mocked;
 
 describe('provideBootstrap', () => {

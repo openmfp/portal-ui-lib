@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent } from '../../models';
-import { LuigiAuthEventsCallbacksService } from '../luigi-auth-events-callbacks.service';
+import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 import { AuthService } from '../portal';
 
 @Injectable({

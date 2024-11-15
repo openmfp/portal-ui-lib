@@ -6,7 +6,11 @@ import {
   Type,
 } from '@angular/core';
 import { provideRouter, RouteReuseStrategy } from '@angular/router';
-import { provideBootstrap, provideSessionRefresh } from './initializers';
+import {
+  provideBootstrap,
+  provideNavigationTracker,
+  provideSessionRefresh,
+} from './initializers';
 import {
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -116,6 +120,7 @@ export function providePortal(
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideBootstrap(),
     provideSessionRefresh(),
+    provideNavigationTracker(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     ...customMessageListeners,

@@ -92,6 +92,9 @@ describe('LifecycleHooksConfigService', () => {
 
         await config.luigiAfterInit();
 
+        expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
+          'btpLayout'
+        );
         expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
       });
 

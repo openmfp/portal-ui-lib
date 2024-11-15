@@ -65,7 +65,7 @@ export class LuigiNodesService {
           errorCode = 404;
         } else {
           console.warn(
-            'Could not retrieve nodes for entity ' + entityType + ', error: ',
+            `Could not retrieve nodes for entity: ${entityType}, error: `,
             e
           );
         }
@@ -81,19 +81,15 @@ export class LuigiNodesService {
       [parentEntityPath]
     );
 
-    if (errorCode > 0) {
+    if (errorCode) {
       return this.createErrorNodes(
         entityDefinition,
         additionalContext,
         errorCode
       );
+    } else {
+      return [...(existingChildren || []), ...(rawEntityNodes || [])];
     }
-
-    const allEntityNodes = [
-      ...(existingChildren || []),
-      ...(rawEntityNodes || []),
-    ];
-    return allEntityNodes;
   }
 
   private createErrorNodes(

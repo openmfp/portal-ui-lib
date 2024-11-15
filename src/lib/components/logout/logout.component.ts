@@ -1,6 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { I18nService, LuigiCoreService } from '../../services';
+import { ActivatedRoute } from '@angular/router';
+import {
+  I18nService,
+  LuigiCoreService,
+  LoginEventService,
+  LoginEventType,
+} from '../../services';
 
 @Component({
   templateUrl: './logout.component.html',
@@ -10,54 +15,37 @@ import { I18nService, LuigiCoreService } from '../../services';
 export class LogoutComponent implements OnInit {
   headline: string = '';
   hint: string = '';
-  message = '';
   btnText: string = '';
-  loginTarget: string = '';
-
-  private urlParams: Params = { error: '' };
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private luigiCoreService: LuigiCoreService,
     private ref: ChangeDetectorRef,
-    private i18nService: I18nService
+    private i18nService: I18nService,
+    private loginEventService: LoginEventService
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.luigiCoreService.ux().hideAppLoadingIndicator();
-    this.parseUrlParameters();
-    const error = this.urlParams['error'];
-    this.headline = await this.i18nService.getTranslationAsync(
-      'SUCCESSFULLY_LOGGED_OUT'
-    );
-    this.hint = await this.i18nService.getTranslationAsync('SIGN_IN_HINT');
-    this.btnText = await this.i18nService.getTranslationAsync('LOGIN_AGAIN');
+    const error = this.route.snapshot.queryParams['error'];
+
+    const translations = await this.getTranslations();
+    this.headline = translations.headlineSuccessfullyLoggedOut;
+    this.hint = translations.hintSignIn;
+    this.btnText = translations.btnTextLoginAgain;
 
     switch (error) {
       case 'tokenExpired':
-        this.headline =
-          await this.i18nService.getTranslationAsync('SESSION_EXPIRED');
-        const lastRoute = sessionStorage.getItem('portal.relogin.url');
-        if (lastRoute) {
-          sessionStorage.removeItem('portal.relogin.url');
-          this.loginTarget = lastRoute;
-        }
+        this.headline = translations.headlineSessionExpired;
         break;
       case 'loginError':
-        this.headline =
-          await this.i18nService.getTranslationAsync('SIGN_IN_ERROR');
-        this.hint =
-          await this.i18nService.getTranslationAsync('SIGN_IN_ERROR_HINT');
+        this.headline = translations.headlineSigInError;
+        this.hint = translations.hintSignInError;
         break;
       case 'invalidToken':
         this.luigiCoreService.removeAuthData();
-        this.headline = await this.i18nService.getTranslationAsync(
-          'INVALID_TOKEN_ERROR'
-        );
-        this.hint = await this.i18nService.getTranslationAsync(
-          'INVALID_TOKEN_ERROR_HINT'
-        );
+        this.headline = translations.headlineInvalidTokenError;
+        this.hint = translations.hintInvalidTokenError;
         break;
       default:
         break;
@@ -67,17 +55,31 @@ export class LogoutComponent implements OnInit {
   }
 
   login() {
-    if (this.loginTarget) {
-      history.replaceState({}, '', this.loginTarget);
-      window.dispatchEvent(new CustomEvent('popstate'));
-    } else {
-      this.router.navigate(['/']);
-    }
+    this.loginEventService.loginEvent({ type: LoginEventType.LOGIN_TRIGGERED });
   }
 
-  parseUrlParameters() {
-    this.route.queryParams.subscribe((params: Params) => {
-      this.urlParams = params;
-    });
+  private async getTranslations() {
+    return {
+      headlineSuccessfullyLoggedOut: await this.i18nService.getTranslationAsync(
+        'SUCCESSFULLY_LOGGED_OUT'
+      ),
+      hintSignIn: await this.i18nService.getTranslationAsync('SIGN_IN_HINT'),
+      btnTextLoginAgain:
+        await this.i18nService.getTranslationAsync('LOGIN_AGAIN'),
+      headlineSessionExpired:
+        await this.i18nService.getTranslationAsync('SESSION_EXPIRED'),
+
+      headlineSigInError:
+        await this.i18nService.getTranslationAsync('SIGN_IN_ERROR'),
+      hintSignInError:
+        await this.i18nService.getTranslationAsync('SIGN_IN_ERROR_HINT'),
+
+      headlineInvalidTokenError: await this.i18nService.getTranslationAsync(
+        'INVALID_TOKEN_ERROR'
+      ),
+      hintInvalidTokenError: await this.i18nService.getTranslationAsync(
+        'INVALID_TOKEN_ERROR_HINT'
+      ),
+    };
   }
 }
