@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { firstValueFrom, tap } from 'rxjs';
 import { EntityConfig, PortalConfig } from '../../models';
 import { RequestHeadersService } from '../request-headers.service';

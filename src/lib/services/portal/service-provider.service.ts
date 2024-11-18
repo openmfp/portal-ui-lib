@@ -15,7 +15,7 @@ export class ServiceProviderService {
   async getRawConfigs(): Promise<ServiceProvider[]> {
     return this.configService
       .getPortalConfig()
-      .then((portalConfig: PortalConfig) => portalConfig?.providers || []);
+      .then((portalConfig: PortalConfig) => portalConfig.providers || []);
   }
 
   async getRawConfigsForEntity(
@@ -24,6 +24,6 @@ export class ServiceProviderService {
   ): Promise<ServiceProvider[]> {
     return this.configService
       .getEntityConfig(entity, context)
-      .then((entityConfig) => entityConfig?.providers || []);
+      .then((entityConfig) => entityConfig.providers || []);
   }
 }
