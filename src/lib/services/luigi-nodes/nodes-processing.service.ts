@@ -231,7 +231,7 @@ export class NodesProcessingService {
         console.warn('No entity node!'); //TODO: check if needed or assured before
         resolve(createChildrenList(directChildren));
       } else {
-        const entityId = ctx && ctx[entityIdContextKey];
+        const entityId = ctx[entityIdContextKey];
         const staticChildren = [
           ...(directChildren || []),
           ...(childrenByEntity[entityTypeId] || []),
@@ -332,7 +332,7 @@ export class NodesProcessingService {
 
   private visibleForContext(ctx: any, node: LuigiNode): boolean {
     // visibleForEntityContext is deprecated
-    if (!isMatch(ctx?.entityContext, node.visibleForEntityContext)) {
+    if (!isMatch(ctx.entityContext, node.visibleForEntityContext)) {
       return false;
     }
 
@@ -360,13 +360,13 @@ export class NodesProcessingService {
         contextForEntityConfig.set(node.defineEntity.dynamicFetchId, {});
         addToAll(
           node.defineEntity.dynamicFetchId,
-          ctx && ctx[node.defineEntity.contextKey]
+          ctx[node.defineEntity.contextKey]
         );
       }
       node = node.parent;
     }
 
-    addToAll('user', ctx && ctx.userid);
+    addToAll('user', ctx.userid);
     return contextForEntityConfig;
   }
 }
