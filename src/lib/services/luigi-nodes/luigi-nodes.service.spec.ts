@@ -27,6 +27,10 @@ describe('LuigiNodesService', () => {
     service = TestBed.inject(LuigiNodesService);
     serviceProviderService = TestBed.inject(ServiceProviderService);
     localConfigurationService = TestBed.inject(LocalConfigurationServiceImpl);
+
+    jest
+      .spyOn(localConfigurationService, 'getLocalNodes')
+      .mockReturnValue(Promise.resolve([]));
   });
 
   it('should be created', () => {
@@ -105,14 +109,13 @@ describe('LuigiNodesService', () => {
         additionalContext
       );
       expect(console.warn).toHaveBeenCalledWith(
-        'Could not retrieve nodes for entity someEntity, error: ',
+        'Could not retrieve nodes for entity: someEntity, error: ',
         expect.any(Error)
       );
     });
   });
 
   describe('retrieveChildrenByEntity', () => {
-    let localNodeServiceSpy;
     let serviceProviderNodes;
 
     const createNodeWithEntityType = (
@@ -166,12 +169,6 @@ describe('LuigiNodesService', () => {
         'getRawConfigsForEntity'
       );
       spyInstanceForProject.mockReturnValue(configServiceResponse);
-
-      localNodeServiceSpy = jest.spyOn(
-        localConfigurationService,
-        'getLocalNodes'
-      );
-      localNodeServiceSpy.mockReturnValue(Promise.resolve([]));
     });
 
     it('should handle errors when retrieving nodes', async () => {

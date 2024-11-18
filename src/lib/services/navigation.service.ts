@@ -5,7 +5,7 @@ import { AuthEvent } from '../models';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthService } from './portal';
 
-const lastNavigationUrlKey = 'openmfp.navigation.lastUrl';
+export const lastNavigationUrlKey = 'openmfp.navigation.lastUrl';
 
 @Injectable({
   providedIn: 'root',

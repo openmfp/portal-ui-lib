@@ -46,7 +46,7 @@ export class LocalConfigurationServiceImpl
 
       return luigiNodes;
     } catch (e) {
-      console.warn(`failed to retrieve local luigi config`, e);
+      console.warn(`Failed to retrieve local luigi config.`, e);
       return [];
     }
   }

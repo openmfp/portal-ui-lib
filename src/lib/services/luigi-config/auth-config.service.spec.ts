@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthConfigService } from './auth-config.service';
 import { AuthService } from '../portal';
-import { LuigiAuthEventsCallbacksService } from '../luigi-auth-events-callbacks.service';
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent, UserData } from '../../models';
+import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 
 describe('AuthConfigService', () => {
   let service: AuthConfigService;

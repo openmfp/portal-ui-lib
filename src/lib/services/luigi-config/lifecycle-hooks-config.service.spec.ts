@@ -123,9 +123,8 @@ describe('LifecycleHooksConfigService', () => {
       });
 
       it('should handle error when retrieving Luigi navigation nodes', async () => {
-        luigiNodesServiceMock.retrieveChildrenByEntity.mockRejectedValue(
-          new Error('Test error')
-        );
+        const error = new Error('Test error');
+        luigiNodesServiceMock.retrieveChildrenByEntity.mockRejectedValue(error);
         staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
           { header: { title: 'Test App' } }
         );
@@ -135,7 +134,8 @@ describe('LifecycleHooksConfigService', () => {
         await config.luigiAfterInit();
 
         expect(console.error).toHaveBeenCalledWith(
-          'Error retrieving Luigi navigation nodes Error: Test error'
+          'Error retrieving Luigi navigation nodes',
+          error
         );
         expect(luigiCoreServiceMock.showAlert).toHaveBeenCalledWith({
           text: 'There was an error loading the Test App',

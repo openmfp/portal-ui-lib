@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { ClientEnvironment } from '../../models';
+import { ClientEnvironment, LuigiConfig } from '../../models';
 import { AuthConfigService } from './auth-config.service';
 import { EnvConfigService } from '../portal';
 import { RoutingConfigService } from './routing-config.service';
@@ -22,7 +22,7 @@ export class LuigiConfigService {
     private staticSettingsConfigService: StaticSettingsConfigService
   ) {}
 
-  public async getLuigiConfiguration() {
+  public async getLuigiConfiguration(): Promise<LuigiConfig> {
     const envConfig: ClientEnvironment =
       await this.envConfigService.getEnvConfig();
     return {

@@ -6,7 +6,7 @@ import { LuigiCoreService } from '../../services';
   template: '',
   standalone: true,
 })
-export class LuigiComponent implements OnDestroy, OnInit {
+export class LuigiComponent implements OnInit {
   constructor(
     private luigiConfigService: LuigiConfigService,
     private luigiCoreService: LuigiCoreService,
@@ -21,9 +21,5 @@ export class LuigiComponent implements OnDestroy, OnInit {
     } catch (e) {
       console.error(`Luigi Component init failed: ${e.toString()}`);
     }
-  }
-
-  ngOnDestroy(): void {
-    console.log('Method not implemented.');
   }
 }
