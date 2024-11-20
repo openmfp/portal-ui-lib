@@ -3,11 +3,3 @@ import { LuigiNode } from '../../models';
 export interface UserSettingsConfigService {
   getUserSettings(luigiNodes: Record<string, LuigiNode[]>): Promise<any>;
 }
-
-export class NoopUserSettingsConfigService
-  implements UserSettingsConfigService
-{
-  async getUserSettings(luigiNodes: Record<string, LuigiNode[]>): Promise<any> {
-    return undefined;
-  }
-}

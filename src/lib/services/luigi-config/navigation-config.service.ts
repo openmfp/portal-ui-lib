@@ -1,8 +1,7 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import {
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
@@ -25,14 +24,16 @@ export class NavigationConfigService {
     private luigiCoreService: LuigiCoreService,
     private luigiNodesService: LuigiNodesService,
     private intentNavigationService: IntentNavigationService,
+    private navigationGlobalContextConfigService: NavigationGlobalContextConfigService,
+    @Optional()
     @Inject(LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN)
     private luigiBreadcrumbConfigService: LuigiBreadcrumbConfigService,
+    @Optional()
     @Inject(LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN)
     private userProfileConfigService: UserProfileConfigService,
+    @Optional()
     @Inject(LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN)
     private appSwitcherConfigService: AppSwitcherConfigService,
-    @Inject(LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN)
-    private navigationGlobalContextConfigService: NavigationGlobalContextConfigService,
     @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService
@@ -58,10 +59,10 @@ export class NavigationConfigService {
     return {
       nodes: luigiNodes,
       viewGroupSettings: this.buildViewGroups(allNodes),
-      appSwitcher: this.appSwitcherConfigService.getAppSwitcher(luigiNodes),
+      appSwitcher: this.appSwitcherConfigService?.getAppSwitcher(luigiNodes),
       globalContext:
-        this.navigationGlobalContextConfigService.getGlobalContext(),
-      profile: await this.userProfileConfigService.getProfile(),
+        await this.navigationGlobalContextConfigService.getGlobalContext(),
+      profile: await this.userProfileConfigService?.getProfile(),
       addNavHrefs: true,
       contextSwitcher: undefined,
       nodeAccessibilityResolver: this.luigiNodesService.nodePolicyResolver,
@@ -70,7 +71,7 @@ export class NavigationConfigService {
       nodeChangeHook: function (prevNode, nextNode) {
         this.nodeChangeHookConfigService.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
-      breadcrumbs: this.luigiBreadcrumbConfigService.getBreadcrumbsConfig(),
+      breadcrumbs: this.luigiBreadcrumbConfigService?.getBreadcrumbsConfig(),
     };
   }
 

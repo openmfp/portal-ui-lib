@@ -20,11 +20,3 @@ export interface LuigiBreadcrumb {
 export interface LuigiBreadcrumbConfigService {
   getBreadcrumbsConfig(): LuigiBreadcrumb;
 }
-
-export class NoopLuigiBreadcrumbConfigService
-  implements LuigiBreadcrumbConfigService
-{
-  getBreadcrumbsConfig(): LuigiBreadcrumb {
-    return undefined;
-  }
-}

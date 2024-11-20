@@ -1,16 +1,14 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { isMatch } from 'lodash';
 import {
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
-  LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
 import { matchesJMESPath } from '../../utilities';
 import { ConfigService } from '../portal';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
-import { LuigiNodeExtendedContextService } from './luigi-node-extended-context.service';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeAccessHandlingService } from './node-access-handling.service';
 import { NodeSortingService } from './node-sorting.service';
@@ -23,13 +21,13 @@ export class NodesProcessingService {
     private luigiNodesService: LuigiNodesService,
     private nodeSortingService: NodeSortingService,
     private commonGlobalLuigiNodesService: CommonGlobalLuigiNodesService,
+    private nodeUtilsService: NodeUtilsService,
+    @Optional()
     @Inject(LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN)
     private nodeAccessHandlingService: NodeAccessHandlingService,
+    @Optional()
     @Inject(LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN)
-    private customGlobalNodesService: CustomGlobalNodesService,
-    @Inject(LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN)
-    private luigiNodeExtendedContextService: LuigiNodeExtendedContextService,
-    private nodeUtilsService: NodeUtilsService
+    private customGlobalNodesService: CustomGlobalNodesService
   ) {}
 
   async processNodes(
@@ -41,7 +39,7 @@ export class NodesProcessingService {
       ...(childrenByEntity['global'] || []),
       ...(childrenByEntity['global.bottom'] || []),
       ...(childrenByEntity['global.topnav'] || []),
-      ...(await this.customGlobalNodesService.getCustomGlobalNodes()),
+      ...((await this.customGlobalNodesService?.getCustomGlobalNodes()) || []),
       this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
     ];
 
@@ -62,17 +60,6 @@ export class NodesProcessingService {
     });
 
     globalNodes.sort(this.nodeSortingService.nodeComparison);
-
-    // enrich context
-    const nodeLuigiContext =
-      await this.luigiNodeExtendedContextService.createLuigiNodeContext(
-        envConfig
-      );
-    globalNodes.forEach((node) => {
-      const ctx = node.context || {};
-      node.context = { ...nodeLuigiContext, ...ctx };
-    });
-
     return globalNodes;
   }
 
@@ -148,13 +135,14 @@ export class NodesProcessingService {
       node.children = (ctx: any) =>
         directChildren
           .filter((child) => this.visibleForContext(ctx, child))
-          .map((child) =>
-            this.nodeAccessHandlingService.nodeAccessHandling(
-              ctx,
-              child,
-              portalConfig,
-              envConfig
-            )
+          .map(
+            (child) =>
+              this.nodeAccessHandlingService?.nodeAccessHandling(
+                ctx,
+                child,
+                portalConfig,
+                envConfig
+              ) || child
           );
     }
 
@@ -319,13 +307,14 @@ export class NodesProcessingService {
     return this.nodeSortingService.sortNodes(
       children
         .filter((child) => this.visibleForContext(child.context, child))
-        .map((child) =>
-          this.nodeAccessHandlingService.nodeAccessHandling(
-            child.context,
-            child,
-            portalConfig,
-            envConfig
-          )
+        .map(
+          (child) =>
+            this.nodeAccessHandlingService?.nodeAccessHandling(
+              child.context,
+              child,
+              portalConfig,
+              envConfig
+            ) || child
         )
     );
   }

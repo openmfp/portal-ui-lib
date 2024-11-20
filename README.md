@@ -183,6 +183,47 @@ const portalOptions: PortalOptions = {
 }
 ```
 
+#### The luigiExtendedGlobalContextConfigService option
+
+By default, in the [Luigi's global context](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=globalcontext) following data is set by the library and available:
+
+```json
+{
+  "portalContext": {...} ,
+  "userId": "logged in user id",
+  "userEmail": "logged in user email",
+  "token": "id token of the logged in user"
+}
+```
+
+With the `luigiExtendedGlobalContextConfigService` option you can define global data you want to be available alongside with the default values present.
+The Luigi's global context is available afterwards in all the micro-frontends.
+
+```ts
+import { LuigiExtendedGlobalContextConfigService, LuigiNode } from '@openmfp/portal-ui-lib';
+
+export class LuigiExtendedGlobalContextConfigServiceImpl implements LuigiExtendedGlobalContextConfigService {
+
+  async createLuigiExtendedGlobalContext(): Promise<ExtendedGlobalContext> {
+
+    return {
+      isLocal: true,
+      analyticsConfig: 'global',
+    };
+  }
+}
+```
+
+In your `main.ts` you can provide your custom implementation like so:
+
+```ts
+const portalOptions: PortalOptions = {
+  luigiExtendedGlobalContextConfigService: LuigiExtendedGlobalContextConfigServiceImpl,
+  // ... other portal options
+}
+```
+
+
 #### The userSettingsConfigService option
 
 With this you can define the [Luigi user settings and a corresponding userSettingGroups configuration](https://docs.luigi-project.io/docs/user-settings?section=user-settings)
@@ -520,7 +561,7 @@ export function actWhenUserAuthSuccedsful(
 
 The library executes rest calls `"/rest/**"` against backend running with the library [portal-servet-lib](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library).
 In order for the calls to reach your backend the `proxy.config.json` needs to be provided, 
-with the target reaching the place where the backend is running `"target": "http://localhost:3000"`.
+with the target reaching the place where and on what port the backend is running `"target": "http://localhost:3000"`.
 
 ```json
 {

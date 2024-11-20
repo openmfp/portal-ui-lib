@@ -7,7 +7,7 @@ The [Luigi context](https://docs.luigi-project.io/docs/navigation-advanced?secti
 The `portalContext` field in the context provides API URLs to often used services:
 
 ```json
- "frameContext": {
+ "portalContext": {
     "accountsServiceApiUrl": "https://api.example.com/accounts/query",
     "organizationServiceApiUrl": "https://api.example.com/org/query"
   },

@@ -44,7 +44,7 @@ describe('LuigiComponent', () => {
 
   describe('ngOnInit', () => {
     it('should initialize Luigi configuration successfully', async () => {
-      const mockConfig = { navigation: 'config' };
+      const mockConfig = { navigation: {} };
       const mockAuthData = {
         idToken: 'test-token',
         accessTokenExpirationDate: 256,

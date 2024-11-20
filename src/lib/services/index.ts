@@ -20,7 +20,7 @@ export * from './luigi-config/luigi-auth-events-callbacks.service';
 
 export * from './luigi-nodes/local-configuration.service';
 export * from './luigi-nodes/luigi-nodes.service';
-export * from './luigi-nodes/luigi-node-extended-context.service';
+export * from './luigi-nodes/luigi-extended-global-context-config.service';
 export * from './luigi-nodes/custom-global-nodes.service';
 export * from './luigi-nodes/node-access-handling.service';
 export * from './luigi-nodes/node-utils.service';
