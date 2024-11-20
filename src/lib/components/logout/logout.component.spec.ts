@@ -1,9 +1,15 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { mock } from 'jest-mock-extended';
 import { of } from 'rxjs';
 import { LogoutComponent } from './logout.component';
-import { LuigiCoreService, I18nService } from '../../services';
+import {
+  LuigiCoreService,
+  I18nService,
+  LoginEventService,
+  LoginEventType,
+} from '../../services';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
@@ -13,9 +19,12 @@ describe('LogoutComponent', () => {
   let mockLuigiCoreService: LuigiCoreService;
   let mockRef: ChangeDetectorRef;
   let mockI18nService: I18nService;
+  let loginEventServiceMock: jest.Mocked<LoginEventService>;
 
   beforeEach(waitForAsync(() => {
-    mockRoute = { queryParams: of({ error: 'tokenExpired' }) } as any;
+    mockRoute = {
+      snapshot: { queryParams: of({ error: 'tokenExpired' }) },
+    } as any;
     mockRouter = { navigate: jest.fn() } as any;
     mockLuigiCoreService = {
       removeAuthData: jest.fn(),
@@ -25,6 +34,7 @@ describe('LogoutComponent', () => {
     mockI18nService = {
       getTranslationAsync: jest.fn().mockResolvedValue('test translation'),
     } as any;
+    loginEventServiceMock = mock<LoginEventService>();
 
     TestBed.configureTestingModule({
       providers: [
@@ -33,6 +43,7 @@ describe('LogoutComponent', () => {
         { provide: LuigiCoreService, useValue: mockLuigiCoreService },
         { provide: ChangeDetectorRef, useValue: mockRef },
         { provide: I18nService, useValue: mockI18nService },
+        { provide: LoginEventService, useValue: loginEventServiceMock },
       ],
     }).compileComponents();
   }));
@@ -53,6 +64,7 @@ describe('LogoutComponent', () => {
 
   it('should set the headline, hint, and btnText correctly on init', async () => {
     await component.ngOnInit();
+
     expect(component.headline).toBe('test translation');
     expect(component.hint).toBe('test translation');
     expect(component.btnText).toBe('test translation');
@@ -60,57 +72,40 @@ describe('LogoutComponent', () => {
 
   it('should handle error cases correctly', async () => {
     await component.ngOnInit();
+
     expect(component.headline).toBe('test translation'); // assuming translation for SESSION_EXPIRED is 'test translation'
-    expect(sessionStorage.getItem('portal.relogin.url')).toBeNull();
   });
 
-  it('should navigate to login target on login if loginTarget is set', () => {
-    history.replaceState = jest.fn();
-    window.dispatchEvent = jest.fn();
-
-    component.loginTarget = 'http://example.com';
+  it('should trigger event type LOGIN_TRIGGERED', () => {
     component.login();
 
-    expect(history.replaceState).toHaveBeenCalledWith(
-      {},
-      '',
-      'http://example.com'
-    );
-    expect(window.dispatchEvent).toHaveBeenCalledWith(
-      new CustomEvent('popstate')
-    );
+    expect(loginEventServiceMock.loginEvent).toHaveBeenCalledWith({
+      type: LoginEventType.LOGIN_TRIGGERED,
+    });
   });
 
-  it('should navigate to home on login if loginTarget is not set', () => {
-    component.loginTarget = '';
-    component.login();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
-  });
+  it('should set headline to SESSION_EXPIRED for tokenExpired error', async () => {
+    mockRoute.snapshot.queryParams = { error: 'tokenExpired' };
 
-  it('should parse URL parameters', () => {
-    component.parseUrlParameters();
-    expect(component['urlParams']['error']).toBe('tokenExpired');
-  });
-
-  it('should set headline to SESSION_EXPIRED for tokenExpired error and remove last route from session storage', async () => {
-    mockRoute.queryParams = of({ error: 'tokenExpired' });
-    sessionStorage.setItem('portal.relogin.url', 'http://localhost');
     await component.ngOnInit();
+
     expect(component.headline).toBe('test translation'); // assuming translation for SESSION_EXPIRED is 'test translation'
-    expect(component.loginTarget).toBe('http://localhost'); // assuming translation for SESSION_EXPIRED is 'test translation'
-    expect(sessionStorage.getItem('portal.relogin.url')).toBeNull(); // assuming translation for SESSION_EXPIRED is 'test translation'
   });
 
   it('should set headline and hint for loginError', async () => {
-    mockRoute.queryParams = of({ error: 'loginError' });
+    mockRoute.snapshot.queryParams = { error: 'loginError' };
+
     await component.ngOnInit();
+
     expect(component.headline).toBe('test translation'); // assuming translation for SIGN_IN_ERROR is 'test translation'
     expect(component.hint).toBe('test translation'); // assuming translation for SIGN_IN_ERROR_HINT is 'test translation'
   });
 
   it('should set headline and hint and remove auth data for invalidToken', async () => {
-    mockRoute.queryParams = of({ error: 'invalidToken' });
+    mockRoute.snapshot.queryParams = { error: 'invalidToken' };
+
     await component.ngOnInit();
+
     expect(component.headline).toBe('test translation'); // assuming translation for INVALID_TOKEN_ERROR is 'test translation'
     expect(component.hint).toBe('test translation'); // assuming translation for INVALID_TOKEN_ERROR_HINT is 'test translation'
     expect(mockLuigiCoreService.removeAuthData).toHaveBeenCalled();

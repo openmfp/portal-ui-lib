@@ -1,99 +1,79 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { LuigiComponent } from './luigi.component';
 import {
-  LuigiCoreService,
   AuthService,
   LuigiConfigService,
+  LuigiCoreService,
 } from '../../services';
 
 describe('LuigiComponent', () => {
   let component: LuigiComponent;
-  let luigiConfigServiceMock: jest.Mocked<LuigiConfigService>;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
-  let authServiceMock: jest.Mocked<AuthService>;
+  let luigiConfigService: jest.Mocked<LuigiConfigService>;
+  let luigiCoreService: jest.Mocked<LuigiCoreService>;
+  let authService: jest.Mocked<AuthService>;
 
-  beforeEach(() => {
-    // Create mock services
-    luigiConfigServiceMock = {
+  beforeEach(async () => {
+    luigiConfigService = {
       getLuigiConfiguration: jest.fn(),
     } as any;
 
-    luigiCoreServiceMock = {
+    luigiCoreService = {
       setConfig: jest.fn(),
-      auth: jest.fn(),
+      setAuthData: jest.fn(),
     } as any;
 
-    authServiceMock = {
+    authService = {
       getAuthData: jest.fn(),
     } as any;
 
-    // Set up successful promise resolution for getLuigiConfiguration
-    luigiConfigServiceMock.getLuigiConfiguration.mockResolvedValue({
-      some: 'config',
-    } as any);
+    await TestBed.configureTestingModule({
+      imports: [LuigiComponent],
+      providers: [
+        { provide: LuigiConfigService, useValue: luigiConfigService },
+        { provide: LuigiCoreService, useValue: luigiCoreService },
+        { provide: AuthService, useValue: authService },
+      ],
+    }).compileComponents();
 
-    // Set up auth mock
-    luigiCoreServiceMock.setAuthData = jest.fn();
-
-    // Create component instance
-    component = new LuigiComponent(
-      luigiConfigServiceMock,
-      luigiCoreServiceMock,
-      authServiceMock
-    );
+    component = TestBed.createComponent(LuigiComponent).componentInstance;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call getLuigiConfiguration on initialization', fakeAsync(() => {
-    tick();
+  describe('ngOnInit', () => {
+    it('should initialize Luigi configuration successfully', async () => {
+      const mockConfig = { navigation: 'config' };
+      const mockAuthData = {
+        idToken: 'test-token',
+        accessTokenExpirationDate: 256,
+      };
 
-    expect(luigiConfigServiceMock.getLuigiConfiguration).toHaveBeenCalled();
-  }));
+      luigiConfigService.getLuigiConfiguration.mockResolvedValue(mockConfig);
+      authService.getAuthData.mockReturnValue(mockAuthData);
 
-  it('should set Luigi config when getLuigiConfiguration resolves', fakeAsync(() => {
-    tick();
+      await component.ngOnInit();
 
-    expect(luigiCoreServiceMock.setConfig).toHaveBeenCalledWith({
-      some: 'config',
+      expect(luigiConfigService.getLuigiConfiguration).toHaveBeenCalled();
+      expect(luigiCoreService.setConfig).toHaveBeenCalledWith(mockConfig);
+      expect(authService.getAuthData).toHaveBeenCalled();
+      expect(luigiCoreService.setAuthData).toHaveBeenCalledWith(mockAuthData);
     });
-  }));
 
-  it('should set auth data when getLuigiConfiguration resolves', fakeAsync(() => {
-    const mockAuthData = { idToken: 'someToken', accessTokenExpirationDate: 5 };
-    authServiceMock.getAuthData.mockReturnValue(mockAuthData);
+    it('should handle initialization error', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error');
+      const error = new Error('Config error');
 
-    component = new LuigiComponent(
-      luigiConfigServiceMock,
-      luigiCoreServiceMock,
-      authServiceMock
-    );
-    tick();
+      luigiConfigService.getLuigiConfiguration.mockRejectedValue(error);
 
-    expect(authServiceMock.getAuthData).toHaveBeenCalled();
-    expect(luigiCoreServiceMock.setAuthData).toHaveBeenCalledWith(mockAuthData);
-  }));
+      await component.ngOnInit();
 
-  it('should log error when getLuigiConfiguration rejects', fakeAsync(() => {
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    const mockError = new Error('Configuration error');
-    luigiConfigServiceMock.getLuigiConfiguration.mockRejectedValue(mockError);
-
-    // Re-create component to trigger the error
-    component = new LuigiComponent(
-      luigiConfigServiceMock,
-      luigiCoreServiceMock,
-      authServiceMock
-    );
-
-    tick();
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      `Luigi Component init failed: ${mockError.toString()}`
-    );
-
-    consoleErrorSpy.mockRestore();
-  }));
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        `Luigi Component init failed: ${error.toString()}`
+      );
+      expect(luigiCoreService.setConfig).not.toHaveBeenCalled();
+      expect(luigiCoreService.setAuthData).not.toHaveBeenCalled();
+    });
+  });
 });

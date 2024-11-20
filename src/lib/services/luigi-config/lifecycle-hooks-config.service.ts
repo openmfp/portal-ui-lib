@@ -41,8 +41,9 @@ export class LifecycleHooksConfigService {
           childrenByEntity =
             await this.luigiNodesService.retrieveChildrenByEntity();
         } catch (e) {
-          console.error(`Error retrieving Luigi navigation nodes ${e}`);
+          console.error(`Error retrieving Luigi navigation nodes`, e);
           this.openErrorDialog();
+          return;
         }
 
         const config = {
@@ -76,13 +77,9 @@ export class LifecycleHooksConfigService {
       this.staticSettingsConfigService.getInitialStaticSettingsConfig()[
         'header'
       ].title;
-    this.luigiCoreService
-      .showAlert({
-        text: $localize`There was an error loading the ${appTitle}`,
-        type: 'error',
-      })
-      .then(() => {
-        location.reload();
-      });
+    this.luigiCoreService.showAlert({
+      text: $localize`There was an error loading the ${appTitle}`,
+      type: 'error',
+    });
   }
 }

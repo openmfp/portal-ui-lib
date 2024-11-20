@@ -5,11 +5,7 @@ import {
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import {
-  ClientEnvironment,
-  LuigiNode,
-  PortalConfig,
-} from '../../models';
+import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
 import { matchesJMESPath } from '../../utilities';
 import { ConfigService } from '../portal';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
@@ -34,7 +30,7 @@ export class NodesProcessingService {
     @Inject(LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN)
     private luigiNodeExtendedContextService: LuigiNodeExtendedContextService,
     private nodeUtilsService: NodeUtilsService
-  ) { }
+  ) {}
 
   async processNodes(
     childrenByEntity: Record<string, LuigiNode[]>,

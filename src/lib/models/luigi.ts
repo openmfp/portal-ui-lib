@@ -5,6 +5,7 @@ export interface LuigiConfig {
   lifecycleHooks?: any;
   navigation?: any;
   userSettings?: any;
+  communication?: any;
   globalSearch?: any;
 }
 

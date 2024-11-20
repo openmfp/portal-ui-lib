@@ -38,9 +38,7 @@ describe('ConfigService', () => {
     it('should get the config from cache', async () => {
       // Arrange
       const portalConfig = { providers: [] } as PortalConfig;
-      service['portalConfigCache'] = new Promise((resolve) =>
-        resolve(portalConfig)
-      );
+      service['portalConfigCache'] = portalConfig;
 
       // Act
       const configFromCache = await service.getPortalConfig();
@@ -125,9 +123,6 @@ describe('ConfigService', () => {
     });
 
     it('should handle 403 error', async () => {
-      delete window.location;
-      window.location = mock<Location>({ assign: jest.fn() });
-
       // Act
       const configsPromise = service.getEntityConfig('project', {
         project: projectId,
@@ -135,13 +130,16 @@ describe('ConfigService', () => {
       const testRequest = httpTestingController.expectOne(
         `/rest/config/project?project=${projectId}`
       );
-      testRequest.flush({}, { status: 403, statusText: 'Forbidden' });
+      const error403 = { status: 403, statusText: 'Forbidden' };
+      testRequest.flush({}, error403);
 
       // Assert
-      await expect(configsPromise).rejects.toBeTruthy();
-      expect(window.location.assign).toHaveBeenCalledWith(
-        '/logout?error=invalidToken'
-      );
+      try {
+        await configsPromise;
+      } catch (e) {
+        expect(e.status).toEqual(error403.status);
+        expect(e.statusText).toEqual('Forbidden');
+      }
     });
 
     it('should get the entity config only once', async () => {

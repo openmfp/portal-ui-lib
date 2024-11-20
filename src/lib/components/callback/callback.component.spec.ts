@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AuthService } from '../../services';
+import { mock } from 'jest-mock-extended';
+import { AuthService, LoginEventService, LoginEventType } from '../../services';
 import { CallbackComponent } from './callback.component';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
@@ -28,10 +29,12 @@ describe('CallbackComponent', () => {
   let location: Location;
   let rootFixture: ComponentFixture<TestRootComponent>;
   let rootComponent: TestRootComponent;
-  let authService: AuthService;
+  let authServiceMock: AuthService;
+  let loginEventServiceMock: jest.Mocked<LoginEventService>;
 
   beforeEach(() => {
-    authService = { auth: jest.fn() } as any as AuthService;
+    authServiceMock = { auth: jest.fn() } as any as AuthService;
+    loginEventServiceMock = mock<LoginEventService>();
     TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot(
@@ -44,7 +47,8 @@ describe('CallbackComponent', () => {
         ),
       ],
     })
-      .overrideProvider(AuthService, { useValue: authService })
+      .overrideProvider(AuthService, { useValue: authServiceMock })
+      .overrideProvider(LoginEventService, { useValue: loginEventServiceMock })
       .compileComponents();
 
     rootFixture = TestBed.createComponent(TestRootComponent);
@@ -56,16 +60,19 @@ describe('CallbackComponent', () => {
     location = TestBed.inject(Location);
   });
 
-  it('throws error and redirect to the logout with login error if there is no code', async () => {
+  it('throws error and trigger redirect event to the logout with login error if there is no code', async () => {
     await router.navigate(['/callback']);
 
     const component = rootComponent.routerOutlet.component;
 
     expect(component).toBeTruthy();
-    expect(location.path()).toBe('/logout?error=loginError');
+    expect(loginEventServiceMock.loginEvent).toHaveBeenCalledWith({
+      type: LoginEventType.LOGOUT_TRIGGERED,
+      queryParams: { error: 'loginError' },
+    });
   });
 
-  it('redirect to the logout with login error if there is no code', async () => {
+  it('trigger redirect event to the logout with login error if there is no code', async () => {
     const state = btoa(encodeURI('http://localhost'));
     await router.navigate(['/callback'], {
       queryParams: {
@@ -76,17 +83,23 @@ describe('CallbackComponent', () => {
     const component = rootComponent.routerOutlet.component;
 
     expect(component).toBeTruthy();
-    expect(location.path()).toBe('/logout?error=loginError');
+    expect(loginEventServiceMock.loginEvent).toHaveBeenCalledWith({
+      type: LoginEventType.LOGOUT_TRIGGERED,
+      queryParams: { error: 'loginError' },
+    });
   });
 
-  it('redirect to the logout with login error if the state does not match', async () => {
+  it('trigger redirect event to the logout with login error if the state does not match', async () => {
     await router.navigate(['/callback'], {
       queryParams: {
         code: 'foo',
       },
     });
 
-    expect(location.path()).toBe('/logout?error=loginError');
+    expect(loginEventServiceMock.loginEvent).toHaveBeenCalledWith({
+      type: LoginEventType.LOGOUT_TRIGGERED,
+      queryParams: { error: 'loginError' },
+    });
   });
 
   it('redirect to home if everything went well', async () => {
