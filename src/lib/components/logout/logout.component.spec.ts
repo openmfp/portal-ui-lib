@@ -74,7 +74,6 @@ describe('LogoutComponent', () => {
     await component.ngOnInit();
 
     expect(component.headline).toBe('test translation'); // assuming translation for SESSION_EXPIRED is 'test translation'
-    expect(sessionStorage.getItem('portal.relogin.url')).toBeNull();
   });
 
   it('should trigger event type LOGIN_TRIGGERED', () => {
@@ -85,7 +84,7 @@ describe('LogoutComponent', () => {
     });
   });
 
-  it('should set headline to SESSION_EXPIRED for tokenExpired error and remove last route from session storage', async () => {
+  it('should set headline to SESSION_EXPIRED for tokenExpired error', async () => {
     mockRoute.snapshot.queryParams = { error: 'tokenExpired' };
 
     await component.ngOnInit();

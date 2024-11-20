@@ -25,13 +25,13 @@ export class ConfigService {
       return this.portalConfigCache;
     }
 
-    // cache response, since it gets called multiple times due to Luigi internals
     const options = this.requestHeadersService.createOptionsWithAuthHeader();
     try {
       await firstValueFrom(
-        this.http
-          .get<PortalConfig>('/rest/config', options)
-          .pipe(tap((config) => (this.portalConfigCache = config)))
+        this.http.get<PortalConfig>('/rest/config', options).pipe(
+          // cache response, since it gets called multiple times due to Luigi internals
+          tap((config: PortalConfig) => (this.portalConfigCache = config))
+        )
       );
     } catch (e) {
       if (e instanceof HttpErrorResponse && e.status === 403) {

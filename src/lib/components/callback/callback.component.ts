@@ -22,7 +22,7 @@ export class CallbackComponent {
     });
   }
 
-  private async navigateToLogoutWithLoginError() {
+  private async triggerLogoutEventWithError() {
     this.loginEventService.loginEvent({
       type: LoginEventType.LOGOUT_TRIGGERED,
       queryParams: { error: 'loginError' },
@@ -34,7 +34,7 @@ export class CallbackComponent {
       const appStateUrl = this.createAppStateUrl(state);
 
       if (!code || !this.stateOriginMatchesOrigin(appStateUrl)) {
-        return this.navigateToLogoutWithLoginError();
+        return this.triggerLogoutEventWithError();
       }
 
       await this.authService.auth(code, state);
@@ -43,7 +43,7 @@ export class CallbackComponent {
         this.createNavigationParams(appStateUrl)
       );
     } catch (e) {
-      this.navigateToLogoutWithLoginError();
+      this.triggerLogoutEventWithError();
     }
   }
 

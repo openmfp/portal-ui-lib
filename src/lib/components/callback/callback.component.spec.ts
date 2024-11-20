@@ -60,7 +60,7 @@ describe('CallbackComponent', () => {
     location = TestBed.inject(Location);
   });
 
-  it('throws error and redirect to the logout with login error if there is no code', async () => {
+  it('throws error and trigger redirect event to the logout with login error if there is no code', async () => {
     await router.navigate(['/callback']);
 
     const component = rootComponent.routerOutlet.component;
@@ -72,7 +72,7 @@ describe('CallbackComponent', () => {
     });
   });
 
-  it('redirect to the logout with login error if there is no code', async () => {
+  it('trigger redirect event to the logout with login error if there is no code', async () => {
     const state = btoa(encodeURI('http://localhost'));
     await router.navigate(['/callback'], {
       queryParams: {
@@ -89,7 +89,7 @@ describe('CallbackComponent', () => {
     });
   });
 
-  it('redirect to the logout with login error if the state does not match', async () => {
+  it('trigger redirect event to the logout with login error if the state does not match', async () => {
     await router.navigate(['/callback'], {
       queryParams: {
         code: 'foo',
