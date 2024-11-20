@@ -135,7 +135,6 @@ describe('ConfigService', () => {
 
       // Asser
       try {
-        try {
         await configsPromise;
       } catch (e) {
         expect(e.status).toEqual(error403.status);
