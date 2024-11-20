@@ -47,6 +47,8 @@ export class NodesProcessingService {
       if (!node.hideFromNav && node.entityType !== 'global.topnav') {
         node.globalNav = node.entityType === 'global.bottom' ? 'bottom' : true;
       }
+
+      node.context = node.context || {};
     });
 
     globalNodes.forEach((node) => {
