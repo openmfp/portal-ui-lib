@@ -3,7 +3,7 @@ import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 
 export interface NodeChangeHookConfigService {
-  nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode);
+  nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode): void;
 }
 
 @Injectable({ providedIn: 'root' })

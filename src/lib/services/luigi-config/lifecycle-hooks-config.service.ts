@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { $localize } from '@angular/localize/init';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -25,8 +25,10 @@ export class LifecycleHooksConfigService {
     private navigationConfigService: NavigationConfigService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService,
+    @Optional()
     @Inject(LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private userSettingsConfigService: UserSettingsConfigService,
+    @Optional()
     @Inject(LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN)
     private globalSearchConfigService: GlobalSearchConfigService
   ) {}
@@ -53,10 +55,10 @@ export class LifecycleHooksConfigService {
             await this.staticSettingsConfigService.getStaticSettingsConfig(),
           routing: this.routingConfigService.getRoutingConfig(),
           userSettings:
-            await this.userSettingsConfigService.getUserSettings(
+            await this.userSettingsConfigService?.getUserSettings(
               childrenByEntity
             ),
-          globalSearch: this.globalSearchConfigService.getGlobalSearchConfig(),
+          globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
           navigation: await this.navigationConfigService.getNavigationConfig(
             childrenByEntity,
             envConfig

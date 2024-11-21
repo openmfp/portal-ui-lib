@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import {
   EnvironmentProviders,
   makeEnvironmentProviders,
+  Provider,
   provideZoneChangeDetection,
   Type,
 } from '@angular/core';
@@ -18,11 +19,10 @@ import {
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
-  LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
+  LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -32,26 +32,15 @@ import { portalRouts } from './portal-routing';
 import {
   AppSwitcherConfigService,
   CustomGlobalNodesService,
-  CustomGlobalNodesServiceImpl,
   CustomMessageListener,
   GlobalSearchConfigService,
   LocalConfigurationService,
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
-  LuigiNodeExtendedContextService,
-  LuigiNodeExtendedContextServiceImpl,
-  NavigationGlobalContextConfigService,
-  NavigationGlobalContextConfigServiceImpl,
+  LuigiExtendedGlobalContextConfigService,
   NodeAccessHandlingService,
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
-  NoopAppSwitcherConfigService,
-  NoopGlobalSearchConfigService,
-  NoopLuigiAuthEventsCallbacksService,
-  NoopLuigiBreadcrumbConfigService,
-  NoopNodeAccessHandlingService,
-  NoopUserProfileConfigService,
-  NoopUserSettingsConfigService,
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
   UserProfileConfigService,
@@ -79,11 +68,8 @@ export interface PortalOptions {
   /** Service providing luigi app switcher configuration **/
   appSwitcherConfigService?: Type<AppSwitcherConfigService>;
 
-  /** Service providing luigi navigation global context configuration **/
-  navigationGlobalContextConfigService?: Type<NavigationGlobalContextConfigService>;
-
   /** Service providing luigi node extended context configuration **/
-  luigiNodeExtendedContextService?: Type<LuigiNodeExtendedContextService>;
+  luigiExtendedGlobalContextConfigService?: Type<LuigiExtendedGlobalContextConfigService>;
 
   /** Service providing custom global level nodes **/
   customGlobalNodesService?: Type<CustomGlobalNodesService>;
@@ -107,15 +93,7 @@ export interface PortalOptions {
 export function providePortal(
   options: PortalOptions = {}
 ): EnvironmentProviders {
-  const customMessageListeners = (options.customMessageListeners || []).map(
-    (customMessageListenerClass) => ({
-      provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
-      multi: true,
-      useClass: customMessageListenerClass,
-    })
-  );
-
-  return makeEnvironmentProviders([
+  const providers: (Provider | EnvironmentProviders)[] = [
     provideHttpClient(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideBootstrap(),
@@ -123,55 +101,10 @@ export function providePortal(
     provideNavigationTracker(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    ...customMessageListeners,
-    {
-      provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.luigiAuthEventsCallbacksService ||
-        NoopLuigiAuthEventsCallbacksService,
-    },
-    {
-      provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.nodeAccessHandlingService || NoopNodeAccessHandlingService,
-    },
     {
       provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
       useClass:
         options.nodeChangeHookConfigService || NodeChangeHookConfigServiceImpl,
-    },
-    {
-      provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.luigiBreadcrumbConfigService ||
-        NoopLuigiBreadcrumbConfigService,
-    },
-    {
-      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.userProfileConfigService || NoopUserProfileConfigService,
-    },
-    {
-      provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.customGlobalNodesService || CustomGlobalNodesServiceImpl,
-    },
-    {
-      provide: LUIGI_NODES_EXTENDED_CONTEXT_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.luigiNodeExtendedContextService ||
-        LuigiNodeExtendedContextServiceImpl,
-    },
-    {
-      provide: LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.navigationGlobalContextConfigService ||
-        NavigationGlobalContextConfigServiceImpl,
-    },
-    {
-      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.appSwitcherConfigService || NoopAppSwitcherConfigService,
     },
     {
       provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -183,15 +116,86 @@ export function providePortal(
       useClass:
         options.localConfigurationService || LocalConfigurationServiceImpl,
     },
-    {
-      provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.userSettingsConfigService || NoopUserSettingsConfigService,
-    },
-    {
-      provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.globalSearchConfigService || NoopGlobalSearchConfigService,
-    },
-  ]);
+    ...addOptionalProviders(options),
+  ];
+
+  return makeEnvironmentProviders(providers);
 }
+
+const addOptionalProviders = (
+  options: PortalOptions
+): (Provider | EnvironmentProviders)[] => {
+  const providers = [];
+  (options.customMessageListeners || []).forEach((customMessageListenerClass) =>
+    providers.push({
+      provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+      multi: true,
+      useClass: customMessageListenerClass,
+    })
+  );
+
+  if (options.luigiAuthEventsCallbacksService) {
+    providers.push({
+      provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
+      useClass: options.luigiAuthEventsCallbacksService,
+    });
+  }
+
+  if (options.nodeAccessHandlingService) {
+    providers.push({
+      provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+      useClass: options.nodeAccessHandlingService,
+    });
+  }
+
+  if (options.luigiBreadcrumbConfigService) {
+    providers.push({
+      provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.luigiBreadcrumbConfigService,
+    });
+  }
+
+  if (options.userProfileConfigService) {
+    providers.push({
+      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.userProfileConfigService,
+    });
+  }
+
+  if (options.customGlobalNodesService) {
+    providers.push({
+      provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+      useClass: options.customGlobalNodesService,
+    });
+  }
+
+  if (options.luigiExtendedGlobalContextConfigService) {
+    providers.push({
+      provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.luigiExtendedGlobalContextConfigService,
+    });
+  }
+
+  if (options.appSwitcherConfigService) {
+    providers.push({
+      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.appSwitcherConfigService,
+    });
+  }
+
+  if (options.userSettingsConfigService) {
+    providers.push({
+      provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.userSettingsConfigService,
+    });
+  }
+
+  if (options.globalSearchConfigService) {
+    providers.push({
+      provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.globalSearchConfigService,
+    });
+  }
+
+  return providers;
+};

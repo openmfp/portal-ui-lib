@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
-import { LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { Injectable } from '@angular/core';
 import { AuthEvent } from '../../models';
 import { NavigationGlobalContextConfigService } from '../luigi-config/navigation-global-context-config.service';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -10,7 +9,6 @@ export class SessionRefreshService {
   constructor(
     private authService: AuthService,
     private luigiCoreService: LuigiCoreService,
-    @Inject(LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN)
     private navigationGlobalContextConfigService: NavigationGlobalContextConfigService
   ) {}
 
@@ -24,7 +22,7 @@ export class SessionRefreshService {
     this.authService.authEvent(AuthEvent.AUTH_REFRESHED);
     this.luigiCoreService.setAuthData(this.authService.getAuthData());
     this.luigiCoreService.setGlobalContext(
-      this.navigationGlobalContextConfigService.getGlobalContext(),
+      await this.navigationGlobalContextConfigService.getGlobalContext(),
       true
     );
     // Luigi executes the TokenExpireSoon only once and afterwards removes an interval which checks expiration.

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent } from '../../models';
@@ -11,6 +11,7 @@ import { AuthService } from '../portal';
 export class AuthConfigService {
   constructor(
     private authService: AuthService,
+    @Optional()
     @Inject(LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN)
     private luigiAuthEventsCallbacksService: LuigiAuthEventsCallbacksService
   ) {}
@@ -61,30 +62,33 @@ export class AuthConfigService {
       events: {
         onAuthSuccessful: (settings, authData) => {
           this.authService.authEvent(AuthEvent.AUTH_SUCCESSFUL);
-          this.luigiAuthEventsCallbacksService.onAuthSuccessful(
+          this.luigiAuthEventsCallbacksService?.onAuthSuccessful(
             settings,
             authData
           );
         },
         onAuthError: (settings, err) => {
           this.authService.authEvent(AuthEvent.AUTH_ERROR);
-          this.luigiAuthEventsCallbacksService.onAuthError(settings, err);
+          this.luigiAuthEventsCallbacksService?.onAuthError(settings, err);
         },
         onAuthExpired: (settings) => {
           this.authService.authEvent(AuthEvent.AUTH_EXPIRED);
-          this.luigiAuthEventsCallbacksService.onAuthExpired(settings);
+          this.luigiAuthEventsCallbacksService?.onAuthExpired(settings);
         },
         onLogout: (settings) => {
           this.authService.authEvent(AuthEvent.LOGOUT);
-          this.luigiAuthEventsCallbacksService.onLogout(settings);
+          this.luigiAuthEventsCallbacksService?.onLogout(settings);
         },
         onAuthExpireSoon: (settings) => {
           this.authService.authEvent(AuthEvent.AUTH_EXPIRE_SOON);
-          this.luigiAuthEventsCallbacksService.onAuthExpireSoon(settings);
+          this.luigiAuthEventsCallbacksService?.onAuthExpireSoon(settings);
         },
         onAuthConfigError: (settings, err) => {
           this.authService.authEvent(AuthEvent.AUTH_CONFIG_ERROR);
-          this.luigiAuthEventsCallbacksService.onAuthConfigError(settings, err);
+          this.luigiAuthEventsCallbacksService?.onAuthConfigError(
+            settings,
+            err
+          );
         },
       },
     };

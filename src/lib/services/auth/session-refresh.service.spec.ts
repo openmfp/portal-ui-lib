@@ -1,11 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import { LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { NavigationGlobalContextConfigService } from '../luigi-config/navigation-global-context-config.service';
 import { AuthService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
 import { SessionRefreshService } from './session-refresh.service';
-import { AuthData, AuthEvent, AuthTokenData } from '../../models';
+import {
+  AuthData,
+  AuthEvent,
+  AuthTokenData,
+  LuigiGlobalContext,
+} from '../../models';
 
 describe('SessionRefreshService', () => {
   let service: SessionRefreshService;
@@ -39,8 +43,7 @@ describe('SessionRefreshService', () => {
         { provide: AuthService, useValue: authServiceMock },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
         {
-          provide:
-            LUIGI_NAVIGATION_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+          provide: NavigationGlobalContextConfigService,
           useValue: navigationGlobalContextConfigServiceMock,
         },
       ],
@@ -61,8 +64,8 @@ describe('SessionRefreshService', () => {
   describe('refresh', () => {
     it('should successfully refresh the session', async () => {
       //Arrange
-      const globalCtx = {};
-      navigationGlobalContextConfigServiceMock.getGlobalContext.mockReturnValue(
+      const globalCtx = {} as LuigiGlobalContext;
+      navigationGlobalContextConfigServiceMock.getGlobalContext.mockResolvedValue(
         globalCtx
       );
       authService.refresh.mockResolvedValue({} as AuthTokenData);
@@ -92,8 +95,8 @@ describe('SessionRefreshService', () => {
 
     it('should not successfully refresh the session', async () => {
       //Arrange
-      const globalCtx = {};
-      navigationGlobalContextConfigServiceMock.getGlobalContext.mockReturnValue(
+      const globalCtx = {} as LuigiGlobalContext;
+      navigationGlobalContextConfigServiceMock.getGlobalContext.mockResolvedValue(
         globalCtx
       );
       authService.refresh.mockResolvedValue(null);

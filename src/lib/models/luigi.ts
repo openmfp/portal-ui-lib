@@ -1,9 +1,31 @@
+export interface LuigiGlobalContext extends Record<string, any> {
+  portalContext: any;
+  userId: string;
+  userEmail: string;
+  token: string;
+}
+
+export interface LuigiNavigationConfig {
+  nodes?: LuigiNode[];
+  viewGroupSettings?: any;
+  appSwitcher?: any;
+  globalContext?: any;
+  profile?: any;
+  addNavHrefs?: boolean;
+  contextSwitcher?: any;
+  nodeAccessibilityResolver?: any;
+  validWebcomponentUrls?: string;
+  intentMapping?: any;
+  nodeChangeHook?: any;
+  breadcrumbs?: any;
+}
+
 export interface LuigiConfig {
   auth?: any;
   routing?: any;
   settings?: any;
   lifecycleHooks?: any;
-  navigation?: any;
+  navigation?: LuigiNavigationConfig;
   userSettings?: any;
   communication?: any;
   globalSearch?: any;

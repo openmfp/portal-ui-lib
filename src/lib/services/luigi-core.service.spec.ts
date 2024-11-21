@@ -7,6 +7,7 @@ const luigiMock = {
         idToken: 'id_token_mock',
       }),
       setNewlyAuthorized: jest.fn(),
+      removeAuthData: jest.fn(),
     },
   }),
   getGlobalContext: jest.fn(),
@@ -70,6 +71,13 @@ describe('LuigiCoreService', () => {
     expect(luigiMock.auth().store.getAuthData()).toEqual(authData);
   });
 
+  it('should call removeAuthData', () => {
+    const authData = service.removeAuthData();
+
+    expect(luigiMock.auth).toHaveBeenCalled();
+    expect(luigiMock.auth().store.removeAuthData).toHaveBeenCalled();
+  });
+
   it('should call setConfig with correct config', () => {
     const config = { settings: 'value' };
     service.setConfig(config);
@@ -83,8 +91,27 @@ describe('LuigiCoreService', () => {
 
   it('should call setGlobalContext', () => {
     const ctx = {};
+
     service.setGlobalContext(ctx, true);
+
     expect(luigiMock.setGlobalContext).toHaveBeenCalledWith(ctx, true);
+  });
+
+  it('should call setGlobalContext while calling the setInGlobalContext', () => {
+    const globalCtx = { globalValue: 'globalValue', toChange: 0 };
+    luigiMock.getGlobalContext.mockReturnValue(globalCtx);
+    const ctx = { setInGlobalContext: 'setInGlobalContext', toChange: 17 };
+
+    service.setInGlobalContext(ctx, true);
+
+    expect(luigiMock.setGlobalContext).toHaveBeenCalledWith(
+      {
+        globalValue: 'globalValue',
+        setInGlobalContext: 'setInGlobalContext',
+        toChange: 17,
+      },
+      true
+    );
   });
 
   it('should call getConfig', () => {

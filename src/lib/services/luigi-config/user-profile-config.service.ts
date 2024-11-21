@@ -1,5 +1,3 @@
-import { Injectable } from '@angular/core';
-
 export interface UserProfileItem {
   label?: string;
   icon?: string;
@@ -13,11 +11,4 @@ export interface UserProfile {
 
 export interface UserProfileConfigService {
   getProfile(): Promise<UserProfile>;
-}
-
-@Injectable({ providedIn: 'root' })
-export class NoopUserProfileConfigService implements UserProfileConfigService {
-  async getProfile() {
-    return undefined;
-  }
 }
