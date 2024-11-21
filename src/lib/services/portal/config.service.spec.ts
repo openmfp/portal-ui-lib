@@ -133,7 +133,7 @@ describe('ConfigService', () => {
       const error403 = { status: 403, statusText: 'Forbidden' };
       testRequest.flush({}, error403);
 
-      // Asser
+      // Assert
       try {
         await configsPromise;
       } catch (e) {
