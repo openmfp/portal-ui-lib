@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 import { PortalConfig } from '../../models';
 import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
 import { AuthService, ConfigService } from '../portal';
@@ -6,25 +7,15 @@ import { LuigiExtendedGlobalContextConfigService } from '../luigi-nodes/luigi-ex
 import { LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 
 describe('NavigationGlobalContextConfigService', () => {
-  let service: NavigationGlobalContextConfigService;
+  let navigationGlobalContextConfigService: NavigationGlobalContextConfigService;
   let authService: jest.Mocked<AuthService>;
   let configService: jest.Mocked<ConfigService>;
   let extendedGlobalContextService: jest.Mocked<LuigiExtendedGlobalContextConfigService>;
 
   beforeEach(() => {
-    authService = {
-      getUsername: jest.fn(),
-      getUserEmail: jest.fn(),
-      getToken: jest.fn(),
-    } as any;
-
-    configService = {
-      getPortalConfig: jest.fn(),
-    } as any;
-
-    extendedGlobalContextService = {
-      createLuigiExtendedGlobalContext: jest.fn(),
-    } as any;
+    authService = mock();
+    configService = mock();
+    extendedGlobalContextService = mock();
 
     TestBed.configureTestingModule({
       providers: [
@@ -38,14 +29,30 @@ describe('NavigationGlobalContextConfigService', () => {
       ],
     });
 
-    service = TestBed.inject(NavigationGlobalContextConfigService);
+    navigationGlobalContextConfigService = TestBed.inject(
+      NavigationGlobalContextConfigService
+    );
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(navigationGlobalContextConfigService).toBeTruthy();
   });
 
   describe('getGlobalContext', () => {
+    it('should throw exception up the stack', async () => {
+      const error = new Error('could not get createLuigiExtendedGlobalContext');
+      extendedGlobalContextService.createLuigiExtendedGlobalContext.mockRejectedValue(
+        error
+      );
+
+      try {
+        await navigationGlobalContextConfigService.getGlobalContext();
+        fail();
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
+    });
+
     it('should return global context with all details', async () => {
       const mockPortalConfig = {
         portalContext: { tenant: 'test-tenant' },
@@ -63,7 +70,8 @@ describe('NavigationGlobalContextConfigService', () => {
       authService.getUserEmail.mockReturnValue('user@test.com');
       authService.getToken.mockReturnValue('test-token');
 
-      const result = await service.getGlobalContext();
+      const result =
+        await navigationGlobalContextConfigService.getGlobalContext();
 
       expect(result).toEqual({
         ...mockExtendedContext,
@@ -74,7 +82,7 @@ describe('NavigationGlobalContextConfigService', () => {
       });
     });
 
-    it('should handle missing extended global context service', async () => {
+    it('should handle missing extended global context navigationGlobalContextConfigService', async () => {
       const mockPortalConfig = {
         portalContext: { tenant: 'test-tenant' },
       } as any as PortalConfig;
@@ -99,9 +107,12 @@ describe('NavigationGlobalContextConfigService', () => {
         ],
       });
 
-      service = TestBed.inject(NavigationGlobalContextConfigService);
+      navigationGlobalContextConfigService = TestBed.inject(
+        NavigationGlobalContextConfigService
+      );
 
-      const result = await service.getGlobalContext();
+      const result =
+        await navigationGlobalContextConfigService.getGlobalContext();
 
       expect(result).toEqual({
         portalContext: mockPortalConfig.portalContext,
