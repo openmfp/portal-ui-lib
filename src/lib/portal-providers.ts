@@ -116,16 +116,16 @@ export function providePortal(
       useClass:
         options.localConfigurationService || LocalConfigurationServiceImpl,
     },
+    ...addOptionalProviders(options),
   ];
 
-  addOptionalProviders(providers, options);
   return makeEnvironmentProviders(providers);
 }
 
 const addOptionalProviders = (
-  providers: (Provider | EnvironmentProviders)[],
   options: PortalOptions
-) => {
+): (Provider | EnvironmentProviders)[] => {
+  const providers = [];
   (options.customMessageListeners || []).forEach((customMessageListenerClass) =>
     providers.push({
       provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -196,4 +196,6 @@ const addOptionalProviders = (
       useClass: options.globalSearchConfigService,
     });
   }
+
+  return providers;
 };
