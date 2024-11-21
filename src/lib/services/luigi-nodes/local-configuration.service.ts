@@ -27,6 +27,8 @@ export class LocalConfigurationServiceImpl
     private devModeSettingsService: DevModeSettingsService
   ) {}
 
+  private retrievedFromHost: ContentConfiguration[];
+
   public async getLocalNodes(): Promise<LuigiNode[]> {
     try {
       const devModeSettings =
@@ -160,11 +162,15 @@ export class LocalConfigurationServiceImpl
   private async getLocalConfigurations(
     devModeSettings: DevModeSettings
   ): Promise<ContentConfiguration[]> {
-    let result = devModeSettings.configs
+    if (this.retrievedFromHost) {
+      return this.retrievedFromHost;
+    }
+
+    this.retrievedFromHost = devModeSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
 
-    const retrievedFromHost = (
+    this.retrievedFromHost = (
       await Promise.allSettled(
         devModeSettings.configs
           .filter((config) => config.url)
@@ -183,9 +189,9 @@ export class LocalConfigurationServiceImpl
         (result): result is PromiseFulfilledResult<ContentConfiguration> =>
           result.status === 'fulfilled'
       )
-      .map((result) => result.value);
+      .map((result) => result.value)
+      .concat(this.retrievedFromHost);
 
-    result = result.concat(retrievedFromHost);
-    return result;
+    return this.retrievedFromHost;
   }
 }
