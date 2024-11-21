@@ -1,6 +1,7 @@
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
+import { of } from 'rxjs';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { ContentConfiguration, LuigiNode } from '../../models';
@@ -9,31 +10,73 @@ import { LocalNodesConfigService } from '../portal';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
-  let mockLuigiDataConfigService: MockProxy<LocalNodesConfigService>;
   let luigiCoreService: LuigiCoreService;
-  let mockDevModeSettingsService: MockProxy<DevModeSettingsService>;
+  let httpClient: HttpClient;
+  let luigiDataConfigServiceMock: MockProxy<LocalNodesConfigService>;
+  let devModeSettingsServiceMock: MockProxy<DevModeSettingsService>;
 
   beforeEach(() => {
-    mockDevModeSettingsService = mock<DevModeSettingsService>();
-    mockLuigiDataConfigService = mock<LocalNodesConfigService>();
+    devModeSettingsServiceMock = mock<DevModeSettingsService>();
+    luigiDataConfigServiceMock = mock<LocalNodesConfigService>();
     TestBed.configureTestingModule({
       providers: [
         DevModeSettingsService,
         {
           provide: LocalNodesConfigService,
-          useValue: mockLuigiDataConfigService,
+          useValue: luigiDataConfigServiceMock,
         },
         provideHttpClient(),
       ],
     }).overrideProvider(DevModeSettingsService, {
-      useValue: mockDevModeSettingsService,
+      useValue: devModeSettingsServiceMock,
     });
     service = TestBed.inject(LocalConfigurationServiceImpl);
     luigiCoreService = TestBed.inject(LuigiCoreService);
+    httpClient = TestBed.inject(HttpClient);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('getLocalNodes', () => {
+    it('should cache the result of the first call to retrieve content configuration', async () => {
+      // Arrange
+      const url = 'http://localhost:8080';
+      devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+        serviceProviderConfig: {},
+        configs: [
+          {
+            url,
+          },
+          {
+            data: {
+              name: 'name-1',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
+      });
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockImplementation(
+        async (conf: ContentConfiguration[]) => conf.map((c) => ({}))
+      );
+      httpClient.get = jest.fn().mockReturnValue(of({}));
+
+      // Act
+      let result = await service.getLocalNodes();
+
+      // Assert
+      expect(result).toHaveLength(2);
+      expect(httpClient.get).toHaveBeenCalledWith(url);
+
+      // Act
+      result = await service.getLocalNodes();
+
+      // Assert
+      expect(result).toHaveLength(2);
+      expect(httpClient.get).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('replaceServerNodesWithLocalOnes', () => {
@@ -90,7 +133,7 @@ describe('LocalConfigurationServiceImpl', () => {
 
     beforeEach(() => {
       getLuigiDataFromConfigurationsSpy = jest.spyOn(
-        mockLuigiDataConfigService,
+        luigiDataConfigServiceMock,
         'getLuigiNodesFromConfigurations'
       );
       i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
@@ -105,20 +148,18 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock = mock<LuigiNode>();
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      mockDevModeSettingsService.getDevModeSettings.mockReturnValue(
-        Promise.resolve({
-          serviceProviderConfig: {},
-          configs: [
-            {
-              data: {
-                name: '',
-                creationTimestamp: '',
-                luigiConfigFragment: {},
-              } as ContentConfiguration,
-            },
-          ],
-        })
-      );
+      devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+        serviceProviderConfig: {},
+        configs: [
+          {
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
+      });
 
       const localNodes = await service.getLocalNodes();
 
@@ -129,7 +170,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      mockDevModeSettingsService.getDevModeSettings.mockResolvedValue({
+      devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
         serviceProviderConfig: {
           a: 'b',
         },
