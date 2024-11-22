@@ -82,7 +82,7 @@ describe('NavigationGlobalContextConfigService', () => {
       });
     });
 
-    it('should handle missing extended global context navigationGlobalContextConfigService', async () => {
+    it('should handle missing extended global context service', async () => {
       const mockPortalConfig = {
         portalContext: { tenant: 'test-tenant' },
       } as any as PortalConfig;
