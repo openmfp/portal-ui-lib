@@ -29,7 +29,7 @@ export class AuthService {
 
   public async auth(code: string, state: string) {
     const response = await lastValueFrom(
-      this.http.post<AuthTokenData>(
+      this.http.post<AuthTokenData | undefined>(
         `/rest/auth?code=${code}&state=${state}`,
         {}
       )
@@ -40,14 +40,14 @@ export class AuthService {
 
   public async refresh(): Promise<AuthTokenData | undefined> {
     const response = await lastValueFrom(
-      this.http.get<AuthTokenData>('/rest/auth/refresh')
+      this.http.get<AuthTokenData | undefined>('/rest/auth/refresh')
     );
 
     this.setAuthData(response);
     return response;
   }
 
-  private setAuthData(authTokenData: AuthTokenData): void {
+  private setAuthData(authTokenData: AuthTokenData | undefined): void {
     if (!authTokenData) {
       return;
     }
