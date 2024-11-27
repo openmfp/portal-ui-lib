@@ -23,14 +23,20 @@ describe('EnvConfigService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get the client env config', async () => {
-    const clientEnvironmentPromise = service.getEnvConfig();
-    const configRequest = http.expectOne('/rest/envconfig');
-    const response = { clientId: '123' };
-    configRequest.flush(response);
+  describe('getEnvConfig', () => {
+    it('should get the client env config', async () => {
+      let clientEnvironmentPromise = service.getEnvConfig();
+      const configRequest = http.expectOne('/rest/envconfig');
+      const response = { clientId: '123' };
+      configRequest.flush(response);
 
-    const clientEnvironment = await clientEnvironmentPromise;
+      expect(await clientEnvironmentPromise).toBe(response);
 
-    expect(clientEnvironment).toBe(response);
+      // Act second call
+      clientEnvironmentPromise = service.getEnvConfig();
+      http.expectNone('/rest/envconfig');
+
+      expect(await clientEnvironmentPromise).toBe(response);
+    });
   });
 });
