@@ -57,23 +57,15 @@ export class ConfigService {
     }
 
     const options = this.requestHeadersService.createOptionsWithAuthHeader();
-    try {
-      const entityConfig = await firstValueFrom(
-        this.http.get<EntityConfig>(`/rest/config/${entity}`, {
-          ...options,
-          ...{ params: context },
-        })
-      );
+    const entityConfig = await firstValueFrom(
+      this.http.get<EntityConfig>(`/rest/config/${entity}`, {
+        ...options,
+        ...{ params: context },
+      })
+    );
 
-      this.entityConfigCache[entity][entityCacheKey] = entityConfig;
-      return entityConfig;
-    } catch (e) {
-      this.entityConfigCache[entity][entityCacheKey] = {
-        providers: [],
-        entityContext: {},
-      };
-      throw e;
-    }
+    this.entityConfigCache[entity][entityCacheKey] = entityConfig;
+    return entityConfig;
   }
 
   clearEntityConfigCache(): void {

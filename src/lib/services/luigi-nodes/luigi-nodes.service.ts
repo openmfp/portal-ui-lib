@@ -57,29 +57,21 @@ export class LuigiNodesService {
     additionalContext?: Record<string, string>
   ): Promise<LuigiNode[]> {
     let errorCode = 0;
+    let configsForEntity;
     const entityType = entityDefinition.dynamicFetchId;
-    const configsForEntity = this.serviceProviderService
-      .getRawConfigsForEntity(entityType, additionalContext)
-      .catch((e) => {
-        if (e instanceof HttpErrorResponse && e.status === 404) {
-          errorCode = 404;
-        } else {
-          console.warn(
-            `Could not retrieve nodes for entity: ${entityType}, error: `,
-            e
-          );
-        }
-        return [];
-      });
-
-    const serverLuigiNodes = this.extractServerLuigiNodes(
-      await configsForEntity
-    );
-
-    const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
-      serverLuigiNodes,
-      [parentEntityPath]
-    );
+    try {
+      configsForEntity =
+        await this.serviceProviderService.getRawConfigsForEntity(
+          entityType,
+          additionalContext
+        );
+    } catch (e) {
+      errorCode = e.status || 500;
+      console.warn(
+        `Could not retrieve nodes for entity: ${entityType}, error: `,
+        e
+      );
+    }
 
     if (errorCode) {
       return this.createErrorNodes(
@@ -87,9 +79,14 @@ export class LuigiNodesService {
         additionalContext,
         errorCode
       );
-    } else {
-      return [...(existingChildren || []), ...(rawEntityNodes || [])];
     }
+
+    const serverLuigiNodes = this.extractServerLuigiNodes(configsForEntity);
+    const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
+      serverLuigiNodes,
+      [parentEntityPath]
+    );
+    return [...(existingChildren || []), ...(rawEntityNodes || [])];
   }
 
   private createErrorNodes(
@@ -114,13 +111,7 @@ export class LuigiNodesService {
       showBreadcrumbs: false,
       virtualTree: true,
     };
-    return [
-      {
-        ...errorNode,
-        ...{ pathSegment: 'error' },
-      },
-      errorNode,
-    ];
+    return [errorNode];
   }
 
   nodePolicyResolver(nodeToCheckPermissionFor): boolean {
@@ -167,10 +158,10 @@ export class LuigiNodesService {
   }
 
   private extractServerLuigiNodes(
-    serviceProviders: ServiceProvider[]
+    serviceProviders: ServiceProvider[] | undefined
   ): LuigiNode[] {
     let serverLuigiNodes: LuigiNode[] = [];
-    serviceProviders.forEach((serviceProvider) => {
+    serviceProviders?.forEach((serviceProvider) => {
       const shouldShowNewBadge = this.shouldShowNewBadge(serviceProvider);
       serviceProvider.nodes.forEach((node) => {
         if (shouldShowNewBadge) {
