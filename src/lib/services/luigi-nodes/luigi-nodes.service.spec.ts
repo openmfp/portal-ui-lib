@@ -2,15 +2,20 @@ import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { RouterModule } from '@angular/router';
-import { ServiceProvider, EntityDefinition, LuigiNode } from '../../models';
+import {
+  ServiceProvider,
+  EntityDefinition,
+  LuigiNode,
+  PortalConfig,
+} from '../../models';
 import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
-import { ServiceProviderService } from '../portal';
+import { ConfigService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 
 describe('LuigiNodesService', () => {
   let service: LuigiNodesService;
-  let serviceProviderService: ServiceProviderService;
+  let configService: ConfigService;
   let localConfigurationService: LocalConfigurationServiceImpl;
 
   beforeEach(() => {
@@ -25,7 +30,7 @@ describe('LuigiNodesService', () => {
       imports: [RouterModule.forRoot([])],
     });
     service = TestBed.inject(LuigiNodesService);
-    serviceProviderService = TestBed.inject(ServiceProviderService);
+    configService = TestBed.inject(ConfigService);
     localConfigurationService = TestBed.inject(LocalConfigurationServiceImpl);
 
     jest
@@ -40,8 +45,8 @@ describe('LuigiNodesService', () => {
   describe('clearNodeCache', () => {
     it('should call the serviceProviderService.clearCache method', () => {
       const serviceProviderServiceSpy = jest.spyOn(
-        serviceProviderService,
-        'clearCache'
+        configService,
+        'clearEntityConfigCache'
       );
       service.clearNodeCache();
       expect(serviceProviderServiceSpy).toHaveBeenCalled();
@@ -59,7 +64,7 @@ describe('LuigiNodesService', () => {
       const additionalContext = { someContext: 'value' };
 
       const serviceProviderServiceSpy = jest
-        .spyOn(serviceProviderService, 'getRawConfigsForEntity')
+        .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new HttpErrorResponse({ status: 404 }));
 
       const result = await service.retrieveAndMergeEntityChildren(
@@ -94,7 +99,7 @@ describe('LuigiNodesService', () => {
       const additionalContext = { someContext: 'value' };
 
       const serviceProviderServiceSpy = jest
-        .spyOn(serviceProviderService, 'getRawConfigsForEntity')
+        .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new Error('Some other error'));
 
       await service.retrieveAndMergeEntityChildren(
@@ -147,8 +152,9 @@ describe('LuigiNodesService', () => {
         createNodeWithEntityType('foo', 'e', 11),
         createNodeWithEntityType('bar', 'f', 20),
       ];
-      const configServiceResponse: Promise<ServiceProvider[]> = Promise.resolve(
-        [
+
+      const portalConfig: PortalConfig = {
+        providers: [
           {
             config: { a: 'b', b: 'b' },
             installationData: { a: 'c', c: 'd' },
@@ -156,26 +162,23 @@ describe('LuigiNodesService', () => {
             nodes: serviceProviderNodes,
             creationTimestamp: '2022-05-17T11:37:17Z',
           },
-        ]
-      );
-      const spyInstanceGetRawConfigs = jest.spyOn(
-        serviceProviderService,
-        'getRawConfigs'
-      );
-      spyInstanceGetRawConfigs.mockReturnValue(configServiceResponse);
+        ],
+      } as any;
 
-      const spyInstanceForProject = jest.spyOn(
-        serviceProviderService,
-        'getRawConfigsForEntity'
-      );
-      spyInstanceForProject.mockReturnValue(configServiceResponse);
+      jest
+        .spyOn(configService, 'getPortalConfig')
+        .mockResolvedValue(portalConfig);
+
+      jest.spyOn(configService, 'getEntityConfig').mockResolvedValue({
+        providers: portalConfig.providers,
+      } as any);
     });
 
     it('should handle errors when retrieving nodes', async () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn');
       const errorMessage = 'Failed to retrieve nodes';
       const serviceProviderServiceSpy = jest
-        .spyOn(serviceProviderService, 'getRawConfigs')
+        .spyOn(configService, 'getPortalConfig')
         .mockRejectedValue(new Error(errorMessage));
 
       try {
@@ -222,22 +225,24 @@ describe('LuigiNodesService', () => {
       });
 
       it('should not add a new badge to nodes', async () => {
-        const serviceProviders: ServiceProvider[] = [
-          {
-            config: { a: 'b', b: 'b' },
-            installationData: { a: 'c', c: 'd' },
-            nodes: [
-              { label: 'Node 1', pathSegment: '/node1' },
-              { label: 'Node 2', pathSegment: '/node2' },
-            ],
-            creationTimestamp: '2022-05-17T11:37:17Z',
-            isMandatoryExtension: true,
-          },
-        ];
+        const portalConfig: PortalConfig = {
+          providers: [
+            {
+              config: { a: 'b', b: 'b' },
+              installationData: { a: 'c', c: 'd' },
+              nodes: [
+                { label: 'Node 1', pathSegment: '/node1' },
+                { label: 'Node 2', pathSegment: '/node2' },
+              ],
+              creationTimestamp: '2022-05-17T11:37:17Z',
+              isMandatoryExtension: true,
+            },
+          ],
+        } as any;
 
         const serviceProviderServiceSpy = jest
-          .spyOn(serviceProviderService, 'getRawConfigs')
-          .mockResolvedValue(serviceProviders);
+          .spyOn(configService, 'getPortalConfig')
+          .mockResolvedValue(portalConfig);
 
         const childrenByEntity = await service.retrieveChildrenByEntity();
 
