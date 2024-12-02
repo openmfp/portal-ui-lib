@@ -2,11 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 import { ClientEnvironment, PortalConfig, ServiceProvider } from '../../models';
 import { providePortal } from '../../portal-providers';
-import {
-  ConfigService,
-  EnvConfigService,
-  ServiceProviderService,
-} from '../portal';
+import { ConfigService, EnvConfigService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NavigationConfigService } from './navigation-config.service';
 
@@ -15,7 +11,6 @@ describe('NavigationConfigService', () => {
   let luigiCoreService: LuigiCoreService;
   let configService: ConfigService;
   let envConfigService: EnvConfigService;
-  let serviceProviderService: ServiceProviderService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,18 +20,18 @@ describe('NavigationConfigService', () => {
     service = TestBed.inject(NavigationConfigService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
     envConfigService = TestBed.inject(EnvConfigService);
-    serviceProviderService = TestBed.inject(ServiceProviderService);
     configService = TestBed.inject(ConfigService);
 
-    const serviceProviders: ServiceProvider[] = [
-      { nodes: [], config: {}, creationTimestamp: '' },
-    ];
+    const portalConfig: PortalConfig = {
+      providers: [{ nodes: [], config: {}, creationTimestamp: '' }],
+    } as PortalConfig;
+
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
 
     jest
-      .spyOn(serviceProviderService, 'getRawConfigs')
-      .mockResolvedValue(serviceProviders);
+      .spyOn(configService, 'getPortalConfig')
+      .mockResolvedValue(portalConfig);
 
     const entityConfig = { providers: [], entityContext: {} };
     jest

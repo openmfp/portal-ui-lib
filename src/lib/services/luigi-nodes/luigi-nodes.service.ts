@@ -1,7 +1,12 @@
 import { Inject, Injectable } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ServiceProviderService } from '../portal';
-import { EntityDefinition, LuigiNode, ServiceProvider } from '../../models';
+import { ConfigService } from '../portal';
+import {
+  EntityConfig,
+  EntityDefinition,
+  LuigiNode,
+  PortalConfig,
+  ServiceProvider,
+} from '../../models';
 import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LocalConfigurationService } from './local-configuration.service';
 
@@ -10,7 +15,7 @@ import { LocalConfigurationService } from './local-configuration.service';
 })
 export class LuigiNodesService {
   constructor(
-    private serviceProviderService: ServiceProviderService,
+    private configService: ConfigService,
     @Inject(LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN)
     private localConfigurationService: LocalConfigurationService
   ) {}
@@ -57,29 +62,20 @@ export class LuigiNodesService {
     additionalContext?: Record<string, string>
   ): Promise<LuigiNode[]> {
     let errorCode = 0;
+    let configsForEntity: EntityConfig;
     const entityType = entityDefinition.dynamicFetchId;
-    const configsForEntity = this.serviceProviderService
-      .getRawConfigsForEntity(entityType, additionalContext)
-      .catch((e) => {
-        if (e instanceof HttpErrorResponse && e.status === 404) {
-          errorCode = 404;
-        } else {
-          console.warn(
-            `Could not retrieve nodes for entity: ${entityType}, error: `,
-            e
-          );
-        }
-        return [];
-      });
-
-    const serverLuigiNodes = this.extractServerLuigiNodes(
-      await configsForEntity
-    );
-
-    const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
-      serverLuigiNodes,
-      [parentEntityPath]
-    );
+    try {
+      configsForEntity = await this.configService.getEntityConfig(
+        entityType,
+        additionalContext
+      );
+    } catch (e) {
+      errorCode = e.status || 500;
+      console.warn(
+        `Could not retrieve nodes for entity: ${entityType}, error: `,
+        e
+      );
+    }
 
     if (errorCode) {
       return this.createErrorNodes(
@@ -87,9 +83,16 @@ export class LuigiNodesService {
         additionalContext,
         errorCode
       );
-    } else {
-      return [...(existingChildren || []), ...(rawEntityNodes || [])];
     }
+
+    const serverLuigiNodes = this.extractServerLuigiNodes(
+      configsForEntity.providers
+    );
+    const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
+      serverLuigiNodes,
+      [parentEntityPath]
+    );
+    return [...(existingChildren || []), ...(rawEntityNodes || [])];
   }
 
   private createErrorNodes(
@@ -114,13 +117,7 @@ export class LuigiNodesService {
       showBreadcrumbs: false,
       virtualTree: true,
     };
-    return [
-      {
-        ...errorNode,
-        ...{ pathSegment: 'error' },
-      },
-      errorNode,
-    ];
+    return [errorNode];
   }
 
   nodePolicyResolver(nodeToCheckPermissionFor): boolean {
@@ -133,19 +130,20 @@ export class LuigiNodesService {
   }
 
   clearNodeCache(): void {
-    this.serviceProviderService.clearCache();
+    this.configService.clearEntityConfigCache();
   }
 
   private async retrieveAndMergeNodes(): Promise<LuigiNode[]> {
-    const rawConfigsPromise = this.serviceProviderService
-      .getRawConfigs()
-      .catch((e) => {
-        console.warn('Could not retrieve nodes, error: ', e);
-        throw e;
-      });
+    let portalConfig: PortalConfig;
+    try {
+      portalConfig = await this.configService.getPortalConfig();
+    } catch (e) {
+      console.warn('Could not retrieve nodes, error: ', e);
+      throw e;
+    }
 
     const serverLuigiNodes = this.extractServerLuigiNodes(
-      await rawConfigsPromise
+      portalConfig.providers
     );
 
     return this.replaceServerNodesWithLocalOnes(serverLuigiNodes, [

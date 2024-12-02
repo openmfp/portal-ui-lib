@@ -117,4 +117,34 @@ describe('DevModeSettingsService', () => {
       serviceProviderConfig: { a: 'b' },
     });
   });
+
+  it('could not overwrites the configs & serviceProviderConfig from the local storage, local storage parsing error', async () => {
+    mockEnvConfig(true);
+    console.error = jest.fn();
+    window.localStorage.setItem(
+      DEV_MODE_SETTINGS_KEY,
+      'hello' +
+        JSON.stringify({
+          configs: [
+            { url: 'http://localhost:4200/assets/content-configuration.json' },
+          ],
+          serviceProviderConfig: { a: 'b' },
+        })
+    );
+    const devModeSettings = await service.getDevModeSettings();
+
+    expect(console.error).toHaveBeenCalled();
+    expect(devModeSettings).toBeTruthy();
+    expect(devModeSettings).toEqual({
+      configs: [
+        {
+          url: 'http://localhost:4200/assets/content-configuration-global.json',
+        },
+        {
+          url: 'http://localhost:4200/assets/content-configuration.json',
+        },
+      ],
+      serviceProviderConfig: {},
+    });
+  });
 });
