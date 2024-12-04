@@ -47,7 +47,7 @@
     "@luigi-project/client": "2.18.0",
     "@luigi-project/client-support-angular": "2.18.0",
     "@openmfp/config-prettier": "0.5.0",
-    "@openmfp/eslint-config-typescript": "0.18.0",
+    "@openmfp/eslint-config-typescript": "0.19.0",
     "@types/jest": "29.5.14",
     "@types/jmespath": "0.15.2",
     "@types/node": "^22.0.0",
