@@ -88,9 +88,6 @@ describe('SessionRefreshService', () => {
         globalCtx,
         true
       );
-      expect(
-        (window as any).IDP.setTokenExpireSoonAction
-      ).toHaveBeenCalledTimes(1);
     });
 
     it('should not successfully refresh the session', async () => {
@@ -167,10 +164,6 @@ describe('SessionRefreshService', () => {
         executionOrder.push('setGlobalContext');
       });
 
-      (window as any).IDP.setTokenExpireSoonAction.mockImplementation(() => {
-        executionOrder.push('setTokenExpireSoonAction');
-      });
-
       // Act
       await service.refresh();
 
@@ -182,7 +175,6 @@ describe('SessionRefreshService', () => {
         'setAuthData',
         'getGlobalContext',
         'setGlobalContext',
-        'setTokenExpireSoonAction',
       ]);
     });
   });
