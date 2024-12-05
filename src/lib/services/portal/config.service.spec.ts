@@ -37,14 +37,14 @@ describe('ConfigService', () => {
   describe('getPortalConfig', () => {
     it('should get the config from cache', async () => {
       // Arrange
-      const portalConfig = { providers: [] } as PortalConfig;
-      service['portalConfigCache'] = portalConfig;
+      const portalConfig = Promise.resolve({ providers: [] }) as any;
+      service['portalConfigCachePromise'] = portalConfig;
 
       // Act
       const configFromCache = await service.getPortalConfig();
 
       // Assert
-      expect(configFromCache).toEqual(portalConfig);
+      expect(configFromCache).toEqual(await portalConfig);
     });
 
     it('should get the config', async () => {
