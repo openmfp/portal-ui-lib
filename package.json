@@ -13,7 +13,7 @@
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
-    "@luigi-project/plugin-auth-oauth2": "2.18.0",
+    "@luigi-project/plugin-auth-oauth2": "2.18.1",
     "jwt-decode": "4.0.0"
   },
   "peerDependencies": {
@@ -26,7 +26,7 @@
     "@angular/router": "^17.3.0 || ^18.0.0",
     "@luigi-project/client": "^2.14.2",
     "@luigi-project/client-support-angular": "^2.14.2",
-    "@luigi-project/plugin-auth-oauth2": "2.18.0",
+    "@luigi-project/plugin-auth-oauth2": "2.18.1",
     "apollo-angular": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
