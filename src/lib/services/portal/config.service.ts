@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { firstValueFrom, tap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { EntityConfig, PortalConfig } from '../../models';
 import { RequestHeadersService } from '../request-headers.service';
 
@@ -8,7 +8,7 @@ import { RequestHeadersService } from '../request-headers.service';
   providedIn: 'root',
 })
 export class ConfigService {
-  private portalConfigCache: PortalConfig;
+  private portalConfigCachePromise: Promise<PortalConfig>;
 
   private entityConfigCache: Record<
     string /* entity */,
@@ -21,26 +21,21 @@ export class ConfigService {
   ) {}
 
   async getPortalConfig(): Promise<PortalConfig> {
-    if (this.portalConfigCache) {
-      return this.portalConfigCache;
+    if (this.portalConfigCachePromise) {
+      return this.portalConfigCachePromise;
     }
 
     const options = this.requestHeadersService.createOptionsWithAuthHeader();
-    try {
-      await firstValueFrom(
-        this.http.get<PortalConfig>('/rest/config', options).pipe(
-          // cache response, since it gets called multiple times due to Luigi internals
-          tap((config: PortalConfig) => (this.portalConfigCache = config))
-        )
-      );
-    } catch (e) {
+    this.portalConfigCachePromise = firstValueFrom(
+      this.http.get<PortalConfig>('/rest/config', options)
+    ).catch((e) => {
       if (e instanceof HttpErrorResponse && e.status === 403) {
         window.location.assign('/logout?error=invalidToken');
       }
       throw e;
-    }
+    });
 
-    return this.portalConfigCache;
+    return this.portalConfigCachePromise;
   }
 
   async getEntityConfig(
