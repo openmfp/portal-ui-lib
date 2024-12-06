@@ -156,6 +156,11 @@ export class LuigiNodesService {
     if (serviceProvider.isMandatoryExtension) {
       return false;
     }
+
+    if (!serviceProvider.creationTimestamp) {
+      return false;
+    }
+
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     return !(
