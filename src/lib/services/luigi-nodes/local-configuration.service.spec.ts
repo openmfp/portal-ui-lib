@@ -116,6 +116,13 @@ describe('LocalConfigurationServiceImpl', () => {
       expect(localNodes).toEqual(serverLuigiNodesTest);
     });
 
+    it('should return empty server nodes when no matching local nodes', async () => {
+      const serverNodes = [{ pathSegment: '/path', entityType: null, label: 'Y', context: {} }];
+      getLocalNodesSpy.mockResolvedValue([{ pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} }]);
+      const localNodes = await service.replaceServerNodesWithLocalOnes(serverNodes,[]);
+      expect(localNodes).toEqual(serverNodes);
+    });
+
     it('should return serverLuigiNodes when localNodes is null', async () => {
       getLocalNodesSpy.mockResolvedValue(null);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
