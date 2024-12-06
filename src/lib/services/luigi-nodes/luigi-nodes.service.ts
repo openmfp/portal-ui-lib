@@ -153,11 +153,10 @@ export class LuigiNodesService {
   }
 
   private shouldShowNewBadge(serviceProvider: ServiceProvider): boolean {
-    if (serviceProvider.isMandatoryExtension) {
-      return false;
-    }
-
-    if (!serviceProvider.creationTimestamp) {
+    if (
+      serviceProvider.isMandatoryExtension ||
+      !serviceProvider.creationTimestamp
+    ) {
       return false;
     }
 
