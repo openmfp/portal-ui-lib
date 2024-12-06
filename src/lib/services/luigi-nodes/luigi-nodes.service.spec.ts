@@ -404,6 +404,35 @@ describe('LuigiNodesService', () => {
         });
       });
 
+      it('should not add a new badge to nodes when there is no provider creationTimestamp', async () => {
+        const portalConfig: PortalConfig = {
+          providers: [
+            {
+              config: { a: 'b', b: 'b' },
+              installationData: { a: 'c', c: 'd' },
+              nodes: [
+                { label: 'Node 1', pathSegment: '/node1' },
+                { label: 'Node 2', pathSegment: '/node2' },
+              ],
+              isMandatoryExtension: false,
+            },
+          ],
+        } as any;
+
+        const serviceProviderServiceSpy = jest
+          .spyOn(configService, 'getPortalConfig')
+          .mockResolvedValue(portalConfig);
+
+        const childrenByEntity = await service.retrieveChildrenByEntity();
+
+        expect(serviceProviderServiceSpy).toHaveBeenCalled();
+        Object.values(childrenByEntity).forEach((nodes) => {
+          nodes.forEach((node) => {
+            expect(node.statusBadge).toBeUndefined();
+          });
+        });
+      });
+
       it('should not add a new badge to nodes', async () => {
         const portalConfig: PortalConfig = {
           providers: [

@@ -153,9 +153,13 @@ export class LuigiNodesService {
   }
 
   private shouldShowNewBadge(serviceProvider: ServiceProvider): boolean {
-    if (serviceProvider.isMandatoryExtension) {
+    if (
+      serviceProvider.isMandatoryExtension ||
+      !serviceProvider.creationTimestamp
+    ) {
       return false;
     }
+
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     return !(
