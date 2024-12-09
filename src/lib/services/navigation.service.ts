@@ -4,8 +4,7 @@ import { filter } from 'rxjs/operators';
 import { AuthEvent } from '../models';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthService } from './portal';
-
-export const lastNavigationUrlKey = 'openmfp.navigation.lastUrl';
+import { lastNavigationUrlKey } from './storage-service';
 
 @Injectable({
   providedIn: 'root',

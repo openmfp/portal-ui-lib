@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { lastNavigationUrlKey, NavigationService } from './navigation.service';
+import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthEvent } from '../models';
+import { lastNavigationUrlKey } from './storage-service';
 
 describe('NavigationService', () => {
   let service: NavigationService;

@@ -14,5 +14,6 @@ module.exports = {
       statements: -33,
     },
   },
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],
 };

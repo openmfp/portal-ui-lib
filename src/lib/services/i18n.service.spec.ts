@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 import { I18nService } from './i18n.service';
 import { LuigiCoreService } from './luigi-core.service';
+import { EnvConfigService } from './portal';
 
 describe('I18nService', () => {
   let i18nService: I18nService;
   let luigiCoreServiceMock: LuigiCoreService;
+  let envConfigServiceMock: jest.Mocked<EnvConfigService>;
   const translationTable = {
     de: {
       SOME_TEST_KEY: 'some test key',
@@ -15,6 +18,7 @@ describe('I18nService', () => {
   };
 
   beforeEach(() => {
+    envConfigServiceMock = mock();
     luigiCoreServiceMock = {
       i18n: jest.fn().mockReturnValue({
         getCurrentLocale: jest.fn().mockReturnValue('de'),
@@ -26,6 +30,7 @@ describe('I18nService', () => {
       providers: [
         I18nService,
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+        { provide: EnvConfigService, useValue: envConfigServiceMock },
       ],
     });
 
@@ -258,5 +263,51 @@ describe('I18nService', () => {
     );
 
     expect(result).toEqual('some test key');
+  });
+
+  describe('getValidLanguages', () => {
+    it('should return only English when not in development instance', async () => {
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
+        developmentInstance: false,
+      } as any);
+
+      const result = await i18nService.getValidLanguages();
+
+      expect(result).toEqual([
+        { value: 'en', label: 'USERSETTINGSDIALOG_LANGUAGE_EN' },
+      ]);
+    });
+
+    it('should return English and German when in development instance', async () => {
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
+        developmentInstance: true,
+      } as any);
+
+      const result = await i18nService.getValidLanguages();
+
+      expect(result).toEqual([
+        { value: 'en', label: 'USERSETTINGSDIALOG_LANGUAGE_EN' },
+        { value: 'de', label: 'USERSETTINGSDIALOG_LANGUAGE_DE' },
+      ]);
+    });
+
+    it('should call getEnvConfig exactly once', async () => {
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
+        developmentInstance: false,
+      } as any);
+
+      await i18nService.getValidLanguages();
+
+      expect(envConfigServiceMock.getEnvConfig).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle errors from getEnvConfig', async () => {
+      const mockError = new Error('Config fetch failed');
+      envConfigServiceMock.getEnvConfig.mockRejectedValue(mockError);
+
+      await expect(i18nService.getValidLanguages()).rejects.toThrow(
+        'Config fetch failed'
+      );
+    });
   });
 });

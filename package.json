@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "xliff2json": "node xliff2json.js",
+    "build": "ng build && npm run xliff2json",
     "build:watch": "mkdirp dist && nodemon --ignore dist --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build && cd dist && yalc publish --push --sig\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -64,6 +65,7 @@
     "rimraf": "6.0.1",
     "ts-jest": "29.2.5",
     "typescript": "~5.5.4",
-    "yalc": "1.0.0-pre.53"
+    "yalc": "1.0.0-pre.53",
+    "xliff": "6.2.1"
   }
 }

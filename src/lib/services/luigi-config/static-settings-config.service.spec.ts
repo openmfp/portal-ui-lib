@@ -1,6 +1,4 @@
-import { mfpMarkSvg } from '../../data/mfp-mark';
 import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
-import { LuigiCoreService } from '../luigi-core.service';
 
 describe('StaticSettingsConfigServiceImpl', () => {
   let service: StaticSettingsConfigServiceImpl;
@@ -20,8 +18,8 @@ describe('StaticSettingsConfigServiceImpl', () => {
       expect(config).toEqual({
         header: {
           title: 'OpenMFP Portal',
-          logo: mfpMarkSvg,
-          favicon: mfpMarkSvg,
+          logo: 'assets/images/mfp_mark.svg',
+          favicon: 'assets/images/mfp_mark.svg',
         },
         experimental: {
           btpToolLayout: true,

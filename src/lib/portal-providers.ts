@@ -12,6 +12,7 @@ import {
   provideNavigationTracker,
   provideSessionRefresh,
 } from './initializers';
+import { provideLanguageServices } from './initializers/language-initializer';
 import {
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -99,6 +100,7 @@ export function providePortal(
     provideBootstrap(),
     provideSessionRefresh(),
     provideNavigationTracker(),
+    provideLanguageServices(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     {
