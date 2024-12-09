@@ -11,8 +11,8 @@ import {
   provideBootstrap,
   provideNavigationTracker,
   provideSessionRefresh,
+  provideLanguageServices,
 } from './initializers';
-import { provideLanguageServices } from './initializers/language-initializer';
 import {
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,

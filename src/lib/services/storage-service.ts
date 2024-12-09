@@ -1,7 +1,7 @@
 import { UserTokenData } from '../models';
 
 export const lastNavigationUrlKey = 'openmfp.navigation.lastUrl';
-export const userSettingsStorageKey = 'openmfp.userSettings';
+export const userSettingsStorageKey = 'openmfp.settings.userSettings';
 
 export async function readUserSettingsFromLocalStorage(
   userInfo: UserTokenData
@@ -15,9 +15,7 @@ export async function readUserSettingsFromLocalStorage(
 
   return new Promise((resolve, reject) => {
     try {
-      const storedSettings = window.localStorage.getItem(
-        userSettingsStorageKey
-      );
+      const storedSettings = localStorage.getItem(userSettingsStorageKey);
       const settings = storedSettings ? JSON.parse(storedSettings) : {};
 
       const resultingSettings = { ...settings, ...transientSettings };
