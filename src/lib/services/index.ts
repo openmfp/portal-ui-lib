@@ -1,9 +1,10 @@
 export * from './luigi-core.service';
 
-export * from './i18n.service';
-export * from './request-headers.service';
-export * from './login-event.service';
 export * from './auth/session-refresh.service';
+export * from './i18n.service';
+export * from './login-event.service';
+export * from './request-headers.service';
+export * from './storage-service';
 
 export * from './luigi-config/luigi-config.service';
 export * from './luigi-config/static-settings-config.service';

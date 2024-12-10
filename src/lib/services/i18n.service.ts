@@ -1,18 +1,17 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { LuigiCoreService } from './luigi-core.service';
+import { EnvConfigService } from './portal';
 
 @Injectable({
   providedIn: 'root',
 })
 export class I18nService {
-  // TODO: configurable in service
+  private envConfigService = inject(EnvConfigService);
+  private luigiCoreService = inject(LuigiCoreService);
+
   fallbackLanguage: string = 'en';
   translationTable: any = {};
-  currentLanguage: string;
-
-  constructor(private luigiCoreService: LuigiCoreService) {
-    this.currentLanguage = '';
-  }
+  currentLanguage: string = '';
 
   afterInit() {
     this.currentLanguage = this.luigiCoreService.i18n().getCurrentLocale();
@@ -164,7 +163,7 @@ export class I18nService {
    */
   async fetchTranslationFile(locale: string) {
     return new Promise((res) => {
-      fetch(`translationFiles/${locale}.json`)
+      fetch(`/assets/translation-files/${locale}.json`)
         .then((response) => {
           return response.json();
         })
@@ -203,5 +202,18 @@ export class I18nService {
       this.currentLanguage,
       interpolations
     );
+  }
+
+  async getValidLanguages(): Promise<{ value: string; label: string }[]> {
+    const { developmentInstance } = await this.envConfigService.getEnvConfig();
+
+    const languages = [
+      { value: 'en', label: 'USERSETTINGSDIALOG_LANGUAGE_EN' },
+    ];
+    if (developmentInstance) {
+      languages.push({ value: 'de', label: 'USERSETTINGSDIALOG_LANGUAGE_DE' });
+    }
+
+    return languages;
   }
 }

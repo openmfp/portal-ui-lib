@@ -11,6 +11,7 @@ import {
   provideBootstrap,
   provideNavigationTracker,
   provideSessionRefresh,
+  provideLanguageServices,
 } from './initializers';
 import {
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
@@ -99,6 +100,7 @@ export function providePortal(
     provideBootstrap(),
     provideSessionRefresh(),
     provideNavigationTracker(),
+    provideLanguageServices(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     {

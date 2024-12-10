@@ -11,8 +11,9 @@ module.exports = {
       branches: 80,
       functions: 90,
       lines: 95,
-      statements: -33,
+      statements: -28,
     },
   },
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],
 };

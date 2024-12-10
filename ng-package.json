@@ -4,7 +4,13 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "assets": ["src/assets"],
+  "assets": [
+    {
+      "input": "src/assets",
+      "glob": "**/*",
+      "output": "assets"
+    }
+  ],
   "allowedNonPeerDependencies": [
     "jwt-decode",
     "@luigi-project/plugin-auth-oauth2"

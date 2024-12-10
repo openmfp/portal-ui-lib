@@ -1,0 +1,303 @@
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" trgLang="en_EN">
+  <file id="namespace1">
+  <!--LEFTNAV-->
+    <unit id="LEFTNAV_COLLAPSE_NAVIGATION">
+      <segment>
+        <target>Collapse navigation</target>
+      </segment>
+    </unit>
+    <unit id="LEFTNAV_EXPAND_NAVIGATION">
+      <segment>
+        <target>Expand navigation</target>
+      </segment>
+    </unit>
+    <!--USERSETTINGS DIALOG-->
+    <unit id="USERSETTINGSDIALOG_SAVE">
+      <segment>
+        <target>Save</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_CANCEL">
+      <segment>
+        <target>Cancel</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_LANGUAGE">
+      <segment>
+        <target>Language</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_USER_ACCOUNT">
+      <segment>
+        <target>User Account</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG__APPEARANCE">
+      <segment>
+        <target>Appearance</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_EMAIL">
+      <segment>
+        <target>E-Mail</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_NAME">
+      <segment>
+        <target>Name</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_LANGUAGE_EN">
+      <segment>
+        <target>English (en)</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_LANGUAGE_DE">
+      <segment>
+        <target>Deutsch (de)</target>
+      </segment>
+    </unit>
+    <unit id="USERSETTINGSDIALOG_HEADER">
+      <segment>
+        <target>Settings</target>
+      </segment>
+    </unit>
+    <unit id="THEME_TAB">
+      <segment>
+        <target>Theme</target>
+      </segment>
+    </unit>
+    <!--PROFILE -->
+    <unit id="USERSETTINGSPROFILEMENUENTRY_SETTINGS">
+      <segment>
+        <target>Settings</target>
+      </segment>
+    </unit>
+    <unit id="PROFILE_SIGNOUT">
+      <segment>
+        <target>Sign out</target>
+      </segment>
+    </unit>
+    <unit id="PROFILE_PROFILE">
+      <segment>
+        <target>Profile</target>
+      </segment>
+    </unit>
+    <unit id="PROFILE_FEEDBACK">
+      <segment>
+        <target>Give Feedback</target>
+      </segment>
+    </unit>
+    <unit id="PROFILE_REPORT_ISSUE">
+      <segment>
+        <target>Report an Issue</target>
+      </segment>
+    </unit>
+    <!-- LOGOUT -->
+    <unit id="LOGOUT_HEADLINE">
+      <segment>
+        <target>You have successfully logged out.</target>
+      </segment>
+    </unit>
+    <unit id="LOGOUT_HINT">
+      <segment>
+        <target>Sign in again to continue working on awesome things!</target>
+      </segment>
+    </unit>
+    <!-- CONFIRMATION MODAL -->
+    <unit id="luigi.confirmationModal.header">
+      <segment>
+        <target>Confirmation</target>
+      </segment>
+    </unit>
+    <unit id="luigi.confirmationModal.body">
+      <segment>
+        <target>Are you sure you want to do this?</target>
+      </segment>
+    </unit>
+    <unit id="luigi.button.dismiss">
+      <segment>
+        <target>No</target>
+      </segment>
+    </unit>
+    <unit id="luigi.button.confirm">
+      <segment>
+        <target>Yes</target>
+      </segment>
+    </unit>
+    <!--UNSAVED CHANGES ALERT-->
+    <unit id="luigi.unsavedChangesAlert.header">
+      <segment>
+        <target>Unsaved changes detected</target>
+      </segment>
+    </unit>
+    <unit id="luigi.unsavedChangesAlert.body">
+      <segment>
+        <target>Unsaved changes will be lost. Do you want to continue?</target>
+      </segment>
+    </unit>
+    <unit id="luigi.requestedRouteNotFound">
+      <segment>
+        <target>Could not find the requested route {route}.</target>
+      </segment>
+    </unit>
+    <unit id="luigi.notExactTargetNode">
+      <segment>
+        <target>Could not map the exact target node for the requested route {route}.</target>
+      </segment>
+    </unit>
+    <!-- LOGOUT-->
+    <unit id="SESSION_EXPIRED">
+      <segment>
+        <target>Your session has expired.</target>
+      </segment>
+    </unit>
+    <unit id="SUCCESSFULLY_LOGGED_OUT">
+      <segment>
+        <target>You have successfully logged out.</target>
+      </segment>
+    </unit>
+    <unit id="SIGN_IN_HINT">
+      <segment>
+        <target>Sign in again to continue working on awesome things!</target>
+      </segment>
+    </unit>
+    <unit id="SIGN_IN_ERROR">
+      <segment>
+        <target>Ooops, something went wrong.</target>
+      </segment>
+    </unit>
+    <unit id="SIGN_IN_ERROR_HINT">
+      <segment>
+        <target>Please try to log in again.</target>
+      </segment>
+    </unit>
+    <unit id="INVALID_TOKEN_ERROR">
+      <segment>
+        <target>Invalid Token</target>
+      </segment>
+    </unit>
+    <unit id="INVALID_TOKEN_ERROR_HINT">
+      <segment>
+        <target>The token provided by the OAuth method is not valid, make sure you are not logged in into a wrong account. Try to login again.</target>
+      </segment>
+    </unit>
+    <unit id="LOGIN_AGAIN">
+      <segment>
+        <target>Login again</target>
+      </segment>
+    </unit>
+    <!--SEARCH-->
+    <unit id="SEARCH_NOT_AVAILABLE">
+      <segment>
+        <target>Search is not available.</target>
+      </segment>
+    </unit>
+    <unit id="SEARCH_LABEL_IN_DOC_TITLE">
+      <segment>
+        <target>Search</target>
+      </segment>
+    </unit>
+    <!-- ERROR PAGES -->
+    <!-- ENTITY -->
+    <unit id="ERROR_ENTITY_NOT_FOUND_TITLE">
+      <segment>
+        <target>{entityType} {entityId} can't be found</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_ENTITY_NOT_FOUND_TEXT_NO_LIST">
+      <segment>
+        <target>Check if the URL is correct.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_ENTITY_NOT_FOUND_TEXT_LIST">
+      <segment>
+        <target>Check if the URL is correct or view all {entityTypePlural_lowerCase}.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_ENTITY_VIEW_ALL_BUTTON">
+      <segment>
+        <target>View All {entityTypePlural}</target>
+      </segment>
+    </unit>
+    <!-- CONTENT NOT FOUND -->
+    <unit id="ERROR_CONTENT_NOT_FOUND_TITLE">
+      <segment>
+        <target>The content you specified can't be found</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_CONTENT_NOT_FOUND_TEXT">
+      <segment>
+        <target>Check if the URL is correct or search in Hyperspace Portal. If this problem persists, create an issue.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_CONTENT_NOT_FOUND_CREATE_ISSUE_BUTTON">
+      <segment>
+        <target>Create issue</target>
+      </segment>
+    </unit>
+    <!-- CONTENT NOT ALLOWED -->
+    <unit id="ERROR_CONTENT_NOT_ALLOWED_NO_PROJECT_MEMBER_TEXT">
+      <segment>
+        <target>Only members of the project can access this page.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_CONTENT_NOT_ALLOWED_JOIN_PROJECT_BUTTON">
+      <segment>
+        <target>Join project</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_CONTENT_NOT_ALLOWED_VIEW_PROJECT_BUTTON">
+      <segment>
+        <target>View Project</target>
+      </segment>
+    </unit>
+    <!-- UNKNOWN ERROR -->
+    <unit id="ERROR_UNIDENTIFIED_TITLE">
+      <segment>
+        <target>An unidentified error has occured</target>
+      </segment>
+    </unit>
+    <!-- PLUGIN TEXT -->
+    <unit id="PLUGIN_PAGE_CAN_NOT_BE_SHOWN">
+      <segment>
+        <target>{extensionLabel} can't be shown</target>
+      </segment>
+    </unit>
+    <unit id="PLUGIN_PAGE_CAN_NOT_BE_SHOWN_UPDATE">
+      <segment>
+        <target>{extensionLabel} can't be shown, Please update your browser extension.</target>
+      </segment>
+    </unit>
+    <unit id="PLUGIN_PAGE_NEED_EXTENSION">
+      <segment>
+         <target>Once you install the Hyperspace Portal Chrome extension, you can view all extension UIs without leaving Hyperspace Portal.</target>
+      </segment>
+    </unit>
+    <unit id="PLUGIN_PAGE_NEED_EXTENSION_UPDATE">
+      <segment>
+        <target>Once you update the Hyperspace Portal browser extension, you can view all extension UIs without leaving Hyperspace Portal. You are running version '{currentVersion}', you require version '{requiredVersion}' </target>
+      </segment>
+    </unit>
+    <unit id="PLUGIN_PAGE_NEED_EXTENSION_CHROME">
+      <segment>
+        <target>Use Google Chrome with the Hyperspace Portal Chrome extension, to view this content here. <br/> You can also open it in a new tab.</target>
+      </segment>
+    </unit>
+      <unit id="VPN_NEEDED_PAGE_TITLE">
+        <segment>
+            <target>VPN Needed</target>
+        </segment>
+      </unit>
+      <unit id="VPN_NEEDED_PAGE_DESCRIPTION">
+        <segment>
+           <target>Connect to the corporate network to view this extension UI directly in Hyperspace Portal.</target>
+        </segment>
+      </unit>
+      <unit id="CONFIGURATION_MISSING_PAGE_TITLE">
+        <segment>
+          <target>Configuration Missing</target>
+        </segment>
+      </unit>
+  </file>
+</xliff>
