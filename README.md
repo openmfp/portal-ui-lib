@@ -34,8 +34,8 @@ and `@luigi-project/plugin-auth-oauth2` in proper versions (along with any other
 
 ### Angular configuration
 
-Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project
-into the project assets, as shown below:
+Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project and assets 
+from `@openmfp/portal-ui-lib` library into the project assets, as shown below:
 
 ```
 {
@@ -46,7 +46,13 @@ into the project assets, as shown below:
       "glob": "**",
       "input": "node_modules/@luigi-project/core",
       "output": "/luigi-core"
-    }
+    },
+    {
+      "glob": "**",
+      "input": "node_modules/@openmfp/portal-ui-lib/assets/",
+      "output": "/assets/"
+    },
+  ]
     // ... other configured assets
   ]
   
