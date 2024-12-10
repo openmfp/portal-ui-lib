@@ -1,12 +1,10 @@
 import { APP_INITIALIZER } from '@angular/core';
 import { provideLanguageServices } from './language-initializer';
-import { AuthService, I18nService } from '../services';
-import { readUserSettingsFromLocalStorage } from '../services';
-
-jest.mock('../services', () => ({
-  ...jest.requireActual('../services'),
-  readUserSettingsFromLocalStorage: jest.fn(),
-}));
+import {
+  AuthService,
+  I18nService,
+  UserSettingsLocalStorage,
+} from '../services';
 
 describe('provideLanguageServices', () => {
   let authServiceMock: jest.Mocked<AuthService>;
@@ -36,7 +34,7 @@ describe('provideLanguageServices', () => {
       fetchTranslationFile: jest.fn(),
     } as unknown as jest.Mocked<I18nService>;
 
-    (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue({
+    UserSettingsLocalStorage.read = jest.fn().mockResolvedValue({
       frame_userAccount: {
         language: 'de',
       },
@@ -49,7 +47,7 @@ describe('provideLanguageServices', () => {
   it('should correctly initialize the language from user settings if valid', async () => {
     await initFn();
 
-    expect(readUserSettingsFromLocalStorage).toHaveBeenCalledWith({
+    expect(UserSettingsLocalStorage.read).toHaveBeenCalledWith({
       id: 'user1',
     });
     expect(i18nServiceMock.getValidLanguages).toHaveBeenCalled();
@@ -58,9 +56,9 @@ describe('provideLanguageServices', () => {
   });
 
   it('should fallback to the default language if user language is invalid', async () => {
-    (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue({
+    UserSettingsLocalStorage.read = jest.fn().mockResolvedValue({
       frame_userAccount: {
-        language: 'fr', // Invalid language
+        language: 'fr',
       },
     });
 
@@ -71,7 +69,7 @@ describe('provideLanguageServices', () => {
   });
 
   it('should fallback to the default language if no user language is set', async () => {
-    (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue(null);
+    UserSettingsLocalStorage.read = jest.fn().mockResolvedValue(null);
 
     await initFn();
 

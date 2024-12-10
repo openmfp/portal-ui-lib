@@ -5,7 +5,7 @@ import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthEvent } from '../models';
-import { lastNavigationUrlKey } from './storage-service';
+import { LocalStorageKeys } from './storage-service';
 
 describe('NavigationService', () => {
   let service: NavigationService;
@@ -91,7 +91,9 @@ describe('NavigationService', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/saved-url'], {
         queryParams: { param: 'value' },
       });
-      expect(localStorage.getItem(lastNavigationUrlKey)).toBe('');
+      expect(localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey)).toBe(
+        ''
+      );
     });
 
     it('should navigate to root if no saved URL on LOGIN_TRIGGERED', () => {
@@ -124,14 +126,16 @@ describe('NavigationService', () => {
     });
 
     it('should clear current URL from localStorage', () => {
-      localStorage.setItem(lastNavigationUrlKey, '/test-url');
+      localStorage.setItem(LocalStorageKeys.lastNavigationUrlKey, '/test-url');
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
         queryParams: {},
       });
 
-      expect(localStorage.getItem(lastNavigationUrlKey)).toBe('');
+      expect(localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey)).toBe(
+        ''
+      );
     });
 
     it('should save current URL to localStorage', () => {
@@ -139,12 +143,14 @@ describe('NavigationService', () => {
       routerEvents.next(navigationEndEvent);
       authEvents.next(AuthEvent.AUTH_EXPIRED);
 
-      expect(localStorage.getItem(lastNavigationUrlKey)).toBe('/test-url');
+      expect(localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey)).toBe(
+        '/test-url'
+      );
     });
 
     it('should get redirect URL from localStorage or return root', () => {
       const savedUrl = '/saved-url';
-      localStorage.setItem(lastNavigationUrlKey, savedUrl);
+      localStorage.setItem(LocalStorageKeys.lastNavigationUrlKey, savedUrl);
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
