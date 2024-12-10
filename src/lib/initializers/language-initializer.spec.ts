@@ -1,106 +1,99 @@
-import { TestBed } from '@angular/core/testing';
+import { APP_INITIALIZER } from '@angular/core';
+import { provideLanguageServices } from './language-initializer';
 import { AuthService, I18nService } from '../services';
 import { readUserSettingsFromLocalStorage } from '../services';
 
-// Mock the imported function
 jest.mock('../services', () => ({
   ...jest.requireActual('../services'),
   readUserSettingsFromLocalStorage: jest.fn(),
 }));
 
-describe('Language Initialization', () => {
-  let mockI18nService: jest.Mocked<I18nService>;
-  let mockAuthService: jest.Mocked<AuthService>;
-
-  beforeEach(() => {
-    mockI18nService = {
-      getValidLanguages: jest.fn().mockResolvedValue([
-        { value: 'en', label: 'English' },
-        { value: 'fr', label: 'Français' },
-        { value: 'de', label: 'Deutsch' },
-      ]),
-      fetchTranslationFile: jest.fn(),
-      fallbackLanguage: 'en',
-    } as any;
-
-    mockAuthService = {
-      getUser: jest.fn().mockReturnValue({}),
-    } as any;
-
-    // Mock global Luigi object
-    (global as any).Luigi = {
-      i18n: jest.fn().mockReturnValue({
-        setCurrentLocale: jest.fn(),
-      }),
-    };
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: I18nService, useValue: mockI18nService },
-        { provide: AuthService, useValue: mockAuthService },
-      ],
-    });
-  });
-
-  const initLanguage = async () => {
-    const userSettings = (await readUserSettingsFromLocalStorage(
-      mockAuthService.getUser()
-    )) as any;
-    const storedLanguage = userSettings?.frame_userAccount?.language;
-
-    const validLanguages = (await mockI18nService.getValidLanguages()).map(
-      (l) => l.value
-    );
-
-    let language = mockI18nService.fallbackLanguage;
-    if (storedLanguage && validLanguages.includes(storedLanguage)) {
-      language = storedLanguage;
-    }
-
-    globalThis.Luigi.i18n().setCurrentLocale(language);
-    await mockI18nService.fetchTranslationFile(language);
+describe('provideLanguageServices', () => {
+  let authServiceMock: jest.Mocked<AuthService>;
+  let i18nServiceMock: jest.Mocked<I18nService>;
+  let initFn: Function;
+  const mockLuigi = {
+    i18n: jest.fn().mockReturnValue({
+      setCurrentLocale: jest.fn(),
+    }),
   };
 
-  it('should set fallback language when no stored language is valid', async () => {
-    // Arrange
-    (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue({
-      frame_userAccount: { language: 'invalid' },
-    });
-
-    // Act
-    await initLanguage();
-
-    // Assert
-    expect(mockI18nService.getValidLanguages).toHaveBeenCalled();
-    expect(global.Luigi.i18n().setCurrentLocale).toHaveBeenCalledWith('en');
-    expect(mockI18nService.fetchTranslationFile).toHaveBeenCalledWith('en');
+  beforeAll(() => {
+    // Mock globalThis.Luigi
+    globalThis.Luigi = mockLuigi as any;
   });
 
-  it('should set stored language when it is valid', async () => {
-    // Arrange
+  beforeEach(() => {
+    authServiceMock = {
+      getUser: jest.fn().mockReturnValue({ id: 'user1' }),
+    } as unknown as jest.Mocked<AuthService>;
+
+    i18nServiceMock = {
+      getValidLanguages: jest
+        .fn()
+        .mockResolvedValue([{ value: 'en' }, { value: 'de' }]),
+      fallbackLanguage: 'en',
+      fetchTranslationFile: jest.fn(),
+    } as unknown as jest.Mocked<I18nService>;
+
     (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue({
-      frame_userAccount: { language: 'fr' },
+      frame_userAccount: {
+        language: 'de',
+      },
     });
 
-    // Act
-    await initLanguage();
-
-    // Assert
-    expect(mockI18nService.getValidLanguages).toHaveBeenCalled();
-    expect(global.Luigi.i18n().setCurrentLocale).toHaveBeenCalledWith('fr');
-    expect(mockI18nService.fetchTranslationFile).toHaveBeenCalledWith('fr');
+    const provider = provideLanguageServices();
+    initFn = provider.useFactory(i18nServiceMock, authServiceMock) as Function;
   });
 
-  it('should handle case with no user settings', async () => {
-    // Arrange
+  it('should correctly initialize the language from user settings if valid', async () => {
+    await initFn();
+
+    expect(readUserSettingsFromLocalStorage).toHaveBeenCalledWith({
+      id: 'user1',
+    });
+    expect(i18nServiceMock.getValidLanguages).toHaveBeenCalled();
+    expect(mockLuigi.i18n().setCurrentLocale).toHaveBeenCalledWith('de');
+    expect(i18nServiceMock.fetchTranslationFile).toHaveBeenCalledWith('de');
+  });
+
+  it('should fallback to the default language if user language is invalid', async () => {
+    (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue({
+      frame_userAccount: {
+        language: 'fr', // Invalid language
+      },
+    });
+
+    await initFn();
+
+    expect(mockLuigi.i18n().setCurrentLocale).toHaveBeenCalledWith('en'); // Fallback language
+    expect(i18nServiceMock.fetchTranslationFile).toHaveBeenCalledWith('en');
+  });
+
+  it('should fallback to the default language if no user language is set', async () => {
     (readUserSettingsFromLocalStorage as jest.Mock).mockResolvedValue(null);
 
-    // Act
-    await initLanguage();
+    await initFn();
 
-    // Assert
-    expect(mockI18nService.getValidLanguages).toHaveBeenCalled();
-    expect(global.Luigi.i18n().setCurrentLocale).toHaveBeenCalledWith('en');
-    expect(mockI18nService.fetchTranslationFile).toHaveBeenCalledWith('en');
+    expect(mockLuigi.i18n().setCurrentLocale).toHaveBeenCalledWith('en'); // Fallback language
+    expect(i18nServiceMock.fetchTranslationFile).toHaveBeenCalledWith('en');
+  });
+
+  it('should throw an error if i18nService fails', async () => {
+    i18nServiceMock.getValidLanguages.mockRejectedValue(
+      new Error('Failed to fetch languages')
+    );
+
+    await expect(initFn()).rejects.toThrow('Failed to fetch languages');
+  });
+
+  it('should provide the correct APP_INITIALIZER configuration', () => {
+    const provider = provideLanguageServices();
+    expect(provider).toEqual({
+      provide: APP_INITIALIZER,
+      useFactory: expect.any(Function),
+      multi: true,
+      deps: [I18nService, AuthService],
+    });
   });
 });
