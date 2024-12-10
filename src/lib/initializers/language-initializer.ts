@@ -1,13 +1,16 @@
 import { APP_INITIALIZER } from '@angular/core';
-import { AuthService, I18nService } from '../services';
-import { readUserSettingsFromLocalStorage } from '../services';
+import {
+  AuthService,
+  I18nService,
+  UserSettingsLocalStorage,
+} from '../services';
 
 export function initLanguage(
   i18nService: I18nService,
   authService: AuthService
 ) {
   return async () => {
-    const userSettings = (await readUserSettingsFromLocalStorage(
+    const userSettings = (await UserSettingsLocalStorage.read(
       authService.getUser()
     )) as any;
     const storedLanguage = userSettings?.frame_userAccount?.language;

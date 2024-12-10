@@ -4,7 +4,7 @@ import { filter } from 'rxjs/operators';
 import { AuthEvent } from '../models';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthService } from './portal';
-import { lastNavigationUrlKey } from './storage-service';
+import { LocalStorageKeys } from './storage-service';
 
 @Injectable({
   providedIn: 'root',
@@ -52,14 +52,17 @@ export class NavigationService {
   }
 
   private clearCurrentUrl() {
-    localStorage.setItem(lastNavigationUrlKey, '');
+    localStorage.setItem(LocalStorageKeys.lastNavigationUrlKey, '');
   }
 
   private saveCurrentUrl(): void {
-    localStorage.setItem(lastNavigationUrlKey, this.currentUrl);
+    localStorage.setItem(
+      LocalStorageKeys.lastNavigationUrlKey,
+      this.currentUrl
+    );
   }
 
   private getRedirectUrl(): string {
-    return localStorage.getItem(lastNavigationUrlKey) || '/';
+    return localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey) || '/';
   }
 }
