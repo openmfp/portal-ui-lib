@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { IframeService } from './iframe.service';
 
 export interface StaticSettingsConfigService {
   getInitialStaticSettingsConfig(): Record<string, any>;
@@ -11,7 +12,7 @@ export interface StaticSettingsConfigService {
 export class StaticSettingsConfigServiceImpl
   implements StaticSettingsConfigService
 {
-  constructor() {}
+  private iframeService = inject(IframeService);
 
   getInitialStaticSettingsConfig() {
     const logo = 'assets/images/mfp_mark.svg';
@@ -33,6 +34,7 @@ export class StaticSettingsConfigServiceImpl
       appLoadingIndicator: {
         hideAutomatically: true,
       },
+      iframeCreationInterceptor: this.iframeService.iFrameCreationInterceptor(),
     };
   }
 

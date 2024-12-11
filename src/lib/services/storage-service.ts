@@ -3,6 +3,7 @@ import { UserTokenData } from '../models';
 export const LocalStorageKeys = {
   lastNavigationUrlKey: 'openmfp.navigation.lastUrl',
   userSettingsStorageKey: 'openmfp.settings.userSettings',
+  developmentModeConfigKey: 'dev-mode-settings',
 };
 
 export const UserSettingsLocalStorage = {

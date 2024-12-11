@@ -1,10 +1,27 @@
+import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
+import { IframeService } from './iframe.service';
 import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
 
 describe('StaticSettingsConfigServiceImpl', () => {
   let service: StaticSettingsConfigServiceImpl;
+  let iframeService: jest.Mocked<IframeService>;
+  let interceptFunction;
 
   beforeEach(() => {
-    service = new StaticSettingsConfigServiceImpl();
+    iframeService = mock();
+    interceptFunction = () => {};
+    iframeService.iFrameCreationInterceptor.mockReturnValue(interceptFunction);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: IframeService, useValue: iframeService },
+        StaticSettingsConfigServiceImpl,
+      ],
+    });
+
+    service = TestBed.inject<StaticSettingsConfigServiceImpl>(
+      StaticSettingsConfigServiceImpl
+    );
   });
 
   it('should be created', () => {
@@ -32,6 +49,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
         appLoadingIndicator: {
           hideAutomatically: true,
         },
+        iframeCreationInterceptor: interceptFunction,
       });
     });
   });
