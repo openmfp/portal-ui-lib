@@ -618,7 +618,7 @@ should be `4300` otherwise you need to set the environment variable to expected 
 
 You can set up a local instance of your application.
 This allows you to thoroughly test your application before you release it to production.
-Please follow our [local setup guide](./readme-local-setup.md) for this task
+Please follow our [local setup guide](./readme-local-setup.md) for this task.
 
 ## Requirements
 
