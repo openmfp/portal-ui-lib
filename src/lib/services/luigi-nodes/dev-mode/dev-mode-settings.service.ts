@@ -1,12 +1,11 @@
 import { EnvConfigService } from '../../portal';
+import { LocalStorageKeys } from '../../storage-service';
 import { DevModeSettings } from './dev-mode-settings';
 import { Injectable } from '@angular/core';
 
-export const DEV_MODE_SETTINGS_KEY = 'dev-mode-settings';
-
 @Injectable({ providedIn: 'root' })
 export class DevModeSettingsService {
-  constructor(private envConfigService: EnvConfigService) { }
+  constructor(private envConfigService: EnvConfigService) {}
 
   async getDevModeSettings(): Promise<DevModeSettings> {
     const { developmentInstance } = await this.envConfigService.getEnvConfig();
@@ -27,7 +26,7 @@ export class DevModeSettingsService {
     let devModeSettingsString: string;
     try {
       devModeSettingsString = window.localStorage.getItem(
-        DEV_MODE_SETTINGS_KEY,
+        LocalStorageKeys.developmentModeConfigKey
       );
     } catch (e) {
       // ignore local storage exceptions
@@ -42,7 +41,7 @@ export class DevModeSettingsService {
         };
       } catch (e) {
         console.error(
-          `Failed to parse the dev mode settings in your localstorage because of ${e}`,
+          `Failed to parse the dev mode settings in your localstorage because of ${e}`
         );
       }
     }

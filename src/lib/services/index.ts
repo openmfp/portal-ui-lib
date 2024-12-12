@@ -14,6 +14,7 @@ export * from './luigi-config/user-settings-config.service';
 export * from './luigi-config/global-search-config.service';
 export * from './luigi-config/app-switcher-config.service';
 export * from './luigi-config/user-profile-config.service';
+export * from './luigi-config/iframe.service';
 export * from './luigi-config/luigi-breadcrumb-config.service';
 export * from './luigi-config/node-change-hook-config.service';
 export * from './luigi-config/navigation-global-context-config.service';

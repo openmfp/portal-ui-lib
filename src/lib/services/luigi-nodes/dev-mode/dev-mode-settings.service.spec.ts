@@ -1,9 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
-import {
-  DEV_MODE_SETTINGS_KEY,
-  DevModeSettingsService,
-} from './dev-mode-settings.service';
+import { LocalStorageKeys } from '../../storage-service';
+import { DevModeSettingsService } from './dev-mode-settings.service';
 import { EnvConfigService } from '../../portal';
 
 describe('DevModeSettingsService', () => {
@@ -57,7 +55,7 @@ describe('DevModeSettingsService', () => {
   it('returns empty if non-dev environment and not active in the local storage', async () => {
     mockEnvConfig(false);
     window.localStorage.setItem(
-      DEV_MODE_SETTINGS_KEY,
+      LocalStorageKeys.developmentModeConfigKey,
       JSON.stringify({
         serviceProviderConfig: { a: 'b' },
       })
@@ -74,7 +72,7 @@ describe('DevModeSettingsService', () => {
   it('returns empty if non-dev environment and active in the local storage', async () => {
     mockEnvConfig(false);
     window.localStorage.setItem(
-      DEV_MODE_SETTINGS_KEY,
+      LocalStorageKeys.developmentModeConfigKey,
       JSON.stringify({
         isActive: true,
         serviceProviderConfig: { a: 'b' },
@@ -99,7 +97,7 @@ describe('DevModeSettingsService', () => {
   it('overwrites the configs & serviceProviderConfig from the local storage', async () => {
     mockEnvConfig(true);
     window.localStorage.setItem(
-      DEV_MODE_SETTINGS_KEY,
+      LocalStorageKeys.developmentModeConfigKey,
       JSON.stringify({
         configs: [
           { url: 'http://localhost:4200/assets/content-configuration.json' },
@@ -122,7 +120,7 @@ describe('DevModeSettingsService', () => {
     mockEnvConfig(true);
     console.error = jest.fn();
     window.localStorage.setItem(
-      DEV_MODE_SETTINGS_KEY,
+      LocalStorageKeys.developmentModeConfigKey,
       'hello' +
         JSON.stringify({
           configs: [
