@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="128" height="128" viewBox="0 0 128 128" id="sapIllus-Spot-UnableToLoad-Alt2">
+    <circle class="sapIllus_ObjectFillColor" style="fill:var(--sapIllus_ObjectFillColor)" cx="64.5794" cy="65.498" r="40.5032"/>
+    <path class="sapIllus_Layering1" style="fill:var(--sapIllus_Layering1)" d="M48.5194,14.9965l-.3976-6.9974c-.0753-1.3238-2.0758-1.3328-2,0l.3976,6.9974c.0752,1.3239,2.0757,1.3328,2,0Z"/>
+    <path class="sapIllus_Layering1" style="fill:var(--sapIllus_Layering1)" d="M22.4364,30.6238l-6.1608-2.562c-1.17-.4866-1.6794,1.4474-.5225,1.9285l6.1609,2.562c1.17.4866,1.6793-1.4474.5224-1.9285Z"/>
+    <path class="sapIllus_Layering1" style="fill:var(--sapIllus_Layering1)" d="M33.096,22.3473a1.0033,1.0033,0,0,1-.817-.4184l-5.9753-8.33a1.002,1.002,0,0,1,1.632-1.1631l5.9753,8.33a1,1,0,0,1-.815,1.5815Z"/>
+    <path class="sapIllus_StrokeDetailColor" style="fill:var(--sapIllus_StrokeDetailColor)" d="M64.5894,106.9984a41.5,41.5,0,1,1,41.5-41.5A41.5473,41.5473,0,0,1,64.5894,106.9984Zm0-82.0035a40.5033,40.5033,0,1,0,40.503,40.503A40.5487,40.5487,0,0,0,64.5894,24.9949Z"/>
+    <circle class="sapIllus_BrandColorSecondary" style="fill:var(--sapIllus_BrandColorSecondary)" cx="64.5794" cy="65.4892" r="30.4981"/>
+    <path class="sapIllus_PatternShadow" style="fill:var(--sapIllus_PatternShadow)" d="M44.421,77.8836a72.1614,72.1614,0,0,0-4.28,5.8558,30.4988,30.4988,0,1,0,44.501-41.2217C68.5319,49.5921,55.55,63.7608,44.421,77.8836Z"/>
+    <g>
+      <rect class="sapIllus_ObjectFillColor" style="fill:var(--sapIllus_ObjectFillColor)" x="52.1019" y="55.9903" width="24.99" height="7.01" rx="0.9902" transform="translate(5.1015 124.0922) rotate(-90)"/>
+      <circle class="sapIllus_ObjectFillColor" style="fill:var(--sapIllus_ObjectFillColor)" cx="64.5794" cy="80.4974" r="3.502"/>
+    </g>
+</svg>
