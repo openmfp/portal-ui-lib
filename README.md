@@ -23,7 +23,7 @@ Main features of this library are:
 - [Library development](#Library-development)
 - [Requirements](#Requirements)
 - [Contributing](#Contributing)
-- [Code of Conduct](#Code of Conduct)
+- [Code of Conduct](#Code-of-Conduct)
 - [Licensing](#Licensing)
 
 
