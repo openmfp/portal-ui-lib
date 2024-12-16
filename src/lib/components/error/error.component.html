@@ -13,7 +13,7 @@
             ></p>
           </figcaption>
           <fd-illustrated-message-actions>
-              @for (button of config.buttons; track button.id) {
+              @for (button of config.buttons; track button.url) {
                   <button
                     fd-button
                     (click)="goTo(button)"

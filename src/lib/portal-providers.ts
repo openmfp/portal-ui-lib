@@ -27,8 +27,9 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+  ERROR_COMPONENT_CONFIG,
 } from './injection-tokens';
-
+import { ErrorComponentConfig } from './models';
 import { portalRouts } from './portal-routing';
 import {
   AppSwitcherConfigService,
@@ -89,6 +90,9 @@ export interface PortalOptions {
 
   /** Service handling luigi authentication events **/
   luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
+
+  /** Provide a error configuration for error component to override the default values **/
+  errorComponentConfig?: Record<string, ErrorComponentConfig>;
 }
 
 export function providePortal(
@@ -196,6 +200,13 @@ const addOptionalProviders = (
     providers.push({
       provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: options.globalSearchConfigService,
+    });
+  }
+
+  if (options.errorComponentConfig) {
+    providers.push({
+      provide: ERROR_COMPONENT_CONFIG,
+      useValue: options.errorComponentConfig,
     });
   }
 

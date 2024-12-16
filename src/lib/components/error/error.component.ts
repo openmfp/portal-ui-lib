@@ -2,8 +2,9 @@ import {
   Component,
   ViewEncapsulation,
   AfterViewInit,
-  inject,
   CUSTOM_ELEMENTS_SCHEMA,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {
   ButtonComponent,
@@ -16,7 +17,9 @@ import {
   addInitListener,
   linkManager,
 } from '@luigi-project/client/luigi-client';
+import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import { I18nService, LuigiCoreService } from '../../services';
+import { ErrorComponentConfig, SceneConfig } from '../../models';
 
 @Component({
   selector: 'app-error',
@@ -34,10 +37,15 @@ import { I18nService, LuigiCoreService } from '../../services';
   ],
 })
 export class ErrorComponent implements AfterViewInit {
-  private luigiCoreService = inject(LuigiCoreService);
-  private i18nService = inject(I18nService);
+  constructor(
+    private i18nService: I18nService,
+    private luigiCoreService: LuigiCoreService,
+    @Optional()
+    @Inject(ERROR_COMPONENT_CONFIG)
+    private errorComponentConfig: Record<string, ErrorComponentConfig>
+  ) {}
 
-  config = {
+  config: ErrorComponentConfig = {
     sceneConfig: {
       scene: {
         url: '',
@@ -51,7 +59,7 @@ export class ErrorComponent implements AfterViewInit {
 
   errorCode: string;
   entityNotFoundError: any;
-  sceneConfig: any;
+  sceneConfig: SceneConfig;
 
   async ngAfterViewInit() {
     this.luigiCoreService.ux().hideAppLoadingIndicator();
@@ -159,14 +167,7 @@ export class ErrorComponent implements AfterViewInit {
       illustratedMessageText: await this.i18nService.getTranslationAsync(
         'ERROR_CONTENT_NOT_FOUND_TEXT'
       ),
-      buttons: [
-        {
-          url: 'https://jira.tools.sap/secure/CreateIssue.jspa?pid=109355&issuetype=1',
-          label: await this.i18nService.getTranslationAsync(
-            'ERROR_CONTENT_NOT_FOUND_CREATE_ISSUE_BUTTON'
-          ),
-        },
-      ],
+      buttons: (this.errorComponentConfig || {})['404']?.buttons,
     };
   }
 

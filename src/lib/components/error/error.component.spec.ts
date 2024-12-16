@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import { ErrorComponent } from './error.component';
 import { I18nService, LuigiCoreService } from '../../services';
 import * as LuigiClient from '@luigi-project/client/luigi-client';
@@ -42,6 +43,7 @@ describe('ErrorComponent', () => {
       providers: [
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
+        // { provide: ERROR_COMPONENT_CONFIG, useValue: {} },
       ],
     }).compileComponents();
 

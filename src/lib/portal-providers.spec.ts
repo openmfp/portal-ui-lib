@@ -206,11 +206,17 @@ describe('Provide Portal', () => {
       customGlobalNodesService: CustomCustomGlobalNodesService,
       userProfileConfigService: CustomUserProfileConfigService,
       luigiBreadcrumbConfigService: CustomLuigiBreadcrumbConfigService,
+      errorComponentConfig: { '404': {} } as any,
     };
 
     providePortal(options);
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
+
+    expect(providersArg).toContainEqual({
+      provide: tokens.ERROR_COMPONENT_CONFIG,
+      useValue: { '404': {} },
+    });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
