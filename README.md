@@ -21,11 +21,13 @@ Main features of this library are:
   - [Start your project](#Start-your-project)
 - [Local Application Development](#Local-Application-Development)
 - [Library development](#Library-development)
+- [Requirements](#Requirements)
+- [Contributing](#Contributing)
+- [Code of Conduct](#Code-of-Conduct)
+- [Licensing](#Licensing)
 
 
-# Getting started
-
-## Configure the project
+## Getting started
 
 ### Dependencies
 
@@ -523,7 +525,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-## Listen and react to Authentication Events
+### Listen and react to Authentication Events
 
 There are following Authentication Events, to which the library consuming application can subscribe and react upon, in case required.
 
@@ -563,7 +565,7 @@ export function actWhenUserAuthSuccedsful(
 }
 ```
 
-## Configure proxy for backend rest calls
+### Configure proxy for backend rest calls
 
 The library executes rest calls `"/rest/**"` against backend running with the library [portal-servet-lib](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library).
 In order for the calls to reach your backend the `proxy.config.json` needs to be provided, 
@@ -604,7 +606,7 @@ The proxy file needs to be indicated in the file `angular.json` section `serve`:
 ```
 
 
-## Start your project
+### Start your project
 
 After finishing all the required steps you might want to check your integration with the library and run your local application.
 In order to do that, firstly you need to run the local server part of the portal,
@@ -612,19 +614,26 @@ please follow the instruction provided [here](https://github.com/openmfp/portal-
 Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port
 should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
-# Local Application Development
+### Local Application Development
 
 You can set up a local instance of your application.
 This allows you to thoroughly test your application before you release it to production.
-Please follow our [local setup guide](./readme-local-setup.md) for this task
+Please follow our [local setup guide](./readme-local-setup.md) for this task.
 
-# Library development
+## Requirements
 
-## Build
+The portal requires a installation of node.js and npm. 
+Checkout the [package.json](package.json) for the required node version and dependencies.
 
-Run `ng build` to build the project.
-The build artifacts will be stored in the `dist/` directory.
+## Contributing
 
-## Running unit tests
+Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file in this repository for instructions on how to contribute to openMFP.
 
-Run `ng test` to execute the unit tests via [Jest](https://jestjs.io/).
+## Code of Conduct
+
+Please refer to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) file in this repository for information on the expected Code of Conduct for contributing to openMFP.
+
+## Licensing
+
+Copyright 2024 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib).
+
