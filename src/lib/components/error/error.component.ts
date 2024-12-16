@@ -93,7 +93,7 @@ export class ErrorComponent implements AfterViewInit {
 
       const sceneId =
         this.entityNotFoundError.entityDefinition?.notFoundConfig
-          ?.sapIllusSVG || 'Scene-NoSearchResults';
+          ?.portalIllusSVG || 'Scene-NoSearchResults';
 
       const id = this.entityNotFoundError.additionalContext[type];
       const gotoNavContext =
@@ -149,8 +149,8 @@ export class ErrorComponent implements AfterViewInit {
     return {
       sceneConfig: {
         scene: {
-          url: 'assets/moments/sapIllus-Scene-NoEntries.svg',
-          id: 'sapIllus-Scene-NoEntries',
+          url: 'assets/moments/portalIllus-Scene-NoEntries.svg',
+          id: 'portalIllus-Scene-NoEntries',
         },
       },
       illustratedMessageTitle: await this.i18nService.getTranslationAsync(
@@ -171,6 +171,10 @@ export class ErrorComponent implements AfterViewInit {
   }
 
   private async getError403Config() {
+    const illustratedMessageText = await this.i18nService.getTranslationAsync(
+      'ERROR_CONTENT_NOT_ALLOWED_NO_PROJECT_MEMBER_TEXT'
+    );
+
     return {
       sceneConfig: {
         scene: {
@@ -179,9 +183,7 @@ export class ErrorComponent implements AfterViewInit {
         },
       },
       illustratedMessageTitle: '',
-      illustratedMessageText: await this.i18nService.getTranslationAsync(
-        'ERROR_CONTENT_NOT_ALLOWED_NO_PROJECT_MEMBER_TEXT'
-      ),
+      illustratedMessageText,
       buttons: [
         {
           url: '',
@@ -223,29 +225,32 @@ export class ErrorComponent implements AfterViewInit {
     gotoNavContext: any,
     buttons: any[]
   ) {
+    const illustratedMessageTitle = await this.i18nService.getTranslationAsync(
+      'ERROR_ENTITY_NOT_FOUND_TITLE',
+      { entityType: typeStr, entityId: `<b>${id}</b>` }
+    );
+    const illustratedMessageText =
+      typeStrPlural && gotoNavContext
+        ? await this.i18nService.getTranslationAsync(
+            'ERROR_ENTITY_NOT_FOUND_TEXT_LIST',
+            {
+              entityTypePlural: typeStrPlural,
+              entityTypePlural_lowerCase: typeStrPlural.toLowerCase(),
+            }
+          )
+        : await this.i18nService.getTranslationAsync(
+            'ERROR_ENTITY_NOT_FOUND_TEXT_NO_LIST'
+          );
+
     return {
       sceneConfig: {
         scene: {
-          url: `assets/moments/sapIllus-${sceneId}.svg`,
-          id: `sapIllus-${sceneId}`,
+          url: `assets/moments/portalIllus-${sceneId}.svg`,
+          id: `portalIllus-${sceneId}`,
         },
       },
-      illustratedMessageTitle: await this.i18nService.getTranslationAsync(
-        'ERROR_ENTITY_NOT_FOUND_TITLE',
-        { entityType: typeStr, entityId: `<b>${id}</b>` }
-      ),
-      illustratedMessageText:
-        typeStrPlural && gotoNavContext
-          ? await this.i18nService.getTranslationAsync(
-              'ERROR_ENTITY_NOT_FOUND_TEXT_LIST',
-              {
-                entityTypePlural: typeStrPlural,
-                entityTypePlural_lowerCase: typeStrPlural.toLowerCase(),
-              }
-            )
-          : await this.i18nService.getTranslationAsync(
-              'ERROR_ENTITY_NOT_FOUND_TEXT_NO_LIST'
-            ),
+      illustratedMessageTitle,
+      illustratedMessageText,
       buttons,
     };
   }
