@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="160" height="160" viewBox="0 0 160 160" id="sapIllus-Dialog-SuccessCheckMark">
+      <circle class="sapIllus_ObjectFillColor" style="fill:var(--sapIllus_ObjectFillColor)" cx="79.0022" cy="75.5141" r="41.9985"/>
+      <ellipse class="sapIllus_BackgroundColor" style="fill:var(--sapIllus_BackgroundColor)" cx="78.9954" cy="142.0063" rx="36.9935" ry="5.9976"/>
+      <path class="sapIllus_StrokeDetailColor" style="fill:var(--sapIllus_StrokeDetailColor)" d="M79.0022,118.5153a43.0036,43.0036,0,1,1,43.004-43.0033A43.0528,43.0528,0,0,1,79.0022,118.5153Zm0-85.0023A41.9985,41.9985,0,1,0,121.001,75.5118,42.046,42.046,0,0,0,79.0022,33.513Z"/>
+      <circle class="sapIllus_BrandColorSecondary" style="fill:var(--sapIllus_BrandColorSecondary)" cx="78.9996" cy="75.5147" r="30.9998"/>
+      <path class="sapIllus_PatternShadow" style="fill:var(--sapIllus_PatternShadow)" d="M62.0735,101.3971A31.001,31.001,0,0,0,104.9154,58.446Z"/>
+</svg>
