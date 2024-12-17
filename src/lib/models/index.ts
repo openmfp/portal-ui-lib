@@ -5,3 +5,4 @@ export * from './user';
 export * from './auth';
 export * from './content-configuration';
 export * from './error-component';
+export * from './scene-config';

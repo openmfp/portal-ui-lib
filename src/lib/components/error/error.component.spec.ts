@@ -209,12 +209,10 @@ describe('ErrorComponent', () => {
     it('entity_404 should add view all button when gotoNavContext and typeStrPlural exist', async () => {
       component.errorCode = 'entity_404';
 
-      // Mock location
       jest.spyOn(globalThis, 'location', 'get').mockReturnValue({
         hash: '#entity_404',
       } as Location);
 
-      // Mock context with error details
       const mockContext = {
         error: {
           entityDefinition: {
@@ -230,26 +228,22 @@ describe('ErrorComponent', () => {
         },
       };
 
-      // Mock Luigi Client's addInitListener
       const addInitListenerMock = LuigiClient.addInitListener as jest.Mock;
       addInitListenerMock.mockImplementation((callback) => {
         callback(mockContext);
       });
 
-      // Ensure the translation is mocked specifically with the expected parameters
       i18nServiceMock.getTranslationAsync.mockImplementation(
         async (key, params) => {
           if (key === 'ERROR_ENTITY_VIEW_ALL_BUTTON') {
             return 'View All Entities';
           }
-          // Fallback for other translation calls
           return key;
         }
       );
 
       await component.ngAfterViewInit();
 
-      // Verify translation was called with correct parameters
       setTimeout(() => {
         expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledTimes(3);
         expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledWith(
@@ -257,7 +251,6 @@ describe('ErrorComponent', () => {
           { entityTypePlural: 'TestEntities' }
         );
 
-        // Check that the button was added correctly
         expect(component.config.buttons.length).toBeGreaterThan(0);
         expect(component.config.buttons[0]).toEqual(
           expect.objectContaining({
@@ -298,7 +291,6 @@ describe('ErrorComponent', () => {
     it('entity_403 should add proper scene id', async () => {
       component.errorCode = 'entity_403';
 
-      // Mock location
       jest.spyOn(globalThis, 'location', 'get').mockReturnValue({
         hash: '#entity_403',
       } as Location);
@@ -326,7 +318,6 @@ describe('ErrorComponent', () => {
     it('entity_500 should add proper scene id', async () => {
       component.errorCode = 'entity_500';
 
-      // Mock location
       jest.spyOn(globalThis, 'location', 'get').mockReturnValue({
         hash: '#entity_500',
       } as Location);

@@ -1,20 +1,8 @@
-export interface SceneConfigData {
-  url: string;
-  id: string;
-}
-
-export interface SceneConfig {
-  scene: SceneConfigData;
-}
-
-export interface ErrorButtonConfig {
-  url: string;
-  label: string;
-}
+import { ButtonConfig, SceneConfig } from './scene-config';
 
 export interface ErrorComponentConfig {
   sceneConfig?: SceneConfig;
   illustratedMessageTitle?: string;
   illustratedMessageText?: string;
-  buttons?: ErrorButtonConfig[];
+  buttons?: ButtonConfig[];
 }

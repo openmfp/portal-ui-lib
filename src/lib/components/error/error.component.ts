@@ -19,7 +19,7 @@ import {
 } from '@luigi-project/client/luigi-client';
 import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import { I18nService, LuigiCoreService } from '../../services';
-import { ErrorComponentConfig, SceneConfig } from '../../models';
+import { ButtonConfig, ErrorComponentConfig, SceneConfig } from '../../models';
 
 @Component({
   selector: 'app-error',
@@ -83,7 +83,7 @@ export class ErrorComponent implements AfterViewInit {
     }
   }
 
-  goTo(button): void {
+  goTo(button: ButtonConfig): void {
     if (button.url) {
       window.open(button.url, '_blank');
     } else if (button.route) {
