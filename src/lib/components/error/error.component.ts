@@ -25,7 +25,6 @@ import { ErrorComponentConfig, SceneConfig } from '../../models';
   selector: 'app-error',
   standalone: true,
   templateUrl: './error.component.html',
-  styleUrls: ['./error.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
@@ -42,7 +41,7 @@ export class ErrorComponent implements AfterViewInit {
     private luigiCoreService: LuigiCoreService,
     @Optional()
     @Inject(ERROR_COMPONENT_CONFIG)
-    private errorComponentConfig: Record<string, ErrorComponentConfig>
+    private errorComponentConfig: Promise<Record<string, ErrorComponentConfig>>
   ) {}
 
   config: ErrorComponentConfig = {
@@ -101,7 +100,7 @@ export class ErrorComponent implements AfterViewInit {
 
       const sceneId =
         this.entityNotFoundError.entityDefinition?.notFoundConfig
-          ?.portalIllusSVG || 'Scene-NoSearchResults';
+          ?.sapIllusSVG || 'Scene-NoSearchResults';
 
       const id = this.entityNotFoundError.additionalContext[type];
       const gotoNavContext =
@@ -122,7 +121,7 @@ export class ErrorComponent implements AfterViewInit {
       }
 
       if (this.errorCode.includes('404')) {
-        this.config = await this.getErrorEntityNotFoundConfig(
+        this.config = await this.getErrorEntity404NotFoundConfig(
           id,
           sceneId,
           typeStr,
@@ -154,11 +153,20 @@ export class ErrorComponent implements AfterViewInit {
   }
 
   private async getError404Config() {
+    const confButtons = (this.errorComponentConfig || {})['404']?.buttons || [];
+    const buttons = [];
+    for (let i = 0; i < confButtons.length; i++) {
+      buttons.push({
+        url: confButtons[i].url,
+        label: await this.i18nService.getTranslationAsync(confButtons[i].label),
+      });
+    }
+
     return {
       sceneConfig: {
         scene: {
-          url: 'assets/moments/portalIllus-Scene-NoEntries.svg',
-          id: 'portalIllus-Scene-NoEntries',
+          url: 'assets/moments/sapIllus-Scene-NoEntries.svg',
+          id: 'sapIllus-Scene-NoEntries',
         },
       },
       illustratedMessageTitle: await this.i18nService.getTranslationAsync(
@@ -167,7 +175,7 @@ export class ErrorComponent implements AfterViewInit {
       illustratedMessageText: await this.i18nService.getTranslationAsync(
         'ERROR_CONTENT_NOT_FOUND_TEXT'
       ),
-      buttons: (this.errorComponentConfig || {})['404']?.buttons,
+      buttons,
     };
   }
 
@@ -218,7 +226,7 @@ export class ErrorComponent implements AfterViewInit {
     };
   }
 
-  private async getErrorEntityNotFoundConfig(
+  private async getErrorEntity404NotFoundConfig(
     id: string,
     sceneId: string,
     typeStr: string,
@@ -246,8 +254,8 @@ export class ErrorComponent implements AfterViewInit {
     return {
       sceneConfig: {
         scene: {
-          url: `assets/moments/portalIllus-${sceneId}.svg`,
-          id: `portalIllus-${sceneId}`,
+          url: `assets/moments/sapIllus-${sceneId}.svg`,
+          id: `sapIllus-${sceneId}`,
         },
       },
       illustratedMessageTitle,

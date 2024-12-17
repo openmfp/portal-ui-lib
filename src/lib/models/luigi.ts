@@ -42,7 +42,10 @@ export interface EntityDefinition {
   useBack?: boolean;
   label?: string;
   pluralLabel?: string;
-  notFoundConfig?: Record<string, string>;
+  notFoundConfig?: {
+    entityListNavigationContext: string;
+    sapIllusSVG: string;
+  };
 }
 
 export interface LuigiStatusBadge {

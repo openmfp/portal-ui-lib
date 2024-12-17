@@ -13,8 +13,8 @@ export interface ErrorButtonConfig {
 }
 
 export interface ErrorComponentConfig {
-  sceneConfig: SceneConfig;
-  illustratedMessageTitle: string;
-  illustratedMessageText: string;
-  buttons: ErrorButtonConfig[];
+  sceneConfig?: SceneConfig;
+  illustratedMessageTitle?: string;
+  illustratedMessageText?: string;
+  buttons?: ErrorButtonConfig[];
 }

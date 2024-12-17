@@ -50,7 +50,7 @@ export class I18nService {
 
   /**
    * Get translation asynchronously (especially for logout and theming translation in user settings dialog).
-   * If nothing is found for current locale try to get tranlsation for fallback language
+   * If nothing is found for current locale try to get translation for fallback language
    *
    * @param key search key
    * @param interpolations in translation table
