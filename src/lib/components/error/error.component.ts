@@ -41,7 +41,7 @@ export class ErrorComponent implements AfterViewInit {
     private luigiCoreService: LuigiCoreService,
     @Optional()
     @Inject(ERROR_COMPONENT_CONFIG)
-    private errorComponentConfig: Promise<Record<string, ErrorComponentConfig>>
+    private errorComponentConfig: Record<string, ErrorComponentConfig>
   ) {}
 
   config: ErrorComponentConfig = {

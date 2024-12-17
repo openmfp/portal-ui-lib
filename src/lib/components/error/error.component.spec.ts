@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
+import { ErrorComponentConfig } from '../../models';
 import { ErrorComponent } from './error.component';
 import { I18nService, LuigiCoreService } from '../../services';
 import * as LuigiClient from '@luigi-project/client/luigi-client';
@@ -21,8 +22,10 @@ describe('ErrorComponent', () => {
   let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
   let i18nServiceMock: jest.Mocked<I18nService>;
   let locationSpy: jest.SpyInstance;
+  let errorComponentConfig: Record<string, ErrorComponentConfig>;
 
   beforeEach(async () => {
+    errorComponentConfig = {};
     locationSpy = jest.spyOn(globalThis, 'location', 'get').mockReturnValue({
       hash: '#404',
     } as Location);
@@ -43,7 +46,7 @@ describe('ErrorComponent', () => {
       providers: [
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
-        // { provide: ERROR_COMPONENT_CONFIG, useValue: {} },
+        { provide: ERROR_COMPONENT_CONFIG, useValue: errorComponentConfig },
       ],
     }).compileComponents();
 
@@ -133,9 +136,32 @@ describe('ErrorComponent', () => {
     it('should get 404 config', async () => {
       const config = await (component as any).getError404Config();
 
-      expect(config.sceneConfig.scene.id).toBe('portalIllus-Scene-NoEntries');
+      expect(config.sceneConfig.scene.id).toBe('sapIllus-Scene-NoEntries');
+      expect(config.buttons).toEqual([]);
       expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledWith(
         'ERROR_CONTENT_NOT_FOUND_TITLE'
+      );
+      expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledWith(
+        'ERROR_CONTENT_NOT_FOUND_TEXT'
+      );
+    });
+
+    it('should get 404 config with buttons from external config', async () => {
+      errorComponentConfig['404'] = {
+        buttons: [{ url: 'url', label: 'LABEL' }],
+      };
+
+      i18nServiceMock.getTranslationAsync.mockResolvedValue('btn-label');
+      const config = await (component as any).getError404Config();
+
+      expect(config.sceneConfig.scene.id).toBe('sapIllus-Scene-NoEntries');
+      expect(config.buttons).toEqual([{ url: 'url', label: 'btn-label' }]);
+      expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledWith('LABEL');
+      expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledWith(
+        'ERROR_CONTENT_NOT_FOUND_TITLE'
+      );
+      expect(i18nServiceMock.getTranslationAsync).toHaveBeenCalledWith(
+        'ERROR_CONTENT_NOT_FOUND_TEXT'
       );
     });
 
@@ -196,7 +222,7 @@ describe('ErrorComponent', () => {
             label: 'TestEntity',
             pluralLabel: 'TestEntities',
             notFoundConfig: {
-              portalIllusSVG: 'TestScene',
+              sapIllusSVG: 'TestScene',
               entityListNavigationContext: 'listContext',
             },
           },
@@ -253,7 +279,7 @@ describe('ErrorComponent', () => {
             dynamicFetchId: 'testId',
             label: 'TestEntity',
             pluralLabel: 'TestEntities',
-            notFoundConfig: { portalIllusSVG: 'TestScene' },
+            notFoundConfig: { sapIllusSVG: 'TestScene' },
           },
           additionalContext: { testId: '123' },
         },

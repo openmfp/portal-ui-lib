@@ -59,7 +59,6 @@ export class ConfigService {
       })
     );
 
-    throw new HttpErrorResponse({ status: 404 });
     this.entityConfigCache[entity][entityCacheKey] = entityConfig;
     return entityConfig;
   }
