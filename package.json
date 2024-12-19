@@ -3,11 +3,10 @@
   "version": "0.83.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
     "xliff2json": "node xliff2json.js",
-    "build": "ng build && npm run xliff2json",
+    "build": "ng build lib && npm run xliff2json",
     "build:watch": "mkdirp dist && nodemon --ignore dist --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build && cd dist && yalc publish --push --sig\"",
-    "watch": "ng build --watch --configuration development",
+    "watch": "npm run build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix"

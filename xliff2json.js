@@ -3,7 +3,7 @@
 const xliff2js = require('xliff/cjs/xliff2js');
 const targetOfjs = require('xliff/targetOfjs');
 var fs = require('fs');
-const dirname = './src/lib/i18n/';
+const dirname = './projects/lib//src/lib/i18n/';
 const targetDir = 'dist/assets/translation-files/';
 try {
   // delete directory recursively
