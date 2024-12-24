@@ -1,10 +1,10 @@
 import {
   Component,
   ViewEncapsulation,
-  AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
-  Inject,
-  Optional,
+  Input,
+  OnInit,
+  inject,
 } from '@angular/core';
 import {
   ButtonComponent,
@@ -14,12 +14,24 @@ import {
   IllustratedMessageTitleDirective,
 } from '@fundamental-ngx/core';
 import {
-  addInitListener,
-  linkManager,
-} from '@luigi-project/client/luigi-client';
-import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
-import { I18nService, LuigiCoreService } from '../../services';
-import { ButtonConfig, ErrorComponentConfig, SceneConfig } from '../../models';
+  ButtonConfig,
+  SceneConfig,
+  ErrorComponentConfig,
+  EntityDefinition,
+} from '../../../../../lib/src/lib/models';
+import {
+  I18nService,
+  LuigiCoreService,
+} from '../../../../../lib/src/lib/services';
+
+interface ErrorNodeContext {
+  error: {
+    code: number;
+    errorComponentConfig: ErrorComponentConfig;
+    entityDefinition: EntityDefinition;
+    additionalContext: any;
+  };
+}
 
 @Component({
   selector: 'app-error',
@@ -35,14 +47,17 @@ import { ButtonConfig, ErrorComponentConfig, SceneConfig } from '../../models';
     ContentDensityDirective,
   ],
 })
-export class ErrorComponent implements AfterViewInit {
-  constructor(
-    private i18nService: I18nService,
-    private luigiCoreService: LuigiCoreService,
-    @Optional()
-    @Inject(ERROR_COMPONENT_CONFIG)
-    private errorComponentConfig: Record<string, ErrorComponentConfig>
-  ) {}
+export class ErrorComponent implements OnInit {
+  private i18nService = inject(I18nService);
+  private luigiCoreService = inject(LuigiCoreService);
+
+  private nodeContext: ErrorNodeContext;
+
+  @Input()
+  set context(context: any) {
+    this.nodeContext = context;
+    console.log(context);
+  }
 
   config: ErrorComponentConfig = {
     sceneConfig: {
@@ -56,56 +71,35 @@ export class ErrorComponent implements AfterViewInit {
     buttons: [],
   };
 
-  errorCode: string;
-  entityNotFoundError: any;
   sceneConfig: SceneConfig;
 
-  async ngAfterViewInit() {
-    this.luigiCoreService.ux().hideAppLoadingIndicator();
-    this.i18nService.afterInit();
-
-    this.errorCode = globalThis.location.hash;
-    if (this.errorCode) {
-      this.errorCode = this.errorCode.replace('#', '');
-      if (this.errorCode.includes('/')) {
-        this.errorCode = this.errorCode.split('/')[0];
-      }
-    }
-    if (this.errorCode.startsWith('entity_')) {
-      addInitListener(async (ctx) => {
-        if (ctx.error) {
-          this.entityNotFoundError = ctx.error;
-        }
-        await this.setSceneConfig();
-      });
-    } else {
-      await this.setSceneConfig();
-    }
+  async ngOnInit() {
+    await this.setSceneConfig();
   }
 
   goTo(button: ButtonConfig): void {
     if (button.url) {
       window.open(button.url, '_blank');
     } else if (button.route) {
-      linkManager().fromContext(button.route.context).navigate('/');
+      this.luigiCoreService.navigation().navigate(`/${button.route.context}`);
     }
   }
 
   private async setSceneConfig() {
-    if (this.entityNotFoundError) {
-      const type = this.entityNotFoundError.entityDefinition?.dynamicFetchId;
-      const typeStr = this.entityNotFoundError.entityDefinition?.label;
-      const typeStrPlural: string =
-        this.entityNotFoundError.entityDefinition?.pluralLabel;
+    if (this.nodeContext.error?.entityDefinition) {
+      const entityDefinition = this.nodeContext.error.entityDefinition;
+      const typeStr = entityDefinition.label;
+      const typeStrPlural: string = entityDefinition.pluralLabel;
 
       const sceneId =
-        this.entityNotFoundError.entityDefinition?.notFoundConfig
-          ?.sapIllusSVG || 'Scene-NoSearchResults';
+        entityDefinition.notFoundConfig?.sapIllusSVG || 'Scene-NoSearchResults';
 
-      const id = this.entityNotFoundError.additionalContext[type];
+      const id =
+        this.nodeContext.error.additionalContext[
+          entityDefinition.dynamicFetchId
+        ];
       const gotoNavContext =
-        this.entityNotFoundError.entityDefinition?.notFoundConfig
-          ?.entityListNavigationContext;
+        entityDefinition.notFoundConfig?.entityListNavigationContext;
       const buttons = [];
 
       if (gotoNavContext && typeStrPlural) {
@@ -120,7 +114,7 @@ export class ErrorComponent implements AfterViewInit {
         });
       }
 
-      if (this.errorCode.includes('404')) {
+      if (this.nodeContext.error.code === 404) {
         this.config = await this.getErrorEntity404NotFoundConfig(
           id,
           sceneId,
@@ -129,18 +123,18 @@ export class ErrorComponent implements AfterViewInit {
           gotoNavContext,
           buttons
         );
-      } else if (this.errorCode.includes('403')) {
+      } else if (this.nodeContext.error.code === 403) {
         this.config = await this.getError403Config();
       } else {
         this.config = await this.getErrorDefaultConfig();
       }
     } else {
-      switch (this.errorCode) {
-        case '403': {
+      switch (this.nodeContext.error.code) {
+        case 403: {
           this.config = await this.getError403Config();
           break;
         }
-        case '404': {
+        case 404: {
           this.config = await this.getError404Config();
           break;
         }
@@ -153,7 +147,8 @@ export class ErrorComponent implements AfterViewInit {
   }
 
   private async getError404Config() {
-    const confButtons = (this.errorComponentConfig || {})['404']?.buttons || [];
+    const confButtons =
+      (this.nodeContext.error.errorComponentConfig || {})['404']?.buttons || [];
     const buttons = [];
     for (let i = 0; i < confButtons.length; i++) {
       buttons.push({
