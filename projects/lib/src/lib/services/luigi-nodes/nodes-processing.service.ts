@@ -5,6 +5,7 @@ import {
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
+import { EntityType } from '../../models/entity';
 import { matchesJMESPath } from '../../utilities';
 import { ConfigService } from '../portal';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
@@ -36,16 +37,17 @@ export class NodesProcessingService {
     envConfig?: ClientEnvironment
   ) {
     const globalNodes = [
-      ...(childrenByEntity['global'] || []),
-      ...(childrenByEntity['global.bottom'] || []),
-      ...(childrenByEntity['global.topnav'] || []),
+      ...(childrenByEntity[EntityType.GLOBAL] || []),
+      ...(childrenByEntity[EntityType.GLOBAL_BOTTOM] || []),
+      ...(childrenByEntity[EntityType.GLOBAL_TOPNAV] || []),
       ...((await this.customGlobalNodesService?.getCustomGlobalNodes()) || []),
-      this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
+      ...this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
     ];
 
     globalNodes.forEach((node) => {
-      if (!node.hideFromNav && node.entityType !== 'global.topnav') {
-        node.globalNav = node.entityType === 'global.bottom' ? 'bottom' : true;
+      if (!node.hideFromNav && node.entityType !== EntityType.GLOBAL_TOPNAV) {
+        node.globalNav =
+          node.entityType === EntityType.GLOBAL_BOTTOM ? 'bottom' : true;
       }
 
       node.context = node.context || {};
@@ -174,7 +176,7 @@ export class NodesProcessingService {
         children?.forEach((child) => {
           if (
             child.entityType === entityPath ||
-            child.entityType === 'ERROR_NOT_FOUND' ||
+            child.entityType === EntityType.ENTITY_ERROR ||
             staticChildren.includes(child)
           ) {
             entityRootChildren.push(child);

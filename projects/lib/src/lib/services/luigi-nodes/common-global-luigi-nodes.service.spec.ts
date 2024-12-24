@@ -1,13 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
-import { LuigiNode } from '../../models';
+import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
+import { EntityType } from '../../models/entity';
 
 describe('CommonGlobalLuigiNodesService', () => {
   let service: CommonGlobalLuigiNodesService;
+  const mockErrorConfig = {
+    someConfig: { property: 'value' },
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CommonGlobalLuigiNodesService],
+      providers: [
+        {
+          provide: ERROR_COMPONENT_CONFIG,
+          useValue: mockErrorConfig,
+        },
+      ],
     });
     service = TestBed.inject(CommonGlobalLuigiNodesService);
   });
@@ -17,43 +26,34 @@ describe('CommonGlobalLuigiNodesService', () => {
   });
 
   describe('getContentNotFoundGlobalNode', () => {
-    let result: LuigiNode;
+    it('should return correct error node structure', () => {
+      const result = service.getContentNotFoundGlobalNode();
 
-    beforeEach(() => {
-      result = service.getContentNotFoundGlobalNode();
-    });
-
-    it('should return a LuigiNode object', () => {
-      expect(result).toBeDefined();
-      expect(result).toBeInstanceOf(Object);
-    });
-
-    it('should have correct top-level properties', () => {
-      expect(result.pathSegment).toBe('error');
-      expect(result.label).toBe('Content not found');
-      expect(result.hideFromNav).toBe(true);
-      expect(Array.isArray(result.children)).toBe(true);
-    });
-
-    it('should have one child node', () => {
-      expect(result.children).toHaveLength(1);
-    });
-
-    describe('child node', () => {
-      let childNode: LuigiNode;
-
-      beforeEach(() => {
-        childNode = result.children[0];
-      });
-
-      it('should have correct properties', () => {
-        expect(childNode.pathSegment).toBe(':id');
-        expect(childNode.hideSideNav).toBe(true);
-        expect(childNode.viewUrl).toBe('/error-handling#:id');
-        expect(childNode.context).toEqual({ id: ':id' });
-        expect(childNode.loadingIndicator).toEqual({ enabled: false });
-        expect(childNode.showBreadcrumbs).toBe(false);
-      });
+      expect(result).toEqual([
+        {
+          pathSegment: 'error',
+          label: 'Content not found',
+          hideFromNav: true,
+          children: [
+            {
+              pathSegment: ':id',
+              entityType: EntityType.ENTITY_ERROR,
+              hideFromNav: true,
+              hideSideNav: true,
+              viewUrl: '/assets/openmfp-portal-ui-wc.js#error-component',
+              context: {
+                error: {
+                  code: 404,
+                  errorComponentConfig: mockErrorConfig,
+                },
+              },
+              webcomponent: {
+                selfRegistered: true,
+              },
+            },
+          ],
+        },
+      ]);
     });
   });
 });

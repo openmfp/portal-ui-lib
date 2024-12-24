@@ -1,13 +1,18 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { EntityType } from '../../models/entity';
 import { ConfigService } from '../portal';
 import {
   EntityConfig,
   EntityDefinition,
+  ErrorComponentConfig,
   LuigiNode,
   PortalConfig,
   ServiceProvider,
 } from '../../models';
-import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import {
+  ERROR_COMPONENT_CONFIG,
+  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import { LocalConfigurationService } from './local-configuration.service';
 
 @Injectable({
@@ -17,7 +22,10 @@ export class LuigiNodesService {
   constructor(
     private configService: ConfigService,
     @Inject(LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN)
-    private localConfigurationService: LocalConfigurationService
+    private localConfigurationService: LocalConfigurationService,
+    @Optional()
+    @Inject(ERROR_COMPONENT_CONFIG)
+    private errorComponentConfig: Record<string, ErrorComponentConfig>
   ) {}
 
   private getChildrenByEntity(
@@ -100,24 +108,28 @@ export class LuigiNodesService {
     additionalContext: Record<string, string>,
     errorCode: number
   ): LuigiNode[] {
-    const errorNode = {
-      pathSegment: ':notfound',
-      entityType: 'ERROR_NOT_FOUND',
-      hideFromNav: true,
-      hideSideNav: true,
-      viewUrl: `/error-handling#entity_${errorCode}`,
-      context: {
-        error: {
-          entityDefinition,
-          additionalContext,
+    return [
+      {
+        pathSegment: 'error',
+        entityType: EntityType.ENTITY_ERROR,
+        hideFromNav: true,
+        hideSideNav: true,
+        viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
+        context: {
+          error: {
+            code: errorCode,
+            errorComponentConfig: this.errorComponentConfig,
+            entityDefinition,
+            additionalContext,
+          },
+        },
+        isolateView: true,
+        showBreadcrumbs: false,
+        webcomponent: {
+          selfRegistered: true,
         },
       },
-      isolateView: true,
-      loadingIndicator: { enabled: false },
-      showBreadcrumbs: false,
-      virtualTree: true,
-    };
-    return [errorNode];
+    ];
   }
 
   nodePolicyResolver(nodeToCheckPermissionFor): boolean {

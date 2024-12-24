@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
+import { EntityType } from '../../models/entity';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { RouterModule } from '@angular/router';
 import {
@@ -9,7 +10,10 @@ import {
   PortalConfig,
   EntityConfig,
 } from '../../models';
-import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import {
+  ERROR_COMPONENT_CONFIG,
+  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { ConfigService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
@@ -18,6 +22,7 @@ describe('LuigiNodesService', () => {
   let service: LuigiNodesService;
   let configService: ConfigService;
   let localConfigurationServiceMock: jest.Mocked<LocalConfigurationServiceImpl>;
+  const errorComponentConfig = {};
 
   beforeEach(() => {
     localConfigurationServiceMock = mock();
@@ -33,6 +38,10 @@ describe('LuigiNodesService', () => {
         {
           provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
           useValue: localConfigurationServiceMock,
+        },
+        {
+          provide: ERROR_COMPONENT_CONFIG,
+          useValue: errorComponentConfig,
         },
         provideHttpClient(),
       ],
@@ -126,12 +135,19 @@ describe('LuigiNodesService', () => {
       expect(result.length).toBe(1);
       expect(result[0]).toEqual(
         expect.objectContaining({
-          entityType: 'ERROR_NOT_FOUND',
-          viewUrl: '/error-handling#entity_404',
+          pathSegment: 'error',
+          entityType: EntityType.ENTITY_ERROR,
           hideFromNav: true,
           hideSideNav: true,
+          viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
+          isolateView: true,
+          showBreadcrumbs: false,
+          webcomponent: {
+            selfRegistered: true,
+          },
         })
       );
+      expect(result[0].context.error.code).toEqual(404);
     });
 
     it('should handle other errors with 500 status', async () => {
@@ -150,10 +166,14 @@ describe('LuigiNodesService', () => {
       expect(result.length).toBe(1);
       expect(result[0]).toEqual(
         expect.objectContaining({
-          entityType: 'ERROR_NOT_FOUND',
-          viewUrl: '/error-handling#entity_500',
+          pathSegment: 'error',
+          entityType: EntityType.ENTITY_ERROR,
+          hideFromNav: true,
+          hideSideNav: true,
+          viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
         })
       );
+      expect(result[0].context.error.code).toEqual(500);
       expect(console.warn).toHaveBeenCalledWith(
         'Could not retrieve nodes for entity: testEntityType, error: ',
         genericError
@@ -200,9 +220,7 @@ describe('LuigiNodesService', () => {
       expect(result.length).toBe(2);
       expect(result).toEqual(mockServiceProvider.nodes);
     });
-  });
 
-  describe('retrieveAndMergeEntityChildren', () => {
     it('should handle 404 error when retrieving configs for entity', async () => {
       const entityDefinition: EntityDefinition = {
         id: 'id',
@@ -230,11 +248,15 @@ describe('LuigiNodesService', () => {
       expect(result).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            entityType: 'ERROR_NOT_FOUND',
-            viewUrl: '/error-handling#entity_404',
+            pathSegment: 'error',
+            entityType: EntityType.ENTITY_ERROR,
+            hideFromNav: true,
+            hideSideNav: true,
+            viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
           }),
         ])
       );
+      expect(result[0].context.error.code).toEqual(404);
     });
 
     it('should handle other errors when retrieving configs for entity', async () => {
