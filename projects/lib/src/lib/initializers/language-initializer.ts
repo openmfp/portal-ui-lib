@@ -35,7 +35,7 @@ const provider = {
   provide: APP_INITIALIZER,
   useFactory: initLanguage,
   multi: true,
-  deps: [I18nService, AuthService],
+  deps: [I18nService, AuthService, LuigiCoreService],
 };
 
 export const provideLanguageServices = () => provider;
