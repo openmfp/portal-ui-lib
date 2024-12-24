@@ -2,9 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import { ErrorComponentConfig, LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
+import { I18nService } from '../i18n.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommonGlobalLuigiNodesService {
+  private i18nService = inject(I18nService);
   private errorComponentConfig = inject<Record<string, ErrorComponentConfig>>(
     ERROR_COMPONENT_CONFIG as any,
     {
@@ -30,6 +32,7 @@ export class CommonGlobalLuigiNodesService {
                 code: 404,
                 errorComponentConfig: this.errorComponentConfig,
               },
+              translationTable: this.i18nService.translationTable,
             },
             webcomponent: {
               selfRegistered: true,

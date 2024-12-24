@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EntityType } from '../../models/entity';
+import { I18nService } from '../i18n.service';
 import { ConfigService } from '../portal';
 import {
   EntityConfig,
@@ -19,6 +20,7 @@ import { LocalConfigurationService } from './local-configuration.service';
   providedIn: 'root',
 })
 export class LuigiNodesService {
+  private i18nService = inject(I18nService);
   private configService = inject(ConfigService);
   private errorComponentConfig = inject<Record<string, ErrorComponentConfig>>(
     ERROR_COMPONENT_CONFIG as any,
@@ -124,6 +126,7 @@ export class LuigiNodesService {
             entityDefinition,
             additionalContext,
           },
+          translationTable: this.i18nService.translationTable,
         },
         isolateView: true,
         showBreadcrumbs: false,

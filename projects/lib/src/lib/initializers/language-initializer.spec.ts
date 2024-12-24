@@ -1,27 +1,21 @@
 import { APP_INITIALIZER } from '@angular/core';
+import { mock } from 'jest-mock-extended';
 import { provideLanguageServices } from './language-initializer';
 import {
   AuthService,
   I18nService,
+  LuigiCoreService,
   UserSettingsLocalStorage,
 } from '../services';
 
 describe('provideLanguageServices', () => {
   let authServiceMock: jest.Mocked<AuthService>;
   let i18nServiceMock: jest.Mocked<I18nService>;
+  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
   let initFn: Function;
-  const mockLuigi = {
-    i18n: jest.fn().mockReturnValue({
-      setCurrentLocale: jest.fn(),
-    }),
-  };
-
-  beforeAll(() => {
-    // Mock globalThis.Luigi
-    globalThis.Luigi = mockLuigi as any;
-  });
 
   beforeEach(() => {
+    luigiCoreServiceMock = mock();
     authServiceMock = {
       getUser: jest.fn().mockReturnValue({ id: 'user1' }),
     } as unknown as jest.Mocked<AuthService>;
@@ -41,7 +35,11 @@ describe('provideLanguageServices', () => {
     });
 
     const provider = provideLanguageServices();
-    initFn = provider.useFactory(i18nServiceMock, authServiceMock) as Function;
+    initFn = provider.useFactory(
+      i18nServiceMock,
+      authServiceMock,
+      luigiCoreServiceMock
+    ) as Function;
   });
 
   it('should correctly initialize the language from user settings if valid', async () => {
@@ -51,7 +49,7 @@ describe('provideLanguageServices', () => {
       id: 'user1',
     });
     expect(i18nServiceMock.getValidLanguages).toHaveBeenCalled();
-    expect(mockLuigi.i18n().setCurrentLocale).toHaveBeenCalledWith('de');
+    expect(luigiCoreServiceMock.setCurrentLocale).toHaveBeenCalledWith('de');
     expect(i18nServiceMock.fetchTranslationFile).toHaveBeenCalledWith('de');
   });
 
@@ -64,7 +62,7 @@ describe('provideLanguageServices', () => {
 
     await initFn();
 
-    expect(mockLuigi.i18n().setCurrentLocale).toHaveBeenCalledWith('en'); // Fallback language
+    expect(luigiCoreServiceMock.setCurrentLocale).toHaveBeenCalledWith('en'); // Fallback language
     expect(i18nServiceMock.fetchTranslationFile).toHaveBeenCalledWith('en');
   });
 
@@ -73,7 +71,7 @@ describe('provideLanguageServices', () => {
 
     await initFn();
 
-    expect(mockLuigi.i18n().setCurrentLocale).toHaveBeenCalledWith('en'); // Fallback language
+    expect(luigiCoreServiceMock.setCurrentLocale).toHaveBeenCalledWith('en'); // Fallback language
     expect(i18nServiceMock.fetchTranslationFile).toHaveBeenCalledWith('en');
   });
 
@@ -91,7 +89,7 @@ describe('provideLanguageServices', () => {
       provide: APP_INITIALIZER,
       useFactory: expect.any(Function),
       multi: true,
-      deps: [I18nService, AuthService],
+      deps: [I18nService, AuthService, LuigiCoreService],
     });
   });
 });
