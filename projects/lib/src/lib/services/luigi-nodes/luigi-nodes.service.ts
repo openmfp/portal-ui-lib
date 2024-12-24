@@ -1,4 +1,4 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { EntityType } from '../../models/entity';
 import { ConfigService } from '../portal';
 import {
@@ -19,14 +19,16 @@ import { LocalConfigurationService } from './local-configuration.service';
   providedIn: 'root',
 })
 export class LuigiNodesService {
-  constructor(
-    private configService: ConfigService,
-    @Inject(LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN)
-    private localConfigurationService: LocalConfigurationService,
-    @Optional()
-    @Inject(ERROR_COMPONENT_CONFIG)
-    private errorComponentConfig: Record<string, ErrorComponentConfig>
-  ) {}
+  private configService = inject(ConfigService);
+  private errorComponentConfig = inject<Record<string, ErrorComponentConfig>>(
+    ERROR_COMPONENT_CONFIG as any,
+    {
+      optional: true,
+    }
+  );
+  private localConfigurationService = inject<LocalConfigurationService>(
+    LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN as any
+  );
 
   private getChildrenByEntity(
     allChildren: LuigiNode[]

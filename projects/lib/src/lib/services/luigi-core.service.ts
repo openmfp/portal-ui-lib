@@ -125,4 +125,8 @@ export class LuigiCoreService {
   getAuthData(): AuthData | undefined {
     return luigi.auth().store.getAuthData();
   }
+
+  setCurrentLocale(language: string) {
+    luigi.i18n().setCurrentLocale(language);
+  }
 }

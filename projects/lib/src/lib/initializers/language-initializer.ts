@@ -2,12 +2,14 @@ import { APP_INITIALIZER } from '@angular/core';
 import {
   AuthService,
   I18nService,
+  LuigiCoreService,
   UserSettingsLocalStorage,
 } from '../services';
 
 export function initLanguage(
   i18nService: I18nService,
-  authService: AuthService
+  authService: AuthService,
+  luigiCoreService: LuigiCoreService
 ) {
   return async () => {
     const userSettings = (await UserSettingsLocalStorage.read(
@@ -24,7 +26,7 @@ export function initLanguage(
       language = storedLanguage;
     }
 
-    globalThis.Luigi.i18n().setCurrentLocale(language);
+    luigiCoreService.setCurrentLocale(language);
     await i18nService.fetchTranslationFile(language);
   };
 }
