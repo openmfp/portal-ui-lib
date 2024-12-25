@@ -3,6 +3,7 @@ module.exports = {
   testRunner: 'jest-jasmine2',
   moduleNameMapper: {
     '^lodash-es(.*)': 'lodash',
+    '@openmfp/portal-ui-lib': '<rootDir>/projects/lib/src/public-api.ts',
   },
   collectCoverage: true,
   setupFilesAfterEnv: ['<rootDir>/jest-global-mocks.ts'],
