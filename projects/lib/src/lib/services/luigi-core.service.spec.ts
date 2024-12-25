@@ -24,7 +24,9 @@ const luigiMock = {
   showAlert: jest.fn(),
   ux: jest.fn(),
   theming: jest.fn(),
-  i18n: jest.fn(),
+  i18n: jest.fn().mockReturnValue({
+    setCurrentLocale: jest.fn(),
+  }),
   globalSearch: jest.fn(),
   routing: jest.fn(),
   sendCustomMessage: jest.fn(),
@@ -175,6 +177,12 @@ describe('LuigiCoreService', () => {
   it('should call i18n', () => {
     service.i18n();
     expect(luigiMock.i18n).toHaveBeenCalled();
+  });
+
+  it('should set current locale', () => {
+    service.setCurrentLocale('locale');
+
+    expect(luigiMock.i18n().setCurrentLocale).toHaveBeenCalledWith('locale');
   });
 
   it('should call globalSearch', () => {
