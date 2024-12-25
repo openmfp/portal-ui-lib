@@ -3,8 +3,8 @@ import { ErrorComponent } from './error.component';
 import {
   I18nService,
   LuigiCoreService,
-} from '../../../../../lib/src/lib/services';
-import { ButtonConfig } from '../../../../../lib/src/lib/models';
+  ButtonConfig,
+} from '@openmfp/portal-ui-lib';
 
 describe('ErrorComponent', () => {
   let component: ErrorComponent;
@@ -37,30 +37,6 @@ describe('ErrorComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should handle context input', () => {
-    const consoleSpy = jest.spyOn(console, 'log');
-    const testContext = {
-      error: {
-        code: 404,
-        entityDefinition: {
-          label: 'Test',
-          pluralLabel: 'Tests',
-          notFoundConfig: {
-            sapIllusSVG: 'test-scene',
-            entityListNavigationContext: 'test-context',
-          },
-          dynamicFetchId: 'testId',
-        },
-        additionalContext: {
-          testId: 'TEST-123',
-        },
-      },
-    };
-
-    component.context = testContext;
-    expect(consoleSpy).toHaveBeenCalledWith(testContext);
   });
 
   describe('goTo', () => {

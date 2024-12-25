@@ -18,11 +18,9 @@ import {
   SceneConfig,
   ErrorComponentConfig,
   EntityDefinition,
-} from '../../../../../lib/src/lib/models';
-import {
   I18nService,
   LuigiCoreService,
-} from '../../../../../lib/src/lib/services';
+} from '@openmfp/portal-ui-lib';
 
 interface ErrorNodeContext {
   error: {
@@ -30,6 +28,7 @@ interface ErrorNodeContext {
     errorComponentConfig: ErrorComponentConfig;
     entityDefinition: EntityDefinition;
     additionalContext: any;
+    translationTable: any;
   };
 }
 
@@ -56,7 +55,7 @@ export class ErrorComponent implements OnInit {
   @Input()
   set context(context: any) {
     this.nodeContext = context;
-    console.log(context);
+    this.i18nService.translationTable = context.translationTable;
   }
 
   config: ErrorComponentConfig = {
@@ -94,10 +93,11 @@ export class ErrorComponent implements OnInit {
       const sceneId =
         entityDefinition.notFoundConfig?.sapIllusSVG || 'Scene-NoSearchResults';
 
-      const id =
-        this.nodeContext.error.additionalContext[
-          entityDefinition.dynamicFetchId
-        ];
+      const id = this.nodeContext.error.additionalContext
+        ? this.nodeContext.error.additionalContext[
+            entityDefinition.dynamicFetchId
+          ]
+        : '';
       const gotoNavContext =
         entityDefinition.notFoundConfig?.entityListNavigationContext;
       const buttons = [];
