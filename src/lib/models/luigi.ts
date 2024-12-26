@@ -62,6 +62,7 @@ export interface LuigiUserSetting {
   type: string;
   label?: string;
   style?: string;
+  description?: string;
   options?: string[];
   isEditable?: boolean;
 }
@@ -159,15 +160,18 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   label?: string;
   icon?: string;
   link?: string;
+  urlSuffix?: string;
   navHeader?: any;
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   virtualTree?: boolean;
+  isolateView?: boolean;
   initialRoute?: any;
   openNodeInModal?: any;
   navigationContext?: string;
   showBreadcrumbs?: boolean;
   loadingIndicator?: { enabled: boolean };
+  target?: IntentSpecification;
   compound?: any;
   badgeCounter?: LuigiBadgeCounter;
   category?: LuigiNodeCategory | string;
@@ -179,6 +183,13 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
     | LuigiNode[]
     | { (context?: any): Promise<LuigiNode[]> }
     | { (context?: any): LuigiNode[] };
+  titleResolver?: any;
+}
+
+export interface IntentSpecification {
+  type: string;
+  inboundId: string;
+  resolvedIntent?: LuigiIntent;
 }
 
 export enum NetworkVisibility {

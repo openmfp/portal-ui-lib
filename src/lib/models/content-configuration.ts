@@ -1,4 +1,9 @@
-import { BreadcrumbBadge, HelpContext, LuigiNode, LuigiUserSettings } from "./luigi";
+import {
+  BreadcrumbBadge,
+  HelpContext,
+  LuigiNode,
+  LuigiUserSettings,
+} from './luigi';
 
 export interface LuigiNodeDefaults {
   entityType?: string;
@@ -16,9 +21,14 @@ export interface LuigiAppConfig {
   urlTemplateId?: string;
 }
 
+export interface LuigiNodeIFramePermissions {
+  allow?: string[];
+  sandbox?: string[];
+}
+
 export interface ViewGroup {
   preloadSuffix?: string;
-  requiredIFramePermissions?: Record<string, string>;
+  requiredIFramePermissions?: LuigiNodeIFramePermissions;
 }
 
 export interface LuigiConfigData {
@@ -44,6 +54,6 @@ export interface ExtendedData {
 
 export interface ContentConfiguration extends ExtendedData {
   name: string;
-  creationTimestamp: string;
+  creationTimestamp?: string;
   luigiConfigFragment: LuigiConfigFragment;
 }
