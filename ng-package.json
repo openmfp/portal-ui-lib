@@ -13,6 +13,7 @@
   ],
   "allowedNonPeerDependencies": [
     "jwt-decode",
-    "@luigi-project/plugin-auth-oauth2"
+    "@luigi-project/plugin-auth-oauth2",
+    "@openmfp/portal-ui-lib"
   ]
 }
