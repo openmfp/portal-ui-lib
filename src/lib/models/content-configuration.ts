@@ -2,6 +2,7 @@ import {
   BreadcrumbBadge,
   HelpContext,
   LuigiNode,
+  LuigiNodeIFramePermissions,
   LuigiUserSettings,
 } from './luigi';
 
@@ -19,11 +20,6 @@ export interface LuigiAppConfig {
   urlTemplateParams: Record<string, any>;
   navMode?: string;
   urlTemplateId?: string;
-}
-
-export interface LuigiNodeIFramePermissions {
-  allow?: string[];
-  sandbox?: string[];
 }
 
 export interface ViewGroup {

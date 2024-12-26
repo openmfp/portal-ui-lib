@@ -53,11 +53,6 @@ export interface LuigiStatusBadge {
   type: string;
 }
 
-export interface LuigiNodeIFramePermissions {
-  allow?: string[];
-  sandbox?: string[];
-}
-
 export interface LuigiUserSetting {
   type: string;
   label?: string;
