@@ -61,21 +61,21 @@
           "configurations": {
             "production": {
               "optimization": true,
-              "outputHashing": "none",
+              "buildOptimizer": true,
               "sourceMap": false,
               "extractLicenses": false,
               "vendorChunk": false,
-              "namedChunks": true,
+              "namedChunks": false,
               "tsConfig": "projects/wc/tsconfig.app.prod.json"
             },
             "development": {
+              "aot": false,
               "optimization": false,
+              "buildOptimizer": false,
               "sourceMap": true,
+              "extractLicenses": false,
               "namedChunks": true,
               "vendorChunk": true,
-              "buildOptimizer": false,
-              "aot": false,
-              "extractLicenses": false,
               "tsConfig": "projects/wc/tsconfig.app.json"
             }
           },
