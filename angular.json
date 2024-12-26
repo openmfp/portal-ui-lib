@@ -69,7 +69,7 @@
               "tsConfig": "projects/wc/tsconfig.app.prod.json"
             },
             "development": {
-              "aot": false,
+              "aot": true,
               "optimization": false,
               "buildOptimizer": false,
               "sourceMap": true,
