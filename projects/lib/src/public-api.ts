@@ -1,5 +1,5 @@
 /*
- * Public API Surface of ui-lib
+ * Public API Surface of lib
  */
 
 export * from './lib/portal-providers';
