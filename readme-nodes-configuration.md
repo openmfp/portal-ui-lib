@@ -17,206 +17,208 @@ Its a dedicated resource in the Kuberentes cluster and this resource contains th
 
 The `content-configuration.json` has the following structure:
 
-```Json
-{
-   "payload": {
-     "visualizations": {
-       "LuigiNavConfig":{
-         "vizConfig": {
-           "viewGroup" : {
-             "preloadSuffix": "",
-             "requiredIFramePermissions": {
-               "allow": [""],
-               "sandbox": [""]
-            }
-           },
-           "nodes": [{
-             "pathSegment": "",
-             "label": "",
-             "urlSuffix": "",
-             "entityType": ""
-           }],
-           "userSettings":{
-             "groups":{
-               "group_id":{
-                 "label":"",
-                 "viewUrl":"",
-                 "title":"",
-                 "settings":{}
-               }
-             }
-           }
-         }
-       }
-     },
-    "targetAppConfig": {
-       "sap.integration": {
-         "urlTemplateParams": {
-         }
+```ts
+const contentConfiguration = {
+  name: 'example',
+  luigiConfigFragment: {
+    data: {
+      viewGroup: {
+        preloadSuffix: '',
+        requiredIFramePermissions: {
+          allow: [''],
+          sandbox: [''],
         },
-        "sap.app": {
-            "crossNavigation": {
-              "inbounds": {
-                  "Samples-view": {
-                      "semanticObject": "",
-                      "action": "",
-                      "pathSegment": ""
-                  }
-              }
-            }
-          }
+      },
+      nodes: [
+        {
+          pathSegment: '',
+          label: '',
+          urlSuffix: '',
+          entityType: '',
+        },
+      ],
+      userSettings: {
+        groups: {
+          group_id: {
+            label: '',
+            viewUrl: '',
+            title: '',
+            settings: {},
+          },
+        },
+      },
+      targetAppConfig: {
+        'example.integration': {
+          urlTemplateParams: {},
+        },
+        'example.app': {
+          crossNavigation: {
+            inbounds: {
+              'Samples-view': {
+                semanticObject: '',
+                action: '',
+                pathSegment: '',
+              },
+            },
+          },
+        },
+      },
+      texts: [
+        {
+          locale: '',
+          textDictionary: {
+            text: '',
+          },
+        },
+      ],
     },
-   "texts": [
-    {
-      "locale": "",
-      "textDictionary": {
-        "text": ""
-      }
-    }
-  ]
- }
+  },
+}
 ```
 
 Here is another example with actual values:
 
-```JSON
-{
-    "payload": {
-        "visualizations": {
-            "LuigiNavConfig": {
-                "vizConfig": {
-                    "viewGroup": {
-                        "preloadSuffix": "/#/preload",
-                        "requiredIFramePermissions": {
-                           "allow": ["clipboard-read"],
-                           "sandbox": ["allow-forms"],
-                        }
-                    },
-                    "nodeDefaults" : {
-                        "isolateView": false
-                    },
-                    "nodes": [{
-                        "label": "{{sample}}",
-                        "children": [{
-                            "pathSegment": ":someId",
-                            "label": "Child Sample",
-                            "hideFromNav": "true",
-                            "virtualTree": true,
-                            "urlSuffix": "/#sample-child/:someId",
-                            "context": {
-                              "sampleInstanceId": ":someId"
-                            },
-                            "navHeader": {
-                              "useTitleResolver": true
-                            },
-                            "titleResolver": {
-                              "request": {
-                                 "url": "https://path.to/your/rest/${someId}",
-                                 "method": "GET",
-                                 "headers": {},
-                                 "body": {}
-                              },
-                              "titlePropertyChain": "result.name",
-                              "iconPropertyChain": "result.pictureUrl",
-                              "fallbackTitle": "Sample Entity",
-                              "fallbackIcon": "course-book",
-                              "prerenderFallback": false
-                            },
-                            "defineEntity": {
-                              "id": "sampleEntity",
-                              "contextKey": "sampleInstanceId",
-                              "dynamicFetchId": "sample"
-                            }
-                        }],
-                        "pathSegment": "sample",
-                        "entityType": "project",
-                        "hideFromNav": false,
-                        "icon": "manager",
-                        "isolateView": false,
-                        "virtualTree": true,
-                        "hideSideNav": false,
-                        "loadingIndicator": true,
-                        "urlSuffix": "/sample",
-                        "category": {
-                            "label": "Samples", "collapsible": false
-                        },
-                        "requiredIFramePermissions": {
-                           "allow": ["clipboard-read", "clipboard-write"],
-                           "sandbox": ["allow-forms"],
-                        }
-                    }],
-                  "userSettings":{
-                    "groups":{
-                      "account":{
-                        "label": "Account",
-                        "sublabel": "Account",
-                        "icon": "account",
-                        "title": "Account Settings",
-                        "viewUrl":"https://url.to.mf",
-                        "settings": {
-                          "name": { "type": "string", "label": "Name" , "isEditable": true},
-                          "checkbox": { "type": "boolean", "label": "Checkbox", "isEditable": false , "style": "checkbox"},
-                          "enum":
-                            {
-                              "type": "enum",
-                              "style": "button",
-                              "label": "Label",
-                              "options": ["option1", "option2", "option3"],
-                              "description": "Description"
-                            }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-        },
-        "targetAppConfig": {
-            "sap.integration": {
-                "urlTemplateParams": {
-                }
+```ts
+const contentConfiguration: ContentConfiguration = {
+    name: 'example',
+    luigiConfigFragment: {
+        data: {
+            viewGroup: {
+                preloadSuffix: '/#/preload',
+                requiredIFramePermissions: {
+                    allow: ['clipboard-read'],
+                    sandbox: ['allow-forms'],
+                },
             },
-            "sap.app": {
-              "crossNavigation": {
-                "inbounds": {
-                    "Sample-view": {
-                        "semanticObject": "Sample",
-                        "action": "view",
-                        "pathSegment": "/projects/:projectId/samples"
-                    }
-                }
-              }
-            }
+            nodeDefaults: {
+                isolateView: false,
+            },
+            nodes: [
+                {
+                    label: '{{sample}}',
+                    children: [
+                        {
+                            pathSegment: ':someId',
+                            label: 'Child Sample',
+                            hideFromNav: true,
+                            virtualTree: true,
+                            urlSuffix: '/#sample-child/:someId',
+                            context: {
+                                sampleInstanceId: ':someId',
+                            },
+                            navHeader: {
+                                useTitleResolver: true,
+                            },
+                            titleResolver: {
+                                request: {
+                                    url: 'https://path.to/your/rest/${someId}',
+                                    method: 'GET',
+                                    headers: {},
+                                    body: {},
+                                },
+                                titlePropertyChain: 'result.name',
+                                iconPropertyChain: 'result.pictureUrl',
+                                fallbackTitle: 'Sample Entity',
+                                fallbackIcon: 'course-book',
+                                prerenderFallback: false,
+                            },
+                            defineEntity: {
+                                id: 'sampleEntity',
+                                contextKey: 'sampleInstanceId',
+                                dynamicFetchId: 'sample',
+                            },
+                        },
+                    ],
+                    pathSegment: 'sample',
+                    entityType: 'project',
+                    hideFromNav: false,
+                    icon: 'manager',
+                    isolateView: false,
+                    virtualTree: true,
+                    hideSideNav: false,
+                    loadingIndicator: { enabled: true },
+                    urlSuffix: '/sample',
+                    category: {
+                        label: 'Samples',
+                        collapsible: false,
+                    },
+                    requiredIFramePermissions: {
+                        allow: ['clipboard-read', 'clipboard-write'],
+                        sandbox: ['allow-forms'],
+                    },
+                },
+            ],
+            userSettings: {
+                groups: {
+                    account: {
+                        label: 'Account',
+                        sublabel: 'Account',
+                        icon: 'account',
+                        title: 'Account Settings',
+                        viewUrl: 'https://url.to.mf',
+                        settings: {
+                            name: { type: 'string', label: 'Name', isEditable: true },
+                            checkbox: {
+                                type: 'boolean',
+                                label: 'Checkbox',
+                                isEditable: false,
+                                style: 'checkbox',
+                            },
+                            enum: {
+                                type: 'enum',
+                                style: 'button',
+                                label: 'Label',
+                                options: ['option1', 'option2', 'option3'],
+                                description: 'Description',
+                            },
+                        },
+                    },
+                },
+            },
+            targetAppConfig: {
+                'example.integration': {
+                    urlTemplateParams: {},
+                },
+                'example.app': {
+                    crossNavigation: {
+                        inbounds: {
+                            'Sample-view': {
+                                semanticObject: 'Sample',
+                                action: 'view',
+                                pathSegment: '/projects/:projectId/samples',
+                            },
+                        },
+                    },
+                },
+            },
+            texts: [
+                {
+                    locale: '',
+                    textDictionary: {
+                        sample: 'Sample',
+                    },
+                },
+                {
+                    locale: 'en',
+                    textDictionary: {
+                        sample: 'Sample',
+                    },
+                },
+                {
+                    locale: 'de',
+                    textDictionary: {
+                        sample: 'Beispiel',
+                    },
+                },
+            ],
+        },
     },
-    "texts": [
-      {
-        "locale": "",
-        "textDictionary": {
-          "sample": "Sample"
-        }
-      },
-      {
-        "locale": "en",
-        "textDictionary": {
-          "sample": "Sample"
-        }
-      },
-      {
-        "locale": "de",
-        "textDictionary": {
-          "sample": "Beispiel"
-        }
-      }
-    ]
-}
+};
 ```
 
 ### Luigi Standard Configuration Parameters
 
-The property `LuigiNavConfig.vizConfig` in the `content-configuration.json` example above defines the navigation entries.
-
-The `nodes` are iterated and added to the frame navigation.
+The `nodes` in the `content-configuration.json` are iterated and added to the frame navigation.
 Each one can contain the following Luigi navigation parameters:
 
 - [label](https://docs.luigi-project.io/docs/navigation-configuration/?section=label)
@@ -267,10 +269,10 @@ Further Portal specific parameters are supported on node level:
 
 - **configurationLink** - Allows to customise the "configuration missing" page with an extension specific link.
 
-- **urlSuffix** - if no URL property is defined, the **viewUrl** of the node is built as `urlTemplateParams.url`+`node.urlSuffix`. For most cases, it is recommended to skip the **urlTemplateParams.url** (see explanation below) to avoid absolute URLs in the `cdm.json`.
+- **urlSuffix** - if no URL property is defined, the **viewUrl** of the node is built as `urlTemplateParams.url`+`node.urlSuffix`. For most cases, it is recommended to skip the **urlTemplateParams.url** (see explanation below) to avoid absolute URLs in the `content-configuration.json`.
 
   > NOTE: The **url** property in the **urlTemplateParams** defines the base URL of the micro frontend. If it is omitted,
-  the host URL of the micro frontend is taken. For example: When the `cdm.json` is loaded from ```https://my.microfrontend.com/assets/cdm.json```, the **url** property will be ```https://my.microfrontend.com/```. This allows you to omit the absolute URL in case your micro frontend will be served from different domains.
+  the host URL of the micro frontend is taken. For example: When the `content-configuration.json` is loaded from ```https://my.microfrontend.com/assets/content-configuration.json```, the **url** property will be ```https://my.microfrontend.com/```. This allows you to omit the absolute URL in case your micro frontend will be served from different domains.
 
 - **requiredIFramePermissions** (optional) - allows to define required [feature policies](https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement/featurePolicy) and sandbox permissions, they will be applied to the Iframe's `allow` and `sandbox` attributes. For single page application micro frontends, it is recommended to use **viewGroup** (see below) to specify them.
 
@@ -280,7 +282,7 @@ Further Portal specific parameters are supported on node level:
 
 - **targetAppConfig** - defines the Portal configurations.
 
-- **texts** - defines the text dictionary for localization (i18n). The context with double curly braces (in the example above, this is the node label `"{{sample}}"`) defined in `cdm.json` be will replaced by the value of the dictionary.
+- **texts** - defines the text dictionary for localization (i18n). The context with double curly braces (in the example above, this is the node label `"{{sample}}"`) defined in `content-configuration.json` will be replaced by the value of the dictionary.
 
 
 ### Entity types
@@ -352,7 +354,7 @@ The following section explains Portal-specific parameters related to entity type
         - `pluralLabel`: The (localized) entity plural label
         - `notFoundConfig`: an object with the following properties:
             - `entityListNavigationContext`: a string containing the luigi navigation context that has been specified for the entity list node
-            - `sapIllusSVG`: Fiori Moments illustration to be shown on error page, one of (https://github.tools.sap/dxp/jukebox/tree/master/jukebox-ui-lib/src/assets/moments), without ``sapIllus-` prefix and file ending (e.g. **Dialog-BeforeSearch-Alt**)
+            - `sapIllusSVG`: Fiori Moments illustration to be shown on error page, one of (https://github.com/openmfp/portal-ui-lib/tree/main/src/assets/moments), without ``sapIllus-` prefix and file ending (e.g. **Dialog-BeforeSearch-Alt**)
 
 - **defineSlot** - a node defining an entity can provide a certain structure for it's direct child nodes by defining slot nodes, which have the **defineSlot** property set. If its value is an empty string, it means it is the default slot. Additionally, a category can be defined for a slot node, so all extension nodes assigned to that slot are part of that category.
 
@@ -383,7 +385,7 @@ The following section explains Portal-specific parameters related to entity type
 
 - **navSlot** - the id of the slot to which a navigation node should be added.
 
-- **dxpOrder** - a number that is used for ordering the node within the entity child list or a particular slot, if defined. This property can also be applied to a category.
+- **order** - a number that is used for ordering the node within the entity child list or a particular slot, if defined. This property can also be applied to a category.
 
   > NOTE: Nodes without a category are always sorted on top.
 
@@ -404,7 +406,7 @@ A title resolver configuration allows to fetch micro frontend specific data outs
 
 
 - **navHeader** - if defined at a node, a navigation header section is shown above the left-side navigation entries. There are two options how to define it:
-    - statically by setting **icon** and **label** properties, where icon can be a url to an image or an identifier of a sap icon.
+    - statically by setting **icon** and **label** properties, where icon can be an url to an image or an identifier of an icon.
     - dynamically by setting the **use** property to **titleResolver**.
 
 ### Feature toggles
@@ -414,8 +416,8 @@ Feature toggles are a way to mark new or experimental features, so they are hidd
 
 > **NOTE:** New features should always be hidden behind feature toggles until they are reviewed and stable.
 
-Luigi offers feature toggle functionality which can be added to your `cdm.json` file.
-To learn how to use feature toggles, see the "Use Feature Toggles in Luigi" section in this [document](https://docs.luigi-project.io/docs/advanced-scenarios/?section=expert-scenarios). After setting a feature toggle, you can restrict visibility of certain nodes/links in the left side navigation using the [visibleForFeatureToggles](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=visibleforfeaturetoggles) parameter, for example:
+Luigi offers feature toggle functionality which can be added to your `content-configuration.json` file.
+To learn how to use feature toggles, see the "Use Feature Toggles in Luigi" section in this [document](https://docs.luigi-project.io/docs/advanced-scenarios/?section=expert-scenarios). After setting a feature toggle, you can restrict visibility of certain nodes/links on the left side navigation using the [visibleForFeatureToggles](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=visibleforfeaturetoggles) parameter, for example:
 
 ```json
 "nodes": [{
@@ -427,7 +429,7 @@ To learn how to use feature toggles, see the "Use Feature Toggles in Luigi" sect
     "visibleForFeatureToggles":["home"],
     "defineEntity" : {
       "id" : "home"
-    },
+    }]
 ```
 
 Once you set a feature toggle in the configuration, the respective feature is not visible by default.
@@ -496,7 +498,7 @@ LuigiClient
 
 ### Localization (i18n)
 fers the functions [getCurrentLocale](https://docs.luigi-project.io/docs/luigi-client-api/?section=getcurrentlocale) and [setCurrentLocale](https://docs.luigi-project.io/docs/luigi-client-api/?section=setcurrentlocale) for your micro frontend. It also offers the Portal-specific [**texts** parameter](#portal-specific-parameters
-Luigi of) used in the `cdm.json` [example](#configuration-file) above. This allows you to translate the side navigation / settings dialog entries.
+Luigi of) used in the `content-configuration.json` [example](#configuration-file) above. This allows you to translate the side navigation / settings dialog entries.
 
 If you are using [localization](https://docs.luigi-project.io/docs/i18n) and translating your page into different languages, you can also add a **{i18n.currentLocale}** parameter to the viewUrl part of your configuration:
 
@@ -521,11 +523,12 @@ This semantic representation is then mapped to the actual path in the Luigi conf
 
 Example:
 
-First, specify proper mappings in the `cdm.json` file of the target micro frontend under the field
-`targetAppConfig.['sap.app'].crossNavigation.inbounds` as follows:
+First, specify proper mappings in the `content-configuration.json` file of the target micro frontend under the field
+`targetAppConfig['example.app'].crossNavigation.inbounds` as follows:
+
 ```javascript
  "targetAppConfig": {
-   "sap.app": {
+   "example.app": {
       "crossNavigation": {
             "inbounds" : {
                 "someView1": {
@@ -541,115 +544,104 @@ First, specify proper mappings in the `cdm.json` file of the target micro fronte
     }
   }
 ```
-The `inbounds` field defines the whole set of semantic representations that can be used in this `cdm` file.
+The `inbounds` field defines the whole set of semantic representations that can be used in this `content-configuration` file.
 `someView1` and `someView2` represent IDs we use to distinguish different targets.
 
-Next, define the node in the tree of the `cdm.json` file where you want to use intent-based navigation.
+Next, define the node in the tree of the `content-configuration.json` file where you want to use intent-based navigation.
 In particular, in a use case where we use both `someView1` and `someView2`, the node representation would be as follows:
 
 ```javascript
- "visualizations": {
-            "LuigiNavConfig": {
-                "vizType": "sap.luigi.node",
-                "vizConfig": {
-                    "nodes": [
-                        {
-                            "pathSegment": "templates",
-                            "label": "Templates",
-                            "entityType" : "project",
-                            "urlSuffix": "/#/templates",
-                            // define target here
-                            "target": {
-                              "type": "IBN",
-                              "inboundId": "someView1"
-                           }
-                        },
-                        {
-                            "pathSegment": "settings",
-                            "label": "Settings",
-                            "entityType" : "project",
-                            "urlSuffix": "/#/settings",
-                            // define target here
-                            "target": {
-                              "type": "IBN",
-                              "inboundId": "someView2"
-                           }
-                        }
-                    ]
-                }
- }
+ "nodes": [
+    {
+        "pathSegment": "templates",
+        "label": "Templates",
+        "entityType" : "project",
+        "urlSuffix": "/#/templates",
+        // define target here
+        "target": {
+          "type": "IBN",
+          "inboundId": "someView1"
+       }
+    },
+    {
+        "pathSegment": "settings",
+        "label": "Settings",
+        "entityType" : "project",
+        "urlSuffix": "/#/settings",
+        // define target here
+        "target": {
+          "type": "IBN",
+          "inboundId": "someView2"
+       }
+    }
+]
 ```
 
 (Notice that the `entityType` of the node refers to the parent entity (i.e.: 'project'), from which we build the global path dynamically.)
 
-The resulting `cdm.json` would look as follows:
+The resulting `content-configuration.json` would look as follows:
 
-```javascript 
-{
-    "_version": "3.0",
-    "payload": {
-        "visualizations": {
-            "LuigiNavConfig": {
-                "vizType": "sap.luigi.node",
-                "vizConfig": {
-                    "viewGroup": {
-                        "preloadSuffix": "/#/preload"
-                    },
-                    "nodeDefaults": {},
-                    "nodes": [
-                        {
-                            "pathSegment": "templates",
-                            "label": "Templates",
-                            "entityType" : "project",
-                            "urlSuffix": "/#/templates",
-                            // define target here
-                            "target": {
-                              "type": "IBN",
-                              "inboundId": "someView1"
-                           }
-                        },
-                        {
-                            "pathSegment": "settings",
-                            "label": "Settings",
-                            "entityType" : "project",
-                            "urlSuffix": "/#/settings",
-                            // define target here
-                            "target": {
-                              "type": "IBN",
-                              "inboundId": "someView2"
-                           }
-                        }
-                    ]
-                }
-            }
-        },
-        "targetAppConfig": {
-            "_version": "1.13.0",
-            "sap.integration": {
-                "navMode": "inplace",
-                "urlTemplateId": "urltemplate.url",
-                "urlTemplateParams": {
-                    "query": {}
-                }
+```ts 
+const contentConfiguration: ContentConfiguration = {
+    name: 'example',
+    luigiConfigFragment: {
+        data: {
+            viewGroup: {
+                preloadSuffix: '/#/preload',
             },
-            "sap.app": {
-                "crossNavigation": {
-                  "inbounds": {
-                   // define semantic representations (inbounds) here
-                   "someView1": {
-                        "semanticObject": "Templates",
-                        "action": "view",
+            nodeDefaults: {},
+            nodes: [
+                {
+                    pathSegment: 'templates',
+                    label: 'Templates',
+                    entityType: 'project',
+                    urlSuffix: '/#/templates',
+                    // define target here
+                    target: {
+                        type: 'IBN',
+                        inboundId: 'someView1',
                     },
-                    "someView2": {
-                        "semanticObject": "Settings",
-                        "action": "view",
-                    }
-                  }
-                }
-            }
-        }
-    }
-}
+                },
+                {
+                    pathSegment: 'settings',
+                    label: 'Settings',
+                    entityType: 'project',
+                    urlSuffix: '/#/settings',
+                    // define target here
+                    target: {
+                        type: 'IBN',
+                        inboundId: 'someView2',
+                    },
+                },
+            ],
+            targetAppConfig: {
+                _version: '1.13.0',
+                'example.integration': {
+                    navMode: 'inplace',
+                    urlTemplateId: 'urltemplate.url',
+                    urlTemplateParams: {
+                        query: {},
+                    },
+                },
+                'example.app': {
+                    crossNavigation: {
+                        inbounds: {
+                            // define semantic representations (inbounds) here
+                            someView1: {
+                                semanticObject: 'Templates',
+                                action: 'view',
+                            },
+                            someView2: {
+                                semanticObject: 'Settings',
+                                action: 'view',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
 ```
 
 (Notice how `someView1` and `someView2` are used only as IDs on node level, and are only defined in the `crossNavigation` section of the configuration.)
@@ -658,7 +650,7 @@ Links are then built using a semantic object and action which joined together re
 
 Example:
 Using the scenario above, we specified `project` as reference entity.
-In case `project` is defined as follows, anywhere in the rest of the cdm's:
+In case `project` is defined as follows, anywhere in the rest of the content-configuration's:
 ```javascript
 // rest of configuration is hidden for readability
 ...
