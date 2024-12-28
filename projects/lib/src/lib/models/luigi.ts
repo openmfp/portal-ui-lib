@@ -160,7 +160,6 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   virtualTree?: boolean;
-  isolateView?: boolean;
   initialRoute?: any;
   openNodeInModal?: any;
   navigationContext?: string;
