@@ -1,0 +1,67 @@
+<div class="page">
+  <div class="container">
+    <h4>Configuration URLs</h4>
+    <div fd-form-item class="config-input">
+      <label [colon]="true" [required]="true" fd-form-label for="input-2">
+        Provide a URL where the content configuration file is served
+      </label>
+      <input
+        fd-form-control
+        type="text"
+        id="input-url"
+        placeholder="http://localhost:4200/assets/content-configuration.json"
+        aria-required="true"
+      />
+      <div class="config-input-buttons">
+        <button fd-button label="Add" fdType="emphasized" fdCompact></button>
+        <button fd-button label="Clear" fdType="ghost" fdCompact></button>
+      </div>
+    </div>
+    <div>
+      <ul fd-list>
+        @for (item of displayedItems; track item; let ind = $index) {
+          <li fd-list-item>
+            <!--            <span fd-list-thumbnail><fd-icon glyph="accept"></fd-icon></span>-->
+            <!--            <span fd-list-thumbnail><fd-icon glyph="decline"></fd-icon></span>-->
+            <span fd-list-title>
+              {{ item }}
+            </span>
+            <span fd-list-secondary>
+              <button
+                fd-button
+                fdType="transparent"
+                glyph="decline"
+                (click)="$event.stopPropagation()"
+                title="Decline"
+                (click)="removeItem(ind)"
+              ></button>
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+    <h4>Service Provider Config</h4>
+    <div fd-form-item class="config-input">
+      <label [colon]="true" fd-form-label for="input-key"> Input </label>
+      <input
+        fd-form-control
+        type="text"
+        id="input-key"
+        placeholder="Field placeholder text"
+        aria-required="true"
+      />
+      <label [colon]="true" fd-form-label for="input-value"> Input </label>
+      <input
+        fd-form-control
+        type="text"
+        id="input-value"
+        placeholder="Field placeholder text"
+        aria-required="true"
+      />
+      <div class="config-input-buttons">
+        <button fd-button label="Add" fdType="emphasized" fdCompact></button>
+        <button fd-button label="Clear" fdType="ghost" fdCompact></button>
+      </div>
+    </div>
+  </div>
+</div>

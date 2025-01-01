@@ -118,7 +118,7 @@ export class LuigiNodesService {
         entityType: EntityType.ENTITY_ERROR,
         hideFromNav: true,
         hideSideNav: true,
-        viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
+        viewUrl: '/assets/openmfp-portal-ui-wc.js#error-component',
         context: {
           error: {
             code: errorCode,
