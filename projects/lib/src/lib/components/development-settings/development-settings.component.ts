@@ -37,7 +37,13 @@ import {
   ],
 })
 export class DevelopmentSettingsComponent {
-  displayedItems = ['Apple', 'Banana', 'Orange', 'Pineapple', 'Strawberry'];
+  displayedItems = [
+    'https://organization-dev.dfabj.sites.dxp.k8s.ondemand.com/cc.json',
+    'https://organization-dev.dfabj.sites.dxp.k8s.ondemand.com/content-configuration.json',
+    'http://localhost:4200/content-configuration.json',
+  ];
+
+  displayedItems2 = ['key1: value1', 'key2: value2'];
 
   removeItem(index: number): void {
     // const allValuesIndex = this.items.indexOf(this.displayedItems[index]);

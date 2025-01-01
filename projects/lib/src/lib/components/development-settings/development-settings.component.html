@@ -42,7 +42,7 @@
     </div>
     <h4>Service Provider Config</h4>
     <div fd-form-item class="config-input">
-      <label [colon]="true" fd-form-label for="input-key"> Input </label>
+      <label [colon]="true" fd-form-label for="input-key"> Key </label>
       <input
         fd-form-control
         type="text"
@@ -50,7 +50,7 @@
         placeholder="Field placeholder text"
         aria-required="true"
       />
-      <label [colon]="true" fd-form-label for="input-value"> Input </label>
+      <label [colon]="true" fd-form-label for="input-value"> Value </label>
       <input
         fd-form-control
         type="text"
@@ -62,6 +62,27 @@
         <button fd-button label="Add" fdType="emphasized" fdCompact></button>
         <button fd-button label="Clear" fdType="ghost" fdCompact></button>
       </div>
+    </div>
+    <div>
+      <ul fd-list>
+        @for (item of displayedItems2; track item; let ind = $index) {
+          <li fd-list-item>
+            <span fd-list-title>
+              {{ item }}
+            </span>
+            <span fd-list-secondary>
+              <button
+                fd-button
+                fdType="transparent"
+                glyph="decline"
+                (click)="$event.stopPropagation()"
+                title="Decline"
+                (click)="removeItem(ind)"
+              ></button>
+            </span>
+          </li>
+        }
+      </ul>
     </div>
   </div>
 </div>
