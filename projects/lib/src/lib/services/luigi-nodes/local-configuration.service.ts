@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { merge } from 'lodash';
-import { ContentConfiguration, LuigiNode } from '../../models';
+import {
+  ContentConfiguration,
+  LuigiNode,
+  LocalDevelopmentSettings,
+} from '../../models';
 import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { LocalNodesConfigService } from '../portal';
-import { DevModeSettings } from './dev-mode/dev-mode-settings';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 
@@ -160,19 +163,19 @@ export class LocalConfigurationServiceImpl
   }
 
   private async getLocalConfigurations(
-    devModeSettings: DevModeSettings
+    localDevelopmentSettings: LocalDevelopmentSettings
   ): Promise<ContentConfiguration[]> {
     if (this.cachedConfigurations) {
       return this.cachedConfigurations;
     }
 
-    this.cachedConfigurations = devModeSettings.configs
+    this.cachedConfigurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
 
     this.cachedConfigurations = (
       await Promise.allSettled(
-        devModeSettings.configs
+        localDevelopmentSettings.configs
           .filter((config) => config.url)
           .map((config) =>
             lastValueFrom(this.http.get<ContentConfiguration>(config.url)).then(

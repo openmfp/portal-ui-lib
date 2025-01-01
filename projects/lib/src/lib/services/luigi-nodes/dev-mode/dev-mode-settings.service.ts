@@ -1,17 +1,39 @@
+import { LocalDevelopmentSettings } from '../../../models';
 import { EnvConfigService } from '../../portal';
-import { LocalStorageKeys } from '../../storage-service';
-import { DevModeSettings } from './dev-mode-settings';
-import { Injectable } from '@angular/core';
+import { LocalDevelopmentSettingsLocalStorage } from '../../storage-service';
+import { inject, Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class DevModeSettingsService {
-  constructor(private envConfigService: EnvConfigService) {}
+  private envConfigService = inject(EnvConfigService);
 
-  async getDevModeSettings(): Promise<DevModeSettings> {
+  async getDevModeSettings(): Promise<LocalDevelopmentSettings> {
     const { developmentInstance } = await this.envConfigService.getEnvConfig();
 
-    let resultingDevModeSettings = {
-      isActive: developmentInstance, // in dev mode always look for external configuration
+    // you can enable external configuration in production by having the localStorageSetting in local storage
+    const localStorageSetting = (LocalDevelopmentSettingsLocalStorage.read() ||
+      {}) as LocalDevelopmentSettings;
+    const localDevelopmentSettings = {
+      ...this.getDefaultLocalDevelopmentSetting(developmentInstance),
+      ...localStorageSetting,
+    };
+
+    if (localDevelopmentSettings.isActive) {
+      return localDevelopmentSettings;
+    } else {
+      return {
+        isActive: false,
+        configs: [],
+        serviceProviderConfig: {},
+      };
+    }
+  }
+
+  private getDefaultLocalDevelopmentSetting(
+    developmentInstance: boolean
+  ): LocalDevelopmentSettings {
+    return {
+      isActive: developmentInstance,
       configs: [
         {
           url: 'http://localhost:4200/assets/content-configuration-global.json',
@@ -21,41 +43,6 @@ export class DevModeSettingsService {
         },
       ],
       serviceProviderConfig: {},
-    };
-
-    let devModeSettingsString: string;
-    try {
-      devModeSettingsString = window.localStorage.getItem(
-        LocalStorageKeys.developmentModeConfigKey
-      );
-    } catch (e) {
-      // ignore local storage exceptions
-    }
-
-    if (devModeSettingsString) {
-      try {
-        resultingDevModeSettings = {
-          // you can enable external configuration in production by setting isActive:true
-          ...resultingDevModeSettings,
-          ...JSON.parse(devModeSettingsString),
-        };
-      } catch (e) {
-        console.error(
-          `Failed to parse the dev mode settings in your localstorage because of ${e}`
-        );
-      }
-    }
-
-    if (!resultingDevModeSettings.isActive) {
-      return {
-        configs: [],
-        serviceProviderConfig: {},
-      };
-    }
-
-    return {
-      configs: resultingDevModeSettings.configs,
-      serviceProviderConfig: resultingDevModeSettings.serviceProviderConfig,
     };
   }
 }

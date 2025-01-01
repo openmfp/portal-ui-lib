@@ -1,13 +1,39 @@
-import { UserTokenData } from '../models';
+import { LocalDevelopmentSettings, UserTokenData } from '../models';
 
-export const LocalStorageKeys = {
-  lastNavigationUrlKey: 'openmfp.navigation.lastUrl',
-  userSettingsStorageKey: 'openmfp.settings.userSettings',
-  developmentModeConfigKey: 'dev-mode-settings',
+export enum LocalStorageKeys {
+  LAST_NAVIGATION_URL = 'openmfp.navigation.lastUrl',
+  USER_SETTINGS = 'openmfp.settings.userSettings',
+  LOCAL_DEVELOPMENT_SETTINGS = 'openmfp.settings.developmentModeConfig',
+  DEVELOPMENT_MODE_CONFIG = 'dev-mode-settings',
+}
+
+export const LocalDevelopmentSettingsLocalStorage = {
+  read: (): LocalDevelopmentSettings => {
+    let localDevelopmentSettingsFromLocalStore: string;
+    try {
+      localDevelopmentSettingsFromLocalStore = localStorage.getItem(
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS
+      );
+    } catch (e) {
+      console.warn('localStorage is not available:', e);
+      return null;
+    }
+
+    try {
+      return JSON.parse(localDevelopmentSettingsFromLocalStore);
+    } catch (e) {
+      console.error(
+        'Failed to parse the local development settings in your localstorage.',
+        e
+      );
+    }
+    return null;
+  },
+  store: () => {},
 };
 
 export const UserSettingsLocalStorage = {
-  async read(userInfo: UserTokenData) {
+  read: async (userInfo: UserTokenData) => {
     const transientSettings = {
       frame_userAccount: {
         name: `${userInfo.first_name || ''} ${userInfo.last_name || ''}`,
@@ -18,7 +44,7 @@ export const UserSettingsLocalStorage = {
     return new Promise((resolve, reject) => {
       try {
         const storedSettings = localStorage.getItem(
-          LocalStorageKeys.userSettingsStorageKey
+          LocalStorageKeys.USER_SETTINGS
         );
         const settings = storedSettings ? JSON.parse(storedSettings) : {};
 
@@ -44,7 +70,7 @@ export const UserSettingsLocalStorage = {
     });
   },
 
-  async store(settings: any) {
+  store: async (settings: any) => {
     if (settings.frame_userAccount && settings.frame_userAccount.language) {
       delete settings.frame_userAccount.name;
       delete settings.frame_userAccount.mail;
@@ -55,7 +81,7 @@ export const UserSettingsLocalStorage = {
     return new Promise((resolve, reject) => {
       try {
         localStorage.setItem(
-          LocalStorageKeys.userSettingsStorageKey,
+          LocalStorageKeys.USER_SETTINGS,
           JSON.stringify(settings)
         );
         resolve(settings);

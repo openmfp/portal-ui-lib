@@ -52,17 +52,14 @@ export class NavigationService {
   }
 
   private clearCurrentUrl() {
-    localStorage.setItem(LocalStorageKeys.lastNavigationUrlKey, '');
+    localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, '');
   }
 
   private saveCurrentUrl(): void {
-    localStorage.setItem(
-      LocalStorageKeys.lastNavigationUrlKey,
-      this.currentUrl
-    );
+    localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, this.currentUrl);
   }
 
   private getRedirectUrl(): string {
-    return localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey) || '/';
+    return localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL) || '/';
   }
 }

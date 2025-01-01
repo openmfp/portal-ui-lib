@@ -48,6 +48,7 @@ describe('DevModeSettingsService', () => {
         },
         { url: 'http://localhost:4200/assets/content-configuration.json' },
       ],
+      isActive: true,
       serviceProviderConfig: {},
     });
   });
@@ -55,7 +56,7 @@ describe('DevModeSettingsService', () => {
   it('returns empty if non-dev environment and not active in the local storage', async () => {
     mockEnvConfig(false);
     window.localStorage.setItem(
-      LocalStorageKeys.developmentModeConfigKey,
+      LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
       JSON.stringify({
         serviceProviderConfig: { a: 'b' },
       })
@@ -64,6 +65,7 @@ describe('DevModeSettingsService', () => {
 
     expect(devModeSettings).toBeTruthy();
     expect(devModeSettings).toEqual({
+      isActive: false,
       configs: [],
       serviceProviderConfig: {},
     });
@@ -72,7 +74,7 @@ describe('DevModeSettingsService', () => {
   it('returns empty if non-dev environment and active in the local storage', async () => {
     mockEnvConfig(false);
     window.localStorage.setItem(
-      LocalStorageKeys.developmentModeConfigKey,
+      LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
       JSON.stringify({
         isActive: true,
         serviceProviderConfig: { a: 'b' },
@@ -90,6 +92,7 @@ describe('DevModeSettingsService', () => {
           url: 'http://localhost:4200/assets/content-configuration.json',
         },
       ],
+      isActive: true,
       serviceProviderConfig: { a: 'b' },
     });
   });
@@ -97,7 +100,7 @@ describe('DevModeSettingsService', () => {
   it('overwrites the configs & serviceProviderConfig from the local storage', async () => {
     mockEnvConfig(true);
     window.localStorage.setItem(
-      LocalStorageKeys.developmentModeConfigKey,
+      LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
       JSON.stringify({
         configs: [
           { url: 'http://localhost:4200/assets/content-configuration.json' },
@@ -112,6 +115,7 @@ describe('DevModeSettingsService', () => {
       configs: [
         { url: 'http://localhost:4200/assets/content-configuration.json' },
       ],
+      isActive: true,
       serviceProviderConfig: { a: 'b' },
     });
   });
@@ -120,7 +124,7 @@ describe('DevModeSettingsService', () => {
     mockEnvConfig(true);
     console.error = jest.fn();
     window.localStorage.setItem(
-      LocalStorageKeys.developmentModeConfigKey,
+      LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
       'hello' +
         JSON.stringify({
           configs: [
@@ -142,6 +146,7 @@ describe('DevModeSettingsService', () => {
           url: 'http://localhost:4200/assets/content-configuration.json',
         },
       ],
+      isActive: true,
       serviceProviderConfig: {},
     });
   });

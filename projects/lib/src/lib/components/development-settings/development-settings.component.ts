@@ -37,6 +37,8 @@ import {
   ],
 })
 export class DevelopmentSettingsComponent {
+  // private i = UserSettingsLocalStorage;
+
   displayedItems = [
     'https://organization-dev.dfabj.sites.dxp.k8s.ondemand.com/cc.json',
     'https://organization-dev.dfabj.sites.dxp.k8s.ondemand.com/content-configuration.json',

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import { ClientEnvironment, PortalConfig, ServiceProvider } from '../../models';
+import { ClientEnvironment, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { ConfigService, EnvConfigService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';

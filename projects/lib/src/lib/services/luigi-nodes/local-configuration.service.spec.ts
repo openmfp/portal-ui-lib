@@ -44,6 +44,7 @@ describe('LocalConfigurationServiceImpl', () => {
       // Arrange
       const url = 'http://localhost:8080';
       devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+        isActive: true,
         serviceProviderConfig: {},
         configs: [
           {
@@ -117,9 +118,16 @@ describe('LocalConfigurationServiceImpl', () => {
     });
 
     it('should return empty server nodes when no matching local nodes', async () => {
-      const serverNodes = [{ pathSegment: '/path', entityType: null, label: 'Y', context: {} }];
-      getLocalNodesSpy.mockResolvedValue([{ pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} }]);
-      const localNodes = await service.replaceServerNodesWithLocalOnes(serverNodes,[]);
+      const serverNodes = [
+        { pathSegment: '/path', entityType: null, label: 'Y', context: {} },
+      ];
+      getLocalNodesSpy.mockResolvedValue([
+        { pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} },
+      ]);
+      const localNodes = await service.replaceServerNodesWithLocalOnes(
+        serverNodes,
+        []
+      );
       expect(localNodes).toEqual(serverNodes);
     });
 
@@ -156,6 +164,7 @@ describe('LocalConfigurationServiceImpl', () => {
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
       devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+        isActive: true,
         serviceProviderConfig: {},
         configs: [
           {
@@ -178,6 +187,7 @@ describe('LocalConfigurationServiceImpl', () => {
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
       devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+        isActive: true,
         serviceProviderConfig: {
           a: 'b',
         },
