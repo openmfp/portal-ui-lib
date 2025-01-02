@@ -1,8 +1,12 @@
 <div class="page">
   <div class="container">
+    <div class="is-active-switch">
+      <h4>Is Development Mode Active?</h4>
+      <fd-switch class="switch-active" [(checked)]="isActive"></fd-switch>
+    </div>
     <h4>Configuration URLs</h4>
     <div fd-form-item class="config-input">
-      <label [colon]="true" [required]="true" fd-form-label for="input-2">
+      <label [colon]="true" [required]="true" fd-form-label for="input-url">
         Provide a URL where the content configuration file is served
       </label>
       <input
@@ -17,7 +21,7 @@
         <button fd-button label="Clear" fdType="ghost" fdCompact></button>
       </div>
     </div>
-    <div>
+    <div class="config-list">
       <ul fd-list>
         @for (item of displayedItems; track item; let ind = $index) {
           <li fd-list-item>
@@ -47,7 +51,7 @@
         fd-form-control
         type="text"
         id="input-key"
-        placeholder="Field placeholder text"
+        placeholder="Key"
         aria-required="true"
       />
       <label [colon]="true" fd-form-label for="input-value"> Value </label>
@@ -55,7 +59,7 @@
         fd-form-control
         type="text"
         id="input-value"
-        placeholder="Field placeholder text"
+        placeholder="Value"
         aria-required="true"
       />
       <div class="config-input-buttons">
@@ -63,7 +67,7 @@
         <button fd-button label="Clear" fdType="ghost" fdCompact></button>
       </div>
     </div>
-    <div>
+    <div class="config-list">
       <ul fd-list>
         @for (item of displayedItems2; track item; let ind = $index) {
           <li fd-list-item>

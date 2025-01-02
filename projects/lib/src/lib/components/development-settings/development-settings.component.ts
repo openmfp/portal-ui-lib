@@ -1,18 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import {
   ButtonComponent,
   ContentDensityDirective,
   FormControlComponent,
   FormItemComponent,
   FormLabelComponent,
-  IconComponent,
-  ListBylineDirective,
   ListComponent,
-  ListContentDirective,
   ListItemComponent,
   ListSecondaryDirective,
-  ListThumbnailDirective,
   ListTitleDirective,
+  SwitchComponent,
 } from '@fundamental-ngx/core';
 
 @Component({
@@ -22,19 +19,17 @@ import {
   styleUrl: './development-settings.component.css',
   imports: [
     ListComponent,
-    IconComponent,
     ButtonComponent,
     ListItemComponent,
-    ListThumbnailDirective,
-    ListContentDirective,
     ListTitleDirective,
-    ListBylineDirective,
     FormLabelComponent,
     FormItemComponent,
     FormControlComponent,
     ContentDensityDirective,
     ListSecondaryDirective,
+    SwitchComponent,
   ],
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class DevelopmentSettingsComponent {
   // private i = UserSettingsLocalStorage;
@@ -45,7 +40,14 @@ export class DevelopmentSettingsComponent {
     'http://localhost:4200/content-configuration.json',
   ];
 
-  displayedItems2 = ['key1: value1', 'key2: value2'];
+  displayedItems2 = [
+    'key1: value1',
+    'key2: value2',
+    'key3: value3',
+    'key4: value4',
+    'key5: value5',
+  ];
+  isActive: boolean;
 
   removeItem(index: number): void {
     // const allValuesIndex = this.items.indexOf(this.displayedItems[index]);
