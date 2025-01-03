@@ -3,17 +3,19 @@ import { LocalDevelopmentSettings, UserTokenData } from '../models';
 export enum LocalStorageKeys {
   LAST_NAVIGATION_URL = 'openmfp.navigation.lastUrl',
   USER_SETTINGS = 'openmfp.settings.userSettings',
-  LOCAL_DEVELOPMENT_SETTINGS = 'openmfp.settings.developmentModeConfig',
+  LOCAL_DEVELOPMENT_SETTINGS = 'openmfp.settings.localDevelopmentSettings',
+  // deprecated to be removed
   DEVELOPMENT_MODE_CONFIG = 'dev-mode-settings',
 }
 
 export const LocalDevelopmentSettingsLocalStorage = {
-  read: (): LocalDevelopmentSettings => {
+  read: (localStorageKey?: string): LocalDevelopmentSettings => {
     let localDevelopmentSettingsFromLocalStore: string;
     try {
       localDevelopmentSettingsFromLocalStore = localStorage.getItem(
-        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS
+        localStorageKey || LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS
       );
+      localStorageKey && localStorage.removeItem(localStorageKey);
     } catch (e) {
       console.warn('localStorage is not available:', e);
       return null;
@@ -29,7 +31,19 @@ export const LocalDevelopmentSettingsLocalStorage = {
     }
     return null;
   },
-  store: () => {},
+  store: (localDevelopmentSetting: LocalDevelopmentSettings) => {
+    try {
+      localStorage.setItem(
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
+        JSON.stringify(localDevelopmentSetting)
+      );
+    } catch (e) {
+      console.error(
+        'Failed to stringify the local development settings setting into your localstorage.',
+        e
+      );
+    }
+  },
 };
 
 export const UserSettingsLocalStorage = {

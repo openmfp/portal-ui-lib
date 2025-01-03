@@ -51,6 +51,10 @@ export class LifecycleHooksConfigService {
         const config = {
           ...this.luigiCoreService.getConfig(),
           lifecycleHooks: {},
+          navigation: await this.navigationConfigService.getNavigationConfig(
+            childrenByEntity,
+            envConfig
+          ),
           settings:
             await this.staticSettingsConfigService.getStaticSettingsConfig(),
           routing: this.routingConfigService.getRoutingConfig(),
@@ -59,10 +63,6 @@ export class LifecycleHooksConfigService {
               childrenByEntity
             ),
           globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
-          navigation: await this.navigationConfigService.getNavigationConfig(
-            childrenByEntity,
-            envConfig
-          ),
         };
 
         this.luigiCoreService.ux().hideAppLoadingIndicator();

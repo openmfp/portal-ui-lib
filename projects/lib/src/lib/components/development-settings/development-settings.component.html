@@ -2,7 +2,11 @@
   <div class="container">
     <div class="is-active-switch">
       <h4>Is Development Mode Active?</h4>
-      <fd-switch class="switch-active" [(checked)]="isActive"></fd-switch>
+      <fd-switch
+        class="switch-active"
+        [checked]="localDevelopmentSettings.isActive"
+        (checkedChange)="switchIsActive()"
+      ></fd-switch>
     </div>
     <h4>Configuration URLs</h4>
     <div fd-form-item class="config-input">
@@ -15,20 +19,40 @@
         id="input-url"
         placeholder="http://localhost:4200/assets/content-configuration.json"
         aria-required="true"
+        #urlInput
       />
+      @if (errors.length) {
+        <div>Please enter a valid URL</div>
+      }
       <div class="config-input-buttons">
-        <button fd-button label="Add" fdType="emphasized" fdCompact></button>
-        <button fd-button label="Clear" fdType="ghost" fdCompact></button>
+        <button
+          fd-button
+          label="Add"
+          fdType="emphasized"
+          fdCompact
+          (click)="addUrl(urlInput.elementRef.nativeElement.value)"
+        ></button>
+        <button
+          fd-button
+          label="Clear"
+          fdType="ghost"
+          fdCompact
+          (click)="urlInput.elementRef.nativeElement.value = ''"
+        ></button>
       </div>
     </div>
     <div class="config-list">
       <ul fd-list>
-        @for (item of displayedItems; track item; let ind = $index) {
+        @for (
+          item of localDevelopmentSettings.configs;
+          track item;
+          let ind = $index
+        ) {
           <li fd-list-item>
             <!--            <span fd-list-thumbnail><fd-icon glyph="accept"></fd-icon></span>-->
             <!--            <span fd-list-thumbnail><fd-icon glyph="decline"></fd-icon></span>-->
             <span fd-list-title>
-              {{ item }}
+              {{ item.url }}
             </span>
             <span fd-list-secondary>
               <button
@@ -37,7 +61,7 @@
                 glyph="decline"
                 (click)="$event.stopPropagation()"
                 title="Decline"
-                (click)="removeItem(ind)"
+                (click)="removeUrl(ind)"
               ></button>
             </span>
           </li>
@@ -53,6 +77,7 @@
         id="input-key"
         placeholder="Key"
         aria-required="true"
+        #inputKey
       />
       <label [colon]="true" fd-form-label for="input-value"> Value </label>
       <input
@@ -61,18 +86,45 @@
         id="input-value"
         placeholder="Value"
         aria-required="true"
+        #inputValue
       />
       <div class="config-input-buttons">
-        <button fd-button label="Add" fdType="emphasized" fdCompact></button>
-        <button fd-button label="Clear" fdType="ghost" fdCompact></button>
+        <button
+          fd-button
+          label="Add"
+          fdType="emphasized"
+          fdCompact
+          (click)="
+            addServiceProviderConfig(
+              inputKey.elementRef.nativeElement.value,
+              inputValue.elementRef.nativeElement.value
+            )
+          "
+        ></button>
+        <button
+          fd-button
+          label="Clear"
+          fdType="ghost"
+          fdCompact
+          (click)="
+            inputKey.elementRef.nativeElement.value = '';
+            inputValue.elementRef.nativeElement.value = ''
+          "
+        ></button>
       </div>
     </div>
     <div class="config-list">
       <ul fd-list>
-        @for (item of displayedItems2; track item; let ind = $index) {
+        @for (
+          item of Object.entries(
+            localDevelopmentSettings.serviceProviderConfig
+          );
+          track item[0];
+          let ind = $index
+        ) {
           <li fd-list-item>
             <span fd-list-title>
-              {{ item }}
+              Key: {{ item[0] }}, Value: {{ item[1] }}
             </span>
             <span fd-list-secondary>
               <button
@@ -81,7 +133,7 @@
                 glyph="decline"
                 (click)="$event.stopPropagation()"
                 title="Decline"
-                (click)="removeItem(ind)"
+                (click)="removeServiceProviderConfig(item[0])"
               ></button>
             </span>
           </li>

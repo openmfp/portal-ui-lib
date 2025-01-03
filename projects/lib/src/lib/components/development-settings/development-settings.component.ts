@@ -1,4 +1,5 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   ButtonComponent,
   ContentDensityDirective,
@@ -11,6 +12,12 @@ import {
   ListTitleDirective,
   SwitchComponent,
 } from '@fundamental-ngx/core';
+import {
+  LocalDevelopmentSettingsLocalStorage,
+  LocalStorageKeys,
+} from '../../services';
+import { LocalDevelopmentSettings } from '../../models';
+import { sendCustomMessage } from '@luigi-project/client';
 
 @Component({
   selector: 'development-settings',
@@ -28,30 +35,77 @@ import {
     ContentDensityDirective,
     ListSecondaryDirective,
     SwitchComponent,
+    FormsModule,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
 })
-export class DevelopmentSettingsComponent {
-  // private i = UserSettingsLocalStorage;
+export class DevelopmentSettingsComponent implements OnInit {
+  protected errors = [];
+  protected readonly Object = Object;
+  protected localDevelopmentSettings: LocalDevelopmentSettings = {
+    isActive: false,
+    configs: [],
+    serviceProviderConfig: {},
+  };
 
-  displayedItems = [
-    'https://organization-dev.dfabj.sites.dxp.k8s.ondemand.com/cc.json',
-    'https://organization-dev.dfabj.sites.dxp.k8s.ondemand.com/content-configuration.json',
-    'http://localhost:4200/content-configuration.json',
-  ];
+  ngOnInit(): void {
+    this.localDevelopmentSettings =
+      LocalDevelopmentSettingsLocalStorage.read(
+        LocalStorageKeys.DEVELOPMENT_MODE_CONFIG
+      ) ||
+      LocalDevelopmentSettingsLocalStorage.read() ||
+      this.localDevelopmentSettings;
+  }
 
-  displayedItems2 = [
-    'key1: value1',
-    'key2: value2',
-    'key3: value3',
-    'key4: value4',
-    'key5: value5',
-  ];
-  isActive: boolean;
+  private saveDevelopmentSettings() {
+    sendCustomMessage({
+      id: 'luigi.updateUserSettings',
+      data: { localDevelopmentSettings: this.localDevelopmentSettings },
+    });
+  }
 
-  removeItem(index: number): void {
-    // const allValuesIndex = this.items.indexOf(this.displayedItems[index]);
-    // this.items.splice(allValuesIndex, 1);
-    // this.displayedItems.splice(index, 1);
+  protected addUrl(url: string) {
+    if (!this.isValidUrl(url)) {
+      this.errors.push('pattern');
+    } else if (
+      url &&
+      !this.localDevelopmentSettings.configs.find((e) => e.url === url)
+    ) {
+      this.errors.length = 0;
+      this.localDevelopmentSettings.configs.push({ url });
+      this.saveDevelopmentSettings();
+    }
+  }
+
+  protected removeUrl(index: number) {
+    this.localDevelopmentSettings.configs.splice(index, 1);
+    this.saveDevelopmentSettings();
+  }
+
+  protected removeServiceProviderConfig(key: string) {
+    delete this.localDevelopmentSettings.serviceProviderConfig[key];
+    this.saveDevelopmentSettings();
+  }
+
+  protected addServiceProviderConfig(key: string, value: string) {
+    if (key && value) {
+      this.localDevelopmentSettings.serviceProviderConfig[key] = value;
+      this.saveDevelopmentSettings();
+    }
+  }
+
+  private isValidUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  switchIsActive() {
+    this.localDevelopmentSettings.isActive =
+      !this.localDevelopmentSettings.isActive;
+    this.saveDevelopmentSettings();
   }
 }
