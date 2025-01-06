@@ -94,6 +94,12 @@ export class DevelopmentSettingsComponent implements OnInit {
     }
   }
 
+  protected switchIsActive() {
+    this.localDevelopmentSettings.isActive =
+      !this.localDevelopmentSettings.isActive;
+    this.saveDevelopmentSettings();
+  }
+
   private isValidUrl(url: string): boolean {
     try {
       new URL(url);
@@ -101,11 +107,5 @@ export class DevelopmentSettingsComponent implements OnInit {
     } catch (_) {
       return false;
     }
-  }
-
-  switchIsActive() {
-    this.localDevelopmentSettings.isActive =
-      !this.localDevelopmentSettings.isActive;
-    this.saveDevelopmentSettings();
   }
 }
