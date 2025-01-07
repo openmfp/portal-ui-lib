@@ -46,7 +46,7 @@ export const localDevelopmentSettingsLocalStorage = {
   },
 };
 
-export const UserSettingsLocalStorage = {
+export const userSettingsLocalStorage = {
   read: async (userInfo: UserTokenData) => {
     const transientSettings = {
       frame_userAccount: {

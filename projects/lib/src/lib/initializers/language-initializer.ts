@@ -3,7 +3,7 @@ import {
   AuthService,
   I18nService,
   LuigiCoreService,
-  UserSettingsLocalStorage,
+  userSettingsLocalStorage,
 } from '../services';
 
 export function initLanguage(
@@ -12,7 +12,7 @@ export function initLanguage(
   luigiCoreService: LuigiCoreService
 ) {
   return async () => {
-    const userSettings = (await UserSettingsLocalStorage.read(
+    const userSettings = (await userSettingsLocalStorage.read(
       authService.getUser()
     )) as any;
     const storedLanguage = userSettings?.frame_userAccount?.language;

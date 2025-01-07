@@ -1,7 +1,7 @@
 import { UserTokenData, LocalDevelopmentSettings } from '../models';
 import {
   LocalStorageKeys,
-  UserSettingsLocalStorage,
+  userSettingsLocalStorage,
   localDevelopmentSettingsLocalStorage,
 } from './storage-service';
 
@@ -186,7 +186,7 @@ describe('UserSettingsLocalStorage', () => {
     it('should return default settings when no stored settings exist', async () => {
       (localStorageMock.getItem as jest.Mock).mockReturnValue(null);
 
-      const result = await UserSettingsLocalStorage.read(mockUserInfo);
+      const result = await userSettingsLocalStorage.read(mockUserInfo);
 
       expect(result).toEqual({
         frame_userAccount: {
@@ -207,7 +207,7 @@ describe('UserSettingsLocalStorage', () => {
         JSON.stringify(existingSettings)
       );
 
-      const result = await UserSettingsLocalStorage.read(mockUserInfo);
+      const result = await userSettingsLocalStorage.read(mockUserInfo);
 
       expect(result).toEqual({
         frame_userAccount: {
@@ -223,7 +223,7 @@ describe('UserSettingsLocalStorage', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
       (localStorageMock.getItem as jest.Mock).mockReturnValue('invalid-json');
 
-      await expect(UserSettingsLocalStorage.read(mockUserInfo)).rejects.toEqual(
+      await expect(userSettingsLocalStorage.read(mockUserInfo)).rejects.toEqual(
         {
           closeDialog: true,
           message: 'Could not read userSettings from storage...',
@@ -240,7 +240,7 @@ describe('UserSettingsLocalStorage', () => {
 
       (localStorageMock.getItem as jest.Mock).mockReturnValue(null);
 
-      const result = await UserSettingsLocalStorage.read(emptyUserInfo);
+      const result = await userSettingsLocalStorage.read(emptyUserInfo);
 
       expect(result).toEqual({
         frame_userAccount: {
@@ -272,7 +272,7 @@ describe('UserSettingsLocalStorage', () => {
         },
       };
 
-      const result = await UserSettingsLocalStorage.store(settings);
+      const result = await userSettingsLocalStorage.store(settings);
 
       expect(localStorage.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
@@ -297,7 +297,7 @@ describe('UserSettingsLocalStorage', () => {
         },
       };
 
-      const result = await UserSettingsLocalStorage.store(settings);
+      const result = await userSettingsLocalStorage.store(settings);
 
       expect(localStorage.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
@@ -316,7 +316,7 @@ describe('UserSettingsLocalStorage', () => {
         },
       };
 
-      const result = await UserSettingsLocalStorage.store(settings);
+      const result = await userSettingsLocalStorage.store(settings);
 
       expect(localStorage.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
@@ -346,7 +346,7 @@ describe('UserSettingsLocalStorage', () => {
         throw new Error('Storage error');
       });
 
-      await expect(UserSettingsLocalStorage.store(settings)).rejects.toEqual({
+      await expect(userSettingsLocalStorage.store(settings)).rejects.toEqual({
         closeDialog: true,
         message: 'Could not write userSettings to storage...',
       });
