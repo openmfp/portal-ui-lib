@@ -6,7 +6,7 @@ import {
 } from './storage-service';
 
 describe('LocalDevelopmentSettingsLocalStorage', () => {
-  let localStorageMock: Storage;
+  let localStorageMock: jest.Mocked<Storage>;
 
   beforeEach(() => {
     localStorageMock = {
@@ -78,6 +78,82 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       const result = LocalDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('store', () => {
+    it('should successfully store valid LocalDevelopmentSettings in localStorage', () => {
+      const testSettings: LocalDevelopmentSettings = {
+        isActive: true,
+        configs: [{ url: 'http://test.com' }],
+        serviceProviderConfig: {
+          key1: 'value1',
+        },
+      };
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      LocalDevelopmentSettingsLocalStorage.store(testSettings);
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
+        JSON.stringify(testSettings)
+      );
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+
+    it('should store empty LocalDevelopmentSettings object', () => {
+      const emptySettings: LocalDevelopmentSettings = {
+        isActive: false,
+        configs: [],
+        serviceProviderConfig: {},
+      };
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      LocalDevelopmentSettingsLocalStorage.store(emptySettings);
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
+        JSON.stringify(emptySettings)
+      );
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle localStorage error and log to console', () => {
+      // Simulate localStorage error
+      localStorageMock.setItem.mockImplementationOnce(() => {
+        throw new Error('Storage full');
+      });
+
+      const testSettings: LocalDevelopmentSettings = {
+        isActive: true,
+        configs: [],
+        serviceProviderConfig: {},
+      };
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      LocalDevelopmentSettingsLocalStorage.store(testSettings);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to stringify the local development settings setting into your localstorage.',
+        expect.any(Error)
+      );
+    });
+
+    it('should handle circular reference in settings object', () => {
+      const circularSettings: any = {
+        isActive: true,
+        configs: [],
+        serviceProviderConfig: {},
+      };
+      circularSettings.circular = circularSettings;
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      LocalDevelopmentSettingsLocalStorage.store(circularSettings);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to stringify the local development settings setting into your localstorage.',
+        expect.any(Error)
+      );
     });
   });
 });

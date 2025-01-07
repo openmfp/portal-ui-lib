@@ -72,7 +72,7 @@ export class DevelopmentSettingsComponent implements OnInit {
     });
   }
 
-  protected addUrl(url: string) {
+  addUrl(url: string) {
     if (!this.isValidUrl(url)) {
       this.errors.push('pattern');
     } else if (
@@ -85,24 +85,24 @@ export class DevelopmentSettingsComponent implements OnInit {
     }
   }
 
-  protected removeUrl(index: number) {
+  removeUrl(index: number) {
     this.localDevelopmentSettings.configs.splice(index, 1);
     this.saveDevelopmentSettings();
   }
 
-  protected removeServiceProviderConfig(key: string) {
+  removeServiceProviderConfig(key: string) {
     delete this.localDevelopmentSettings.serviceProviderConfig[key];
     this.saveDevelopmentSettings();
   }
 
-  protected addServiceProviderConfig(key: string, value: string) {
+  addServiceProviderConfig(key: string, value: string) {
     if (key && value) {
       this.localDevelopmentSettings.serviceProviderConfig[key] = value;
       this.saveDevelopmentSettings();
     }
   }
 
-  protected switchIsActive() {
+  switchIsActive() {
     this.localDevelopmentSettings.isActive =
       !this.localDevelopmentSettings.isActive;
     this.saveDevelopmentSettings();
