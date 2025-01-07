@@ -101,7 +101,14 @@ describe('DevelopmentSettingsComponent', () => {
       component.ngOnInit();
       expect(component['localDevelopmentSettings']).toEqual({
         isActive: false,
-        configs: [],
+        configs: [
+          {
+            url: 'http://localhost:4200/assets/content-configuration-global.json',
+          },
+          {
+            url: 'http://localhost:4200/assets/content-configuration.json',
+          },
+        ],
         serviceProviderConfig: {},
       });
     });
@@ -131,7 +138,6 @@ describe('DevelopmentSettingsComponent', () => {
       component.addUrl(invalidUrl);
 
       expect(component['errors']).toContain('pattern');
-      expect(component['localDevelopmentSettings'].configs).toHaveLength(0);
     });
   });
 

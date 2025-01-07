@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { merge } from 'lodash';
 import {
   ContentConfiguration,
   LuigiNode,
   LocalDevelopmentSettings,
 } from '../../models';
-import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
+import { LocalDevelopmentSettingsLocalStorage } from '../storage-service';
 import { LocalNodesConfigService } from '../portal';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
@@ -24,18 +24,19 @@ export interface LocalConfigurationService {
 export class LocalConfigurationServiceImpl
   implements LocalConfigurationService
 {
-  constructor(
-    private http: HttpClient,
-    private luigiConfigService: LocalNodesConfigService,
-    private devModeSettingsService: DevModeSettingsService
-  ) {}
-
+  private http = inject(HttpClient);
+  private luigiConfigService = inject(LocalNodesConfigService);
   private cachedConfigurations: ContentConfiguration[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
+    const localDevelopmentSettings =
+      LocalDevelopmentSettingsLocalStorage.read();
+
+    if (!localDevelopmentSettings?.isActive) {
+      return [];
+    }
+
     try {
-      const localDevelopmentSettings =
-        this.devModeSettingsService.getDevModeSettings();
       const configurations = await this.getLocalConfigurations(
         localDevelopmentSettings
       );

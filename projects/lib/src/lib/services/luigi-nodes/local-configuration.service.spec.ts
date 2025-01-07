@@ -3,32 +3,28 @@ import { TestBed } from '@angular/core/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { of } from 'rxjs';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
-import { DevModeSettingsService } from './dev-mode/dev-mode-settings.service';
 import { ContentConfiguration, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesConfigService } from '../portal';
+import { LocalDevelopmentSettingsLocalStorage } from '../storage-service';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
   let luigiCoreService: LuigiCoreService;
   let httpClient: HttpClient;
   let luigiDataConfigServiceMock: MockProxy<LocalNodesConfigService>;
-  let devModeSettingsServiceMock: MockProxy<DevModeSettingsService>;
 
   beforeEach(() => {
-    devModeSettingsServiceMock = mock<DevModeSettingsService>();
+    LocalDevelopmentSettingsLocalStorage.read = jest.fn();
     luigiDataConfigServiceMock = mock<LocalNodesConfigService>();
     TestBed.configureTestingModule({
       providers: [
-        DevModeSettingsService,
         {
           provide: LocalNodesConfigService,
           useValue: luigiDataConfigServiceMock,
         },
         provideHttpClient(),
       ],
-    }).overrideProvider(DevModeSettingsService, {
-      useValue: devModeSettingsServiceMock,
     });
     service = TestBed.inject(LocalConfigurationServiceImpl);
     luigiCoreService = TestBed.inject(LuigiCoreService);
@@ -43,7 +39,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should cache the result of the first call to retrieve content configuration', async () => {
       // Arrange
       const url = 'http://localhost:8080';
-      devModeSettingsServiceMock.getDevModeSettings.mockReturnValue({
+      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
         serviceProviderConfig: {},
         configs: [
@@ -163,7 +159,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock = mock<LuigiNode>();
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      devModeSettingsServiceMock.getDevModeSettings.mockReturnValue({
+      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
         serviceProviderConfig: {},
         configs: [
@@ -186,7 +182,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      devModeSettingsServiceMock.getDevModeSettings.mockReturnValue({
+      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
         serviceProviderConfig: {
           a: 'b',
@@ -209,12 +205,50 @@ describe('LocalConfigurationServiceImpl', () => {
       ]);
     });
 
+    it('should return empty array if the local settings is not active', async () => {
+      const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
+      getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
+
+      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+        isActive: false,
+        serviceProviderConfig: {
+          a: 'b',
+        },
+        configs: [
+          {
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
+      });
+
+      const localNodes = await service.getLocalNodes();
+
+      expect(localNodes).toEqual([]);
+    });
+
     it('should return an empty array for a dev environment if the request fails', async () => {
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([]);
 
       const localNodes = await service.getLocalNodes();
 
       expect(localNodes).toEqual([]);
+    });
+
+    it('should return an empty array for a dev environment if the request fails', async () => {
+      getLuigiDataFromConfigurationsSpy.mockRejectedValue();
+      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+        isActive: true,
+      });
+      console.warn = jest.fn();
+
+      const localNodes = await service.getLocalNodes();
+
+      expect(localNodes).toEqual([]);
+      expect(console.warn).toHaveBeenCalled();
     });
   });
 });
