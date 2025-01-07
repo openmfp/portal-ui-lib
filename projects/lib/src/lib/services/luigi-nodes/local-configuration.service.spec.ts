@@ -43,7 +43,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should cache the result of the first call to retrieve content configuration', async () => {
       // Arrange
       const url = 'http://localhost:8080';
-      devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+      devModeSettingsServiceMock.getDevModeSettings.mockReturnValue({
         isActive: true,
         serviceProviderConfig: {},
         configs: [
@@ -163,7 +163,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock = mock<LuigiNode>();
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+      devModeSettingsServiceMock.getDevModeSettings.mockReturnValue({
         isActive: true,
         serviceProviderConfig: {},
         configs: [
@@ -186,7 +186,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      devModeSettingsServiceMock.getDevModeSettings.mockResolvedValue({
+      devModeSettingsServiceMock.getDevModeSettings.mockReturnValue({
         isActive: true,
         serviceProviderConfig: {
           a: 'b',

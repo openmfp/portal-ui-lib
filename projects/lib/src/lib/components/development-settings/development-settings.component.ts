@@ -50,7 +50,14 @@ export class DevelopmentSettingsComponent implements OnInit {
   protected readonly Object = Object;
   protected localDevelopmentSettings: LocalDevelopmentSettings = {
     isActive: false,
-    configs: [],
+    configs: [
+      {
+        url: 'http://localhost:4200/assets/content-configuration-global.json',
+      },
+      {
+        url: 'http://localhost:4200/assets/content-configuration.json',
+      },
+    ],
     serviceProviderConfig: {},
   };
 

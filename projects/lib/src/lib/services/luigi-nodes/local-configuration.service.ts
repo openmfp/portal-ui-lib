@@ -34,20 +34,22 @@ export class LocalConfigurationServiceImpl
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     try {
-      const devModeSettings =
-        await this.devModeSettingsService.getDevModeSettings();
-      const configurations = await this.getLocalConfigurations(devModeSettings);
+      const localDevelopmentSettings =
+        this.devModeSettingsService.getDevModeSettings();
+      const configurations = await this.getLocalConfigurations(
+        localDevelopmentSettings
+      );
       const luigiNodes =
         await this.luigiConfigService.getLuigiNodesFromConfigurations(
           configurations
         );
 
-      if (luigiNodes)
-        luigiNodes.forEach((node) => {
-          node.context = node.context || {};
-          node.context.serviceProviderConfig =
-            devModeSettings.serviceProviderConfig;
-        });
+      (luigiNodes || []).forEach((node) => {
+        node.context = {
+          ...node.context,
+          serviceProviderConfig: localDevelopmentSettings.serviceProviderConfig,
+        };
+      });
 
       return luigiNodes;
     } catch (e) {
