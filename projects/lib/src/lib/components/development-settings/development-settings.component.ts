@@ -44,7 +44,7 @@ import { sendCustomMessage } from '@luigi-project/client';
 })
 export class DevelopmentSettingsComponent implements OnInit {
   private i18nService = inject(I18nService);
-  protected texts: any = {};
+  protected texts = this.readTranslations();
 
   protected errors = [];
   protected readonly Object = Object;
@@ -54,8 +54,8 @@ export class DevelopmentSettingsComponent implements OnInit {
     serviceProviderConfig: {},
   };
 
-  async ngOnInit(): Promise<void> {
-    await this.readTranslations();
+  ngOnInit(): void {
+    this.readTranslations();
 
     this.localDevelopmentSettings =
       LocalDevelopmentSettingsLocalStorage.read(
@@ -117,57 +117,55 @@ export class DevelopmentSettingsComponent implements OnInit {
     }
   }
 
-  private async readTranslations() {
-    this.texts = {
-      explanation: await this.i18nService.getTranslationAsync(
+  private readTranslations() {
+    return {
+      explanation: this.i18nService.getTranslation(
         'LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION'
       ),
-      link: await this.i18nService.getTranslationAsync(
-        'LOCAL_DEVELOPMENT_SETTINGS_LINK'
-      ),
-      addButton: await this.i18nService.getTranslationAsync(
+      link: this.i18nService.getTranslation('LOCAL_DEVELOPMENT_SETTINGS_LINK'),
+      addButton: this.i18nService.getTranslation(
         'LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON'
       ),
-      clearButton: await this.i18nService.getTranslationAsync(
+      clearButton: this.i18nService.getTranslation(
         'LOCAL_DEVELOPMENT_SETTINGS_CLEAR_BUTTON'
       ),
-      removeButton: await this.i18nService.getTranslationAsync(
+      removeButton: this.i18nService.getTranslation(
         'LOCAL_DEVELOPMENT_SETTINGS_REMOVE_BUTTON'
       ),
-      isDevelopmentModeActive: await this.i18nService.getTranslationAsync(
+      isDevelopmentModeActive: this.i18nService.getTranslation(
         'LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE'
       ),
       urlsInput: {
-        title: await this.i18nService.getTranslationAsync(
+        title: this.i18nService.getTranslation(
           'LOCAL_DEVELOPMENT_SETTINGS_URLS_TITLE'
         ),
-        label: await this.i18nService.getTranslationAsync(
+        label: this.i18nService.getTranslation(
           'LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL'
         ),
-        error: await this.i18nService.getTranslationAsync(
+        error: this.i18nService.getTranslation(
           'LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR'
         ),
       },
       serviceProviderConfig: {
-        title: await this.i18nService.getTranslationAsync(
+        title: this.i18nService.getTranslation(
           'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE'
         ),
-        explanation: await this.i18nService.getTranslationAsync(
+        explanation: this.i18nService.getTranslation(
           'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION'
         ),
         keyInput: {
-          label: await this.i18nService.getTranslationAsync(
+          label: this.i18nService.getTranslation(
             'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL'
           ),
-          placeholder: await this.i18nService.getTranslationAsync(
+          placeholder: this.i18nService.getTranslation(
             'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER'
           ),
         },
         valueInput: {
-          label: await this.i18nService.getTranslationAsync(
+          label: this.i18nService.getTranslation(
             'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL'
           ),
-          placeholder: await this.i18nService.getTranslationAsync(
+          placeholder: this.i18nService.getTranslation(
             'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER'
           ),
         },

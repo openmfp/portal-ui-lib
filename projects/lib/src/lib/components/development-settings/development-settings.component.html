@@ -16,10 +16,10 @@
         (checkedChange)="switchIsActive()"
       ></fd-switch>
     </div>
-    <h4>{{ texts.urlsInput.title }}</h4>
+    <h4>{{ texts.urlsInput?.title }}</h4>
     <div fd-form-item class="config-input">
       <label [colon]="true" [required]="true" fd-form-label for="input-url">
-        {{ texts.urlsInput.label }}
+        {{ texts.urlsInput?.label }}
       </label>
       <input
         fd-form-control
@@ -30,7 +30,7 @@
         #urlInput
       />
       @if (errors.length) {
-        <div>{{ texts.urlsInput.error }}</div>
+        <div>{{ texts.urlsInput?.error }}</div>
       }
       <div class="config-input-buttons">
         <button
@@ -75,32 +75,32 @@
         }
       </ul>
     </div>
-    <h4>{{ texts.serviceProviderConfig.title }}</h4>
+    <h4>{{ texts.serviceProviderConfig?.title }}</h4>
     <div fd-form-item class="config-input">
       <label [colon]="false" fd-form-label for="input-key">
-        {{ texts.serviceProviderConfig.explanation }}
+        {{ texts.serviceProviderConfig?.explanation }}
       </label>
       <br />
       <label [colon]="true" fd-form-label for="input-key">
-        {{ texts.serviceProviderConfig.keyInput.label }}
+        {{ texts.serviceProviderConfig?.keyInput.label }}
       </label>
       <input
         fd-form-control
         type="text"
         id="input-key"
-        placeholder="{{ texts.serviceProviderConfig.keyInput.placeholder }}"
+        placeholder="{{ texts.serviceProviderConfig?.keyInput.placeholder }}"
         aria-required="true"
         #inputKey
       />
       <br />
       <label [colon]="true" fd-form-label for="input-value">
-        {{ texts.serviceProviderConfig.valueInput.label }}
+        {{ texts.serviceProviderConfig?.valueInput.label }}
       </label>
       <input
         fd-form-control
         type="text"
         id="input-value"
-        placeholder="{{ texts.serviceProviderConfig.valueInput.placeholder }}"
+        placeholder="{{ texts.serviceProviderConfig?.valueInput.placeholder }}"
         aria-required="true"
         #inputValue
       />
