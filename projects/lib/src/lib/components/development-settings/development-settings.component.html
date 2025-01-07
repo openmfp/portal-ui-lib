@@ -1,30 +1,25 @@
 <div class="page">
   <div class="container">
-    <p>
-      Below settings provide means to run and test your locally developed
-      application along with this application. Once the Development Mode is
-      <strong>active</strong> and the proper URLs are provided your locally
-      running applications will be included into this application.
-    </p>
+    <p>{{ texts.explanation }}</p>
     <a
       fd-link
       target="_blank"
       href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
-      >Local development setting documentation</a
+      >{{ texts.link }}</a
     >
     <br />
     <div class="is-active-switch">
-      <h4>Is Development Mode Active?</h4>
+      <h4>{{ texts.isDevelopmentModeActive }}</h4>
       <fd-switch
         class="switch-active"
         [checked]="localDevelopmentSettings.isActive"
         (checkedChange)="switchIsActive()"
       ></fd-switch>
     </div>
-    <h4>Configuration URLs</h4>
+    <h4>{{ texts.urlsInput.title }}</h4>
     <div fd-form-item class="config-input">
       <label [colon]="true" [required]="true" fd-form-label for="input-url">
-        Provide a URL where the content configuration file is served
+        {{ texts.urlsInput.label }}
       </label>
       <input
         fd-form-control
@@ -35,19 +30,19 @@
         #urlInput
       />
       @if (errors.length) {
-        <div>Please enter a valid URL</div>
+        <div>{{ texts.urlsInput.error }}</div>
       }
       <div class="config-input-buttons">
         <button
           fd-button
-          label="Add"
+          label="{{ texts.addButton }}"
           fdType="emphasized"
           fdCompact
           (click)="addUrl(urlInput.elementRef.nativeElement.value)"
         ></button>
         <button
           fd-button
-          label="Clear"
+          label="{{ texts.clearButton }}"
           fdType="ghost"
           fdCompact
           (click)="urlInput.elementRef.nativeElement.value = ''"
@@ -72,7 +67,7 @@
                 fd-button
                 fdType="transparent"
                 glyph="decline"
-                title="Decline"
+                title="{{ texts.removeButton }}"
                 (click)="removeUrl(ind)"
               ></button>
             </span>
@@ -80,36 +75,39 @@
         }
       </ul>
     </div>
-    <h4>Service Provider Config</h4>
+    <h4>{{ texts.serviceProviderConfig.title }}</h4>
     <div fd-form-item class="config-input">
       <label [colon]="false" fd-form-label for="input-key">
-        The values will be added to every Luigi node's context in the
-        `serviceProviderConfig` field.
+        {{ texts.serviceProviderConfig.explanation }}
       </label>
       <br />
-      <label [colon]="true" fd-form-label for="input-key"> Key </label>
+      <label [colon]="true" fd-form-label for="input-key">
+        {{ texts.serviceProviderConfig.keyInput.label }}
+      </label>
       <input
         fd-form-control
         type="text"
         id="input-key"
-        placeholder="Key"
+        placeholder="{{ texts.serviceProviderConfig.keyInput.placeholder }}"
         aria-required="true"
         #inputKey
       />
       <br />
-      <label [colon]="true" fd-form-label for="input-value"> Value </label>
+      <label [colon]="true" fd-form-label for="input-value">
+        {{ texts.serviceProviderConfig.valueInput.label }}
+      </label>
       <input
         fd-form-control
         type="text"
         id="input-value"
-        placeholder="Value"
+        placeholder="{{ texts.serviceProviderConfig.valueInput.placeholder }}"
         aria-required="true"
         #inputValue
       />
       <div class="config-input-buttons">
         <button
           fd-button
-          label="Add"
+          label="{{ texts.addButton }}"
           fdType="emphasized"
           fdCompact
           (click)="
@@ -121,7 +119,7 @@
         ></button>
         <button
           fd-button
-          label="Clear"
+          label="{{ texts.clearButton }}"
           fdType="ghost"
           fdCompact
           (click)="
@@ -149,7 +147,7 @@
                 fd-button
                 fdType="transparent"
                 glyph="decline"
-                title="Decline"
+                title="{{ texts.removeButton }}"
                 (click)="removeServiceProviderConfig(item[0])"
               ></button>
             </span>
