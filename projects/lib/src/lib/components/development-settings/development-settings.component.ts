@@ -6,6 +6,7 @@ import {
   FormControlComponent,
   FormItemComponent,
   FormLabelComponent,
+  LinkComponent,
   ListComponent,
   ListItemComponent,
   ListSecondaryDirective,
@@ -36,6 +37,7 @@ import { sendCustomMessage } from '@luigi-project/client';
     ListSecondaryDirective,
     SwitchComponent,
     FormsModule,
+    LinkComponent,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
 })

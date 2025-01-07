@@ -1,5 +1,18 @@
 <div class="page">
   <div class="container">
+    <p>
+      Below settings provide means to run and test your locally developed
+      application along with this application. Once the Development Mode is
+      <strong>active</strong> and the proper URLs are provided your locally
+      running applications will be included into this application.
+    </p>
+    <a
+      fd-link
+      target="_blank"
+      href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
+      >Local development setting documentation</a
+    >
+    <br />
     <div class="is-active-switch">
       <h4>Is Development Mode Active?</h4>
       <fd-switch
@@ -69,6 +82,11 @@
     </div>
     <h4>Service Provider Config</h4>
     <div fd-form-item class="config-input">
+      <label [colon]="false" fd-form-label for="input-key">
+        The values will be added to every Luigi node's context in the
+        `serviceProviderConfig` field.
+      </label>
+      <br />
       <label [colon]="true" fd-form-label for="input-key"> Key </label>
       <input
         fd-form-control
@@ -78,6 +96,7 @@
         aria-required="true"
         #inputKey
       />
+      <br />
       <label [colon]="true" fd-form-label for="input-value"> Value </label>
       <input
         fd-form-control

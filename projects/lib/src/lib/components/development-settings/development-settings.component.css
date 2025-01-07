@@ -35,3 +35,7 @@
   gap: 8px;
   margin-top: 16px;
 }
+
+label .fd-form-label {
+  white-space: pre-line;
+}
