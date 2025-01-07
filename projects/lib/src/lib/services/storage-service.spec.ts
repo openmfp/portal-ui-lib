@@ -2,7 +2,7 @@ import { UserTokenData, LocalDevelopmentSettings } from '../models';
 import {
   LocalStorageKeys,
   UserSettingsLocalStorage,
-  LocalDevelopmentSettingsLocalStorage,
+  localDevelopmentSettingsLocalStorage,
 } from './storage-service';
 
 describe('LocalDevelopmentSettingsLocalStorage', () => {
@@ -40,7 +40,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
         .fn()
         .mockReturnValue(JSON.stringify(mockSettings));
 
-      const result = LocalDevelopmentSettingsLocalStorage.read();
+      const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toEqual(mockSettings);
       expect(localStorageMock.getItem).toHaveBeenCalledWith(
@@ -54,7 +54,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       });
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      const result = LocalDevelopmentSettingsLocalStorage.read();
+      const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalled();
@@ -65,7 +65,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       localStorageMock.getItem = jest.fn().mockReturnValue('invalid json');
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      const result = LocalDevelopmentSettingsLocalStorage.read();
+      const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
     it('should return null when no settings exist in localStorage', () => {
       localStorageMock.getItem = jest.fn().mockReturnValue(null);
 
-      const result = LocalDevelopmentSettingsLocalStorage.read();
+      const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
     });
@@ -92,7 +92,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       };
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      LocalDevelopmentSettingsLocalStorage.store(testSettings);
+      localDevelopmentSettingsLocalStorage.store(testSettings);
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
@@ -109,7 +109,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       };
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      LocalDevelopmentSettingsLocalStorage.store(emptySettings);
+      localDevelopmentSettingsLocalStorage.store(emptySettings);
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
@@ -131,7 +131,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       };
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      LocalDevelopmentSettingsLocalStorage.store(testSettings);
+      localDevelopmentSettingsLocalStorage.store(testSettings);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to stringify the local development settings setting into your localstorage.',
@@ -148,7 +148,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
       circularSettings.circular = circularSettings;
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      LocalDevelopmentSettingsLocalStorage.store(circularSettings);
+      localDevelopmentSettingsLocalStorage.store(circularSettings);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to stringify the local development settings setting into your localstorage.',

@@ -5,7 +5,7 @@ import {
   LuigiNode,
   LocalDevelopmentSettings,
 } from '../../models';
-import { LocalDevelopmentSettingsLocalStorage } from '../storage-service';
+import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { LocalNodesConfigService } from '../portal';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
@@ -30,7 +30,7 @@ export class LocalConfigurationServiceImpl
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     const localDevelopmentSettings =
-      LocalDevelopmentSettingsLocalStorage.read();
+      localDevelopmentSettingsLocalStorage.read();
 
     if (!localDevelopmentSettings?.isActive) {
       return [];

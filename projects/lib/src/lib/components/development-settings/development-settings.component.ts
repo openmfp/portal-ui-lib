@@ -15,7 +15,7 @@ import {
 } from '@fundamental-ngx/core';
 import {
   I18nService,
-  LocalDevelopmentSettingsLocalStorage,
+  localDevelopmentSettingsLocalStorage,
   LocalStorageKeys,
 } from '../../services';
 import { LocalDevelopmentSettings } from '../../models';
@@ -65,10 +65,10 @@ export class DevelopmentSettingsComponent implements OnInit {
     this.readTranslations();
 
     this.localDevelopmentSettings =
-      LocalDevelopmentSettingsLocalStorage.read(
+      localDevelopmentSettingsLocalStorage.read(
         LocalStorageKeys.DEVELOPMENT_MODE_CONFIG
       ) ||
-      LocalDevelopmentSettingsLocalStorage.read() ||
+      localDevelopmentSettingsLocalStorage.read() ||
       this.localDevelopmentSettings;
   }
 

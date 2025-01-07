@@ -16,7 +16,7 @@ import {
 import { DevelopmentSettingsComponent } from './development-settings.component';
 import {
   I18nService,
-  LocalDevelopmentSettingsLocalStorage,
+  localDevelopmentSettingsLocalStorage,
 } from '../../services';
 import { sendCustomMessage } from '@luigi-project/client';
 
@@ -69,7 +69,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: { key: 'value' },
       };
 
-      LocalDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = jest
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -84,7 +84,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: {},
       };
 
-      LocalDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = jest
         .fn()
         .mockReturnValueOnce(null)
         .mockReturnValueOnce(mockSettings);
@@ -94,7 +94,7 @@ describe('DevelopmentSettingsComponent', () => {
     });
 
     it('should initialize with default settings when no stored settings available', () => {
-      LocalDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = jest
         .fn()
         .mockReturnValue(null);
 

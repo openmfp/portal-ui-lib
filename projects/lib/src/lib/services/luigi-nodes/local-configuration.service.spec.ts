@@ -6,7 +6,7 @@ import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { ContentConfiguration, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesConfigService } from '../portal';
-import { LocalDevelopmentSettingsLocalStorage } from '../storage-service';
+import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
@@ -15,7 +15,7 @@ describe('LocalConfigurationServiceImpl', () => {
   let luigiDataConfigServiceMock: MockProxy<LocalNodesConfigService>;
 
   beforeEach(() => {
-    LocalDevelopmentSettingsLocalStorage.read = jest.fn();
+    localDevelopmentSettingsLocalStorage.read = jest.fn();
     luigiDataConfigServiceMock = mock<LocalNodesConfigService>();
     TestBed.configureTestingModule({
       providers: [
@@ -39,7 +39,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should cache the result of the first call to retrieve content configuration', async () => {
       // Arrange
       const url = 'http://localhost:8080';
-      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
         serviceProviderConfig: {},
         configs: [
@@ -159,7 +159,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock = mock<LuigiNode>();
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
         serviceProviderConfig: {},
         configs: [
@@ -182,7 +182,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
         serviceProviderConfig: {
           a: 'b',
@@ -209,7 +209,7 @@ describe('LocalConfigurationServiceImpl', () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
 
-      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: false,
         serviceProviderConfig: {
           a: 'b',
@@ -240,7 +240,7 @@ describe('LocalConfigurationServiceImpl', () => {
 
     it('should return an empty array for a dev environment if the request fails', async () => {
       getLuigiDataFromConfigurationsSpy.mockRejectedValue();
-      LocalDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
       });
       console.warn = jest.fn();

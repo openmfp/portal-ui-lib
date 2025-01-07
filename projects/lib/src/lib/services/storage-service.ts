@@ -8,7 +8,7 @@ export enum LocalStorageKeys {
   DEVELOPMENT_MODE_CONFIG = 'dev-mode-settings',
 }
 
-export const LocalDevelopmentSettingsLocalStorage = {
+export const localDevelopmentSettingsLocalStorage = {
   read: (localStorageKey?: string): LocalDevelopmentSettings => {
     let localDevelopmentSettingsFromLocalStore: string;
     try {
