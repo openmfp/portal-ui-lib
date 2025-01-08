@@ -5,10 +5,11 @@ A development instance of the portal provides the capability to serve local fron
 
 ## Consuming Local Content Configuration
 
-By default the development instance of the portal will look for a `content-configuration.json` file on your localhost (more precisely the URL `http://localhost:4200/assets/content-configuration.json` is requested).
+If the `Development Mode Active` is turned on, by default, the development instance of the portal will look for a `content-configuration.json` 
+file on your localhost (more precisely the URL `http://localhost:4200/assets/content-configuration.json` is requested).
 The contents of this file are described in great detail at [nodes configuration and content-configuration](readme-nodes-configuration.md) document.
  
-In order to use your local `content-configuration.json` file on other environments (like production), you have to add the `dev-mode-settings` 
+In order to use your local `content-configuration.json` file on other environments (like production), you have to add the `openmfp.settings.localDevelopmentSettings` 
 local storage key like described underneath under "Customize the local extensions".
 
 If the URL `http://localhost:4200/assets/content-configuration.json` returns a valid `content-configuration.json`, the nodes defined in the `content-configuration.json` will overwrite any already existing nodes.
@@ -31,16 +32,16 @@ With Angular, you need to:
 3. Go to the portal development instance
 4. Visit the sites where you frontend is usually shown (now the local running variant is shown)
 
-## Use dev-mode-settings for Customization
+## Use openmfp.settings.localDevelopmentSettings for Customization
 
-If you want to load the local `content-configuration.json` from a different URL or want to specify the `content-configuration.json` directly without serving it on `localhost` you can use the `dev-mode-settings` local storage option:
+If you want to load the local `content-configuration.json` from a different URL or want to specify the `content-configuration.json` directly without serving it on `localhost` you can use the `openmfp.settings.localDevelopmentSettings` local storage option:
 
-To use this feature, you need to set the local storage key `dev-mode-settings` on the portal domain.
+To use this feature, you need to set the local storage key `openmfp.settings.localDevelopmentSettings` on the portal domain.
 You can set these values easily from the console on the portal domain by opening your web console (press F12) and find the `Console` tab.
 Then you can place your settings via this JavaScript snipped:
 
 ```ts
-localStorage.setItem("dev-mode-settings", JSON.stringify({
+localStorage.setItem("openmfp.settings.localDevelopmentSettings", JSON.stringify({
     isActive: true,
     configs: [
         {url:"http://localhost:4200/assets/content-configuration.json"},
@@ -57,7 +58,7 @@ localStorage.setItem("dev-mode-settings", JSON.stringify({
 Note that by setting `isActive` to true, you also can use this feature on any deployment environment within your organization.
 
 You can provide as many `content-configuration.json` in two ways:
-* Provide it via the `url` field. The URL must be accessible from the portal domain and it must serve a valid content configuration
+* Provide it via the `url` field. The URL must be accessible from the portal domain, and it must serve a valid content configuration
 * Provide it via the `data` field. Here you place your content configuration content inline.
 
 
