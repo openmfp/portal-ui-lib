@@ -1,10 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  EntityDefinition,
-  LuigiNode,
-  PortalConfig,
-  ServiceProvider,
-} from '../../models';
+import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { ConfigService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';

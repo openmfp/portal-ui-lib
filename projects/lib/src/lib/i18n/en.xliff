@@ -299,5 +299,109 @@
           <target>Configuration Missing</target>
         </segment>
       </unit>
+      <!-- LOCAL DEVELOPMENT SETTINGS TEXT -->
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR">
+      <segment>
+        <target>Local Development Mode ON</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL">
+      <segment>
+        <target>Development</target>
+      </segment>
+     </unit>
+     <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL">
+      <segment>
+        <target>Local application development</target>
+      </segment>
+     </unit>
+     <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE">
+      <segment>
+        <target>Local Development Mode</target>
+      </segment>
+     </unit>
+     <unit id="LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON">
+      <segment>
+        <target>Add</target>
+      </segment>
+     </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_CLEAR_BUTTON">
+      <segment>
+        <target>Clear</target>
+      </segment>
+     </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_REMOVE_BUTTON">
+      <segment>
+        <target>Remove</target>
+      </segment>
+     </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION">
+       <segment>
+         <target>
+               The following settings enable you to run and test your locally developed
+               application alongside this application. Once Development Mode is
+               active and the correct URLs are provided, your locally
+               running applications will be seamlessly integrated. For more information
+               about local development, please follow the link:
+         </target>
+       </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_LINK">
+        <segment>
+          <target>Local Development Documentation</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE">
+        <segment>
+          <target>Is Development Mode Active?</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_URLS_TITLE">
+        <segment>
+          <target>Configuration URLs</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL">
+        <segment>
+          <target>Provide a URL where the content configuration file is served</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR">
+        <segment>
+          <target>Please enter a valid URL</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE">
+        <segment>
+          <target>Service Provider Config</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION">
+        <segment>
+          <target>
+            The values will be added to every Luigi node's context in the serviceProviderConfig field.
+          </target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL">
+        <segment>
+          <target>Key</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER">
+        <segment>
+          <target>Provide key</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL">
+        <segment>
+          <target>Value</target>
+        </segment>
+      </unit>
+      <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER">
+        <segment>
+          <target>Provide value</target>
+        </segment>
+      </unit>
   </file>
 </xliff>

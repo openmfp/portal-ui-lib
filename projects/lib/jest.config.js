@@ -11,4 +11,7 @@ module.exports = {
       statements: -28,
     },
   },
+  moduleNameMapper: {
+    '^lodash-es(.*)': 'lodash',
+  },
 };

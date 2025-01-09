@@ -91,7 +91,7 @@ describe('NavigationService', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/saved-url'], {
         queryParams: { param: 'value' },
       });
-      expect(localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey)).toBe(
+      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         ''
       );
     });
@@ -126,14 +126,14 @@ describe('NavigationService', () => {
     });
 
     it('should clear current URL from localStorage', () => {
-      localStorage.setItem(LocalStorageKeys.lastNavigationUrlKey, '/test-url');
+      localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, '/test-url');
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
         queryParams: {},
       });
 
-      expect(localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey)).toBe(
+      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         ''
       );
     });
@@ -143,14 +143,14 @@ describe('NavigationService', () => {
       routerEvents.next(navigationEndEvent);
       authEvents.next(AuthEvent.AUTH_EXPIRED);
 
-      expect(localStorage.getItem(LocalStorageKeys.lastNavigationUrlKey)).toBe(
+      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         '/test-url'
       );
     });
 
     it('should get redirect URL from localStorage or return root', () => {
       const savedUrl = '/saved-url';
-      localStorage.setItem(LocalStorageKeys.lastNavigationUrlKey, savedUrl);
+      localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, savedUrl);
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,

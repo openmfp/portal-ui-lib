@@ -289,5 +289,105 @@
           <target>Konfiguration erforderlich</target>
         </segment>
       </unit>
+    <!-- LOCAL DEVELOPMENT SETTINGS TEXT -->
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR">
+      <segment>
+        <target>Lokale Anwendungsentwicklungmodus ON</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL">
+      <segment>
+        <target>Entwicklung</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL">
+      <segment>
+        <target>Lokale Anwendungsentwicklung</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE">
+      <segment>
+        <target>Lokaler Entwicklungsmodus</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON">
+      <segment>
+        <target>Hinzufügen</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_CLEAR_BUTTON">
+      <segment>
+        <target>Löschen</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_REMOVE_BUTTON">
+      <segment>
+        <target>Entfernen</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION">
+      <segment>
+        <target>
+          Die folgenden Einstellungen ermöglichen es Ihnen, Ihre lokal entwickelte Anwendung zusammen mit dieser Anwendung auszuführen und zu testen. Sobald der Entwicklungsmodus aktiv ist und die richtigen URLs bereitgestellt werden, werden Ihre lokal laufenden Anwendungen nahtlos integriert. Für weitere Informationen zur lokalen Entwicklung folgen Sie bitte dem Link:
+        </target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_LINK">
+      <segment>
+        <target>Dokumentation zur lokalen Entwicklung</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE">
+      <segment>
+        <target>Ist der Entwicklungsmodus aktiv?</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_URLS_TITLE">
+      <segment>
+        <target>Konfigurations-URLs</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL">
+      <segment>
+        <target>Geben Sie eine URL an, unter der die Inhaltskonfigurationsdatei bereitgestellt wird</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR">
+      <segment>
+        <target>Bitte geben Sie eine gültige URL ein</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE">
+      <segment>
+        <target>Service-Provider-Konfiguration</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION">
+      <segment>
+        <target>
+          Die Werte werden zu jedem Luigi-Knoten-Kontext im Feld serviceProviderConfig hinzugefügt.
+        </target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL">
+      <segment>
+        <target>Schlüssel</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER">
+      <segment>
+        <target>Schlüssel angeben</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL">
+      <segment>
+        <target>Wert</target>
+      </segment>
+    </unit>
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER">
+      <segment>
+        <target>Wert angeben</target>
+      </segment>
+    </unit>
   </file>
 </xliff>

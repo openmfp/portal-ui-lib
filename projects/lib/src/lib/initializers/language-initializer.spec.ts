@@ -5,7 +5,7 @@ import {
   AuthService,
   I18nService,
   LuigiCoreService,
-  UserSettingsLocalStorage,
+  userSettingsLocalStorage,
 } from '../services';
 
 describe('provideLanguageServices', () => {
@@ -28,7 +28,7 @@ describe('provideLanguageServices', () => {
       fetchTranslationFile: jest.fn(),
     } as unknown as jest.Mocked<I18nService>;
 
-    UserSettingsLocalStorage.read = jest.fn().mockResolvedValue({
+    userSettingsLocalStorage.read = jest.fn().mockResolvedValue({
       frame_userAccount: {
         language: 'de',
       },
@@ -45,7 +45,7 @@ describe('provideLanguageServices', () => {
   it('should correctly initialize the language from user settings if valid', async () => {
     await initFn();
 
-    expect(UserSettingsLocalStorage.read).toHaveBeenCalledWith({
+    expect(userSettingsLocalStorage.read).toHaveBeenCalledWith({
       id: 'user1',
     });
     expect(i18nServiceMock.getValidLanguages).toHaveBeenCalled();
@@ -54,7 +54,7 @@ describe('provideLanguageServices', () => {
   });
 
   it('should fallback to the default language if user language is invalid', async () => {
-    UserSettingsLocalStorage.read = jest.fn().mockResolvedValue({
+    userSettingsLocalStorage.read = jest.fn().mockResolvedValue({
       frame_userAccount: {
         language: 'fr',
       },
@@ -67,7 +67,7 @@ describe('provideLanguageServices', () => {
   });
 
   it('should fallback to the default language if no user language is set', async () => {
-    UserSettingsLocalStorage.read = jest.fn().mockResolvedValue(null);
+    userSettingsLocalStorage.read = jest.fn().mockResolvedValue(null);
 
     await initFn();
 

@@ -1,11 +1,12 @@
-import { ContentConfiguration } from "../../../models";
+import { ContentConfiguration } from './content-configuration';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Config {
   url?: string;
   data?: ContentConfiguration;
 }
-export interface DevModeSettings {
+
+export interface LocalDevelopmentSettings {
+  isActive: boolean;
   configs: Config[];
   serviceProviderConfig: Record<string, string>;
 }
