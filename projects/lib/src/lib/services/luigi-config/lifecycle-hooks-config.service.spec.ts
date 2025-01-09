@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 import { I18nService } from '../i18n.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
@@ -13,6 +14,7 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
+import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
 describe('LifecycleHooksConfigService', () => {
   let service: LifecycleHooksConfigService;
@@ -26,7 +28,7 @@ describe('LifecycleHooksConfigService', () => {
   let navigationConfigServiceMock: jest.Mocked<NavigationConfigService>;
 
   beforeEach(() => {
-    i18nServiceMock = { afterInit: jest.fn() } as any;
+    i18nServiceMock = mock();
     luigiNodesServiceMock = { retrieveChildrenByEntity: jest.fn() } as any;
     luigiCoreServiceMock = {
       getConfig: jest.fn(),
@@ -141,6 +143,89 @@ describe('LifecycleHooksConfigService', () => {
           text: 'There was an error loading the Test App',
           type: 'error',
         });
+      });
+    });
+  });
+
+  describe('Local development ', () => {
+    let mockQuerySelector;
+    let mockCreateElement;
+
+    beforeEach(() => {
+      mockCreateElement = jest.fn();
+      mockQuerySelector = jest.fn();
+
+      document.querySelector = mockQuerySelector;
+      document.createElement = mockCreateElement;
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe('addLocalDevelopmentModeOnIndicator', () => {
+      test('should not add indicator when local development is not active', () => {
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: false });
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        expect(document.querySelector).not.toHaveBeenCalled();
+        expect(document.createElement).not.toHaveBeenCalled();
+      });
+
+      test('should not add indicator when popover control is not found', () => {
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: true });
+        mockQuerySelector.mockReturnValue(null);
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        expect(document.createElement).not.toHaveBeenCalled();
+      });
+
+      test('should not add indicator when popover control has no parent', () => {
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: true });
+        mockQuerySelector.mockReturnValue({ parentNode: null });
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        expect(document.createElement).not.toHaveBeenCalled();
+      });
+
+      test('should add indicator when local development is active and popover exists', () => {
+        const mockSpan = {
+          classList: {
+            add: jest.fn(),
+          },
+          title: '',
+        };
+
+        const mockParentNode = {
+          appendChild: jest.fn(),
+        };
+
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: true });
+        mockQuerySelector.mockReturnValue({ parentNode: mockParentNode });
+        mockCreateElement.mockReturnValue(mockSpan);
+        i18nServiceMock.getTranslation.mockReturnValue('Translated Text');
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        expect(document.querySelector).toHaveBeenCalledWith('#profilePopover');
+        expect(document.createElement).toHaveBeenCalledWith('span');
+        expect(mockSpan.classList.add).toHaveBeenCalledWith(
+          'sap-icon--action-settings',
+          'local-development-settings-indication'
+        );
+        expect(mockSpan.title).toBe('Translated Text');
+        expect(mockParentNode.appendChild).toHaveBeenCalledWith(mockSpan);
       });
     });
   });

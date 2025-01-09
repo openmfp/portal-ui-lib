@@ -87,7 +87,7 @@ export class LifecycleHooksConfigService {
     });
   }
 
-  private addLocalDevelopmentModeOnIndicator() {
+  addLocalDevelopmentModeOnIndicator() {
     if (localDevelopmentSettingsLocalStorage.read()?.isActive) {
       const popoverControl = document.querySelector('#profilePopover');
 
