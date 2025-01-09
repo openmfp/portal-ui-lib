@@ -7,6 +7,6 @@ import { RouterOutlet } from '@angular/router';
   imports: [RouterOutlet],
   templateUrl: './portal.component.html',
   styleUrls: ['./portal.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom,
+  encapsulation: ViewEncapsulation.None,
 })
 export class PortalComponent {}
