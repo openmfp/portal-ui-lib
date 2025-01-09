@@ -14,6 +14,7 @@ import {
   LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { LuigiNode, ClientEnvironment } from '../../models';
+import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
 @Injectable({ providedIn: 'root' })
 export class LifecycleHooksConfigService {
@@ -70,6 +71,7 @@ export class LifecycleHooksConfigService {
         if (this.luigiCoreService.isFeatureToggleActive('btpLayout')) {
           this.luigiCoreService.resetLuigi();
         }
+        this.addLocalDevelopmentModeOnIndicator();
       },
     };
   }
@@ -83,5 +85,23 @@ export class LifecycleHooksConfigService {
       text: $localize`There was an error loading the ${appTitle}`,
       type: 'error',
     });
+  }
+
+  private addLocalDevelopmentModeOnIndicator() {
+    if (localDevelopmentSettingsLocalStorage.read()?.isActive) {
+      const popoverControl = document.querySelector('#profilePopover');
+
+      if (popoverControl && popoverControl.parentNode) {
+        const newSpan = document.createElement('span');
+        newSpan.classList.add(
+          'sap-icon--action-settings',
+          'local-development-settings-indication'
+        );
+        newSpan.title = this.i18nService.getTranslation(
+          'LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR'
+        );
+        popoverControl.parentNode.appendChild(newSpan);
+      }
+    }
   }
 }

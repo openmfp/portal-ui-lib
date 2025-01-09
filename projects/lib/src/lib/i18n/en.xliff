@@ -300,6 +300,11 @@
         </segment>
       </unit>
       <!-- LOCAL DEVELOPMENT SETTINGS TEXT -->
+    <unit id="LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR">
+      <segment>
+        <target>Local Development Mode ON</target>
+      </segment>
+    </unit>
     <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL">
       <segment>
         <target>Development</target>
