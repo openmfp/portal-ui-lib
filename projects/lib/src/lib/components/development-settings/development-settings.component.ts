@@ -48,16 +48,17 @@ export class DevelopmentSettingsComponent implements OnInit {
 
   protected errors = [];
   protected readonly Object = Object;
+  protected readonly defaultConfig = [
+    {
+      url: 'http://localhost:4200/assets/content-configuration-global.json',
+    },
+    {
+      url: 'http://localhost:4200/assets/content-configuration.json',
+    },
+  ];
   protected localDevelopmentSettings: LocalDevelopmentSettings = {
     isActive: false,
-    configs: [
-      {
-        url: 'http://localhost:4200/assets/content-configuration-global.json',
-      },
-      {
-        url: 'http://localhost:4200/assets/content-configuration.json',
-      },
-    ],
+    configs: this.defaultConfig,
     serviceProviderConfig: {},
   };
 
@@ -70,6 +71,14 @@ export class DevelopmentSettingsComponent implements OnInit {
       ) ||
       localDevelopmentSettingsLocalStorage.read() ||
       this.localDevelopmentSettings;
+
+    if (!this.localDevelopmentSettings.configs) {
+      this.localDevelopmentSettings.configs = this.defaultConfig;
+    }
+
+    if (!this.localDevelopmentSettings.serviceProviderConfig) {
+      this.localDevelopmentSettings.serviceProviderConfig = {};
+    }
   }
 
   private saveDevelopmentSettings() {
