@@ -184,7 +184,7 @@ describe('DevelopmentSettingsComponent', () => {
   });
 
   describe('addServiceProviderConfig', () => {
-    it('should add new config when key and value are provided and serviceProviderConfig is nulklk', () => {
+    it('should add new config when key and value are provided and serviceProviderConfig is null', () => {
       component['localDevelopmentSettings'].serviceProviderConfig = null;
 
       component.addServiceProviderConfig('newKey', 'newValue');
