@@ -115,6 +115,17 @@ describe('DevelopmentSettingsComponent', () => {
   });
 
   describe('addUrl', () => {
+    it('should add valid URL to configs even if the configs is empty', () => {
+      component['localDevelopmentSettings'].configs = null;
+      const validUrl = 'https://test.com';
+      component.addUrl(validUrl);
+
+      expect(component['localDevelopmentSettings'].configs).toContainEqual({
+        url: validUrl,
+      });
+      expect(sendCustomMessage).toHaveBeenCalled();
+    });
+
     it('should add valid URL to configs', () => {
       const validUrl = 'https://test.com';
       component.addUrl(validUrl);
@@ -173,6 +184,17 @@ describe('DevelopmentSettingsComponent', () => {
   });
 
   describe('addServiceProviderConfig', () => {
+    it('should add new config when key and value are provided and serviceProviderConfig is nulklk', () => {
+      component['localDevelopmentSettings'].serviceProviderConfig = null;
+
+      component.addServiceProviderConfig('newKey', 'newValue');
+
+      expect(
+        component['localDevelopmentSettings'].serviceProviderConfig['newKey']
+      ).toBe('newValue');
+      expect(sendCustomMessage).toHaveBeenCalled();
+    });
+
     it('should add new config when key and value are provided', () => {
       component.addServiceProviderConfig('newKey', 'newValue');
       expect(

@@ -80,6 +80,10 @@ export class DevelopmentSettingsComponent implements OnInit {
   }
 
   addUrl(url: string) {
+    if (!this.localDevelopmentSettings.configs) {
+      this.localDevelopmentSettings.configs = [];
+    }
+
     if (!this.isValidUrl(url)) {
       this.errors.push('pattern');
     } else if (
@@ -103,6 +107,10 @@ export class DevelopmentSettingsComponent implements OnInit {
   }
 
   addServiceProviderConfig(key: string, value: string) {
+    if (!this.localDevelopmentSettings.serviceProviderConfig) {
+      this.localDevelopmentSettings.serviceProviderConfig = {};
+    }
+
     if (key && value) {
       this.localDevelopmentSettings.serviceProviderConfig[key] = value;
       this.saveDevelopmentSettings();
