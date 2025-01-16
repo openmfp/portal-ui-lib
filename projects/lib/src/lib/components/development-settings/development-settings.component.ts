@@ -73,7 +73,7 @@ export class DevelopmentSettingsComponent implements OnInit {
       this.localDevelopmentSettings;
 
     if (!this.localDevelopmentSettings.configs) {
-      this.localDevelopmentSettings.configs = this.defaultConfig;
+      this.localDevelopmentSettings.configs = [];
     }
 
     if (!this.localDevelopmentSettings.serviceProviderConfig) {

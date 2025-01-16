@@ -77,14 +77,7 @@ describe('DevelopmentSettingsComponent', () => {
 
       expect(component['localDevelopmentSettings']).toEqual({
         isActive: mockSettings.isActive,
-        configs: [
-          {
-            url: 'http://localhost:4200/assets/content-configuration-global.json',
-          },
-          {
-            url: 'http://localhost:4200/assets/content-configuration.json',
-          },
-        ],
+        configs: [],
         serviceProviderConfig: {},
       });
     });
@@ -102,14 +95,7 @@ describe('DevelopmentSettingsComponent', () => {
 
       expect(component['localDevelopmentSettings']).toEqual({
         isActive: mockSettings.isActive,
-        configs: [
-          {
-            url: 'http://localhost:4200/assets/content-configuration-global.json',
-          },
-          {
-            url: 'http://localhost:4200/assets/content-configuration.json',
-          },
-        ],
+        configs: [],
         serviceProviderConfig: {},
       });
     });
