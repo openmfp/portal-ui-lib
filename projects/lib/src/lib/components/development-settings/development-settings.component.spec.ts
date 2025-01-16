@@ -115,7 +115,7 @@ describe('DevelopmentSettingsComponent', () => {
   });
 
   describe('addUrl', () => {
-    it('should add valid URL to configs even if the configs is empty', () => {
+    it('should add valid URL to configs even if the configs is null', () => {
       component['localDevelopmentSettings'].configs = null;
       const validUrl = 'https://test.com';
       component.addUrl(validUrl);
