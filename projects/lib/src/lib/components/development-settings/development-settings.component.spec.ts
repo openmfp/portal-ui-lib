@@ -62,6 +62,44 @@ describe('DevelopmentSettingsComponent', () => {
   });
 
   describe('ngOnInit', () => {
+    it('should initialize with wrong stored settings without config and service null', () => {
+      const mockSettings = {
+        isActive: true,
+        configs: null,
+        serviceProviderConfig: null,
+      };
+
+      localDevelopmentSettingsLocalStorage.read = jest
+        .fn()
+        .mockReturnValue(mockSettings);
+
+      component.ngOnInit();
+
+      expect(component['localDevelopmentSettings']).toEqual({
+        isActive: mockSettings.isActive,
+        configs: [],
+        serviceProviderConfig: {},
+      });
+    });
+
+    it('should initialize with wrong stored settings without config and service missing', () => {
+      const mockSettings = {
+        isActive: true,
+      };
+
+      localDevelopmentSettingsLocalStorage.read = jest
+        .fn()
+        .mockReturnValue(mockSettings);
+
+      component.ngOnInit();
+
+      expect(component['localDevelopmentSettings']).toEqual({
+        isActive: mockSettings.isActive,
+        configs: [],
+        serviceProviderConfig: {},
+      });
+    });
+
     it('should initialize with stored settings when available in DEVELOPMENT_MODE_CONFIG', () => {
       const mockSettings = {
         isActive: true,
