@@ -1,5 +1,203 @@
-import { LuigiNode } from '../../models';
+import { inject, Injectable } from '@angular/core';
+import { isEqual } from 'lodash';
+import { THEMING_SERVICE } from '../../injection-tokens';
+import { LuigiNode, LuigiUserSettings } from '../../models';
+import { I18nService } from '../i18n.service';
+import { AuthService } from '../portal';
+import {
+  localDevelopmentSettingsLocalStorage,
+  userSettingsLocalStorage,
+} from '../storage-service';
+import { ThemingService } from '../theming.service';
 
-export interface UserSettingsConfigService {
-  getUserSettings(luigiNodes: Record<string, LuigiNode[]>): Promise<any>;
+interface UserSettings {
+  frame_userAccount?: any;
+  frame_appearance?: any;
+  frame_development?: any;
+}
+
+@Injectable({ providedIn: 'root' })
+export class UserSettingsConfigService {
+  private luigiThemingService = inject<ThemingService>(THEMING_SERVICE as any, {
+    optional: true,
+  });
+  private authService = inject(AuthService);
+  private i18nService = inject(I18nService);
+
+  async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
+    const userSettingsConfig = this.extractUserSettings(childrenByEntity);
+    const groupsFromNodes = this.getGroupsFromUserSettings(userSettingsConfig);
+
+    let coreGroups = await this.getCoreUserSettingsGroups();
+
+    const userSettings = {
+      userSettingsProfileMenuEntry: {
+        label: 'USERSETTINGSPROFILEMENUENTRY_SETTINGS',
+      },
+      userSettingsDialog: {
+        dismissBtn: 'USERSETTINGSDIALOG_CANCEL',
+        saveBtn: 'USERSETTINGSDIALOG_SAVE',
+        dialogHeader: 'USERSETTINGSDIALOG_HEADER',
+      },
+      userSettingGroups: { ...coreGroups, ...groupsFromNodes },
+
+      readUserSettings: async () =>
+        await userSettingsLocalStorage.read(this.authService.getUser()),
+
+      storeUserSettings: async (settings, previous) => {
+        await userSettingsLocalStorage.store(settings);
+        coreGroups = await this.getCoreUserSettingsGroups();
+        userSettings.userSettingGroups = { ...coreGroups, ...groupsFromNodes };
+
+        this.applyNewTheme(settings, previous);
+        this.changeToSelectedLanguage(settings, previous);
+        this.saveLocalDevelopmentSettings(settings, previous);
+      },
+    };
+    return userSettings;
+  }
+
+  private async getCoreUserSettingsGroups() {
+    const userInfo = this.authService.getUserInfo();
+
+    const settings: UserSettings = {
+      frame_userAccount: {
+        label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
+        sublabel: userInfo.name,
+        icon: `https://avatars.wdf.sap.corp/avatar/${this.authService.getUsername()}`,
+        title: userInfo.name,
+        initials: userInfo.initials,
+        iconClassAttribute:
+          'fd-avatar fd-avatar--s fd-avatar--circle fd-avatar--thumbnail lui-avatar-space',
+        settings: {
+          name: {
+            type: 'string',
+            label: 'USERSETTINGSDIALOG_NAME',
+            isEditable: false,
+          },
+          mail: {
+            type: 'string',
+            label: 'USERSETTINGSDIALOG_EMAIL',
+            isEditable: false,
+          },
+        },
+      },
+    };
+
+    if (this.luigiThemingService) {
+      settings.frame_appearance = {
+        label: 'USERSETTINGSDIALOG__APPEARANCE',
+        sublabel: await this.getSelectedThemeDisplayName(),
+        icon: 'palette',
+        title: 'USERSETTINGSDIALOG__APPEARANCE',
+        viewUrl: '/settings-theming#dxp_disable_loading_indicator',
+        settings: {},
+      };
+    }
+
+    settings.frame_development = {
+      label: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL',
+      sublabel: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL',
+      icon: 'action-settings',
+      iconClassAttribute: localDevelopmentSettingsLocalStorage.read()?.isActive
+        ? 'local-development-settings-icon-active'
+        : '',
+      title: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE',
+      viewUrl: '/development-settings#dxp_disable_loading_indicator',
+    };
+
+    const validLanguages = await this.i18nService.getValidLanguages();
+    if (validLanguages.length > 1) {
+      settings.frame_userAccount.settings['language'] = {
+        type: 'enum',
+        label: 'USERSETTINGSDIALOG_LANGUAGE',
+        options: validLanguages,
+      };
+    }
+
+    return settings;
+  }
+
+  private saveLocalDevelopmentSettings(settings, previous) {
+    const currentLocalDevelopmentSettings =
+      settings?.frame_development?.localDevelopmentSettings;
+    const previousLocalDevelopmentSettings =
+      previous?.frame_development?.localDevelopmentSettings;
+    if (
+      currentLocalDevelopmentSettings &&
+      (!localDevelopmentSettingsLocalStorage.read() ||
+        !isEqual(
+          currentLocalDevelopmentSettings,
+          previousLocalDevelopmentSettings
+        ))
+    ) {
+      localDevelopmentSettingsLocalStorage.store(
+        currentLocalDevelopmentSettings
+      );
+
+      globalThis.location.reload();
+    }
+  }
+
+  private extractUserSettings(
+    childrenByEntity: Record<string, LuigiNode[]>
+  ): LuigiUserSettings[] {
+    const userSettings = Object.values(childrenByEntity)
+      .reduce((accumulator, value) => accumulator.concat(value), [])
+      .reduce((accu, n) => {
+        if (n._userSettingsConfig) {
+          accu.push(n._userSettingsConfig);
+        }
+        return accu;
+      }, [] as LuigiUserSettings[]);
+
+    return userSettings;
+  }
+
+  private changeToSelectedLanguage(settings, previous) {
+    if (
+      settings?.frame_userAccount?.language &&
+      previous?.frame_userAccount?.language !==
+        settings?.frame_userAccount?.language
+    ) {
+      globalThis.location.reload();
+    }
+  }
+
+  private applyNewTheme(settings, previous) {
+    if (
+      settings?.frame_appearance?.selectedTheme &&
+      previous?.frame_appearance?.selectedTheme !==
+        settings?.frame_appearance?.selectedTheme
+    ) {
+      this.luigiThemingService?.applyTheme(
+        settings.frame_appearance.selectedTheme
+      );
+    }
+  }
+
+  private getGroupsFromUserSettings(luigiUserSettings: LuigiUserSettings[]) {
+    const settingsGroups = {};
+    luigiUserSettings.forEach((userConfig) => {
+      if (userConfig?.groups) {
+        Object.keys(userConfig.groups).forEach((groupId) => {
+          const groupConfig = userConfig.groups[groupId];
+          settingsGroups[groupId] = groupConfig;
+        });
+      }
+    });
+
+    return settingsGroups;
+  }
+
+  private async getSelectedThemeDisplayName(): Promise<string> {
+    const user = this.authService.getUser();
+    const userSettings = (await userSettingsLocalStorage.read(user)) as any;
+    const selectedTheme =
+      userSettings?.frame_appearance?.selectedTheme ||
+      this.luigiThemingService.getDefaultThemeId();
+    return this.luigiThemingService
+      .getAvailableThemes()
+      .find((t) => t.id === selectedTheme)?.name;
+  }
 }

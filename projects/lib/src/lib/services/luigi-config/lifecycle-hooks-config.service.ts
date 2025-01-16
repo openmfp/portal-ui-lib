@@ -11,7 +11,6 @@ import { UserSettingsConfigService } from './user-settings-config.service';
 import {
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { LuigiNode, ClientEnvironment } from '../../models';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
@@ -24,11 +23,9 @@ export class LifecycleHooksConfigService {
     private luigiCoreService: LuigiCoreService,
     private routingConfigService: RoutingConfigService,
     private navigationConfigService: NavigationConfigService,
+    private userSettingsConfigService: UserSettingsConfigService,
     @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
     private staticSettingsConfigService: StaticSettingsConfigService,
-    @Optional()
-    @Inject(LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
-    private userSettingsConfigService: UserSettingsConfigService,
     @Optional()
     @Inject(LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN)
     private globalSearchConfigService: GlobalSearchConfigService
@@ -60,7 +57,7 @@ export class LifecycleHooksConfigService {
             await this.staticSettingsConfigService.getStaticSettingsConfig(),
           routing: this.routingConfigService.getRoutingConfig(),
           userSettings:
-            await this.userSettingsConfigService?.getUserSettings(
+            await this.userSettingsConfigService.getUserSettings(
               childrenByEntity
             ),
           globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
