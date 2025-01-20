@@ -27,6 +27,7 @@ export class LocalConfigurationServiceImpl
   private http = inject(HttpClient);
   private luigiConfigService = inject(LocalNodesConfigService);
   private cachedConfigurations: ContentConfiguration[];
+  private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     const localDevelopmentSettings =
@@ -34,6 +35,10 @@ export class LocalConfigurationServiceImpl
 
     if (!localDevelopmentSettings?.isActive) {
       return [];
+    }
+
+    if (this.cachedLocalNodes) {
+      return this.cachedLocalNodes;
     }
 
     try {
@@ -52,6 +57,7 @@ export class LocalConfigurationServiceImpl
         };
       });
 
+      this.cachedLocalNodes = luigiNodes;
       return luigiNodes;
     } catch (e) {
       console.warn(`Failed to retrieve local luigi config.`, e);
