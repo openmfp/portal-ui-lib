@@ -185,7 +185,7 @@ export class LocalConfigurationServiceImpl
               (contentConfiguration: ContentConfiguration) =>
                 ({
                   ...contentConfiguration,
-                  devUrl: config.url,
+                  url: config.url,
                 }) as ContentConfiguration
             )
           )
