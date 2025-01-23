@@ -26,7 +26,6 @@ export class LocalConfigurationServiceImpl
 {
   private http = inject(HttpClient);
   private luigiConfigService = inject(LocalNodesConfigService);
-  private cachedConfigurations: ContentConfiguration[];
   private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
@@ -174,15 +173,12 @@ export class LocalConfigurationServiceImpl
   private async getLocalConfigurations(
     localDevelopmentSettings: LocalDevelopmentSettings
   ): Promise<ContentConfiguration[]> {
-    if (this.cachedConfigurations) {
-      return this.cachedConfigurations;
-    }
 
-    this.cachedConfigurations = localDevelopmentSettings.configs
+    let configurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
 
-    this.cachedConfigurations = (
+    configurations = (
       await Promise.allSettled(
         localDevelopmentSettings.configs
           .filter((config) => config.url)
@@ -202,8 +198,8 @@ export class LocalConfigurationServiceImpl
           result.status === 'fulfilled'
       )
       .map((result) => result.value)
-      .concat(this.cachedConfigurations);
+      .concat(configurations);
 
-    return this.cachedConfigurations;
+    return configurations;
   }
 }
