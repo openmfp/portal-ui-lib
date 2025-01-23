@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { I18nService } from '../i18n.service';
 import { IframeService } from './iframe.service';
 
 export interface StaticSettingsConfigService {
@@ -12,6 +13,7 @@ export interface StaticSettingsConfigService {
 export class StaticSettingsConfigServiceImpl
   implements StaticSettingsConfigService
 {
+  private i18nService = inject(I18nService);
   private iframeService = inject(IframeService);
 
   getInitialStaticSettingsConfig() {
@@ -35,6 +37,7 @@ export class StaticSettingsConfigServiceImpl
         hideAutomatically: true,
       },
       iframeCreationInterceptor: this.iframeService.iFrameCreationInterceptor(),
+      customTranslationImplementation: this.i18nService,
     };
   }
 

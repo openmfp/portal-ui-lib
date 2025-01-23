@@ -14,6 +14,7 @@ import {
   NodeAccessHandlingService,
   NodeChangeHookConfigService,
   StaticSettingsConfigServiceImpl,
+  ThemingService,
   UserProfileConfigService,
   UserSettingsConfigService,
 } from './services';
@@ -148,8 +149,14 @@ describe('Provide Portal', () => {
       }
     }
 
-    class CustomUserSettingsConfigService implements UserSettingsConfigService {
-      getUserSettings(luigiNodes: Record<string, LuigiNode[]>): Promise<any> {
+    class CustomThemingService implements ThemingService {
+      applyTheme(id: string, reset?: boolean): void {
+        throw new Error('Method not implemented.');
+      }
+      getDefaultThemeId(): string {
+        throw new Error('Method not implemented.');
+      }
+      getAvailableThemes(): services.Theme[] {
         throw new Error('Method not implemented.');
       }
     }
@@ -199,7 +206,6 @@ describe('Provide Portal', () => {
       nodeAccessHandlingService: CustomNodeAccessService,
       nodeChangeHookConfigService: CustomNodeChangeHookService,
       globalSearchConfigService: CustomGlobalSearchConfigService,
-      userSettingsConfigService: CustomUserSettingsConfigService,
       appSwitcherConfigService: CustomAppSwitcherConfigService,
       luigiExtendedGlobalContextConfigService:
         CustomLuigiExtendedGlobalContextConfigService,
@@ -207,6 +213,7 @@ describe('Provide Portal', () => {
       userProfileConfigService: CustomUserProfileConfigService,
       luigiBreadcrumbConfigService: CustomLuigiBreadcrumbConfigService,
       errorComponentConfig: { '404': {} } as any,
+      themingService: CustomThemingService,
     };
 
     providePortal(options);
@@ -245,8 +252,8 @@ describe('Provide Portal', () => {
     });
 
     expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CustomUserSettingsConfigService,
+      provide: tokens.THEMING_SERVICE,
+      useClass: CustomThemingService,
     });
 
     expect(providersArg).toContainEqual({

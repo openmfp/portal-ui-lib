@@ -12,7 +12,6 @@ import { GlobalSearchConfigService } from './global-search-config.service';
 import {
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
@@ -59,12 +58,12 @@ describe('LifecycleHooksConfigService', () => {
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
         { provide: RoutingConfigService, useValue: routingConfigServiceMock },
         {
-          provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-          useValue: staticSettingsConfigServiceMock,
+          provide: UserSettingsConfigService,
+          useValue: userSettingsConfigServiceMock,
         },
         {
-          provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-          useValue: userSettingsConfigServiceMock,
+          provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+          useValue: staticSettingsConfigServiceMock,
         },
         {
           provide: LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,

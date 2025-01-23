@@ -26,8 +26,8 @@ import {
   LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   ERROR_COMPONENT_CONFIG,
+  THEMING_SERVICE,
 } from './injection-tokens';
 import { ErrorComponentConfig } from './models';
 import { portalRouts } from './portal-routing';
@@ -48,6 +48,7 @@ import {
   UserProfileConfigService,
   UserSettingsConfigService,
   LocalConfigurationServiceImpl,
+  ThemingService,
 } from './services';
 import { CustomReuseStrategy } from './utilities';
 
@@ -93,6 +94,9 @@ export interface PortalOptions {
 
   /** Provide a error configuration for error component to override the default values **/
   errorComponentConfig?: Record<string, ErrorComponentConfig>;
+
+  /** Provide a error configuration for error component to override the default values **/
+  themingService?: Type<ThemingService>;
 }
 
 export function providePortal(
@@ -189,10 +193,10 @@ const addOptionalProviders = (
     });
   }
 
-  if (options.userSettingsConfigService) {
+  if (options.themingService) {
     providers.push({
-      provide: LUIGI_USER_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.userSettingsConfigService,
+      provide: THEMING_SERVICE,
+      useClass: options.themingService,
     });
   }
 
