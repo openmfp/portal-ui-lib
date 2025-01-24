@@ -277,6 +277,23 @@ export class NodesProcessingService {
       }
     }
 
+    if (entityNode.defineEntity) {
+      console.log("Define Entity");
+      if (!entityNode.navHeader) {
+        entityNode.navHeader = {};
+      }
+      entityNode.navHeader.renderer = (containerElement: HTMLElement, nodeItem: LuigiNode, clickHandler: Function, navHeader: any ) => {
+        if (!containerElement || !navHeader.label) {
+          return;
+        }
+
+        const label = navHeader.label;
+        const type = nodeItem.defineEntity.label ? nodeItem.defineEntity.label : "Extension";
+        
+        containerElement.innerHTML = `${label}: ${type}`
+      }
+    }
+
     if (!children) {
       return [];
     }
