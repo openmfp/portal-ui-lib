@@ -8,6 +8,7 @@ import { THEMING_SERVICE } from '../../injection-tokens';
 import {
   userSettingsLocalStorage,
   localDevelopmentSettingsLocalStorage,
+  LocalStorageKeys,
 } from '../storage-service';
 import { LuigiNode, LuigiUserSettings } from '../../models';
 import { mock } from 'jest-mock-extended';

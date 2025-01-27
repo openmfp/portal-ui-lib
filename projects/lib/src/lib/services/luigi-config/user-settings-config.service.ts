@@ -47,9 +47,9 @@ export class UserSettingsConfigService {
       userSettingGroups: { ...coreGroups, ...groupsFromNodes },
 
       readUserSettings: async () => {
-        const setting: any = await userSettingsLocalStorage.read(
-          this.authService.getUser()
-        );
+        const setting: any =
+          (await userSettingsLocalStorage.read(this.authService.getUser())) ||
+          {};
         setting.frame_versions = this.versionsConfig;
         return setting;
       },
