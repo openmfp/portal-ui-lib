@@ -3,13 +3,14 @@ import { UserSettingsConfigService } from './user-settings-config.service';
 import { ThemingService } from '../theming.service';
 import { AuthService } from '../portal';
 import { I18nService } from '../i18n.service';
-import { THEMING_SERVICE } from '../../injection-tokens';
+import { THEMING_SERVICE, VERSIONS_CONFIG } from '../../injection-tokens';
 import {
   userSettingsLocalStorage,
   localDevelopmentSettingsLocalStorage,
 } from '../storage-service';
 import { LuigiNode, LuigiUserSettings } from '../../models';
 import { mock } from 'jest-mock-extended';
+import { VersionsConfig } from '../../utilities';
 
 jest.mock('../storage-service');
 
@@ -18,6 +19,7 @@ describe('UserSettingsConfigService', () => {
   const themingServiceMock = mock<ThemingService>();
   const authServiceMock = mock<AuthService>();
   const i18nServiceMock = mock<I18nService>();
+  let versionsConfig: VersionsConfig = {};
 
   beforeEach(() => {
     const originalLocation = window.location;
@@ -31,6 +33,7 @@ describe('UserSettingsConfigService', () => {
       providers: [
         UserSettingsConfigService,
         { provide: THEMING_SERVICE, useValue: themingServiceMock },
+        { provide: VERSIONS_CONFIG, useValue: versionsConfig },
         { provide: AuthService, useValue: authServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
       ],
@@ -68,6 +71,7 @@ describe('UserSettingsConfigService', () => {
       expect(result.userSettingGroups.frame_userAccount).toBeDefined();
       expect(result.userSettingGroups.frame_appearance).toBeDefined();
       expect(result.userSettingGroups.frame_development).toBeDefined();
+      expect(result.userSettingGroups.frame_versions).toBeDefined();
     });
 
     it('should extract user settings from children entities', async () => {

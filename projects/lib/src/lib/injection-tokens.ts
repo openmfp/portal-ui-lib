@@ -1,5 +1,3 @@
-import { ThemingService } from './services';
-
 export const ERROR_COMPONENT_CONFIG = 'OPENMFP_ERROR_COMPONENT_CONFIG';
 
 export const THEMING_SERVICE = 'OPENMFP_THEMING_SERVICE';
