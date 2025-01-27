@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
 import { ThemingService } from '../theming.service';
 import { AuthService } from '../portal';
 import { I18nService } from '../i18n.service';
-import { THEMING_SERVICE, VERSIONS_CONFIG } from '../../injection-tokens';
+import { THEMING_SERVICE } from '../../injection-tokens';
 import {
   userSettingsLocalStorage,
   localDevelopmentSettingsLocalStorage,
 } from '../storage-service';
 import { LuigiNode, LuigiUserSettings } from '../../models';
 import { mock } from 'jest-mock-extended';
-import { VersionsConfig } from '../../utilities';
 
 jest.mock('../storage-service');
 
@@ -19,7 +19,7 @@ describe('UserSettingsConfigService', () => {
   const themingServiceMock = mock<ThemingService>();
   const authServiceMock = mock<AuthService>();
   const i18nServiceMock = mock<I18nService>();
-  let versionsConfig: VersionsConfig = {};
+  const dependenciesVersionsService = mock<DependenciesVersionsService>();
 
   beforeEach(() => {
     const originalLocation = window.location;
@@ -29,11 +29,16 @@ describe('UserSettingsConfigService', () => {
       reload: jest.fn(),
     };
 
+    dependenciesVersionsService.read.mockResolvedValue({});
+
     TestBed.configureTestingModule({
       providers: [
         UserSettingsConfigService,
         { provide: THEMING_SERVICE, useValue: themingServiceMock },
-        { provide: VERSIONS_CONFIG, useValue: versionsConfig },
+        {
+          provide: DependenciesVersionsService,
+          useValue: dependenciesVersionsService,
+        },
         { provide: AuthService, useValue: authServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
       ],
