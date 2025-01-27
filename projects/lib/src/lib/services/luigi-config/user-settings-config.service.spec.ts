@@ -80,6 +80,18 @@ describe('UserSettingsConfigService', () => {
       expect(result.userSettingGroups.frame_versions).toBeDefined();
     });
 
+    it('should return user settings configuration with default versions', async () => {
+      const childrenByEntity: Record<string, LuigiNode[]> = {};
+      dependenciesVersionsService.read.mockRejectedValue('error');
+
+      const result = await service.getUserSettings(childrenByEntity);
+
+      expect(result.userSettingsDialog).toBeDefined();
+      expect(service['versionsConfig']).toEqual({
+        browser: jasmine.any(String),
+      });
+    });
+
     it('should extract user settings from children entities', async () => {
       const mockUserSettings: LuigiUserSettings = {
         groups: {

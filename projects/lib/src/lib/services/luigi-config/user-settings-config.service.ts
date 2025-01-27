@@ -26,7 +26,7 @@ export class UserSettingsConfigService {
   private authService = inject(AuthService);
   private i18nService = inject(I18nService);
   private dependenciesVersionsService = inject(DependenciesVersionsService);
-  private versionsConfig: Record<string, string>;
+  private versionsConfig: Record<string, string> = {};
 
   async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
     const userSettingsConfig = this.extractUserSettings(childrenByEntity);
@@ -218,10 +218,6 @@ export class UserSettingsConfigService {
   }
 
   private addInfoSettings(settings: UserSettings) {
-    if (!this.versionsConfig) {
-      return;
-    }
-
     const settingsTransformed =
       this.dependenciesVersionsService.transformVersionsConfig(
         this.versionsConfig
