@@ -289,6 +289,22 @@
           <target>Konfiguration erforderlich</target>
         </segment>
       </unit>
+    <!-- ABOUT SETTINGS TEXT  -->
+    <unit id="INFO_SETTINGS_DIALOG_LABEL">
+      <segment>
+        <target>Über</target>
+      </segment>
+    </unit>
+    <unit id="INFO_SETTINGS_DIALOG_SUBLABEL">
+      <segment>
+        <target>Informationen über die Anwendung</target>
+      </segment>
+    </unit>
+    <unit id="INFO_SETTINGS_DIALOG_TITLE">
+      <segment>
+        <target>Über</target>
+      </segment>
+    </unit>
     <!-- LOCAL DEVELOPMENT SETTINGS TEXT -->
     <unit id="LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR">
       <segment>
