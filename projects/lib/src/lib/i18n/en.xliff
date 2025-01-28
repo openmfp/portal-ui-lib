@@ -299,6 +299,22 @@
           <target>Configuration Missing</target>
         </segment>
       </unit>
+    <!-- ABOUT SETTINGS TEXT -->
+    <unit id="INFO_SETTINGS_DIALOG_LABEL">
+      <segment>
+        <target>About</target>
+      </segment>
+    </unit>
+    <unit id="INFO_SETTINGS_DIALOG_SUBLABEL">
+      <segment>
+        <target>Information about application</target>
+      </segment>
+    </unit>
+    <unit id="INFO_SETTINGS_DIALOG_TITLE">
+      <segment>
+        <target>About</target>
+      </segment>
+    </unit>
       <!-- LOCAL DEVELOPMENT SETTINGS TEXT -->
     <unit id="LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR">
       <segment>
