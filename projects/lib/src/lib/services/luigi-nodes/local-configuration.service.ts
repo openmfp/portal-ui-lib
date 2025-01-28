@@ -174,11 +174,11 @@ export class LocalConfigurationServiceImpl
     localDevelopmentSettings: LocalDevelopmentSettings
   ): Promise<ContentConfiguration[]> {
 
-    let configurations = localDevelopmentSettings.configs
+    const initialConfigurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
 
-    configurations = (
+    const configurations = (
       await Promise.allSettled(
         localDevelopmentSettings.configs
           .filter((config) => config.url)
@@ -198,7 +198,7 @@ export class LocalConfigurationServiceImpl
           result.status === 'fulfilled'
       )
       .map((result) => result.value)
-      .concat(configurations);
+      .concat(initialConfigurations);
 
     return configurations;
   }
