@@ -16,7 +16,6 @@ import {
   StaticSettingsConfigServiceImpl,
   ThemingService,
   UserProfileConfigService,
-  UserSettingsConfigService,
 } from './services';
 import * as services from './services';
 import { Context } from '@luigi-project/client';

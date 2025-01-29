@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { isEqual } from 'lodash';
 import { THEMING_SERVICE } from '../../injection-tokens';
 import { LuigiNode, LuigiUserSettings } from '../../models';
+import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { AuthService } from '../portal';
 import {
@@ -14,6 +15,7 @@ interface UserSettings {
   frame_userAccount?: any;
   frame_appearance?: any;
   frame_development?: any;
+  frame_versions?: any;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,10 +25,13 @@ export class UserSettingsConfigService {
   });
   private authService = inject(AuthService);
   private i18nService = inject(I18nService);
+  private dependenciesVersionsService = inject(DependenciesVersionsService);
+  private versionsConfig: Record<string, string> = {};
 
   async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
     const userSettingsConfig = this.extractUserSettings(childrenByEntity);
     const groupsFromNodes = this.getGroupsFromUserSettings(userSettingsConfig);
+    this.versionsConfig = await this.readDependenciesVersions();
 
     let coreGroups = await this.getCoreUserSettingsGroups();
 
@@ -41,14 +46,16 @@ export class UserSettingsConfigService {
       },
       userSettingGroups: { ...coreGroups, ...groupsFromNodes },
 
-      readUserSettings: async () =>
-        await userSettingsLocalStorage.read(this.authService.getUser()),
+      readUserSettings: async () => {
+        const setting: any =
+          (await userSettingsLocalStorage.read(this.authService.getUser())) ||
+          {};
+        setting.frame_versions = this.versionsConfig;
+        return setting;
+      },
 
       storeUserSettings: async (settings, previous) => {
-        await userSettingsLocalStorage.store(settings);
-        coreGroups = await this.getCoreUserSettingsGroups();
-        userSettings.userSettingGroups = { ...coreGroups, ...groupsFromNodes };
-
+        userSettingsLocalStorage.store(settings);
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
         this.saveLocalDevelopmentSettings(settings, previous);
@@ -58,62 +65,11 @@ export class UserSettingsConfigService {
   }
 
   private async getCoreUserSettingsGroups() {
-    const userInfo = this.authService.getUserInfo();
-
-    const settings: UserSettings = {
-      frame_userAccount: {
-        label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
-        sublabel: userInfo.name,
-        icon: `https://avatars.wdf.sap.corp/avatar/${this.authService.getUsername()}`,
-        title: userInfo.name,
-        initials: userInfo.initials,
-        iconClassAttribute:
-          'fd-avatar fd-avatar--s fd-avatar--circle fd-avatar--thumbnail lui-avatar-space',
-        settings: {
-          name: {
-            type: 'string',
-            label: 'USERSETTINGSDIALOG_NAME',
-            isEditable: false,
-          },
-          mail: {
-            type: 'string',
-            label: 'USERSETTINGSDIALOG_EMAIL',
-            isEditable: false,
-          },
-        },
-      },
-    };
-
-    if (this.luigiThemingService) {
-      settings.frame_appearance = {
-        label: 'USERSETTINGSDIALOG__APPEARANCE',
-        sublabel: await this.getSelectedThemeDisplayName(),
-        icon: 'palette',
-        title: 'USERSETTINGSDIALOG__APPEARANCE',
-        viewUrl: '/settings-theming#dxp_disable_loading_indicator',
-        settings: {},
-      };
-    }
-
-    settings.frame_development = {
-      label: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL',
-      sublabel: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL',
-      icon: 'action-settings',
-      iconClassAttribute: localDevelopmentSettingsLocalStorage.read()?.isActive
-        ? 'local-development-settings-icon-active'
-        : '',
-      title: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE',
-      viewUrl: '/development-settings#dxp_disable_loading_indicator',
-    };
-
-    const validLanguages = await this.i18nService.getValidLanguages();
-    if (validLanguages.length > 1) {
-      settings.frame_userAccount.settings['language'] = {
-        type: 'enum',
-        label: 'USERSETTINGSDIALOG_LANGUAGE',
-        options: validLanguages,
-      };
-    }
+    const settings: UserSettings = {};
+    await this.addUserSettings(settings);
+    await this.addThemingSettings(settings);
+    this.addLocalDevelopmentSettings(settings);
+    this.addInfoSettings(settings);
 
     return settings;
   }
@@ -199,5 +155,91 @@ export class UserSettingsConfigService {
     return this.luigiThemingService
       .getAvailableThemes()
       .find((t) => t.id === selectedTheme)?.name;
+  }
+
+  private async addThemingSettings(settings: UserSettings) {
+    if (this.luigiThemingService) {
+      settings.frame_appearance = {
+        label: 'USERSETTINGSDIALOG__APPEARANCE',
+        sublabel: await this.getSelectedThemeDisplayName(),
+        icon: 'palette',
+        title: 'USERSETTINGSDIALOG__APPEARANCE',
+        viewUrl: '/settings-theming#dxp_disable_loading_indicator',
+        settings: {},
+      };
+    }
+  }
+
+  private addLocalDevelopmentSettings(settings: UserSettings) {
+    settings.frame_development = {
+      label: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL',
+      sublabel: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL',
+      icon: 'action-settings',
+      iconClassAttribute: localDevelopmentSettingsLocalStorage.read()?.isActive
+        ? 'local-development-settings-icon-active'
+        : '',
+      title: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE',
+      viewUrl: '/development-settings#dxp_disable_loading_indicator',
+    };
+  }
+
+  private async addUserSettings(settings: UserSettings) {
+    const userInfo = this.authService.getUserInfo();
+    settings.frame_userAccount = {
+      label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
+      sublabel: userInfo.name,
+      icon: `https://avatars.wdf.sap.corp/avatar/${this.authService.getUsername()}`,
+      title: userInfo.name,
+      initials: userInfo.initials,
+      iconClassAttribute:
+        'fd-avatar fd-avatar--s fd-avatar--circle fd-avatar--thumbnail lui-avatar-space',
+      settings: {
+        name: {
+          type: 'string',
+          label: 'USERSETTINGSDIALOG_NAME',
+          isEditable: false,
+        },
+        mail: {
+          type: 'string',
+          label: 'USERSETTINGSDIALOG_EMAIL',
+          isEditable: false,
+        },
+      },
+    };
+
+    const validLanguages = await this.i18nService.getValidLanguages();
+    if (validLanguages.length > 1) {
+      settings.frame_userAccount.settings['language'] = {
+        type: 'enum',
+        label: 'USERSETTINGSDIALOG_LANGUAGE',
+        options: validLanguages,
+      };
+    }
+  }
+
+  private addInfoSettings(settings: UserSettings) {
+    const settingsTransformed =
+      this.dependenciesVersionsService.transformVersionsConfig(
+        this.versionsConfig
+      );
+
+    settings.frame_versions = {
+      label: 'INFO_SETTINGS_DIALOG_LABEL',
+      sublabel: 'INFO_SETTINGS_DIALOG_SUBLABEL',
+      title: 'INFO_SETTINGS_DIALOG_TITLE',
+      icon: 'message-information',
+      settings: settingsTransformed,
+    };
+  }
+
+  private async readDependenciesVersions(): Promise<Record<string, string>> {
+    const versions = { browser: navigator.userAgent };
+    try {
+      return {
+        ...(await this.dependenciesVersionsService.read()),
+        ...versions,
+      };
+    } catch (error) {}
+    return versions;
   }
 }

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
 import { ThemingService } from '../theming.service';
 import { AuthService } from '../portal';
@@ -7,6 +8,7 @@ import { THEMING_SERVICE } from '../../injection-tokens';
 import {
   userSettingsLocalStorage,
   localDevelopmentSettingsLocalStorage,
+  LocalStorageKeys,
 } from '../storage-service';
 import { LuigiNode, LuigiUserSettings } from '../../models';
 import { mock } from 'jest-mock-extended';
@@ -18,6 +20,7 @@ describe('UserSettingsConfigService', () => {
   const themingServiceMock = mock<ThemingService>();
   const authServiceMock = mock<AuthService>();
   const i18nServiceMock = mock<I18nService>();
+  const dependenciesVersionsService = mock<DependenciesVersionsService>();
 
   beforeEach(() => {
     const originalLocation = window.location;
@@ -27,10 +30,16 @@ describe('UserSettingsConfigService', () => {
       reload: jest.fn(),
     };
 
+    dependenciesVersionsService.read.mockResolvedValue({});
+
     TestBed.configureTestingModule({
       providers: [
         UserSettingsConfigService,
         { provide: THEMING_SERVICE, useValue: themingServiceMock },
+        {
+          provide: DependenciesVersionsService,
+          useValue: dependenciesVersionsService,
+        },
         { provide: AuthService, useValue: authServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
       ],
@@ -68,6 +77,19 @@ describe('UserSettingsConfigService', () => {
       expect(result.userSettingGroups.frame_userAccount).toBeDefined();
       expect(result.userSettingGroups.frame_appearance).toBeDefined();
       expect(result.userSettingGroups.frame_development).toBeDefined();
+      expect(result.userSettingGroups.frame_versions).toBeDefined();
+    });
+
+    it('should return user settings configuration with default versions', async () => {
+      const childrenByEntity: Record<string, LuigiNode[]> = {};
+      dependenciesVersionsService.read.mockRejectedValue('error');
+
+      const result = await service.getUserSettings(childrenByEntity);
+
+      expect(result.userSettingsDialog).toBeDefined();
+      expect(service['versionsConfig']).toEqual({
+        browser: jasmine.any(String),
+      });
     });
 
     it('should extract user settings from children entities', async () => {

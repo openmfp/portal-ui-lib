@@ -17,3 +17,7 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
   height: 12px;
   font-size: 12px;
 }
+
+.fd-container.fd-form-layout-grid-container .fd-row .fd-col {
+  white-space: inherit !important;
+}
