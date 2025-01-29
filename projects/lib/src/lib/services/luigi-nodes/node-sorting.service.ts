@@ -23,6 +23,13 @@ export class NodeSortingService {
       return 1;
     }
 
+    // if orders are equal -> sort alphabetically by label
+    if (a.label > b.label) {
+      return -1;
+    } else if (a.label < b.label) {
+      return 1;
+    }
+
     return 0;
   }
 
