@@ -1,11 +1,10 @@
 import { LuigiNode } from './luigi';
 
 export interface ServiceProvider {
-  nodes: LuigiNode[];
-  config: Record<string, string>;
-  installationData?: Record<string, string>;
-  isMandatoryExtension?: boolean;
+  name: string;
+  displayName: string;
   creationTimestamp: string;
+  nodes: LuigiNode[];
 }
 
 export interface EntityConfig {
