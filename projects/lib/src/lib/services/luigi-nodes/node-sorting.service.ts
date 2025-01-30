@@ -23,7 +23,8 @@ export class NodeSortingService {
       return 1;
     }
 
-    return 0;
+    // if orders are equal -> sort alphabetically by label
+    return a.label?.localeCompare(b.label);
   }
 
   appendChildrenToSlot(

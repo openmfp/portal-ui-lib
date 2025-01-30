@@ -312,4 +312,35 @@ describe('NodeSortingService', () => {
       'ex2_fifthnode',
     ]);
   });
+
+  it('should sort nodes alphabetically by label if orders are equal', () => {
+    const nodeA = { label: 'alpha', order: '1' } as LuigiNode;
+    const nodeB = { label: 'beta', order: '1' } as LuigiNode;
+    const nodeC = { label: 'gamma', order: '1' } as LuigiNode;
+
+    const nodes = [nodeC, nodeA, nodeB];
+    nodes.sort(service.nodeComparison);
+
+    expect(nodes).toEqual([nodeA, nodeB, nodeC]);
+  });
+
+  it('should sort nodes correctly using sortNodes method', () => {
+    const nodes = [
+      { label: 'gamma', order: '2' } as LuigiNode,
+      { label: 'alpha', order: '1' } as LuigiNode,
+      { label: 'beta', order: '2' } as LuigiNode,
+      { label: 'delta', order: '3' } as LuigiNode,
+      { label: 'epsilon' } as LuigiNode, // default order '999'
+    ];
+
+    const sortedNodes = service.sortNodes(nodes);
+
+    expect(sortedNodes).toEqual([
+      { label: 'alpha', order: '1' },
+      { label: 'beta', order: '2' },
+      { label: 'gamma', order: '2' },
+      { label: 'delta', order: '3' },
+      { label: 'epsilon', order: '999' },
+    ]);
+  });
 });
