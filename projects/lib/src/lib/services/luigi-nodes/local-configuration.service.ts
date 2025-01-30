@@ -26,7 +26,7 @@ export class LocalConfigurationServiceImpl
 {
   private http = inject(HttpClient);
   private luigiConfigService = inject(LocalNodesConfigService);
-  private cachedConfigurations: ContentConfiguration[];
+  private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     const localDevelopmentSettings =
@@ -34,6 +34,10 @@ export class LocalConfigurationServiceImpl
 
     if (!localDevelopmentSettings?.isActive) {
       return [];
+    }
+
+    if (this.cachedLocalNodes) {
+      return this.cachedLocalNodes;
     }
 
     try {
@@ -52,6 +56,7 @@ export class LocalConfigurationServiceImpl
         };
       });
 
+      this.cachedLocalNodes = luigiNodes;
       return luigiNodes;
     } catch (e) {
       console.warn(`Failed to retrieve local luigi config.`, e);
@@ -168,15 +173,12 @@ export class LocalConfigurationServiceImpl
   private async getLocalConfigurations(
     localDevelopmentSettings: LocalDevelopmentSettings
   ): Promise<ContentConfiguration[]> {
-    if (this.cachedConfigurations) {
-      return this.cachedConfigurations;
-    }
 
-    this.cachedConfigurations = localDevelopmentSettings.configs
+    const initialConfigurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
 
-    this.cachedConfigurations = (
+    const configurations = (
       await Promise.allSettled(
         localDevelopmentSettings.configs
           .filter((config) => config.url)
@@ -196,8 +198,8 @@ export class LocalConfigurationServiceImpl
           result.status === 'fulfilled'
       )
       .map((result) => result.value)
-      .concat(this.cachedConfigurations);
+      .concat(initialConfigurations);
 
-    return this.cachedConfigurations;
+    return configurations;
   }
 }
