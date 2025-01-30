@@ -23,7 +23,7 @@ describe('NavigationConfigService', () => {
     configService = TestBed.inject(ConfigService);
 
     const portalConfig: PortalConfig = {
-      providers: [{ nodes: [], config: {}, creationTimestamp: '' }],
+      providers: [{ nodes: [], creationTimestamp: '' }],
     } as PortalConfig;
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);

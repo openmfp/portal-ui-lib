@@ -125,11 +125,11 @@ export class NodesProcessingService {
           directChildren
             .filter((child) => this.visibleForContext(ctx, child))
             .map(
-              async (child) =>
-                (await this.nodeAccessHandlingService?.nodeAccessHandling(
+              (child) =>
+                this.nodeAccessHandlingService?.nodeAccessHandling(
                   ctx,
                   child
-                )) || child
+                ) || child
             )
         );
     }

@@ -39,7 +39,7 @@ describe('NodesProcessingService', () => {
     configService = TestBed.inject(ConfigService);
 
     const portalConfig: PortalConfig = {
-      providers: [{ nodes: [], config: {}, creationTimestamp: '' }],
+      providers: [{ nodes: [], creationTimestamp: '' }],
     } as PortalConfig;
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
@@ -89,8 +89,6 @@ describe('NodesProcessingService', () => {
       entityNode,
       { myentityId, userid },
       childrenByEntity,
-      undefined,
-      undefined,
       undefined,
       entityName
     );
@@ -148,8 +146,6 @@ describe('NodesProcessingService', () => {
         userid,
       },
       {},
-      undefined,
-      undefined,
       undefined,
       entityName
     );
@@ -254,25 +250,20 @@ describe('NodesProcessingService', () => {
       };
 
       // Act
-      service.applyEntityChildrenRecursively(
-        rootNode,
-        childrenByEntity,
-        '',
-        undefined,
-        undefined
-      );
+      service.applyEntityChildrenRecursively(rootNode, childrenByEntity, '');
 
       // Assert
       expect(Array.isArray(rootNode.children)).toBeFalsy();
       // @ts-ignore
       expect(Array.isArray(rootNode.children({}).children)).toBeFalsy();
       // @ts-ignore
-      const entityChildren = await rootNode.children({})[0].children({});
+      const entity = await rootNode.children({});
+      const entityChildren = await entity[0].children({});
       expect(entityChildren.length).toBe(projectChildren.length + 1);
       expect(entityChildren[0].pathSegment).toEqual('directChild1');
-      const subEntityChildren = await entityChildren[0]
-        .children({})[0]
-        .children({});
+      const subEntityChildren = await (
+        await entityChildren[0].children({})
+      )[0].children({});
       expect(subEntityChildren[0].pathSegment).toEqual('subentityextension');
       const subsubChildren = await subEntityChildren[0].children({
         id: 'someId',
@@ -344,13 +335,7 @@ describe('NodesProcessingService', () => {
         entityContext: { foo: 'bar1' },
       });
 
-      service.applyEntityChildrenRecursively(
-        rootNode,
-        childrenByEntity,
-        '',
-        undefined,
-        undefined
-      );
+      service.applyEntityChildrenRecursively(rootNode, childrenByEntity, '');
 
       const rootChildren =
         rootNode.children instanceof Function
@@ -411,13 +396,7 @@ describe('NodesProcessingService', () => {
         entityContext: { foo: 'bar1' },
       });
 
-      service.applyEntityChildrenRecursively(
-        rootNode,
-        childrenByEntity,
-        '',
-        undefined,
-        undefined
-      );
+      service.applyEntityChildrenRecursively(rootNode, childrenByEntity, '');
 
       // @ts-ignore
       const rootChildren = await rootNode.children({});
