@@ -1,6 +1,4 @@
 import {
-  BreadcrumbBadge,
-  HelpContext,
   LuigiNode,
   LuigiNodeIFramePermissions,
   LuigiUserSettings,
@@ -40,14 +38,7 @@ export interface LuigiConfigFragment {
   data: LuigiConfigData;
 }
 
-export interface ExtendedData {
-  isMissingMandatoryData?: boolean;
-  extensionClassName?: string;
-  helpContext?: HelpContext;
-  breadcrumbBadge?: BreadcrumbBadge;
-}
-
-export interface ContentConfiguration extends ExtendedData {
+export interface ContentConfiguration {
   name: string;
   creationTimestamp?: string;
   url?: string;
