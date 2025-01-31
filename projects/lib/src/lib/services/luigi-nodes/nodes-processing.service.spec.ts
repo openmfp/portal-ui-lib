@@ -315,6 +315,7 @@ describe('NodesProcessingService', () => {
             },
           },
         ],
+        compound: {}
       };
 
       const childrenByEntity = {
