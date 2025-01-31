@@ -77,13 +77,19 @@ describe('LuigiNodesService', () => {
     ];
 
     const mockServiceProvider: ServiceProvider = {
-      nodes: [
-        { pathSegment: 'node1', label: 'Test Node 1' },
-        { pathSegment: 'node2', label: 'Test Node 2' },
-      ],
-      config: {},
-      installationData: {},
+      name: 'name',
+      displayName: 'displayName',
       creationTimestamp: new Date().toISOString(),
+      nodes: [
+        {
+          pathSegment: 'node1',
+          label: 'Test Node 1',
+        },
+        {
+          pathSegment: 'node2',
+          label: 'Test Node 2',
+        },
+      ],
     };
 
     const mockEntityConfig: EntityConfig = {
@@ -358,8 +364,6 @@ describe('LuigiNodesService', () => {
       const portalConfig: PortalConfig = {
         providers: [
           {
-            config: { a: 'b', b: 'b' },
-            installationData: { a: 'c', c: 'd' },
             viewGroup: 'foo',
             nodes: serviceProviderNodes,
             creationTimestamp: '2022-05-17T11:37:17Z',
@@ -392,98 +396,6 @@ describe('LuigiNodesService', () => {
           expect.any(Error)
         );
       }
-    });
-
-    describe('config', () => {
-      it('should extend the node with a config', async () => {
-        const childrenByEntity = await service.retrieveChildrenByEntity();
-
-        const home = childrenByEntity['home'];
-        expect(home[0].context.serviceProviderConfig).toStrictEqual({
-          a: 'c',
-          b: 'b',
-          c: 'd',
-        });
-        expect(home[1].context.serviceProviderConfig).toStrictEqual(
-          home[0].context.serviceProviderConfig
-        );
-      });
-    });
-
-    describe('new badge', () => {
-      it('should add new badge to new nodes', async () => {
-        service['shouldShowNewBadge'] = jest.fn().mockReturnValue(true);
-
-        const childrenByEntity = await service.retrieveChildrenByEntity();
-
-        Object.keys(childrenByEntity).forEach((entity) => {
-          childrenByEntity[entity].forEach((node) => {
-            expect(node.statusBadge).toEqual({
-              label: 'New',
-              type: 'informative',
-            });
-          });
-        });
-      });
-
-      it('should not add a new badge to nodes when there is no provider creationTimestamp', async () => {
-        const portalConfig: PortalConfig = {
-          providers: [
-            {
-              config: { a: 'b', b: 'b' },
-              installationData: { a: 'c', c: 'd' },
-              nodes: [
-                { label: 'Node 1', pathSegment: '/node1' },
-                { label: 'Node 2', pathSegment: '/node2' },
-              ],
-              isMandatoryExtension: false,
-            },
-          ],
-        } as any;
-
-        const serviceProviderServiceSpy = jest
-          .spyOn(configService, 'getPortalConfig')
-          .mockResolvedValue(portalConfig);
-
-        const childrenByEntity = await service.retrieveChildrenByEntity();
-
-        expect(serviceProviderServiceSpy).toHaveBeenCalled();
-        Object.values(childrenByEntity).forEach((nodes) => {
-          nodes.forEach((node) => {
-            expect(node.statusBadge).toBeUndefined();
-          });
-        });
-      });
-
-      it('should not add a new badge to nodes', async () => {
-        const portalConfig: PortalConfig = {
-          providers: [
-            {
-              config: { a: 'b', b: 'b' },
-              installationData: { a: 'c', c: 'd' },
-              nodes: [
-                { label: 'Node 1', pathSegment: '/node1' },
-                { label: 'Node 2', pathSegment: '/node2' },
-              ],
-              creationTimestamp: '2022-05-17T11:37:17Z',
-              isMandatoryExtension: true,
-            },
-          ],
-        } as any;
-
-        const serviceProviderServiceSpy = jest
-          .spyOn(configService, 'getPortalConfig')
-          .mockResolvedValue(portalConfig);
-
-        const childrenByEntity = await service.retrieveChildrenByEntity();
-
-        expect(serviceProviderServiceSpy).toHaveBeenCalled();
-        Object.values(childrenByEntity).forEach((nodes) => {
-          nodes.forEach((node) => {
-            expect(node.statusBadge).toBeUndefined();
-          });
-        });
-      });
     });
 
     describe('categories', () => {

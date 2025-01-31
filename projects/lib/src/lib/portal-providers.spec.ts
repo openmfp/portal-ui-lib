@@ -132,12 +132,7 @@ describe('Provide Portal', () => {
     }
 
     class CustomNodeAccessService implements NodeAccessHandlingService {
-      nodeAccessHandling(
-        ctx: Context,
-        node: LuigiNode,
-        portalConfig: PortalConfig,
-        clientEnvironment: ClientEnvironment
-      ): LuigiNode {
+      nodeAccessHandling(ctx: Context, node: LuigiNode): Promise<LuigiNode> {
         throw new Error('Method not implemented.');
       }
     }

@@ -50,11 +50,8 @@ export class NavigationConfigService {
 
     const portalConfig = await this.configService.getPortalConfig();
     this.luigiCoreService.setFeatureToggles(portalConfig.featureToggles);
-    const luigiNodes = await this.nodesProcessingService.processNodes(
-      childrenByEntity,
-      portalConfig,
-      envConfig
-    );
+    const luigiNodes =
+      await this.nodesProcessingService.processNodes(childrenByEntity);
 
     return {
       nodes: luigiNodes,

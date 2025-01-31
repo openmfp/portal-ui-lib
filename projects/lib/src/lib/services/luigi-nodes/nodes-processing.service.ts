@@ -31,11 +31,7 @@ export class NodesProcessingService {
     private customGlobalNodesService: CustomGlobalNodesService
   ) {}
 
-  async processNodes(
-    childrenByEntity: Record<string, LuigiNode[]>,
-    portalConfig: PortalConfig,
-    envConfig?: ClientEnvironment
-  ) {
+  async processNodes(childrenByEntity: Record<string, LuigiNode[]>) {
     const globalNodes = [
       ...(childrenByEntity[EntityType.GLOBAL] || []),
       ...(childrenByEntity[EntityType.GLOBAL_BOTTOM] || []),
@@ -54,13 +50,7 @@ export class NodesProcessingService {
     });
 
     globalNodes.forEach((node) => {
-      this.applyEntityChildrenRecursively(
-        node,
-        childrenByEntity,
-        '',
-        envConfig,
-        portalConfig
-      );
+      this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
 
     globalNodes.sort(this.nodeSortingService.nodeComparison);
@@ -70,9 +60,7 @@ export class NodesProcessingService {
   applyEntityChildrenRecursively(
     node: LuigiNode,
     childrenByEntity: Record<string, LuigiNode[]>,
-    parentEntityPath: string,
-    envConfig: ClientEnvironment,
-    portalConfig: PortalConfig
+    parentEntityPath: string
   ) {
     if (Array.isArray(node.children)) {
       this.nodeSortingService.markEntityRootChildren(node.children);
@@ -92,8 +80,6 @@ export class NodesProcessingService {
           node,
           ctx,
           childrenByEntity,
-          envConfig,
-          portalConfig,
           directChildren,
           newEntityPath
         );
@@ -131,23 +117,21 @@ export class NodesProcessingService {
         this.applyEntityChildrenRecursively(
           child,
           childrenByEntity,
-          newEntityPath,
-          envConfig,
-          portalConfig
+          newEntityPath
         );
       });
-      node.children = (ctx: any) =>
-        directChildren
-          .filter((child) => this.visibleForContext(ctx, child))
-          .map(
-            (child) =>
-              this.nodeAccessHandlingService?.nodeAccessHandling(
-                ctx,
-                child,
-                portalConfig,
-                envConfig
-              ) || child
-          );
+      node.children = async (ctx: any) =>
+        await Promise.all(
+          directChildren
+            .filter((child) => this.visibleForContext(ctx, child))
+            .map(
+              (child) =>
+                this.nodeAccessHandlingService?.nodeAccessHandling(
+                  ctx,
+                  child
+                ) || child
+            )
+        );
     }
 
     if (node.virtualTree) {
@@ -159,8 +143,6 @@ export class NodesProcessingService {
     entityNode: LuigiNode,
     ctx: any,
     childrenByEntity: Record<string, LuigiNode[]>,
-    envConfig: ClientEnvironment,
-    portalConfig: PortalConfig,
     directChildren?: LuigiNode[],
     entityPath?: string
   ) {
@@ -202,18 +184,10 @@ export class NodesProcessingService {
         this.applyEntityChildrenRecursively(
           child,
           mergedChildrenByEntity,
-          entityPath,
-          envConfig,
-          portalConfig
+          entityPath
         );
       });
-      return this.buildChildrenForEntity(
-        entityNode,
-        entityRootChildren,
-        ctx,
-        portalConfig,
-        envConfig
-      );
+      return this.buildChildrenForEntity(entityNode, entityRootChildren, ctx);
     };
 
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
@@ -262,9 +236,7 @@ export class NodesProcessingService {
   async buildChildrenForEntity(
     entityNode: LuigiNode,
     children: LuigiNode[],
-    ctx: any,
-    portalConfig: PortalConfig,
-    envConfig: ClientEnvironment
+    ctx: any
   ): Promise<LuigiNode[]> {
     if (entityNode.defineEntity?.useBack) {
       if (
@@ -325,19 +297,19 @@ export class NodesProcessingService {
       child.onNodeActivation =
         this.nodeUtilsService.retrieveGlobalHelpContext();
     });
-    return this.nodeSortingService.sortNodes(
+
+    const nodes = await Promise.all(
       children
         .filter((child) => this.visibleForContext(child.context, child))
         .map(
           (child) =>
             this.nodeAccessHandlingService?.nodeAccessHandling(
               child.context,
-              child,
-              portalConfig,
-              envConfig
+              child
             ) || child
         )
     );
+    return this.nodeSortingService.sortNodes(nodes);
   }
 
   private visibleForContext(ctx: any, node: LuigiNode): boolean {

@@ -8,7 +8,6 @@ import {
   ErrorComponentConfig,
   LuigiNode,
   PortalConfig,
-  ServiceProvider,
 } from '../../models';
 import {
   ERROR_COMPONENT_CONFIG,
@@ -97,8 +96,8 @@ export class LuigiNodesService {
       );
     }
 
-    const serverLuigiNodes = this.extractServerLuigiNodes(
-      configsForEntity.providers
+    const serverLuigiNodes: LuigiNode[] = configsForEntity.providers.flatMap(
+      (p) => p.nodes
     );
     const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
       serverLuigiNodes,
@@ -159,50 +158,12 @@ export class LuigiNodesService {
       throw e;
     }
 
-    const serverLuigiNodes = this.extractServerLuigiNodes(
-      portalConfig.providers
+    const serverLuigiNodes: LuigiNode[] = portalConfig.providers.flatMap(
+      (p) => p.nodes
     );
-
     return this.replaceServerNodesWithLocalOnes(serverLuigiNodes, [
       'global',
       'home',
     ]);
-  }
-
-  private shouldShowNewBadge(serviceProvider: ServiceProvider): boolean {
-    if (
-      serviceProvider.isMandatoryExtension ||
-      !serviceProvider.creationTimestamp
-    ) {
-      return false;
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return !(
-      new Date(serviceProvider.creationTimestamp).getTime() <
-      yesterday.getTime()
-    );
-  }
-
-  private extractServerLuigiNodes(
-    serviceProviders: ServiceProvider[]
-  ): LuigiNode[] {
-    let serverLuigiNodes: LuigiNode[] = [];
-    serviceProviders.forEach((serviceProvider) => {
-      const shouldShowNewBadge = this.shouldShowNewBadge(serviceProvider);
-      serviceProvider.nodes.forEach((node) => {
-        if (shouldShowNewBadge) {
-          node.statusBadge = { label: 'New', type: 'informative' };
-        }
-        node.context = node.context || {};
-        node.context.serviceProviderConfig = {
-          ...serviceProvider.config,
-          ...serviceProvider.installationData,
-        };
-      });
-      serverLuigiNodes = serverLuigiNodes.concat(serviceProvider.nodes);
-    });
-    return serverLuigiNodes;
   }
 }

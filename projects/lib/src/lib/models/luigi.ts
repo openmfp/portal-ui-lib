@@ -99,6 +99,7 @@ export interface PortalLuigiNodeExtensions {
   configurationMissing?: string; // experimental
   networkVisibility?: NetworkVisibility; //experimental
   isMissingMandatoryData?: boolean; // experimental
+  extensionClassName?: string;
   defineEntity?: EntityDefinition;
   globalNav?: boolean | string;
   order?: string;
