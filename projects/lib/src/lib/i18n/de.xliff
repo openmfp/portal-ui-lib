@@ -228,7 +228,7 @@
     </unit>
     <unit id="ERROR_CONTENT_NOT_FOUND_TEXT">
       <segment>
-        <target>Prüfe, ob die URL korrekt ist oder benutze die Suche im Hyperspace Portal. Falls dieses Problem weiterhin auftritt, lege einen Issue an.</target>
+        <target>Prüfe, ob die URL korrekt ist oder benutze die Suche im Portal. Falls dieses Problem weiterhin auftritt, lege einen Issue an.</target>
       </segment>
     </unit>
     <unit id="ERROR_CONTENT_NOT_FOUND_CREATE_ISSUE_BUTTON">
@@ -266,12 +266,12 @@
     </unit>
      <unit id="PLUGIN_PAGE_NEED_EXTENSION">
         <segment>
-            <target>Installiere Hyperspace Portal Chrome Erweiterung, damit du dir alle UIs in Hyperspace Portal anschauen kannst.</target>
+            <target>Installiere Portal Chrome Erweiterung, damit du dir alle UIs in Portal anschauen kannst.</target>
         </segment>
      </unit>
      <unit id="PLUGIN_PAGE_NEED_EXTENSION_CHROME">
         <segment>
-            <target>Benutze Google Chrome mit der Hyperspace Portal Chrome Erweiterung, damit du dir alle UIs in Hyperspace Portal anschauen kannst.<br/> Sie können es auch in einem neuen Tab öffnen.</target>
+            <target>Benutze Google Chrome mit der Portal Chrome Erweiterung, damit du dir alle UIs in Portal anschauen kannst.<br/> Sie können es auch in einem neuen Tab öffnen.</target>
         </segment>
      </unit>
       <unit id="VPN_NEEDED_PAGE_TITLE">
@@ -281,7 +281,7 @@
       </unit>
       <unit id="VPN_NEEDED_PAGE_DESCRIPTION">
         <segment>
-           <target>Stellen Sie eine Verbindung zum Unternehmensnetzwerk her, um diese Seite direkt in Hyperspace Portal anzuzeigen.</target>
+           <target>Stellen Sie eine Verbindung zum Unternehmensnetzwerk her, um diese Seite direkt in Portal anzuzeigen.</target>
         </segment>
       </unit>
       <unit id="CONFIGURATION_MISSING_PAGE_TITLE">

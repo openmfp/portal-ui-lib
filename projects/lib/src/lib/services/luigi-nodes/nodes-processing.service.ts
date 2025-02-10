@@ -4,7 +4,7 @@ import {
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
+import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
 import { matchesJMESPath } from '../../utilities';
 import { ConfigService } from '../portal';
@@ -247,6 +247,30 @@ export class NodesProcessingService {
       ) {
         entityNode.navHeader.showUpLink = true;
       }
+    }
+
+    if (entityNode.defineEntity) {
+      console.log('Define Entity');
+      if (!entityNode.navHeader) {
+        entityNode.navHeader = {};
+      }
+      entityNode.navHeader.renderer = (
+        containerElement: HTMLElement,
+        nodeItem: LuigiNode,
+        clickHandler: Function,
+        navHeader: any
+      ) => {
+        if (!containerElement || !navHeader.label) {
+          return;
+        }
+
+        const label = navHeader.label;
+        const type = nodeItem.defineEntity.label
+          ? nodeItem.defineEntity.label
+          : 'Extension';
+
+        containerElement.innerHTML = `${label}: ${type}`;
+      };
     }
 
     if (!children) {

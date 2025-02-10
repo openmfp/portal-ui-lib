@@ -228,7 +228,7 @@
     </unit>
     <unit id="ERROR_CONTENT_NOT_FOUND_TEXT">
       <segment>
-        <target>Check if the URL is correct or search in Hyperspace Portal. If this problem persists, create an issue.</target>
+        <target>Check if the URL is correct or search in the Portal. If this problem persists, create an issue.</target>
       </segment>
     </unit>
     <unit id="ERROR_CONTENT_NOT_FOUND_CREATE_ISSUE_BUTTON">
@@ -271,17 +271,17 @@
     </unit>
     <unit id="PLUGIN_PAGE_NEED_EXTENSION">
       <segment>
-         <target>Once you install the Hyperspace Portal Chrome extension, you can view all extension UIs without leaving Hyperspace Portal.</target>
+         <target>Once you install the Portal Chrome extension, you can view all extension UIs without leaving the Portal.</target>
       </segment>
     </unit>
     <unit id="PLUGIN_PAGE_NEED_EXTENSION_UPDATE">
       <segment>
-        <target>Once you update the Hyperspace Portal browser extension, you can view all extension UIs without leaving Hyperspace Portal. You are running version '{currentVersion}', you require version '{requiredVersion}' </target>
+        <target>Once you update the Portal browser extension, you can view all extension UIs without leaving the Portal. You are running version '{currentVersion}', you require version '{requiredVersion}' </target>
       </segment>
     </unit>
     <unit id="PLUGIN_PAGE_NEED_EXTENSION_CHROME">
       <segment>
-        <target>Use Google Chrome with the Hyperspace Portal Chrome extension, to view this content here. <br/> You can also open it in a new tab.</target>
+        <target>Use Google Chrome with the Portal Chrome extension, to view this content here. <br/> You can also open it in a new tab.</target>
       </segment>
     </unit>
       <unit id="VPN_NEEDED_PAGE_TITLE">
@@ -291,7 +291,7 @@
       </unit>
       <unit id="VPN_NEEDED_PAGE_DESCRIPTION">
         <segment>
-           <target>Connect to the corporate network to view this extension UI directly in Hyperspace Portal.</target>
+           <target>Connect to the corporate network to view this extension UI directly in the Portal.</target>
         </segment>
       </unit>
       <unit id="CONFIGURATION_MISSING_PAGE_TITLE">
