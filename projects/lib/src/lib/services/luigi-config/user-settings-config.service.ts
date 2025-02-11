@@ -164,7 +164,7 @@ export class UserSettingsConfigService {
         sublabel: await this.getSelectedThemeDisplayName(),
         icon: 'palette',
         title: 'USERSETTINGSDIALOG__APPEARANCE',
-        viewUrl: '/settings-theming#dxp_disable_loading_indicator',
+        viewUrl: '/settings-theming#disable_loading_indicator',
         settings: {},
       };
     }
@@ -179,7 +179,7 @@ export class UserSettingsConfigService {
         ? 'local-development-settings-icon-active'
         : '',
       title: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE',
-      viewUrl: '/development-settings#dxp_disable_loading_indicator',
+      viewUrl: '/development-settings#disable_loading_indicator',
     };
   }
 
