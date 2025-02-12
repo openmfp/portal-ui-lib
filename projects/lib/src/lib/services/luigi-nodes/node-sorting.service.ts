@@ -17,9 +17,12 @@ export class NodeSortingService {
     a.order = a.dxpOrder || a.order || '999';
     b.order = b.dxpOrder || b.order || '999';
 
-    if (a.order < b.order) {
+    const orderA = isNaN(parseFloat(a?.order)) ? 999 : parseFloat(a.order);
+    const orderB = isNaN(parseFloat(b?.order)) ? 999 : parseFloat(b.order);
+
+    if (orderA < orderB) {
       return -1;
-    } else if (a.order > b.order) {
+    } else if (orderA > orderB) {
       return 1;
     }
 
