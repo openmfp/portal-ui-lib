@@ -14,13 +14,13 @@ import {
   LuigiExtendedGlobalContextConfigService,
   NodeAccessHandlingService,
   NodeChangeHookConfigService,
-  StaticSettingsConfigServiceImpl,
+  StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
 } from './services';
 import * as services from './services';
 import { Context } from '@luigi-project/client';
-import { LuigiNode, PortalConfig, ClientEnvironment } from './models';
+import { LuigiNode } from './models';
 
 class MockCustomListener1 implements CustomMessageListener {
   messageId(): string {
@@ -107,11 +107,6 @@ describe('Provide Portal', () => {
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 
     expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: StaticSettingsConfigServiceImpl,
-    });
-
-    expect(providersArg).toContainEqual({
       provide: tokens.LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
       useClass: LocalConfigurationServiceImpl,
     });
@@ -196,8 +191,17 @@ describe('Provide Portal', () => {
       }
     }
 
+    class StaticSettingsConfigServiceImpl
+      implements StaticSettingsConfigService
+    {
+      getStaticSettingsConfig(): Promise<services.LuigiStaticSettings> {
+        throw new Error('Method not implemented.');
+      }
+    }
+
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: CustomAuthEventsService,
+      staticSettingsConfigService: StaticSettingsConfigServiceImpl,
       nodeAccessHandlingService: CustomNodeAccessService,
       nodeChangeHookConfigService: CustomNodeChangeHookService,
       globalSearchConfigService: CustomGlobalSearchConfigService,
@@ -218,6 +222,11 @@ describe('Provide Portal', () => {
     expect(providersArg).toContainEqual({
       provide: tokens.ERROR_COMPONENT_CONFIG,
       useValue: { '404': {} },
+    });
+
+    expect(providersArg).toContainEqual({
+      provide: tokens.LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: StaticSettingsConfigServiceImpl,
     });
 
     expect(providersArg).toContainEqual({
