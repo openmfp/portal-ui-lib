@@ -1,10 +1,18 @@
 import { inject, Injectable } from '@angular/core';
+import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { I18nService } from '../i18n.service';
 import { IframeService } from './iframe.service';
 
 export interface StaticSettingsConfigService {
-  getInitialStaticSettingsConfig(): Record<string, any>;
-  getStaticSettingsConfig(): Record<string, any>;
+  getStaticSettingsConfig(): Promise<LuigiStaticSettings>;
+}
+
+export interface LuigiStaticSettings extends Record<string, any> {
+  header: {
+    title: string;
+    logo: string;
+    favicon?: string;
+  };
 }
 
 @Injectable({
@@ -13,10 +21,17 @@ export interface StaticSettingsConfigService {
 export class StaticSettingsConfigServiceImpl
   implements StaticSettingsConfigService
 {
+  private customStaticSettingsConfigService =
+    inject<StaticSettingsConfigService>(
+      LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN as any,
+      {
+        optional: true,
+      }
+    );
   private i18nService = inject(I18nService);
   private iframeService = inject(IframeService);
 
-  getInitialStaticSettingsConfig() {
+  async getStaticSettingsConfig(): Promise<LuigiStaticSettings> {
     const logo = 'assets/images/mfp_mark.svg';
 
     return {
@@ -38,10 +53,7 @@ export class StaticSettingsConfigServiceImpl
       },
       iframeCreationInterceptor: this.iframeService.iFrameCreationInterceptor(),
       customTranslationImplementation: this.i18nService,
+      ...(await this.customStaticSettingsConfigService?.getStaticSettingsConfig()),
     };
-  }
-
-  getStaticSettingsConfig() {
-    return this.getInitialStaticSettingsConfig();
   }
 }
