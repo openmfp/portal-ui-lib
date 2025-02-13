@@ -38,7 +38,7 @@ export class LifecycleHooksConfigService {
             await this.luigiNodesService.retrieveChildrenByEntity();
         } catch (e) {
           console.error(`Error retrieving Luigi navigation nodes`, e);
-          this.openErrorDialog();
+          await this.openErrorDialog();
           return;
         }
 

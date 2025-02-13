@@ -9,6 +9,7 @@ import {
   GlobalSearchConfigService,
   LocalConfigurationServiceImpl,
   LuigiAuthEventsCallbacksService,
+  LuigiBreadcrumb,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
   NodeAccessHandlingService,
@@ -190,7 +191,7 @@ describe('Provide Portal', () => {
     class CustomLuigiBreadcrumbConfigService
       implements LuigiBreadcrumbConfigService
     {
-      getBreadcrumbsConfig(): services.LuigiBreadcrumb {
+      getBreadcrumbsConfig(): Promise<LuigiBreadcrumb> {
         throw new Error('Method not implemented.');
       }
     }

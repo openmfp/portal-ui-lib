@@ -34,9 +34,9 @@ describe('StaticSettingsConfigServiceImpl', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('getInitialStaticSettingsConfig', () => {
-    it('should return the correct configuration with MFP logo', () => {
-      const config = service.getInitialStaticSettingsConfig();
+  describe('getStaticSettingsConfig', () => {
+    it('should return the correct configuration with MFP logo', async () => {
+      const config = await service.getStaticSettingsConfig();
 
       expect(config).toEqual({
         header: {
@@ -58,14 +58,6 @@ describe('StaticSettingsConfigServiceImpl', () => {
         iframeCreationInterceptor: interceptFunction,
         customTranslationImplementation: i18nService,
       });
-    });
-  });
-
-  describe('getStaticSettingsConfig', () => {
-    it('should return the same configuration as getInitialStaticSettingsConfig', () => {
-      const initialConfig = service.getInitialStaticSettingsConfig();
-      const staticConfig = service.getStaticSettingsConfig();
-      expect(staticConfig).toEqual(initialConfig);
     });
   });
 });
