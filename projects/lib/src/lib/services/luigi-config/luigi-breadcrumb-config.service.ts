@@ -18,5 +18,5 @@ export interface LuigiBreadcrumb {
 }
 
 export interface LuigiBreadcrumbConfigService {
-  getBreadcrumbsConfig(): LuigiBreadcrumb;
+  getBreadcrumbsConfig(): Promise<LuigiBreadcrumb>;
 }

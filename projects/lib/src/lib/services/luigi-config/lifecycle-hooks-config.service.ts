@@ -6,12 +6,9 @@ import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { NavigationConfigService } from './navigation-config.service';
 import { RoutingConfigService } from './routing-config.service';
-import { StaticSettingsConfigService } from './static-settings-config.service';
+import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
-import {
-  LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-} from '../../injection-tokens';
+import { LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode, ClientEnvironment } from '../../models';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
@@ -24,8 +21,7 @@ export class LifecycleHooksConfigService {
     private routingConfigService: RoutingConfigService,
     private navigationConfigService: NavigationConfigService,
     private userSettingsConfigService: UserSettingsConfigService,
-    @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
-    private staticSettingsConfigService: StaticSettingsConfigService,
+    private staticSettingsConfigService: StaticSettingsConfigServiceImpl,
     @Optional()
     @Inject(LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN)
     private globalSearchConfigService: GlobalSearchConfigService
@@ -42,7 +38,7 @@ export class LifecycleHooksConfigService {
             await this.luigiNodesService.retrieveChildrenByEntity();
         } catch (e) {
           console.error(`Error retrieving Luigi navigation nodes`, e);
-          this.openErrorDialog();
+          await this.openErrorDialog();
           return;
         }
 
@@ -53,8 +49,6 @@ export class LifecycleHooksConfigService {
             childrenByEntity,
             envConfig
           ),
-          settings:
-            await this.staticSettingsConfigService.getStaticSettingsConfig(),
           routing: this.routingConfigService.getRoutingConfig(),
           userSettings:
             await this.userSettingsConfigService.getUserSettings(
@@ -73,11 +67,10 @@ export class LifecycleHooksConfigService {
     };
   }
 
-  private openErrorDialog() {
-    const appTitle =
-      this.staticSettingsConfigService.getInitialStaticSettingsConfig()[
-        'header'
-      ].title;
+  private async openErrorDialog() {
+    const appTitle = (
+      await this.staticSettingsConfigService.getStaticSettingsConfig()
+    ).header.title;
     this.luigiCoreService.showAlert({
       text: $localize`There was an error loading the ${appTitle}`,
       type: 'error',
