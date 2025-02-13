@@ -44,7 +44,6 @@ import {
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
   StaticSettingsConfigService,
-  StaticSettingsConfigServiceImpl,
   UserProfileConfigService,
   UserSettingsConfigService,
   LocalConfigurationServiceImpl,
@@ -117,11 +116,6 @@ export function providePortal(
         options.nodeChangeHookConfigService || NodeChangeHookConfigServiceImpl,
     },
     {
-      provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.staticSettingsConfigService || StaticSettingsConfigServiceImpl,
-    },
-    {
       provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
       useClass:
         options.localConfigurationService || LocalConfigurationServiceImpl,
@@ -143,6 +137,13 @@ const addOptionalProviders = (
       useClass: customMessageListenerClass,
     })
   );
+
+  if (options.staticSettingsConfigService) {
+    providers.push({
+      provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.staticSettingsConfigService,
+    });
+  }
 
   if (options.luigiAuthEventsCallbacksService) {
     providers.push({
