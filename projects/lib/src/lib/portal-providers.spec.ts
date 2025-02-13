@@ -191,13 +191,13 @@ describe('Provide Portal', () => {
       }
     }
 
-    class StaticSettingsConfigServiceImpl
-      implements StaticSettingsConfigService
-    {
-      getStaticSettingsConfig(): Promise<services.LuigiStaticSettings> {
-        throw new Error('Method not implemented.');
+      class StaticSettingsConfigServiceImpl
+          implements StaticSettingsConfigService
+      {
+          getStaticSettingsConfig(): Promise<services.LuigiStaticSettings> {
+              throw new Error('Method not implemented.');
+          }
       }
-    }
 
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: CustomAuthEventsService,
