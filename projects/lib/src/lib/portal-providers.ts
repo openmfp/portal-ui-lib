@@ -44,7 +44,6 @@ import {
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
   StaticSettingsConfigService,
-  StaticSettingsConfigServiceImpl,
   UserProfileConfigService,
   UserSettingsConfigService,
   LocalConfigurationServiceImpl,
