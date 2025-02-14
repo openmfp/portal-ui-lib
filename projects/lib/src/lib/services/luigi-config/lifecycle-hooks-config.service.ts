@@ -37,7 +37,7 @@ export class LifecycleHooksConfigService {
           childrenByEntity =
             await this.luigiNodesService.retrieveChildrenByEntity();
         } catch (e) {
-          console.error(`Error retrieving Luigi navigation nodes`, e);
+          console.error('Error retrieving Luigi navigation nodes', e);
           await this.openErrorDialog();
           return;
         }
@@ -50,6 +50,8 @@ export class LifecycleHooksConfigService {
             envConfig
           ),
           routing: this.routingConfigService.getRoutingConfig(),
+          settings:
+            await this.staticSettingsConfigService.getStaticSettingsConfig(),
           userSettings:
             await this.userSettingsConfigService.getUserSettings(
               childrenByEntity
