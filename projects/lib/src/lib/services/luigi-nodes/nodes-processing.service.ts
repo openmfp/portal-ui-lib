@@ -255,14 +255,19 @@ export class NodesProcessingService {
         entityNode.navHeader = {};
       }
       entityNode.navHeader.renderer = (containerElement: HTMLElement, nodeItem: LuigiNode, clickHandler: Function, navHeader: any ) => {
-        if (!containerElement || !navHeader.label) {
+        if (!containerElement || !navHeader?.label) {
           return;
         }
 
         const label = navHeader.label;
+        if (!nodeItem.defineEntity) {
+          return;
+        }
+
         const type = nodeItem.defineEntity.label ? nodeItem.defineEntity.label : "Extension";
-        
-        containerElement.innerHTML = `${label}: ${type}`
+        containerElement.style.padding = "9px 8px";
+        containerElement.style.height = "auto";
+        containerElement.innerHTML = `<ui5-text style="font-size: 12px;">${type}</ui5-text><ui5-title level="H6" size="H6" style="color: var(--sapAccentColor6); padding-top: 8px;">${label}</ui5-title>`
       }
     }
 
