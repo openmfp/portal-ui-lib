@@ -1,9 +1,13 @@
+import { TestBed } from '@angular/core/testing';
 import { LuigiConfigService } from './luigi-config.service';
 import { EnvConfigService } from '../portal';
 import { AuthConfigService } from './auth-config.service';
 import { ClientEnvironment } from '../../models';
 import { RoutingConfigService } from './routing-config.service';
-import { StaticSettingsConfigService } from './static-settings-config.service';
+import {
+  StaticSettingsConfigService,
+  StaticSettingsConfigServiceImpl,
+} from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 
@@ -26,7 +30,7 @@ describe('LuigiConfigService', () => {
     } as any;
 
     staticSettingsConfigServiceMock = {
-      getInitialStaticSettingsConfig: jest.fn(),
+      getStaticSettingsConfig: jest.fn(),
     } as any;
 
     customMessageListenersMock = {
@@ -42,14 +46,28 @@ describe('LuigiConfigService', () => {
       getLifecycleHooksConfig: jest.fn(),
     } as any;
 
-    service = new LuigiConfigService(
-      envConfigServiceMock,
-      authConfigServiceMock,
-      customMessageListenersMock,
-      routingConfigServiceMock,
-      lifecycleHooksConfigServiceMock,
-      staticSettingsConfigServiceMock
-    );
+    TestBed.configureTestingModule({
+      providers: [
+        LuigiConfigService,
+        { provide: EnvConfigService, useValue: envConfigServiceMock },
+        { provide: AuthConfigService, useValue: authConfigServiceMock },
+        {
+          provide: CustomMessageListenersService,
+          useValue: customMessageListenersMock,
+        },
+        { provide: RoutingConfigService, useValue: routingConfigServiceMock },
+        {
+          provide: LifecycleHooksConfigService,
+          useValue: lifecycleHooksConfigServiceMock,
+        },
+        {
+          provide: StaticSettingsConfigServiceImpl,
+          useValue: staticSettingsConfigServiceMock,
+        },
+      ],
+    });
+
+    service = TestBed.inject(LuigiConfigService);
   });
 
   it('should be created', () => {
@@ -69,6 +87,10 @@ describe('LuigiConfigService', () => {
       } as any;
 
       const mockStaticSettings = {
+        header: {
+          title: 'title',
+          logo: 'https://example.com/oauth',
+        },
         filed: 'filed',
       };
 
@@ -92,7 +114,7 @@ describe('LuigiConfigService', () => {
       lifecycleHooksConfigServiceMock.getLifecycleHooksConfig.mockReturnValue(
         mockLifecycleHooks
       );
-      staticSettingsConfigServiceMock.getInitialStaticSettingsConfig.mockReturnValue(
+      staticSettingsConfigServiceMock.getStaticSettingsConfig.mockResolvedValue(
         mockStaticSettings
       );
       customMessageListenersMock.getMessageListeners.mockReturnValue(
@@ -108,7 +130,7 @@ describe('LuigiConfigService', () => {
       // Assert
       expect(envConfigServiceMock.getEnvConfig).toHaveBeenCalled();
       expect(
-        staticSettingsConfigServiceMock.getInitialStaticSettingsConfig
+        staticSettingsConfigServiceMock.getStaticSettingsConfig
       ).toHaveBeenCalled();
       expect(authConfigServiceMock.getAuthConfig).toHaveBeenCalledWith(
         mockEnvConfig.oauthServerUrl,
