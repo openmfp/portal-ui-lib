@@ -21,3 +21,18 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
 .fd-container.fd-form-layout-grid-container .fd-row .fd-col {
   white-space: inherit !important;
 }
+
+.entity-nav-header {
+  padding-left: var(--fdNavigation_Padding_X);
+  padding-right: var(--fdNavigation_Padding_X);
+  padding-bottom:  1.25rem !important;
+}
+
+.entity-nav-header-type {
+  font-size: 12px;
+}
+
+.entity-nav-header-label {
+  color: var(--sapAccentColor6);
+  padding-top: 8px;
+}

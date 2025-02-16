@@ -14,10 +14,12 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeAccessHandlingService } from './node-access-handling.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
+import { LuigiCoreService } from '../luigi-core.service';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
   constructor(
+    private luigiCoreService: LuigiCoreService,
     private configService: ConfigService,
     private luigiNodesService: LuigiNodesService,
     private nodeSortingService: NodeSortingService,
@@ -233,6 +235,36 @@ export class NodesProcessingService {
     });
   }
 
+  addBtpLayoutNavigationHeader(entityNode: LuigiNode) {
+    if (
+      entityNode.defineEntity &&
+      this.luigiCoreService.config.settings.btpToolLayout
+    ) {
+      if (!entityNode.navHeader) {
+        entityNode.navHeader = {};
+      }
+
+      entityNode.navHeader.renderer = (
+        containerElement: HTMLElement,
+        nodeItem: LuigiNode,
+        clickHandler: Function,
+        navHeader: any
+      ) => {
+        if (!containerElement || !navHeader?.label) {
+          return;
+        }
+
+        const label = navHeader.label;
+        const type = nodeItem.defineEntity.label || 'Extension';
+        containerElement.classList.add('entity-nav-header');
+        containerElement.innerHTML = `
+            <ui5-text class="entity-nav-header-type">${type}</ui5-text>
+            <ui5-title class="entity-nav-header-label" level="H6" size="H6">${label}</ui5-title>
+        `;
+      };
+    }
+  }
+
   async buildChildrenForEntity(
     entityNode: LuigiNode,
     children: LuigiNode[],
@@ -249,27 +281,7 @@ export class NodesProcessingService {
       }
     }
 
-    if (entityNode.defineEntity) {
-      console.log("Define Entity");
-      if (!entityNode.navHeader) {
-        entityNode.navHeader = {};
-      }
-      entityNode.navHeader.renderer = (containerElement: HTMLElement, nodeItem: LuigiNode, clickHandler: Function, navHeader: any ) => {
-        if (!containerElement || !navHeader?.label) {
-          return;
-        }
-
-        const label = navHeader.label;
-        if (!nodeItem.defineEntity) {
-          return;
-        }
-
-        const type = nodeItem.defineEntity.label ? nodeItem.defineEntity.label : "Extension";
-        containerElement.style.padding = "9px 8px";
-        containerElement.style.height = "auto";
-        containerElement.innerHTML = `<ui5-text style="font-size: 12px;">${type}</ui5-text><ui5-title level="H6" size="H6" style="color: var(--sapAccentColor6); padding-top: 8px;">${label}</ui5-title>`
-      }
-    }
+    this.addBtpLayoutNavigationHeader(entityNode);
 
     if (!children) {
       return [];

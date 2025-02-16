@@ -44,6 +44,12 @@ describe('NodesProcessingService', () => {
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
+    Object.defineProperty(luigiCoreService, 'config', {
+      get: jest.fn(() => ({
+        settings: { btpToolLayout: true },
+      })),
+      configurable: true,
+    });
 
     jest
       .spyOn(configService, 'getPortalConfig')
@@ -315,7 +321,7 @@ describe('NodesProcessingService', () => {
             },
           },
         ],
-        compound: {}
+        compound: {},
       };
 
       const childrenByEntity = {
@@ -406,6 +412,158 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       expect(await rootChildren[0].children({})).toEqual([]);
+    });
+  });
+
+  describe('addBtpLayoutNavigationHeader', () => {
+    it('should not add navHeader when entityNode has no defineEntity', () => {
+      // Arrange
+      const entityNode: LuigiNode = {
+        pathSegment: 'test',
+      };
+
+      // Act
+      service.addBtpLayoutNavigationHeader(entityNode);
+
+      // Assert
+      expect(entityNode.navHeader).toBeUndefined();
+    });
+
+    it('should not add navHeader when btpToolLayout is disabled', () => {
+      // Arrange
+      const entityNode: LuigiNode = {
+        pathSegment: 'test',
+        defineEntity: {
+          id: 'testEntity',
+        },
+      };
+
+      Object.defineProperty(luigiCoreService, 'config', {
+        get: jest.fn(() => ({
+          settings: { btpToolLayout: false },
+        })),
+      });
+
+      // Act
+      service.addBtpLayoutNavigationHeader(entityNode);
+
+      // Assert
+      expect(entityNode.navHeader).toBeUndefined();
+    });
+
+    it('should initialize navHeader if not present', () => {
+      // Arrange
+      const entityNode: LuigiNode = {
+        pathSegment: 'test',
+        defineEntity: {
+          id: 'testEntity',
+        },
+      };
+
+      // Act
+      service.addBtpLayoutNavigationHeader(entityNode);
+
+      // Assert
+      expect(entityNode.navHeader).toBeDefined();
+      expect(entityNode.navHeader.renderer).toBeDefined();
+    });
+
+    it('should preserve existing navHeader properties while adding renderer', () => {
+      // Arrange
+      const entityNode: LuigiNode = {
+        pathSegment: 'test',
+        defineEntity: {
+          id: 'testEntity',
+        },
+        navHeader: {
+          existingProp: 'test',
+        },
+      };
+
+      // Act
+      service.addBtpLayoutNavigationHeader(entityNode);
+
+      // Assert
+      expect(entityNode.navHeader.existingProp).toBe('test');
+      expect(entityNode.navHeader.renderer).toBeDefined();
+    });
+
+    describe('navHeader renderer', () => {
+      let entityNode: LuigiNode;
+      let containerElement: HTMLElement;
+
+      beforeEach(() => {
+        entityNode = {
+          pathSegment: 'test',
+          defineEntity: {
+            id: 'testEntity',
+            label: 'Test Entity',
+          },
+        };
+        containerElement = document.createElement('div');
+      });
+
+      it('should not modify container if navHeader label is missing', () => {
+        // Arrange
+        service.addBtpLayoutNavigationHeader(entityNode);
+        const originalHTML = containerElement.innerHTML;
+
+        // Act
+        entityNode.navHeader.renderer(
+          containerElement,
+          entityNode,
+          () => {},
+          {}
+        );
+
+        // Assert
+        expect(containerElement.innerHTML).toBe(originalHTML);
+      });
+
+      it('should render header with correct structure and content', () => {
+        // Arrange
+        service.addBtpLayoutNavigationHeader(entityNode);
+        const navHeader = { label: 'Test Label' };
+
+        // Act
+        entityNode.navHeader.renderer(
+          containerElement,
+          entityNode,
+          () => {},
+          navHeader
+        );
+
+        // Assert
+        expect(containerElement.classList.contains('entity-nav-header')).toBe(
+          true
+        );
+        expect(
+          containerElement.querySelector('.entity-nav-header-type')
+        ).toBeDefined();
+        expect(
+          containerElement.querySelector('.entity-nav-header-label')
+        ).toBeDefined();
+        expect(containerElement.innerHTML).toContain('Test Entity');
+        expect(containerElement.innerHTML).toContain('Test Label');
+      });
+
+      it('should use "Extension" as default type when entity label is not defined', () => {
+        // Arrange
+        entityNode.defineEntity.label = undefined;
+        service.addBtpLayoutNavigationHeader(entityNode);
+        const navHeader = { label: 'Test Label' };
+
+        // Act
+        entityNode.navHeader.renderer(
+          containerElement,
+          entityNode,
+          () => {},
+          navHeader
+        );
+
+        // Assert
+        expect(containerElement.innerHTML).toContain('Extension');
+      });
     });
   });
 });

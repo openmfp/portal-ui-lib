@@ -117,7 +117,7 @@ describe('LuigiCoreService', () => {
   });
 
   it('should call getConfig', () => {
-    service.getConfig();
+    service.config;
     expect(luigiMock.getConfig).toHaveBeenCalled();
   });
 
