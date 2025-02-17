@@ -87,6 +87,23 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy = jest.spyOn(service, 'getLocalNodes');
     });
 
+    it('should return compound nodes with global nodes', async () => {
+      const localNode = {
+        pathSegment: '/path',
+        entityType: 'typeA.typeB::compound',
+        label: 'C',
+        context: {},
+      };
+
+      getLocalNodesSpy.mockResolvedValue([localNode]);
+      const localNodes = await service.replaceServerNodesWithLocalOnes(
+        serverLuigiNodesTest,
+        ['global', 'home']
+      );
+
+      expect(localNodes).toContain(localNode);
+    });
+
     it('should return modified nodes', async () => {
       const localNode = {
         pathSegment: '/path',
