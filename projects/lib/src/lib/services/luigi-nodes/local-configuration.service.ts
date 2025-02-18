@@ -83,20 +83,14 @@ export class LocalConfigurationServiceImpl
     );
 
     console.debug(
-      `Found '${serverLuigiNodes.length}' server nodes. Found '${
-        localLuigiNodes.length
-      }' local luigi nodes. The entities of the server node are:${[
-        ...new Set(
-          serverLuigiNodes.map((n) =>
-            this.stripCompoundFromEntity(n.entityType)
-          )
-        ),
-      ].join(',')}
-      The entities of local nodes are: ${[
-        ...new Set(
-          localLuigiNodes.map((n) => this.stripCompoundFromEntity(n.entityType))
-        ),
-      ].join(',')}`
+      `Found '${serverLuigiNodes.length}' server nodes. 
+       Found '${localLuigiNodes.length}' local luigi nodes. 
+       The entities of the server node are: [${[
+         ...new Set(serverLuigiNodes.map((n) => n.entityType)),
+       ].join(',')}]
+      The entities of local nodes are: [${[
+        ...new Set(localLuigiNodes.map((n) => n.entityType)),
+      ].join(',')}]`
     );
 
     const filteredServerNodes = serverLuigiNodes.filter(
@@ -111,8 +105,9 @@ export class LocalConfigurationServiceImpl
     );
 
     const nodesToAdd = localLuigiNodes.filter((n) => {
-      let entity = this.stripCompoundFromEntity(n.entityType);
-      entity = entity || 'home';
+      const entity = n.entityType?.includes('::compound')
+        ? 'global'
+        : n.entityType || 'home';
       return currentEntities.includes(entity);
     });
 
@@ -129,16 +124,6 @@ export class LocalConfigurationServiceImpl
       } local nodes to the luigi config for ${currentEntities.join(',')}`
     );
     return filteredServerNodes.concat(nodesToAdd);
-  }
-
-  private stripCompoundFromEntity(entity: string): string {
-    if (!entity) {
-      return entity;
-    }
-
-    // also strip the first segemnt of the entity, to get the actual entity.
-    // then strip ::.* for the root compound views
-    return entity.replace(/\..*::.*/, '').replace(/::.*/, '');
   }
 
   private extendContextOfLocalNodes(
@@ -173,7 +158,6 @@ export class LocalConfigurationServiceImpl
   private async getLocalConfigurations(
     localDevelopmentSettings: LocalDevelopmentSettings
   ): Promise<ContentConfiguration[]> {
-
     const initialConfigurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);
