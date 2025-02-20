@@ -10,8 +10,8 @@ To create a micro frontend that is displayed in the portal, you need to create a
 
 This file is picked up by the deployed portal server at runtime therefore the file needs to be reachable from the domain the portal server is deployed on.
 The registration to the portal happens through the portals Extension mechanism.
-Technically an Extension is a Custom Resource Definition of Kuberenetes.
-Its a dedicated resource in the Kuberentes cluster and this resource contains the URL to the `content-configuration.json` file of your application.
+Technically an Extension is a Custom Resource Definition of Kubernetes.
+It is a dedicated resource in the Kuberntes cluster and this resource contains the URL to the `content-configuration.json` file of your application.
 
 ## The Content Configuration File Contents
 
@@ -289,7 +289,7 @@ Further Portal specific parameters are supported on node level:
 
 The following section explains Portal-specific parameters related to entity types:
 
-- **entityType** - defines the location within the Portal navigation tree under which this node will be added. Currently, there are three **entityTypes** predefined in Portal:  "global", "project" and "project.component". The **entityType** correlates with a particular route in Portal, so it defines the base route to which your micro frontends pathSegment is added.
+- **entityType** - defines the location within the Portal navigation tree under which this node will be added. Currently, there is an **entityType** predefined in Portal:  "global". The **entityType** correlates with a particular route in Portal, so it defines the base route to which your micro frontends pathSegment is added.
     - Example ("global"): If the [pathSegment](https://docs.luigi-project.io/docs/navigation-configuration/?section=pathsegment) of the child node is `overview` and **entityType** is `global`, the node is shown in Portal's global navigation and the resulting route will be `/overview`.
     - Example ("project"): A project has a dynamic URL part. If the child **pathSegment** is "overview" and the **entityType** is "project", the URL will be `/project/123ProjectId/overview`.
   > NOTE: The **projectId** is available in the Luigi context object and can be retrieved by the micro frontend using the [initListener](https://docs.luigi-project.io/docs/luigi-client-api/?section=addinitlistener) / [contextUpdateListener](https://docs.luigi-project.io/docs/luigi-client-api/?section=addcontextupdatelistener).
@@ -338,7 +338,7 @@ The following section explains Portal-specific parameters related to entity type
       ```
       Unlike the static example, here **dynamicFetchId** and **contextKey** are defined, so additional nodes will be fetched from the extension manager for this entity type.
 
-      For example, a route `/projects/123ProjectId/sample/123someId` will result in a request to extension manager with the following data:
+      For example, a route `/projects/123ProjectId/sample/123someId` will result in a request with the following data:
 
         - Entity Type: `sample` - dynamicFetchId
         - Entity Id: `123sampleId` - this value is retrieved from the node **context** object, specified by the `contextKey` property.
