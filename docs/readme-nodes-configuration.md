@@ -2,7 +2,7 @@
 
 This document shows you how to create the configuration `content-configuration.json` file for your application.
 It also describes the various parameters the file may contain.
-In general this file contains any [Luigi configuration](#luigi-standard-configuration-parameters) values but also and [portal specific configuration](portal-specific-configuration-parameters) values.
+In general this file contains any [Luigi configuration](#luigi-standard-configuration-parameters) values but also and [Portal Specific Configuration](#portal-specific-configuration-parameters) values.
 
 ## The Content Configuration File and Portal Extensions
 
@@ -445,11 +445,11 @@ if (LuigiClient.getActiveFeatureToggles().includes('FeatureToggle1')) {
   }
 ```
 
-## Additional Luigi features
+## Additional Luigi Features
 
 If you need modals or alerts in your micro frontend, you must use the [Luigi Client APIs](https://docs.luigi-project.io/docs/luigi-client-api) to implement them in order to maintain a consistent user interface across Portal. Instead of being confined to the micro frontend area, these messages will be displayed as if they are a part of the bigger main application.
 
-### Confirmation modal
+### Confirmation Modal
 
 Luigi provides a modal element which can be used if you want to get a confirmation from the user before executing a certain operation. You must use Luigi's [showConfirmationModal](https://docs.luigi-project.io/docs/luigi-client-api/?section=showconfirmationmodal) function to add a modal to your micro frontend.
 
@@ -515,7 +515,7 @@ The **{i18n.currentLocale}** parameter will be replaced by the value of `LuigiI1
 
 The i18n implementation itself should be developed using Angular i18n support. To find more information, see the [Angular documentation](https://angular.io/guide/i18n).
 
-### Intent-based navigation
+### Intent-based Navigation
 
 Luigi allows you to navigate through micro frontends by using an intent-based navigation model which is inspired by the [SAP Fiori Launchpad intent-based navigation](https://help.sap.com/viewer/c0fe6b2660754f609482d4bfc5c619b1/1.18/en-US/745586a3468640d48b84ffe0e28fe473.html). This type of navigation removes the need to specify absolute paths to navigate between micro frontends. Rather than directly encoding the full absolute path to navigate to, app developers provide a semantic representation of the path.
 
