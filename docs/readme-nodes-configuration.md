@@ -11,7 +11,7 @@ To create a micro frontend that is displayed in the portal, you need to create a
 This file is picked up by the deployed portal server at runtime therefore the file needs to be reachable from the domain the portal server is deployed on.
 The registration to the portal happens through the portals Extension mechanism.
 Technically an Extension is a Custom Resource Definition of Kubernetes.
-It is a dedicated resource in the Kuberntes cluster and this resource contains the URL to the `content-configuration.json` file of your application.
+It is a dedicated resource in the Kubernetes cluster and this resource contains the URL to the `content-configuration.json` file of your application.
 
 ## The Content Configuration File Contents
 
