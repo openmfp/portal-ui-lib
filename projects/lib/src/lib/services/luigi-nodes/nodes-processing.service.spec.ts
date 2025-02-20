@@ -547,9 +547,9 @@ describe('NodesProcessingService', () => {
         expect(containerElement.innerHTML).toContain('Test Label');
       });
 
-      it('should use "Extension" as default type when entity label is not defined', () => {
+      it('should use "Component" if entity label is set to "component', () => {
         // Arrange
-        entityNode.defineEntity.label = undefined;
+        entityNode.defineEntity.label = "component";
         service.addBtpLayoutNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 
@@ -562,7 +562,43 @@ describe('NodesProcessingService', () => {
         );
 
         // Assert
-        expect(containerElement.innerHTML).toContain('Extension');
+        expect(containerElement.innerHTML).toContain('Component');
+      });
+
+      it('should use "Product" for product-type projects', () => {
+        // Arrange
+        entityNode.defineEntity.label = "Project";
+        service.addBtpLayoutNavigationHeader(entityNode);
+        const navHeader = { label: 'Test Label', context: {entityContext: {project: {type: 'product'}} }};
+
+        // Act
+        entityNode.navHeader.renderer(
+          containerElement,
+          entityNode,
+          () => {},
+          navHeader
+        );
+
+        // Assert
+        expect(containerElement.innerHTML).toContain('Product');
+      });
+
+      it('should use "Experiment" for experiment-type projects', () => {
+        // Arrange
+        entityNode.defineEntity.label = "Project";
+        service.addBtpLayoutNavigationHeader(entityNode);
+        const navHeader = { label: 'Test Label', context: {entityContext: {project: {type: 'experiment'}} }};
+
+        // Act
+        entityNode.navHeader.renderer(
+          containerElement,
+          entityNode,
+          () => {},
+          navHeader
+        );
+
+        // Assert
+        expect(containerElement.innerHTML).toContain('Experiment');
       });
     });
   });
