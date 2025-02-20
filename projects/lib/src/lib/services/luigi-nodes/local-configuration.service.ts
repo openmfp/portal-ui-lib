@@ -1,12 +1,15 @@
 import { inject, Injectable } from '@angular/core';
+import { DialogService } from '@fundamental-ngx/core/dialog';
 import { merge } from 'lodash';
 import {
   ContentConfiguration,
   LuigiNode,
   LocalDevelopmentSettings,
 } from '../../models';
+import { ValidationResult } from '../../models/node-transform';
+import { LuigiCoreService } from '../luigi-core.service';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
-import { LocalNodesConfigService } from '../portal';
+import { LocalNodesService } from '../portal';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 
@@ -25,7 +28,9 @@ export class LocalConfigurationServiceImpl
   implements LocalConfigurationService
 {
   private http = inject(HttpClient);
-  private luigiConfigService = inject(LocalNodesConfigService);
+  private luigiConfigService = inject(LocalNodesService);
+  private luigiCoreService = inject(LuigiCoreService);
+  private dialogService = inject(DialogService);
   private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
@@ -44,24 +49,50 @@ export class LocalConfigurationServiceImpl
       const configurations = await this.getLocalConfigurations(
         localDevelopmentSettings
       );
-      const luigiNodes =
-        await this.luigiConfigService.getLuigiNodesFromConfigurations(
+      const result =
+        (await this.luigiConfigService.getLuigiNodesFromConfigurations(
           configurations
-        );
+        )) || {};
 
-      (luigiNodes || []).forEach((node) => {
+      if (result.errors) {
+        this.alertErrors(result.errors);
+      }
+
+      (result.nodes || []).forEach((node) => {
         node.context = {
           ...node.context,
           serviceProviderConfig: localDevelopmentSettings.serviceProviderConfig,
         };
       });
 
-      this.cachedLocalNodes = luigiNodes;
-      return luigiNodes;
+      return (this.cachedLocalNodes = result.nodes || []);
     } catch (e) {
       console.warn(`Failed to retrieve local luigi config.`, e);
       return [];
     }
+  }
+
+  private alertErrors(errors: ValidationResult[]) {
+    const message = errors
+      .map((e) => {
+        return `For configuration with url:
+            ${e.url} <br/><br/>
+            ${e.validationErrors
+              .map((v) => v.message)
+              .slice(0, -1)
+              .join('<br/>')}`;
+      })
+      .join('<br/><br/><br/>');
+    this.luigiCoreService.showAlert({
+      text: `
+            Your local development configuration contains error(s).
+            You will not be able to see you local changes and local development results unless you correct the data and reload the page. 
+            Please see below the detailed information: <br/><br/>
+            
+            ${message}
+          `,
+      type: 'error',
+    });
   }
 
   public async replaceServerNodesWithLocalOnes(

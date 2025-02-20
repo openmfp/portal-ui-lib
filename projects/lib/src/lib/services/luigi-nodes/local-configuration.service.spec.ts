@@ -5,22 +5,22 @@ import { of } from 'rxjs';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { ContentConfiguration, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
-import { LocalNodesConfigService } from '../portal';
+import { LocalNodesService } from '../portal';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
   let luigiCoreService: LuigiCoreService;
   let httpClient: HttpClient;
-  let luigiDataConfigServiceMock: MockProxy<LocalNodesConfigService>;
+  let luigiDataConfigServiceMock: MockProxy<LocalNodesService>;
 
   beforeEach(() => {
     localDevelopmentSettingsLocalStorage.read = jest.fn();
-    luigiDataConfigServiceMock = mock<LocalNodesConfigService>();
+    luigiDataConfigServiceMock = mock<LocalNodesService>();
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: LocalNodesConfigService,
+          provide: LocalNodesService,
           useValue: luigiDataConfigServiceMock,
         },
         provideHttpClient(),
@@ -56,7 +56,9 @@ describe('LocalConfigurationServiceImpl', () => {
         ],
       });
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockImplementation(
-        async (conf: ContentConfiguration[]) => conf.map((c) => ({}))
+        async (conf: ContentConfiguration[]) => {
+          return { nodes: conf.map((c) => ({})) };
+        }
       );
       httpClient.get = jest.fn().mockReturnValue(of({}));
 
@@ -156,14 +158,9 @@ describe('LocalConfigurationServiceImpl', () => {
   });
 
   describe('getNodes', () => {
-    let getLuigiDataFromConfigurationsSpy;
     let i18nSpy;
 
     beforeEach(() => {
-      getLuigiDataFromConfigurationsSpy = jest.spyOn(
-        luigiDataConfigServiceMock,
-        'getLuigiNodesFromConfigurations'
-      );
       i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
       i18nSpy.mockReturnValue({
         getCurrentLocale: () => {
@@ -174,7 +171,9 @@ describe('LocalConfigurationServiceImpl', () => {
 
     it('should return the nodes for a dev environment if the request is successful', async () => {
       const luigiNodeMock = mock<LuigiNode>();
-      getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        { nodes: [luigiNodeMock] }
+      );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
@@ -197,7 +196,9 @@ describe('LocalConfigurationServiceImpl', () => {
 
     it('should apply the serviceProviderConfig to the nodes', async () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
-      getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        { nodes: [luigiNodeMock] }
+      );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
@@ -224,7 +225,9 @@ describe('LocalConfigurationServiceImpl', () => {
 
     it('should return empty array if the local settings is not active', async () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
-      getLuigiDataFromConfigurationsSpy.mockResolvedValue([luigiNodeMock]);
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        { nodes: [luigiNodeMock] }
+      );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: false,
@@ -248,7 +251,9 @@ describe('LocalConfigurationServiceImpl', () => {
     });
 
     it('should return an empty array for a dev environment if the request fails', async () => {
-      getLuigiDataFromConfigurationsSpy.mockResolvedValue([]);
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        { nodes: [] }
+      );
 
       const localNodes = await service.getLocalNodes();
 
@@ -256,7 +261,9 @@ describe('LocalConfigurationServiceImpl', () => {
     });
 
     it('should return an empty array for a dev environment if the request fails', async () => {
-      getLuigiDataFromConfigurationsSpy.mockRejectedValue();
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockRejectedValue(
+        null
+      );
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
       });

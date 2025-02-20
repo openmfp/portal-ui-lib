@@ -20,10 +20,18 @@ export interface LuigiNavigationConfig {
   breadcrumbs?: any;
 }
 
+export interface LuigiStaticSettings extends Record<string, any> {
+  header: {
+    title: string;
+    logo: string;
+    favicon?: string;
+  };
+}
+
 export interface LuigiConfig {
   auth?: any;
   routing?: any;
-  settings?: any;
+  settings?: LuigiStaticSettings;
   lifecycleHooks?: any;
   navigation?: LuigiNavigationConfig;
   userSettings?: any;
