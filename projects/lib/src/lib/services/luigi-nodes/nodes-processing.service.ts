@@ -255,7 +255,7 @@ export class NodesProcessingService {
         }
 
         const label = navHeader.label;
-        const type = nodeItem.defineEntity.label || 'Extension';
+        const type = this.getSideNavigationHeaderType(navHeader.context);
         containerElement.classList.add('entity-nav-header');
         containerElement.innerHTML = `
             <ui5-text class="entity-nav-header-type">${type}</ui5-text>
@@ -367,5 +367,10 @@ export class NodesProcessingService {
 
     addToAll('user', ctx.userid);
     return contextForEntityConfig;
+  }
+
+  private getSideNavigationHeaderType(navHeaderContext: any): string {
+    const type: string = navHeaderContext.entityContext.project.type;
+    return type.at(0).toUpperCase() + type.slice(1);
   }
 }
