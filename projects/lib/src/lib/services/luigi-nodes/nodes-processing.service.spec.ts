@@ -14,18 +14,10 @@ describe('NodesProcessingService', () => {
   const entityName = 'myentity';
 
   const homeChildren: LuigiNode[] = [
-    {
-      label: 'home1',
-      pathSegment: '',
-      viewUrl: '',
-    },
+    { label: 'home1', pathSegment: '', viewUrl: '' },
   ];
   const projectChildren: LuigiNode[] = [
-    {
-      label: 'project1',
-      pathSegment: '',
-      viewUrl: '',
-    },
+    { label: 'project1', pathSegment: '', viewUrl: '' },
   ];
 
   beforeEach(() => {
@@ -45,9 +37,7 @@ describe('NodesProcessingService', () => {
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
     Object.defineProperty(luigiCoreService, 'config', {
-      get: jest.fn(() => ({
-        settings: { btpToolLayout: true },
-      })),
+      get: jest.fn(() => ({ settings: { btpToolLayout: true } })),
       configurable: true,
     });
 
@@ -85,10 +75,7 @@ describe('NodesProcessingService', () => {
       },
     };
 
-    const childrenByEntity = {
-      home: homeChildren,
-      myentity: projectChildren,
-    };
+    const childrenByEntity = { home: homeChildren, myentity: projectChildren };
 
     // Act
     await service.entityChildrenProvider(
@@ -101,11 +88,7 @@ describe('NodesProcessingService', () => {
 
     // Assert
     expect(retrieveAndMergeEntityChildrenSpy).toHaveBeenCalledWith(
-      {
-        contextKey: 'myentityId',
-        dynamicFetchId: entityName,
-        id: entityName,
-      },
+      { contextKey: 'myentityId', dynamicFetchId: entityName, id: entityName },
       childrenByEntity.myentity,
       entityName,
       { myentity: myentityId, user: userid }
@@ -187,10 +170,7 @@ describe('NodesProcessingService', () => {
       // Arrange
       const subsubchildren: Record<string, LuigiNode[]> = {
         someId: [
-          {
-            pathSegment: 'subsub',
-            entityType: 'myentity.subentity.subsub',
-          },
+          { pathSegment: 'subsub', entityType: 'myentity.subentity.subsub' },
         ],
         someOtherId: [
           {
@@ -235,18 +215,14 @@ describe('NodesProcessingService', () => {
         children: [
           {
             pathSegment: 'random',
-            defineEntity: {
-              id: entityName,
-            },
+            defineEntity: { id: entityName },
             children: [
               {
                 pathSegment: 'directChild1',
                 children: [
                   {
                     pathSegment: 'subentity',
-                    defineEntity: {
-                      id: 'subentity',
-                    },
+                    defineEntity: { id: 'subentity' },
                   },
                 ],
               },
@@ -296,51 +272,34 @@ describe('NodesProcessingService', () => {
         children: [
           {
             pathSegment: 'directChild1',
-            visibleForEntityContext: {
-              myentity: {
-                foo: 'bar1',
-              },
-            },
+            visibleForEntityContext: { myentity: { foo: 'bar1' } },
             children: [
               {
                 pathSegment: 'grandChild1',
-                visibleForEntityContext: {
-                  myentity: {
-                    foo: 'bar2',
-                  },
-                },
+                visibleForEntityContext: { myentity: { foo: 'bar2' } },
               },
             ],
           },
           {
             pathSegment: 'directChild2',
-            visibleForEntityContext: {
-              myentity: {
-                foo: 'bar2',
-              },
-            },
+            visibleForEntityContext: { myentity: { foo: 'bar2' } },
           },
         ],
-        compound: {}
+        compound: {},
       };
 
       const childrenByEntity = {
         myentity: [
           {
             pathSegment: 'entityChild1',
-            visibleForEntityContext: {
-              myentity: {
-                foo: 'bar1',
-              },
-            },
+            visibleForEntityContext: { myentity: { foo: 'bar1' } },
           },
         ],
       };
 
-      jest.spyOn(configService, 'getEntityConfig').mockResolvedValue({
-        providers: [],
-        entityContext: { foo: 'bar1' },
-      });
+      jest
+        .spyOn(configService, 'getEntityConfig')
+        .mockResolvedValue({ providers: [], entityContext: { foo: 'bar1' } });
 
       service.applyEntityChildrenRecursively(rootNode, childrenByEntity, '');
 
@@ -389,19 +348,14 @@ describe('NodesProcessingService', () => {
         myentity: [
           {
             pathSegment: 'entityChild1',
-            visibleForEntityContext: {
-              myentity: {
-                foo: 'bar1',
-              },
-            },
+            visibleForEntityContext: { myentity: { foo: 'bar1' } },
           },
         ],
       };
 
-      jest.spyOn(configService, 'getEntityConfig').mockResolvedValue({
-        providers: [],
-        entityContext: { foo: 'bar1' },
-      });
+      jest
+        .spyOn(configService, 'getEntityConfig')
+        .mockResolvedValue({ providers: [], entityContext: { foo: 'bar1' } });
 
       service.applyEntityChildrenRecursively(rootNode, childrenByEntity, '');
 
@@ -418,9 +372,7 @@ describe('NodesProcessingService', () => {
   describe('addBtpLayoutNavigationHeader', () => {
     it('should not add navHeader when entityNode has no defineEntity', () => {
       // Arrange
-      const entityNode: LuigiNode = {
-        pathSegment: 'test',
-      };
+      const entityNode: LuigiNode = { pathSegment: 'test' };
 
       // Act
       service.addBtpLayoutNavigationHeader(entityNode);
@@ -433,15 +385,11 @@ describe('NodesProcessingService', () => {
       // Arrange
       const entityNode: LuigiNode = {
         pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
+        defineEntity: { id: 'testEntity' },
       };
 
       Object.defineProperty(luigiCoreService, 'config', {
-        get: jest.fn(() => ({
-          settings: { btpToolLayout: false },
-        })),
+        get: jest.fn(() => ({ settings: { btpToolLayout: false } })),
       });
 
       // Act
@@ -455,9 +403,7 @@ describe('NodesProcessingService', () => {
       // Arrange
       const entityNode: LuigiNode = {
         pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
+        defineEntity: { id: 'testEntity' },
       };
 
       // Act
@@ -472,12 +418,8 @@ describe('NodesProcessingService', () => {
       // Arrange
       const entityNode: LuigiNode = {
         pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
-        navHeader: {
-          existingProp: 'test',
-        },
+        defineEntity: { id: 'testEntity' },
+        navHeader: { existingProp: 'test' },
       };
 
       // Act
@@ -495,10 +437,7 @@ describe('NodesProcessingService', () => {
       beforeEach(() => {
         entityNode = {
           pathSegment: 'test',
-          defineEntity: {
-            id: 'testEntity',
-            label: 'Test Entity',
-          },
+          defineEntity: { id: 'testEntity', label: 'Test Entity' },
         };
         containerElement = document.createElement('div');
       });
@@ -549,7 +488,7 @@ describe('NodesProcessingService', () => {
 
       it('should use "Component" if entity label is set to "component', () => {
         // Arrange
-        entityNode.defineEntity.label = "component";
+        entityNode.defineEntity.label = 'component';
         service.addBtpLayoutNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 
@@ -567,9 +506,12 @@ describe('NodesProcessingService', () => {
 
       it('should use "Product" for product-type projects', () => {
         // Arrange
-        entityNode.defineEntity.label = "Project";
+        entityNode.defineEntity.label = 'Project';
         service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = { label: 'Test Label', context: {entityContext: {project: {type: 'product'}} }};
+        const navHeader = {
+          label: 'Test Label',
+          context: { entityContext: { project: { type: 'product' } } },
+        };
 
         // Act
         entityNode.navHeader.renderer(
@@ -585,9 +527,12 @@ describe('NodesProcessingService', () => {
 
       it('should use "Experiment" for experiment-type projects', () => {
         // Arrange
-        entityNode.defineEntity.label = "Project";
+        entityNode.defineEntity.label = 'Project';
         service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = { label: 'Test Label', context: {entityContext: {project: {type: 'experiment'}} }};
+        const navHeader = {
+          label: 'Test Label',
+          context: { entityContext: { project: { type: 'experiment' } } },
+        };
 
         // Act
         entityNode.navHeader.renderer(
