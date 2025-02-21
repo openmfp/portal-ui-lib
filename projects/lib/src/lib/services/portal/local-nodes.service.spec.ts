@@ -8,7 +8,7 @@ import {
 import { RouterModule } from '@angular/router';
 import { LuigiCoreService } from '../luigi-core.service';
 
-describe('LocalNodesConfigService', () => {
+describe('LocalNodesService', () => {
   let service: LocalNodesService;
   let httpTestingController: HttpTestingController;
   let luigiCoreService: LuigiCoreService;

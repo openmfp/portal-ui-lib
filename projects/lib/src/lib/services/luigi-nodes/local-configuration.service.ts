@@ -77,7 +77,7 @@ export class LocalConfigurationServiceImpl
       .map((e) => {
         return `For configuration with url:
             ${e.url} <br/><br/>
-            ${e.validationErrors
+            ${(e.validationErrors || [])
               .map((v) => v.message)
               .slice(0, -1)
               .join('<br/>')}`;
