@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { LocalNodesConfigService } from './local-nodes-config.service';
+import { LocalNodesService } from './local-nodes.service';
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -8,8 +8,8 @@ import {
 import { RouterModule } from '@angular/router';
 import { LuigiCoreService } from '../luigi-core.service';
 
-describe('LocalNodesConfigService', () => {
-  let service: LocalNodesConfigService;
+describe('LocalNodesService', () => {
+  let service: LocalNodesService;
   let httpTestingController: HttpTestingController;
   let luigiCoreService: LuigiCoreService;
   let i18nSpy;
@@ -25,7 +25,7 @@ describe('LocalNodesConfigService', () => {
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(LocalNodesConfigService);
+    service = TestBed.inject(LocalNodesService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
 
     i18nSpy = jest.spyOn(luigiCoreService, 'i18n');

@@ -126,9 +126,9 @@ describe('LifecycleHooksConfigService', () => {
       it('should handle error when retrieving Luigi navigation nodes', async () => {
         const error = new Error('Test error');
         luigiNodesServiceMock.retrieveChildrenByEntity.mockRejectedValue(error);
-        staticSettingsConfigServiceMock.getStaticSettingsConfig.mockResolvedValue(
-          { header: { title: 'Test App', logo: 'assets/logo.png' } }
-        );
+        luigiCoreServiceMock.getConfig.mockReturnValue({
+          settings: { header: { title: 'Test App', logo: 'assets/logo.png' } },
+        });
         console.error = jest.fn();
 
         const config = service.getLifecycleHooksConfig({} as any);
