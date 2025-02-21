@@ -30,13 +30,15 @@ describe('LifecycleHooksConfigService', () => {
     i18nServiceMock = mock();
     luigiNodesServiceMock = { retrieveChildrenByEntity: jest.fn() } as any;
     luigiCoreServiceMock = {
-      getConfig: jest.fn(),
       setConfig: jest.fn(),
       ux: jest.fn().mockReturnValue({ hideAppLoadingIndicator: jest.fn() }),
       isFeatureToggleActive: jest.fn(),
       resetLuigi: jest.fn(),
       showAlert: jest.fn().mockReturnValue(Promise.resolve()),
     } as any;
+    Object.defineProperty(luigiCoreServiceMock, 'config', {
+      get: jest.fn(),
+    });
     routingConfigServiceMock = { getRoutingConfig: jest.fn() } as any;
     staticSettingsConfigServiceMock = {
       getStaticSettingsConfig: jest.fn(),
@@ -115,8 +117,12 @@ describe('LifecycleHooksConfigService', () => {
 
       it('should call luigiCoreServiceMock methods', async () => {
         const config = service.getLifecycleHooksConfig({} as any);
+
         await config.luigiAfterInit();
-        expect(luigiCoreServiceMock.getConfig).toHaveBeenCalled();
+
+        expect(
+          Object.getOwnPropertyDescriptor(luigiCoreServiceMock, 'config')?.get
+        ).toHaveBeenCalled();
         expect(
           luigiCoreServiceMock.ux().hideAppLoadingIndicator
         ).toHaveBeenCalled();

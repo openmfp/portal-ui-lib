@@ -42,7 +42,7 @@ export class LifecycleHooksConfigService {
         }
 
         const config = {
-          ...this.luigiCoreService.getConfig(),
+          ...this.luigiCoreService.config,
           lifecycleHooks: {},
           navigation: await this.navigationConfigService.getNavigationConfig(
             childrenByEntity,

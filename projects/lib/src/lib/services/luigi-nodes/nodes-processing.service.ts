@@ -14,10 +14,12 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeAccessHandlingService } from './node-access-handling.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
+import { LuigiCoreService } from '../luigi-core.service';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
   constructor(
+    private luigiCoreService: LuigiCoreService,
     private configService: ConfigService,
     private luigiNodesService: LuigiNodesService,
     private nodeSortingService: NodeSortingService,
@@ -233,6 +235,39 @@ export class NodesProcessingService {
     });
   }
 
+  addBtpLayoutNavigationHeader(entityNode: LuigiNode) {
+    if (
+      entityNode.defineEntity &&
+      this.luigiCoreService.config.settings.btpToolLayout
+    ) {
+      if (!entityNode.navHeader) {
+        entityNode.navHeader = {};
+      }
+
+      entityNode.navHeader.renderer = (
+        containerElement: HTMLElement,
+        nodeItem: LuigiNode,
+        clickHandler: Function,
+        navHeader: any
+      ) => {
+        if (!containerElement || !navHeader?.label) {
+          return;
+        }
+
+        const label = navHeader.label;
+        const type = this.getSideNavigationHeaderType(
+          navHeader.context,
+          nodeItem
+        );
+        containerElement.classList.add('entity-nav-header');
+        containerElement.innerHTML = `
+            <ui5-text class="entity-nav-header-type">${type}</ui5-text>
+            <ui5-title class="entity-nav-header-label" level="H6" size="H6">${label}</ui5-title>
+        `;
+      };
+    }
+  }
+
   async buildChildrenForEntity(
     entityNode: LuigiNode,
     children: LuigiNode[],
@@ -248,6 +283,8 @@ export class NodesProcessingService {
         entityNode.navHeader.showUpLink = true;
       }
     }
+
+    this.addBtpLayoutNavigationHeader(entityNode);
 
     if (!children) {
       return [];
@@ -333,5 +370,16 @@ export class NodesProcessingService {
 
     addToAll('user', ctx.userid);
     return contextForEntityConfig;
+  }
+
+  private getSideNavigationHeaderType(
+    navHeaderContext: any,
+    nodeItem: LuigiNode
+  ): string {
+    let type: string = nodeItem.defineEntity.label;
+    if (type === 'Project') {
+      type = navHeaderContext.entityContext.project.type;
+    }
+    return type.at(0).toUpperCase() + type.slice(1);
   }
 }
