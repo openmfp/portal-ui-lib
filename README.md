@@ -1,5 +1,9 @@
 # Portal UI Library
 
+![Build Status](https://github.com/openmfp/portal-ui-lib/actions/workflows/pipeline.yaml/badge.svg)
+[![REUSE status](
+https://api.reuse.software/badge/github.com/openmfp/portal-ui-lib)](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib)
+
 This library helps you to set up your angular project consuming [Luigi](https://luigi-project.io/) configuration.
 
 Main features of this library are:
@@ -635,5 +639,5 @@ Please refer to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) file in this reposi
 
 ## Licensing
 
-Copyright 2024 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib).
+Copyright 2025 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib).
 

@@ -40,7 +40,7 @@ describe('matchesJMESPath', () => {
         {
           entityContext: { component: { tags: null } },
         },
-        'contains(entityContext.component.tags, "hyperspace-template")'
+        'contains(entityContext.component.tags, "template")'
       )
     ).toEqual(false);
     expect(console.warn).toHaveBeenCalled();

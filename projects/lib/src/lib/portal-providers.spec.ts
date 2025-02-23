@@ -9,17 +9,18 @@ import {
   GlobalSearchConfigService,
   LocalConfigurationServiceImpl,
   LuigiAuthEventsCallbacksService,
+  LuigiBreadcrumb,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
   NodeAccessHandlingService,
   NodeChangeHookConfigService,
-  StaticSettingsConfigServiceImpl,
+  StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
 } from './services';
 import * as services from './services';
 import { Context } from '@luigi-project/client';
-import { LuigiNode, PortalConfig, ClientEnvironment } from './models';
+import { LuigiNode } from './models';
 
 class MockCustomListener1 implements CustomMessageListener {
   messageId(): string {
@@ -106,11 +107,6 @@ describe('Provide Portal', () => {
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
 
     expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: StaticSettingsConfigServiceImpl,
-    });
-
-    expect(providersArg).toContainEqual({
       provide: tokens.LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
       useClass: LocalConfigurationServiceImpl,
     });
@@ -122,92 +118,19 @@ describe('Provide Portal', () => {
   });
 
   it('should set custom services when provided', () => {
-    class CustomAuthEventsService implements LuigiAuthEventsCallbacksService {
-      onAuthSuccessful: (settings: any, authData: any) => void;
-      onAuthError: (settings: any, err: any) => void;
-      onAuthExpired: (settings: any) => void;
-      onLogout: (settings: any) => void;
-      onAuthExpireSoon: (settings: any) => void;
-      onAuthConfigError: (settings: any, err: any) => void;
-    }
-
-    class CustomNodeAccessService implements NodeAccessHandlingService {
-      nodeAccessHandling(ctx: Context, node: LuigiNode): Promise<LuigiNode> {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomNodeChangeHookService implements NodeChangeHookConfigService {
-      nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode) {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomThemingService implements ThemingService {
-      applyTheme(id: string, reset?: boolean): void {
-        throw new Error('Method not implemented.');
-      }
-      getDefaultThemeId(): string {
-        throw new Error('Method not implemented.');
-      }
-      getAvailableThemes(): services.Theme[] {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomGlobalSearchConfigService implements GlobalSearchConfigService {
-      getGlobalSearchConfig() {
-        return null;
-      }
-    }
-
-    class CustomAppSwitcherConfigService implements AppSwitcherConfigService {
-      getAppSwitcher(luigiNodes: LuigiNode[]) {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomLuigiExtendedGlobalContextConfigService
-      implements LuigiExtendedGlobalContextConfigService
-    {
-      createLuigiExtendedGlobalContext(): Promise<Record<string, any>> {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomCustomGlobalNodesService implements CustomGlobalNodesService {
-      getCustomGlobalNodes(): Promise<LuigiNode[]> {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomUserProfileConfigService implements UserProfileConfigService {
-      getProfile(): Promise<services.UserProfile> {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class CustomLuigiBreadcrumbConfigService
-      implements LuigiBreadcrumbConfigService
-    {
-      getBreadcrumbsConfig(): services.LuigiBreadcrumb {
-        throw new Error('Method not implemented.');
-      }
-    }
-
     const options: PortalOptions = {
-      luigiAuthEventsCallbacksService: CustomAuthEventsService,
-      nodeAccessHandlingService: CustomNodeAccessService,
-      nodeChangeHookConfigService: CustomNodeChangeHookService,
-      globalSearchConfigService: CustomGlobalSearchConfigService,
-      appSwitcherConfigService: CustomAppSwitcherConfigService,
-      luigiExtendedGlobalContextConfigService:
-        CustomLuigiExtendedGlobalContextConfigService,
-      customGlobalNodesService: CustomCustomGlobalNodesService,
-      userProfileConfigService: CustomUserProfileConfigService,
-      luigiBreadcrumbConfigService: CustomLuigiBreadcrumbConfigService,
+      luigiAuthEventsCallbacksService: {} as any,
+      staticSettingsConfigService: {} as any,
+      nodeAccessHandlingService: {} as any,
+      nodeChangeHookConfigService: {} as any,
+      globalSearchConfigService: {} as any,
+      appSwitcherConfigService: {} as any,
+      luigiExtendedGlobalContextConfigService: {} as any,
+      customGlobalNodesService: {} as any,
+      userProfileConfigService: {} as any,
+      luigiBreadcrumbConfigService: {} as any,
+      themingService: {} as any,
       errorComponentConfig: { '404': {} } as any,
-      themingService: CustomThemingService,
     };
 
     providePortal(options);
@@ -220,54 +143,59 @@ describe('Provide Portal', () => {
     });
 
     expect(providersArg).toContainEqual({
+      provide: tokens.LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: {},
+    });
+
+    expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CustomLuigiBreadcrumbConfigService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CustomUserProfileConfigService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
-      useClass: CustomCustomGlobalNodesService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide:
         tokens.LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CustomLuigiExtendedGlobalContextConfigService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CustomAppSwitcherConfigService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.THEMING_SERVICE,
-      useClass: CustomThemingService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: CustomGlobalSearchConfigService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
-      useClass: CustomAuthEventsService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
-      useClass: CustomNodeAccessService,
+      useClass: {},
     });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-      useClass: CustomNodeChangeHookService,
+      useClass: {},
     });
   });
 

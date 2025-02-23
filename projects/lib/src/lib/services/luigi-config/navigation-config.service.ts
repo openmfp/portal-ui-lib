@@ -68,7 +68,8 @@ export class NavigationConfigService {
       nodeChangeHook: function (prevNode, nextNode) {
         this.nodeChangeHookConfigService.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
-      breadcrumbs: this.luigiBreadcrumbConfigService?.getBreadcrumbsConfig(),
+      breadcrumbs:
+        await this.luigiBreadcrumbConfigService?.getBreadcrumbsConfig(),
     };
   }
 

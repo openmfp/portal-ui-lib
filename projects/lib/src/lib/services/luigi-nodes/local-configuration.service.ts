@@ -1,12 +1,15 @@
 import { inject, Injectable } from '@angular/core';
+import { DialogService } from '@fundamental-ngx/core/dialog';
 import { merge } from 'lodash';
 import {
   ContentConfiguration,
   LuigiNode,
   LocalDevelopmentSettings,
 } from '../../models';
+import { ValidationResult } from '../../models/node-transform';
+import { LuigiCoreService } from '../luigi-core.service';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
-import { LocalNodesConfigService } from '../portal';
+import { LocalNodesService } from '../portal';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
 
@@ -25,7 +28,9 @@ export class LocalConfigurationServiceImpl
   implements LocalConfigurationService
 {
   private http = inject(HttpClient);
-  private luigiConfigService = inject(LocalNodesConfigService);
+  private luigiConfigService = inject(LocalNodesService);
+  private luigiCoreService = inject(LuigiCoreService);
+  private dialogService = inject(DialogService);
   private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
@@ -44,24 +49,50 @@ export class LocalConfigurationServiceImpl
       const configurations = await this.getLocalConfigurations(
         localDevelopmentSettings
       );
-      const luigiNodes =
-        await this.luigiConfigService.getLuigiNodesFromConfigurations(
+      const result =
+        (await this.luigiConfigService.getLuigiNodesFromConfigurations(
           configurations
-        );
+        )) || {};
 
-      (luigiNodes || []).forEach((node) => {
+      if (result.errors) {
+        this.alertErrors(result.errors);
+      }
+
+      (result.nodes || []).forEach((node) => {
         node.context = {
           ...node.context,
           serviceProviderConfig: localDevelopmentSettings.serviceProviderConfig,
         };
       });
 
-      this.cachedLocalNodes = luigiNodes;
-      return luigiNodes;
+      return (this.cachedLocalNodes = result.nodes || []);
     } catch (e) {
       console.warn(`Failed to retrieve local luigi config.`, e);
       return [];
     }
+  }
+
+  private alertErrors(errors: ValidationResult[]) {
+    const message = errors
+      .map((e) => {
+        return `For configuration with url:
+            ${e.url} <br/><br/>
+            ${(e.validationErrors || [])
+              .map((v) => v.message)
+              .slice(0, -1)
+              .join('<br/>')}`;
+      })
+      .join('<br/><br/><br/>');
+    this.luigiCoreService.showAlert({
+      text: `
+            Your local development configuration contains error(s).
+            You will not be able to see you local changes and local development results unless you correct the data and reload the page. 
+            Please see below the detailed information: <br/><br/>
+            
+            ${message}
+          `,
+      type: 'error',
+    });
   }
 
   public async replaceServerNodesWithLocalOnes(
@@ -83,20 +114,14 @@ export class LocalConfigurationServiceImpl
     );
 
     console.debug(
-      `Found '${serverLuigiNodes.length}' server nodes. Found '${
-        localLuigiNodes.length
-      }' local luigi nodes. The entities of the server node are:${[
-        ...new Set(
-          serverLuigiNodes.map((n) =>
-            this.stripCompoundFromEntity(n.entityType)
-          )
-        ),
-      ].join(',')}
-      The entities of local nodes are: ${[
-        ...new Set(
-          localLuigiNodes.map((n) => this.stripCompoundFromEntity(n.entityType))
-        ),
-      ].join(',')}`
+      `Found '${serverLuigiNodes.length}' server nodes. 
+       Found '${localLuigiNodes.length}' local luigi nodes. 
+       The entities of the server node are: [${[
+         ...new Set(serverLuigiNodes.map((n) => n.entityType)),
+       ].join(',')}]
+      The entities of local nodes are: [${[
+        ...new Set(localLuigiNodes.map((n) => n.entityType)),
+      ].join(',')}]`
     );
 
     const filteredServerNodes = serverLuigiNodes.filter(
@@ -111,8 +136,9 @@ export class LocalConfigurationServiceImpl
     );
 
     const nodesToAdd = localLuigiNodes.filter((n) => {
-      let entity = this.stripCompoundFromEntity(n.entityType);
-      entity = entity || 'home';
+      const entity = n.entityType?.includes('::compound')
+        ? 'global'
+        : n.entityType || 'home';
       return currentEntities.includes(entity);
     });
 
@@ -129,16 +155,6 @@ export class LocalConfigurationServiceImpl
       } local nodes to the luigi config for ${currentEntities.join(',')}`
     );
     return filteredServerNodes.concat(nodesToAdd);
-  }
-
-  private stripCompoundFromEntity(entity: string): string {
-    if (!entity) {
-      return entity;
-    }
-
-    // also strip the first segemnt of the entity, to get the actual entity.
-    // then strip ::.* for the root compound views
-    return entity.replace(/\..*::.*/, '').replace(/::.*/, '');
   }
 
   private extendContextOfLocalNodes(
@@ -173,7 +189,6 @@ export class LocalConfigurationServiceImpl
   private async getLocalConfigurations(
     localDevelopmentSettings: LocalDevelopmentSettings
   ): Promise<ContentConfiguration[]> {
-
     const initialConfigurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
       .map((config) => config.data);

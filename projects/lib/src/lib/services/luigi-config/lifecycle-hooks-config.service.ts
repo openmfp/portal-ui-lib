@@ -1,4 +1,4 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { $localize } from '@angular/localize/init';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -6,30 +6,25 @@ import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { NavigationConfigService } from './navigation-config.service';
 import { RoutingConfigService } from './routing-config.service';
-import { StaticSettingsConfigService } from './static-settings-config.service';
+import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
-import {
-  LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-} from '../../injection-tokens';
+import { LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode, ClientEnvironment } from '../../models';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 
 @Injectable({ providedIn: 'root' })
 export class LifecycleHooksConfigService {
-  constructor(
-    private i18nService: I18nService,
-    private luigiNodesService: LuigiNodesService,
-    private luigiCoreService: LuigiCoreService,
-    private routingConfigService: RoutingConfigService,
-    private navigationConfigService: NavigationConfigService,
-    private userSettingsConfigService: UserSettingsConfigService,
-    @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
-    private staticSettingsConfigService: StaticSettingsConfigService,
-    @Optional()
-    @Inject(LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN)
-    private globalSearchConfigService: GlobalSearchConfigService
-  ) {}
+  private i18nService = inject(I18nService);
+  private luigiNodesService = inject(LuigiNodesService);
+  private luigiCoreService = inject(LuigiCoreService);
+  private routingConfigService = inject(RoutingConfigService);
+  private navigationConfigService = inject(NavigationConfigService);
+  private userSettingsConfigService = inject(UserSettingsConfigService);
+  private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);
+  private globalSearchConfigService = inject<GlobalSearchConfigService>(
+    LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN as any,
+    { optional: true }
+  );
 
   getLifecycleHooksConfig(envConfig: ClientEnvironment) {
     return {
@@ -41,7 +36,7 @@ export class LifecycleHooksConfigService {
           childrenByEntity =
             await this.luigiNodesService.retrieveChildrenByEntity();
         } catch (e) {
-          console.error(`Error retrieving Luigi navigation nodes`, e);
+          console.error('Error retrieving Luigi navigation nodes', e);
           this.openErrorDialog();
           return;
         }
@@ -53,9 +48,9 @@ export class LifecycleHooksConfigService {
             childrenByEntity,
             envConfig
           ),
+          routing: this.routingConfigService.getRoutingConfig(),
           settings:
             await this.staticSettingsConfigService.getStaticSettingsConfig(),
-          routing: this.routingConfigService.getRoutingConfig(),
           userSettings:
             await this.userSettingsConfigService.getUserSettings(
               childrenByEntity
@@ -74,10 +69,7 @@ export class LifecycleHooksConfigService {
   }
 
   private openErrorDialog() {
-    const appTitle =
-      this.staticSettingsConfigService.getInitialStaticSettingsConfig()[
-        'header'
-      ].title;
+    const appTitle = this.luigiCoreService.getConfig().settings.header.title;
     this.luigiCoreService.showAlert({
       text: $localize`There was an error loading the ${appTitle}`,
       type: 'error',

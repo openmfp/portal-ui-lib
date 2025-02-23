@@ -19,6 +19,7 @@ export class CommonGlobalLuigiNodesService {
       {
         pathSegment: 'error',
         label: 'Content not found',
+        order: '1000',
         hideFromNav: true,
         children: [
           {

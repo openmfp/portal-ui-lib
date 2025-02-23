@@ -1,10 +1,9 @@
-import { Inject, Injectable } from '@angular/core';
-import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { Injectable, inject } from '@angular/core';
 import { ClientEnvironment, LuigiConfig } from '../../models';
 import { AuthConfigService } from './auth-config.service';
 import { EnvConfigService } from '../portal';
 import { RoutingConfigService } from './routing-config.service';
-import { StaticSettingsConfigService } from './static-settings-config.service';
+import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 
@@ -12,15 +11,12 @@ import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
   providedIn: 'root',
 })
 export class LuigiConfigService {
-  constructor(
-    private envConfigService: EnvConfigService,
-    private authConfigService: AuthConfigService,
-    private customMessageListenersService: CustomMessageListenersService,
-    private routingConfigService: RoutingConfigService,
-    private lifecycleHooksConfigService: LifecycleHooksConfigService,
-    @Inject(LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN)
-    private staticSettingsConfigService: StaticSettingsConfigService
-  ) {}
+  private envConfigService = inject(EnvConfigService);
+  private authConfigService = inject(AuthConfigService);
+  private customMessageListenersService = inject(CustomMessageListenersService);
+  private routingConfigService = inject(RoutingConfigService);
+  private lifecycleHooksConfigService = inject(LifecycleHooksConfigService);
+  private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);
 
   public async getLuigiConfiguration(): Promise<LuigiConfig> {
     const envConfig: ClientEnvironment =
@@ -33,7 +29,7 @@ export class LuigiConfigService {
       routing: this.routingConfigService.getInitialRoutingConfig(),
       communication: this.customMessageListenersService.getMessageListeners(),
       settings:
-        this.staticSettingsConfigService.getInitialStaticSettingsConfig(),
+        await this.staticSettingsConfigService.getStaticSettingsConfig(),
       lifecycleHooks:
         this.lifecycleHooksConfigService.getLifecycleHooksConfig(envConfig),
     };

@@ -161,6 +161,10 @@ describe('NodeSortingService', () => {
           label: '3',
         },
         {
+          label: 'last-one',
+          order: '1000',
+        },
+        {
           label: '4',
           order: '2',
           category: {
@@ -208,6 +212,10 @@ describe('NodeSortingService', () => {
         {
           label: '3',
           order: '999',
+        },
+        {
+          label: 'last-one',
+          order: '1000',
         },
       ]);
     });
