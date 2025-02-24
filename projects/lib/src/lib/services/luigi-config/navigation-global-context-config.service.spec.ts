@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import { PortalConfig } from '../../models';
+import { UserInfo } from 'node:os';
+import { PortalConfig, UserData } from '../../models';
 import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
 import { AuthService, ConfigService } from '../portal';
 import { LuigiExtendedGlobalContextConfigService } from '../luigi-nodes/luigi-extended-global-context-config.service';
@@ -66,8 +67,10 @@ describe('NavigationGlobalContextConfigService', () => {
         mockExtendedContext
       );
 
-      authService.getUsername.mockReturnValue('test-user');
-      authService.getUserEmail.mockReturnValue('user@test.com');
+      authService.getUserInfo.mockReturnValue({
+        email: 'user@test.com',
+        userId: 'test-user',
+      } as UserData);
       authService.getToken.mockReturnValue('test-token');
 
       const result =
@@ -89,8 +92,10 @@ describe('NavigationGlobalContextConfigService', () => {
 
       configService.getPortalConfig.mockResolvedValue(mockPortalConfig);
 
-      authService.getUsername.mockReturnValue('test-user');
-      authService.getUserEmail.mockReturnValue('user@test.com');
+      authService.getUserInfo.mockReturnValue({
+        email: 'user@test.com',
+        userId: 'test-user',
+      } as UserData);
       authService.getToken.mockReturnValue('test-token');
 
       TestBed.resetTestingModule();

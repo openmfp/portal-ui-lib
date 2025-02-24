@@ -1,4 +1,5 @@
-import { LocalDevelopmentSettings, UserTokenData } from '../models';
+import { LocalDevelopmentSettings, UserData, UserTokenData } from '../models';
+import { UserSettingsValues } from './luigi-config/user-settings-config.service';
 
 export enum LocalStorageKeys {
   LAST_NAVIGATION_URL = 'openmfp.navigation.lastUrl',
@@ -31,6 +32,7 @@ export const localDevelopmentSettingsLocalStorage = {
     }
     return null;
   },
+
   store: (localDevelopmentSetting: LocalDevelopmentSettings) => {
     try {
       localStorage.setItem(
@@ -47,11 +49,11 @@ export const localDevelopmentSettingsLocalStorage = {
 };
 
 export const userSettingsLocalStorage = {
-  read: async (userInfo: UserTokenData) => {
+  read: async (userInfo: UserData): Promise<UserSettingsValues> => {
     const transientSettings = {
       frame_userAccount: {
-        name: `${userInfo.first_name || ''} ${userInfo.last_name || ''}`,
-        mail: userInfo.email || '',
+        name: userInfo.name || '',
+        email: userInfo.email || '',
       },
     };
 
@@ -84,10 +86,10 @@ export const userSettingsLocalStorage = {
     });
   },
 
-  store: async (settings: any) => {
+  store: async (settings: UserSettingsValues) => {
     if (settings.frame_userAccount && settings.frame_userAccount.language) {
       delete settings.frame_userAccount.name;
-      delete settings.frame_userAccount.mail;
+      delete settings.frame_userAccount.email;
     } else {
       delete settings.frame_userAccount;
     }

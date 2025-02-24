@@ -130,7 +130,7 @@ describe('AuthService', () => {
       };
       jest.spyOn(service, 'getAuthData').mockReturnValue(mockAuthData);
 
-      const user = service.getUser();
+      const user = service['getUser']();
 
       expect(user).toEqual(mockDecodedToken);
       expect(jwtDecode).toHaveBeenCalledWith('mock_token');
@@ -146,13 +146,21 @@ describe('AuthService', () => {
         expires_in: '3600',
       });
 
-      expect(service.getUser()).toEqual(null);
+      expect(service.getUserInfo()).toEqual({
+        description: '',
+        email: '',
+        icon: false,
+        initials: '',
+        name: ' ',
+        picture: '',
+        userId: '',
+      });
     });
 
     it('should return an empty object if no auth data', () => {
       jest.spyOn(service, 'getAuthData').mockReturnValue(undefined as any);
 
-      const user = service.getUser();
+      const user = service['getUser']();
 
       expect(user).toEqual({});
     });
@@ -161,22 +169,22 @@ describe('AuthService', () => {
   describe('getUsername', () => {
     it('should return the sub from the decoded token', () => {
       jest
-        .spyOn(service, 'getUser')
+        .spyOn(service as any, 'getUser')
         .mockReturnValue({ sub: 'user123' } as UserTokenData);
 
-      const username = service.getUsername();
+      const { userId } = service.getUserInfo();
 
-      expect(username).toBe('user123');
+      expect(userId).toBe('user123');
     });
   });
 
   describe('getUserEmail', () => {
     it('should return the mail from the decoded token', () => {
       jest
-        .spyOn(service, 'getUser')
+        .spyOn(service as any, 'getUser')
         .mockReturnValue({ mail: 'user@example.com' } as UserTokenData);
 
-      const email = service.getUserEmail();
+      const { email } = service.getUserInfo();
 
       expect(email).toBe('user@example.com');
     });
@@ -184,7 +192,7 @@ describe('AuthService', () => {
 
   describe('getUserInfo', () => {
     it('should return user info object', () => {
-      jest.spyOn(service, 'getUser').mockReturnValue({
+      jest.spyOn(service as any, 'getUser').mockReturnValue({
         first_name: 'John',
         last_name: 'Doe',
         mail: 'john.doe@example.com',
@@ -198,13 +206,14 @@ describe('AuthService', () => {
         email: 'john.doe@example.com',
         description: 'john.doe@example.com',
         picture: '',
+        userId: 'user123',
         icon: false,
         initials: 'JD',
       });
     });
 
     it('should handle undefined first name and last name', () => {
-      jest.spyOn(service, 'getUser').mockReturnValue({
+      jest.spyOn(service as any, 'getUser').mockReturnValue({
         mail: 'john.doe@example.com',
         sub: 'user123',
       } as UserTokenData);
@@ -218,6 +227,7 @@ describe('AuthService', () => {
         picture: '',
         icon: false,
         initials: '',
+        userId: 'user123',
       });
     });
   });

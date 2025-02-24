@@ -17,7 +17,7 @@ describe('provideLanguageServices', () => {
   beforeEach(() => {
     luigiCoreServiceMock = mock();
     authServiceMock = {
-      getUser: jest.fn().mockReturnValue({ id: 'user1' }),
+      getUserInfo: jest.fn().mockReturnValue({ userId: 'user1' }),
     } as unknown as jest.Mocked<AuthService>;
 
     i18nServiceMock = {
@@ -46,7 +46,7 @@ describe('provideLanguageServices', () => {
     await initFn();
 
     expect(userSettingsLocalStorage.read).toHaveBeenCalledWith({
-      id: 'user1',
+      userId: 'user1',
     });
     expect(i18nServiceMock.getValidLanguages).toHaveBeenCalled();
     expect(luigiCoreServiceMock.setCurrentLocale).toHaveBeenCalledWith('de');

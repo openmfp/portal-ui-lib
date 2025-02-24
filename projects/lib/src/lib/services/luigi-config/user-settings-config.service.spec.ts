@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
-import { UserSettingsConfigService } from './user-settings-config.service';
+import {
+  UserSettingsConfigService,
+  UserSettingsValues,
+} from './user-settings-config.service';
 import { ThemingService } from '../theming.service';
 import { AuthService } from '../portal';
 import { I18nService } from '../i18n.service';
@@ -10,7 +13,7 @@ import {
   localDevelopmentSettingsLocalStorage,
   LocalStorageKeys,
 } from '../storage-service';
-import { LuigiNode, LuigiUserSettings } from '../../models';
+import { LuigiNode, LuigiUserSettings, UserData } from '../../models';
 import { mock } from 'jest-mock-extended';
 
 jest.mock('../storage-service');
@@ -57,7 +60,9 @@ describe('UserSettingsConfigService', () => {
         name: 'Test User',
         initials: 'TU',
       } as any);
-      authServiceMock.getUsername.mockReturnValue('testuser');
+      authServiceMock.getUserInfo.mockReturnValue({
+        userId: 'testuser',
+      } as UserData);
       themingServiceMock.getDefaultThemeId.mockReturnValue('default-theme');
       themingServiceMock.getAvailableThemes.mockReturnValue([
         { id: 'default-theme', name: 'Default Theme', description: 'des' },
@@ -124,13 +129,19 @@ describe('UserSettingsConfigService', () => {
       // Test store operation
       const newSettings = {
         frame_appearance: { selectedTheme: 'new-theme' },
-        frame_userAccount: { language: 'de' },
-        frame_development: { localDevelopmentSettings: { isActive: true } },
+        frame_userAccount: { name: 'name', email: 'email', language: 'de' },
+        frame_development: {
+          localDevelopmentSettings: {
+            isActive: true,
+            configs: [],
+            serviceProviderConfig: {},
+          },
+        },
       };
       const previousSettings = {
         frame_appearance: { selectedTheme: 'old-theme' },
         frame_userAccount: { language: 'en' },
-      };
+      } as UserSettingsValues;
 
       await result.storeUserSettings(newSettings, previousSettings);
       expect(userSettingsLocalStorage.store).toHaveBeenCalledWith(newSettings);
@@ -138,6 +149,8 @@ describe('UserSettingsConfigService', () => {
       expect(globalThis.location.reload).toHaveBeenCalled();
       expect(localDevelopmentSettingsLocalStorage.store).toHaveBeenCalledWith({
         isActive: true,
+        configs: [],
+        serviceProviderConfig: {},
       });
     });
   });
@@ -187,12 +200,12 @@ describe('UserSettingsConfigService', () => {
         frame_development: {
           localDevelopmentSettings: { isActive: true },
         },
-      };
+      } as UserSettingsValues;
       const previousSettings = {
         frame_development: {
           localDevelopmentSettings: { isActive: false },
         },
-      };
+      } as UserSettingsValues;
 
       globalThis.location.reload = jest.fn();
 
