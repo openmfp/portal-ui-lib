@@ -180,7 +180,7 @@ export class UserSettingsConfigService {
 
   private async getSelectedThemeDisplayName(): Promise<string> {
     const user = this.authService.getUserInfo();
-    const userSettings = (await userSettingsLocalStorage.read(user)) as any;
+    const userSettings = await userSettingsLocalStorage.read(user);
     const selectedTheme =
       userSettings?.frame_appearance?.selectedTheme ||
       this.luigiThemingService.getDefaultThemeId();
