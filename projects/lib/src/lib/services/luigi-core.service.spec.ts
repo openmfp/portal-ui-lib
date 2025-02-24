@@ -39,7 +39,7 @@ const luigiMock = {
 (globalThis as any).Luigi = luigiMock;
 
 import { TestBed } from '@angular/core/testing';
-import { AuthData } from '../models';
+import { AuthData, LuigiConfig } from '../models';
 import { LuigiCoreService } from './luigi-core.service';
 
 describe('LuigiCoreService', () => {
@@ -81,7 +81,9 @@ describe('LuigiCoreService', () => {
   });
 
   it('should call setConfig with correct config', () => {
-    const config = { settings: 'value' };
+    const config: LuigiConfig = {
+      settings: { header: { title: 'title', logo: 'logo' } },
+    };
     service.setConfig(config);
     expect(luigiMock.setConfig).toHaveBeenCalledWith(config);
   });

@@ -78,7 +78,7 @@ export class AuthService {
     return {};
   };
 
-  getUser(): UserTokenData {
+  private getUser(): UserTokenData {
     const auth = this.getAuthData();
     if (auth) {
       return this.parseJwt(auth.idToken);
@@ -86,33 +86,22 @@ export class AuthService {
     return {} as UserTokenData;
   }
 
-  getUsername() {
-    const tokenValues = this.getUser();
-    return tokenValues.sub;
-  }
-
-  getUserEmail() {
-    const { mail } = this.getUser();
-    return mail;
-  }
-
   getUserInfo(): UserData {
-    const { first_name, last_name, mail } = this.getUser();
-    //handle undefined cases of first name or last name
-    const initialsFirstName: string =
-      typeof first_name === 'undefined' ? '' : first_name[0];
-    const initialsLastName: string =
-      typeof last_name === 'undefined' ? '' : last_name[0];
-    const firstName = typeof first_name === 'undefined' ? '' : first_name;
-    const lastName = typeof last_name === 'undefined' ? '' : last_name;
+    const user = this.getUser() || ({} as UserTokenData);
+
+    const firstName = user.first_name || user.given_name || '';
+    const lastName = user.last_name || user.family_name || '';
+    const initialsFirstName: string = firstName[0] || '';
+    const initialsLastName: string = lastName[0] || '';
 
     return {
       name: `${firstName} ${lastName}`,
-      email: mail,
-      description: mail,
+      email: user.mail || user.email || '',
+      description: user.mail || user.email || '',
       picture: '',
       icon: false,
       initials: initialsFirstName + initialsLastName,
+      userId: user.sub || '',
     };
   }
 

@@ -12,9 +12,9 @@ export function initLanguage(
   luigiCoreService: LuigiCoreService
 ) {
   return async () => {
-    const userSettings = (await userSettingsLocalStorage.read(
-      authService.getUser()
-    )) as any;
+    const userSettings = await userSettingsLocalStorage.read(
+      authService.getUserInfo()
+    );
     const storedLanguage = userSettings?.frame_userAccount?.language;
 
     const validLanguages = (await i18nService.getValidLanguages()).map(

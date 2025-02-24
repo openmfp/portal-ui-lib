@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { isEqual } from 'lodash';
 import { THEMING_SERVICE } from '../../injection-tokens';
-import { LuigiNode, LuigiUserSettings } from '../../models';
+import {
+  LocalDevelopmentSettings,
+  LuigiNode,
+  LuigiUserSettings,
+} from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { AuthService } from '../portal';
@@ -11,10 +15,25 @@ import {
 } from '../storage-service';
 import { ThemingService } from '../theming.service';
 
-interface UserSettings {
+export interface UserSettings {
   frame_userAccount?: any;
   frame_appearance?: any;
   frame_development?: any;
+  frame_versions?: any;
+}
+
+export interface UserSettingsValues {
+  frame_userAccount?: {
+    name: string;
+    email: string;
+    language: string;
+  };
+  frame_appearance?: {
+    selectedTheme: string;
+  };
+  frame_development?: {
+    localDevelopmentSettings: LocalDevelopmentSettings;
+  };
   frame_versions?: any;
 }
 
@@ -48,13 +67,17 @@ export class UserSettingsConfigService {
 
       readUserSettings: async () => {
         const setting: any =
-          (await userSettingsLocalStorage.read(this.authService.getUser())) ||
-          {};
+          (await userSettingsLocalStorage.read(
+            this.authService.getUserInfo()
+          )) || {};
         setting.frame_versions = this.versionsConfig;
         return setting;
       },
 
-      storeUserSettings: async (settings, previous) => {
+      storeUserSettings: async (
+        settings: UserSettingsValues,
+        previous: UserSettingsValues
+      ) => {
         userSettingsLocalStorage.store(settings);
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
@@ -74,7 +97,10 @@ export class UserSettingsConfigService {
     return settings;
   }
 
-  private saveLocalDevelopmentSettings(settings, previous) {
+  private saveLocalDevelopmentSettings(
+    settings: UserSettingsValues,
+    previous: UserSettingsValues
+  ) {
     const currentLocalDevelopmentSettings =
       settings?.frame_development?.localDevelopmentSettings;
     const previousLocalDevelopmentSettings =
@@ -110,7 +136,10 @@ export class UserSettingsConfigService {
     return userSettings;
   }
 
-  private changeToSelectedLanguage(settings, previous) {
+  private changeToSelectedLanguage(
+    settings: UserSettingsValues,
+    previous: UserSettingsValues
+  ) {
     if (
       settings?.frame_userAccount?.language &&
       previous?.frame_userAccount?.language !==
@@ -120,7 +149,10 @@ export class UserSettingsConfigService {
     }
   }
 
-  private applyNewTheme(settings, previous) {
+  private applyNewTheme(
+    settings: UserSettingsValues,
+    previous: UserSettingsValues
+  ) {
     if (
       settings?.frame_appearance?.selectedTheme &&
       previous?.frame_appearance?.selectedTheme !==
@@ -147,8 +179,8 @@ export class UserSettingsConfigService {
   }
 
   private async getSelectedThemeDisplayName(): Promise<string> {
-    const user = this.authService.getUser();
-    const userSettings = (await userSettingsLocalStorage.read(user)) as any;
+    const user = this.authService.getUserInfo();
+    const userSettings = await userSettingsLocalStorage.read(user);
     const selectedTheme =
       userSettings?.frame_appearance?.selectedTheme ||
       this.luigiThemingService.getDefaultThemeId();
@@ -188,7 +220,7 @@ export class UserSettingsConfigService {
     settings.frame_userAccount = {
       label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
       sublabel: userInfo.name,
-      icon: `https://avatars.wdf.sap.corp/avatar/${this.authService.getUsername()}`,
+      icon: `https://avatars.wdf.sap.corp/avatar/${userInfo.userId}`,
       title: userInfo.name,
       initials: userInfo.initials,
       iconClassAttribute:
@@ -199,7 +231,7 @@ export class UserSettingsConfigService {
           label: 'USERSETTINGSDIALOG_NAME',
           isEditable: false,
         },
-        mail: {
+        email: {
           type: 'string',
           label: 'USERSETTINGSDIALOG_EMAIL',
           isEditable: false,

@@ -1,18 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { LuigiStaticSettings } from '../../models';
 import { I18nService } from '../i18n.service';
 import { IframeService } from './iframe.service';
 
 export interface StaticSettingsConfigService {
   getStaticSettingsConfig(): Promise<LuigiStaticSettings>;
-}
-
-export interface LuigiStaticSettings extends Record<string, any> {
-  header: {
-    title: string;
-    logo: string;
-    favicon?: string;
-  };
 }
 
 @Injectable({
