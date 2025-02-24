@@ -1,4 +1,5 @@
-import { UserTokenData, LocalDevelopmentSettings } from '../models';
+import { UserSettingsValues } from '@openmfp/portal-ui-lib';
+import { UserTokenData, LocalDevelopmentSettings, UserData } from '../models';
 import {
   LocalStorageKeys,
   userSettingsLocalStorage,
@@ -177,9 +178,8 @@ describe('UserSettingsLocalStorage', () => {
       });
     });
 
-    const mockUserInfo: UserTokenData = {
-      first_name: 'John',
-      last_name: 'Doe',
+    const mockUserInfo: UserData = {
+      name: 'John Doe',
       email: 'john.doe@example.com',
     } as any;
 
@@ -191,7 +191,7 @@ describe('UserSettingsLocalStorage', () => {
       expect(result).toEqual({
         frame_userAccount: {
           name: 'John Doe',
-          mail: 'john.doe@example.com',
+          email: 'john.doe@example.com',
           language: 'en',
         },
       });
@@ -212,7 +212,7 @@ describe('UserSettingsLocalStorage', () => {
       expect(result).toEqual({
         frame_userAccount: {
           name: 'John Doe',
-          mail: 'john.doe@example.com',
+          email: 'john.doe@example.com',
           role: 'admin',
           language: 'en',
         },
@@ -232,9 +232,8 @@ describe('UserSettingsLocalStorage', () => {
     });
 
     it('should handle empty user info gracefully', async () => {
-      const emptyUserInfo: UserTokenData = {
-        first_name: '',
-        last_name: '',
+      const emptyUserInfo: UserData = {
+        name: '',
         email: '',
       } as any;
 
@@ -244,8 +243,8 @@ describe('UserSettingsLocalStorage', () => {
 
       expect(result).toEqual({
         frame_userAccount: {
-          name: ' ',
-          mail: '',
+          name: '',
+          email: '',
           language: 'en',
         },
       });
@@ -268,9 +267,9 @@ describe('UserSettingsLocalStorage', () => {
         frame_userAccount: {
           language: 'en',
           name: 'John Doe',
-          mail: 'john@example.com',
+          email: 'john@example.com',
         },
-      };
+      } as UserSettingsValues;
 
       const result = await userSettingsLocalStorage.store(settings);
 
@@ -293,9 +292,9 @@ describe('UserSettingsLocalStorage', () => {
       const settings = {
         frame_userAccount: {
           name: 'John Doe',
-          mail: 'john@example.com',
+          email: 'john@example.com',
         },
-      };
+      } as UserSettingsValues;
 
       const result = await userSettingsLocalStorage.store(settings);
 
@@ -312,9 +311,9 @@ describe('UserSettingsLocalStorage', () => {
         frame_userAccount: {
           language: 'en',
           name: 'John Doe',
-          mail: 'john@example.com',
+          email: 'john@example.com',
         },
-      };
+      } as UserSettingsValues;
 
       const result = await userSettingsLocalStorage.store(settings);
 
@@ -340,7 +339,7 @@ describe('UserSettingsLocalStorage', () => {
         frame_userAccount: {
           language: 'en',
         },
-      };
+      } as UserSettingsValues;
 
       localStorage.setItem = jest.fn().mockImplementation(() => {
         throw new Error('Storage error');
