@@ -86,7 +86,7 @@ export const userSettingsLocalStorage = {
     });
   },
 
-  store: async (settings: UserSettingsValues) => {
+  store: async (settings: UserSettingsValues): Promise<UserSettingsValues> => {
     if (settings.frame_userAccount && settings.frame_userAccount.language) {
       delete settings.frame_userAccount.name;
       delete settings.frame_userAccount.email;
