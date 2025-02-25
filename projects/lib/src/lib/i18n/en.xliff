@@ -328,7 +328,7 @@
      </unit>
      <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL">
       <segment>
-        <target>Local application development</target>
+        <target>Local extension development</target>
       </segment>
      </unit>
      <unit id="LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE">
