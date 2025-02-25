@@ -268,6 +268,19 @@ export class NodesProcessingService {
     }
   }
 
+  private getSideNavigationHeaderType(
+    navHeaderContext: any,
+    nodeItem: LuigiNode
+  ): string {
+    const dynamicFetchId = nodeItem.defineEntity?.dynamicFetchId || '';
+    let type = (navHeaderContext.entityContext?.[dynamicFetchId] || {}).type;
+    if (!type || typeof type !== 'string') {
+      type = nodeItem.defineEntity?.label || dynamicFetchId || 'Extension';
+    }
+    type = type.replace(/Id/i, '');
+    return type.at(0).toUpperCase() + type.slice(1).toLowerCase();
+  }
+
   async buildChildrenForEntity(
     entityNode: LuigiNode,
     children: LuigiNode[],
@@ -370,16 +383,5 @@ export class NodesProcessingService {
 
     addToAll('user', ctx.userid);
     return contextForEntityConfig;
-  }
-
-  private getSideNavigationHeaderType(
-    navHeaderContext: any,
-    nodeItem: LuigiNode
-  ): string {
-    let type: string = nodeItem.defineEntity.label;
-    if (type === 'Project') {
-      type = navHeaderContext.entityContext.project.type;
-    }
-    return type.at(0).toUpperCase() + type.slice(1);
   }
 }
