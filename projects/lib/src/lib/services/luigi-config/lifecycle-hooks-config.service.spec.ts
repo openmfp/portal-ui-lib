@@ -220,7 +220,7 @@ describe('LifecycleHooksConfigService', () => {
         expect(document.querySelector).toHaveBeenCalledWith('#profilePopover');
         expect(document.createElement).toHaveBeenCalledWith('span');
         expect(mockSpan.classList.add).toHaveBeenCalledWith(
-          'sap-icon--action-settings',
+          'sap-icon--developer-settings',
           'local-development-settings-indication'
         );
         expect(mockSpan.title).toBe('Translated Text');
