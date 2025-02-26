@@ -269,16 +269,16 @@ export class NodesProcessingService {
   }
 
   private getSideNavigationHeaderType(
-    navHeaderContext: any,
+    nodeContext: Record<string, any> = {},
     nodeItem: LuigiNode
   ): string {
     const dynamicFetchId = nodeItem.defineEntity?.dynamicFetchId || '';
-    let type = (navHeaderContext.entityContext?.[dynamicFetchId] || {}).type;
+    let type = (nodeContext.entityContext?.[dynamicFetchId] || {}).type;
     if (!type || typeof type !== 'string') {
       type = nodeItem.defineEntity?.label || dynamicFetchId || 'Extension';
     }
     type = type.replace(/Id/i, '');
-    return type.at(0).toUpperCase() + type.slice(1).toLowerCase();
+    return type.at(0).toUpperCase() + type.slice(1);
   }
 
   async buildChildrenForEntity(

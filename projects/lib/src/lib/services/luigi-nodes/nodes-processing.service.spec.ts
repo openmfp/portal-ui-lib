@@ -549,7 +549,7 @@ describe('NodesProcessingService', () => {
 
       it('should use "Component" if entity label is set to "component', () => {
         // Arrange
-        entityNode.defineEntity.label = "component";
+        entityNode.defineEntity.label = 'component';
         service.addBtpLayoutNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 
@@ -567,9 +567,16 @@ describe('NodesProcessingService', () => {
 
       it('should use "Product" for product-type projects', () => {
         // Arrange
-        entityNode.defineEntity.label = "Project";
+        entityNode.defineEntity = {
+          id: 'project',
+          label: 'Project',
+          dynamicFetchId: 'project',
+        };
         service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = { label: 'Test Label', context: {entityContext: {project: {type: 'product'}} }};
+        const navHeader = {
+          label: 'Test Label',
+          context: { entityContext: { project: { type: 'product' } } },
+        };
 
         // Act
         entityNode.navHeader.renderer(
@@ -585,9 +592,17 @@ describe('NodesProcessingService', () => {
 
       it('should use "Experiment" for experiment-type projects', () => {
         // Arrange
-        entityNode.defineEntity.label = "Project";
+        entityNode.defineEntity = {
+          id: 'project',
+          label: 'Project',
+          dynamicFetchId: 'project',
+        };
+
         service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = { label: 'Test Label', context: {entityContext: {project: {type: 'experiment'}} }};
+        const navHeader = {
+          label: 'Test Label',
+          context: { entityContext: { project: { type: 'experiment' } } },
+        };
 
         // Act
         entityNode.navHeader.renderer(

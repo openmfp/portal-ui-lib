@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { DialogService } from '@fundamental-ngx/core/dialog';
 import { merge } from 'lodash';
 import {
   ContentConfiguration,
@@ -30,7 +29,6 @@ export class LocalConfigurationServiceImpl
   private http = inject(HttpClient);
   private luigiConfigService = inject(LocalNodesService);
   private luigiCoreService = inject(LuigiCoreService);
-  private dialogService = inject(DialogService);
   private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
@@ -79,7 +77,7 @@ export class LocalConfigurationServiceImpl
             ${e.url} <br/><br/>
             ${(e.validationErrors || [])
               .map((v) => v.message)
-              .slice(0, -1)
+              .filter((v) => !v.includes('The document is not valid'))
               .join('<br/>')}`;
       })
       .join('<br/><br/><br/>');
