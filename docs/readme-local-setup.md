@@ -1,4 +1,4 @@
-# Local application development
+# Local extension development
 
 A development instance of the portal provides the capability to serve local frontend applications.
 

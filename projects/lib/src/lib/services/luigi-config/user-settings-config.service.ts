@@ -206,7 +206,7 @@ export class UserSettingsConfigService {
     settings.frame_development = {
       label: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_LABEL',
       sublabel: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL',
-      icon: 'action-settings',
+      icon: 'developer-settings',
       iconClassAttribute: localDevelopmentSettingsLocalStorage.read()?.isActive
         ? 'local-development-settings-icon-active'
         : '',

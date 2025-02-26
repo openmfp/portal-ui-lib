@@ -83,7 +83,7 @@ export class LifecycleHooksConfigService {
       if (popoverControl && popoverControl.parentNode) {
         const newSpan = document.createElement('span');
         newSpan.classList.add(
-          'sap-icon--action-settings',
+          'sap-icon--developer-settings',
           'local-development-settings-indication'
         );
         newSpan.title = this.i18nService.getTranslation(
