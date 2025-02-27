@@ -38,7 +38,7 @@
     "@luigi-project/client": "^2.19.2",
     "@luigi-project/client-support-angular": "^2.19.2",
     "@luigi-project/plugin-auth-oauth2": "^2.19.2",
-    "@ui5/webcomponents": "2.5.0",
+    "@ui5/webcomponents": "2.7.3",
     "@ui5/webcomponents-base": "2.5.0",
     "@ui5/webcomponents-icons": "2.0.1",
     "apollo-angular": "^7.0.0",
