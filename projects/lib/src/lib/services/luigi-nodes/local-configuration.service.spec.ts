@@ -29,6 +29,7 @@ describe('LocalConfigurationServiceImpl', () => {
     service = TestBed.inject(LocalConfigurationServiceImpl);
     luigiCoreService = TestBed.inject(LuigiCoreService);
     httpClient = TestBed.inject(HttpClient);
+    luigiCoreService.showAlert = jest.fn();
   });
 
   it('should be created', () => {
@@ -75,6 +76,115 @@ describe('LocalConfigurationServiceImpl', () => {
       // Assert
       expect(result).toHaveLength(2);
       expect(httpClient.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call alertErrors when result contains validation errors', async () => {
+      // Arrange
+      const validationErrors = [{ message: 'Error 1' }, { message: 'Error 2' }];
+      const errors = [{ url: 'http://test.com', validationErrors }];
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        {
+          errors,
+        }
+      );
+
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+        isActive: true,
+        serviceProviderConfig: {},
+        configs: [
+          {
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
+      });
+
+      // Act
+      await service.getLocalNodes();
+
+      // Assert
+      expect(luigiCoreService.showAlert).toHaveBeenCalled();
+      expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
+        text: expect.stringContaining('Error 1'),
+        type: 'error',
+      });
+    });
+
+    it('should not call alertErrors when result contains no errors', async () => {
+      // Arrange
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        {
+          nodes: [],
+        }
+      );
+
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+        isActive: true,
+        serviceProviderConfig: {},
+        configs: [
+          {
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
+      });
+
+      // Act
+      await service.getLocalNodes();
+
+      // Assert
+      expect(luigiCoreService.showAlert).not.toHaveBeenCalled();
+    });
+
+    it('should format multiple validation errors correctly in the alert message', async () => {
+      // Arrange
+      const validationErrors1 = [
+        { message: 'Config 1 Error 1' },
+        { message: 'Config 1 Error 2' },
+      ];
+      const validationErrors2 = [{ message: 'Config 2 Error 1' }];
+      const errors = [
+        { url: 'http://test1.com', validationErrors: validationErrors1 },
+        { url: 'http://test2.com', validationErrors: validationErrors2 },
+      ];
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        {
+          errors,
+        }
+      );
+
+      localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
+        isActive: true,
+        serviceProviderConfig: {},
+        configs: [
+          {
+            data: {
+              name: '',
+              creationTimestamp: '',
+              luigiConfigFragment: {},
+            } as ContentConfiguration,
+          },
+        ],
+      });
+
+      // Act
+      await service.getLocalNodes();
+
+      // Assert
+      expect(luigiCoreService.showAlert).toHaveBeenCalled();
+      const alertText = (luigiCoreService.showAlert as any).mock.calls[0][0]
+        .text;
+      expect(alertText).toContain('http://test1.com');
+      expect(alertText).toContain('Config 1 Error 1');
+      expect(alertText).toContain('Config 1 Error 2');
+      expect(alertText).toContain('http://test2.com');
+      expect(alertText).toContain('Config 2 Error 1');
     });
   });
 

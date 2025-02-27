@@ -30,13 +30,16 @@ describe('LifecycleHooksConfigService', () => {
     i18nServiceMock = mock();
     luigiNodesServiceMock = { retrieveChildrenByEntity: jest.fn() } as any;
     luigiCoreServiceMock = {
-      getConfig: jest.fn(),
       setConfig: jest.fn(),
       ux: jest.fn().mockReturnValue({ hideAppLoadingIndicator: jest.fn() }),
       isFeatureToggleActive: jest.fn(),
       resetLuigi: jest.fn(),
       showAlert: jest.fn().mockReturnValue(Promise.resolve()),
     } as any;
+    Object.defineProperty(luigiCoreServiceMock, 'config', {
+      get: jest.fn(),
+      configurable: true,
+    });
     routingConfigServiceMock = { getRoutingConfig: jest.fn() } as any;
     staticSettingsConfigServiceMock = {
       getStaticSettingsConfig: jest.fn(),
@@ -115,8 +118,12 @@ describe('LifecycleHooksConfigService', () => {
 
       it('should call luigiCoreServiceMock methods', async () => {
         const config = service.getLifecycleHooksConfig({} as any);
+
         await config.luigiAfterInit();
-        expect(luigiCoreServiceMock.getConfig).toHaveBeenCalled();
+
+        expect(
+          Object.getOwnPropertyDescriptor(luigiCoreServiceMock, 'config')?.get
+        ).toHaveBeenCalled();
         expect(
           luigiCoreServiceMock.ux().hideAppLoadingIndicator
         ).toHaveBeenCalled();
@@ -126,8 +133,13 @@ describe('LifecycleHooksConfigService', () => {
       it('should handle error when retrieving Luigi navigation nodes', async () => {
         const error = new Error('Test error');
         luigiNodesServiceMock.retrieveChildrenByEntity.mockRejectedValue(error);
-        luigiCoreServiceMock.getConfig.mockReturnValue({
-          settings: { header: { title: 'Test App', logo: 'assets/logo.png' } },
+        Object.defineProperty(luigiCoreServiceMock, 'config', {
+          get: jest.fn(() => ({
+            settings: {
+              header: { title: 'Test App', logo: 'assets/logo.png' },
+            },
+          })),
+          configurable: true,
         });
         console.error = jest.fn();
 

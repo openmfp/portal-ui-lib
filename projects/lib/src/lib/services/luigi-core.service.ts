@@ -10,7 +10,7 @@ export class LuigiCoreService {
     return luigi.setConfig(config);
   }
 
-  getConfig(): LuigiConfig {
+  get config(): LuigiConfig {
     return luigi.getConfig();
   }
 

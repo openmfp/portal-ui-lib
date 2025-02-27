@@ -26,6 +26,16 @@ export interface LuigiStaticSettings extends Record<string, any> {
     logo: string;
     favicon?: string;
   };
+  btpToolLayout?: boolean;
+  experimental?: {
+    webcomponents?: boolean;
+    globalNav?: boolean;
+    profileMenuFiori3?: boolean;
+    navHeader?: boolean;
+    breadcrumbs?: boolean;
+    globalSearchCentered?: boolean;
+    btpToolLayout?: boolean;
+  };
 }
 
 export interface LuigiConfig {

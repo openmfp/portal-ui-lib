@@ -42,7 +42,7 @@ export class LifecycleHooksConfigService {
         }
 
         const config = {
-          ...this.luigiCoreService.getConfig(),
+          ...this.luigiCoreService.config,
           lifecycleHooks: {},
           navigation: await this.navigationConfigService.getNavigationConfig(
             childrenByEntity,
@@ -69,7 +69,7 @@ export class LifecycleHooksConfigService {
   }
 
   private openErrorDialog() {
-    const appTitle = this.luigiCoreService.getConfig().settings.header.title;
+    const appTitle = this.luigiCoreService.config.settings.header.title;
     this.luigiCoreService.showAlert({
       text: $localize`There was an error loading the ${appTitle}`,
       type: 'error',
