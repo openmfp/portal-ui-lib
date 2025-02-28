@@ -1,4 +1,4 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { isMatch } from 'lodash';
 import {
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
@@ -18,45 +18,42 @@ import { LuigiCoreService } from '../luigi-core.service';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
-  constructor(
-    private luigiCoreService: LuigiCoreService,
-    private configService: ConfigService,
-    private luigiNodesService: LuigiNodesService,
-    private nodeSortingService: NodeSortingService,
-    private commonGlobalLuigiNodesService: CommonGlobalLuigiNodesService,
-    private nodeUtilsService: NodeUtilsService,
-    @Optional()
-    @Inject(LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN)
-    private nodeAccessHandlingService: NodeAccessHandlingService,
-    @Optional()
-    @Inject(LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN)
-    private customGlobalNodesService: CustomGlobalNodesService
-  ) {}
+  private luigiCoreService = inject(LuigiCoreService);
+  private configService = inject(ConfigService);
+  private luigiNodesService = inject(LuigiNodesService);
+  private nodeSortingService = inject(NodeSortingService);
+  private commonGlobalLuigiNodesService = inject(CommonGlobalLuigiNodesService);
+  private nodeUtilsService = inject(NodeUtilsService);
+  private nodeAccessHandlingService = inject<NodeAccessHandlingService>(
+    LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN as any,
+    { optional: true }
+  );
+  private customGlobalNodesService = inject<CustomGlobalNodesService>(
+    LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN as any,
+    { optional: true }
+  );
 
   async processNodes(childrenByEntity: Record<string, LuigiNode[]>) {
     const globalNodes = [
       ...(childrenByEntity[EntityType.GLOBAL] || []),
-      ...(childrenByEntity[EntityType.GLOBAL_BOTTOM] || []),
       ...(childrenByEntity[EntityType.GLOBAL_TOPNAV] || []),
       ...((await this.customGlobalNodesService?.getCustomGlobalNodes()) || []),
       ...this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
     ];
 
     globalNodes.forEach((node) => {
-      if (!node.hideFromNav && node.entityType !== EntityType.GLOBAL_TOPNAV) {
-        node.globalNav =
-          node.entityType === EntityType.GLOBAL_BOTTOM ? 'bottom' : true;
-      }
-
-      node.context = node.context || {};
-    });
-
-    globalNodes.forEach((node) => {
+      this.markAsGlobalNavNode(node);
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
 
     globalNodes.sort(this.nodeSortingService.nodeComparison);
     return globalNodes;
+  }
+
+  private markAsGlobalNavNode(node: LuigiNode) {
+    if (!node.hideFromNav && node.entityType === EntityType.GLOBAL) {
+      node.globalNav = true;
+    }
   }
 
   applyEntityChildrenRecursively(

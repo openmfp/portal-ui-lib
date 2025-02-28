@@ -119,7 +119,6 @@ export interface PortalLuigiNodeExtensions {
   isMissingMandatoryData?: boolean; // experimental
   extensionClassName?: string;
   defineEntity?: EntityDefinition;
-  globalNav?: boolean | string;
   order?: string;
   dxpOrder?: string;
   navSlot?: string;
@@ -201,6 +200,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
     | { (context?: any): Promise<LuigiNode[]> }
     | { (context?: any): LuigiNode[] };
   titleResolver?: any;
+  globalNav?: boolean;
 }
 
 export interface IntentSpecification {
