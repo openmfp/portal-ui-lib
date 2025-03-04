@@ -42,6 +42,7 @@ export class NodesProcessingService {
     ];
 
     globalNodes.forEach((node) => {
+      node.context = { ...node.context };
       this.markAsGlobalNavNode(node);
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
