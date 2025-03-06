@@ -34,8 +34,10 @@ export class StaticSettingsConfigServiceImpl
         logo,
         favicon,
       },
+      globalSideNavigation: true,
       experimental: {
         btpToolLayout: true,
+        globalNav: true,
       },
       btpToolLayout: true,
       responsiveNavigation: 'Fiori3',

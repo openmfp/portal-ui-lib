@@ -59,9 +59,11 @@ describe('StaticSettingsConfigServiceImpl', () => {
         },
         experimental: {
           btpToolLayout: true,
+          globalNav: true,
         },
         btpToolLayout: true,
         responsiveNavigation: 'Fiori3',
+        globalSideNavigation: true,
         featureToggles: {
           queryStringParam: 'ft',
         },
@@ -105,6 +107,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
         },
         btpToolLayout: true,
         responsiveNavigation: 'Fiori3',
+        globalSideNavigation: true,
         featureToggles: {
           queryStringParam: 'ft',
         },
