@@ -43,7 +43,7 @@ export class NodesProcessingService {
 
     globalNodes.forEach((node) => {
       node.context = { ...node.context };
-      this.markAsGlobalNavNode(node);
+      node.globalNav = this.isGlobalNavNode(node);
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
 
@@ -51,10 +51,8 @@ export class NodesProcessingService {
     return globalNodes;
   }
 
-  private markAsGlobalNavNode(node: LuigiNode) {
-    if (!node.hideFromNav && node.entityType === EntityType.GLOBAL) {
-      node.globalNav = true;
-    }
+  private isGlobalNavNode(node: LuigiNode) {
+    return !node.hideFromNav && node.entityType === EntityType.GLOBAL;
   }
 
   applyEntityChildrenRecursively(
