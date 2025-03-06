@@ -54,14 +54,16 @@ describe('StaticSettingsConfigServiceImpl', () => {
       expect(config).toEqual({
         header: {
           title: 'OpenMFP Portal',
-          logo: 'assets/images/mfp_mark.svg',
-          favicon: 'assets/images/mfp_mark.svg',
+          logo: 'assets/images/logo.png',
+          favicon: 'assets/images/favicon.ico',
         },
         experimental: {
           btpToolLayout: true,
+          globalNav: true,
         },
         btpToolLayout: true,
         responsiveNavigation: 'Fiori3',
+        globalSideNavigation: true,
         featureToggles: {
           queryStringParam: 'ft',
         },
@@ -105,6 +107,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
         },
         btpToolLayout: true,
         responsiveNavigation: 'Fiori3',
+        globalSideNavigation: true,
         featureToggles: {
           queryStringParam: 'ft',
         },

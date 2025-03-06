@@ -25,16 +25,19 @@ export class StaticSettingsConfigServiceImpl
   private iframeService = inject(IframeService);
 
   async getStaticSettingsConfig(): Promise<LuigiStaticSettings> {
-    const logo = 'assets/images/mfp_mark.svg';
+    const logo = 'assets/images/logo.png';
+    const favicon = 'assets/images/favicon.ico';
 
     return {
       header: {
         title: 'OpenMFP Portal',
-        logo: logo,
-        favicon: logo,
+        logo,
+        favicon,
       },
+      globalSideNavigation: true,
       experimental: {
         btpToolLayout: true,
+        globalNav: true,
       },
       btpToolLayout: true,
       responsiveNavigation: 'Fiori3',

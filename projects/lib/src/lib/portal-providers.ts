@@ -48,6 +48,7 @@ import {
   UserSettingsConfigService,
   LocalConfigurationServiceImpl,
   ThemingService,
+  AppSwitcherConfigServiceImpl,
 } from './services';
 import { CustomReuseStrategy } from './utilities';
 
@@ -110,16 +111,6 @@ export function providePortal(
     provideLanguageServices(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    {
-      provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.nodeChangeHookConfigService || NodeChangeHookConfigServiceImpl,
-    },
-    {
-      provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.localConfigurationService || LocalConfigurationServiceImpl,
-    },
     ...addOptionalProviders(options),
   ];
 
@@ -136,6 +127,24 @@ const addOptionalProviders = (
       multi: true,
       useClass: customMessageListenerClass,
     })
+  );
+
+  providers.push(
+    {
+      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass:
+        options.appSwitcherConfigService || AppSwitcherConfigServiceImpl,
+    },
+    {
+      provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+      useClass:
+        options.nodeChangeHookConfigService || NodeChangeHookConfigServiceImpl,
+    },
+    {
+      provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+      useClass:
+        options.localConfigurationService || LocalConfigurationServiceImpl,
+    }
   );
 
   if (options.staticSettingsConfigService) {
@@ -184,13 +193,6 @@ const addOptionalProviders = (
     providers.push({
       provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: options.luigiExtendedGlobalContextConfigService,
-    });
-  }
-
-  if (options.appSwitcherConfigService) {
-    providers.push({
-      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.appSwitcherConfigService,
     });
   }
 

@@ -1,6 +1,12 @@
 name: ci
 on:
-  [push]
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
 jobs:
   pipe:
@@ -10,5 +16,4 @@ jobs:
     uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@main
     with:
       publishFromDist: true
-      versionPrefix: v
     secrets: inherit
