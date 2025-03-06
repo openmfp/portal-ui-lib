@@ -70,8 +70,7 @@ from `@openmfp/portal-ui-lib` library into the project assets, as shown below:
 
 First you have to import the `providePortal` and bootstrap the `PortalComponent` in your `main.ts` file.
 To do this call `providePortal(portalOptions)` method, which takes the `PortalOptions` object as an argument,
-inside the providers section of the application configuration.
-It is important to note that the `providePortal(portalOptions)` should be imported after any app specific
+inside the providers section of the application configuration. It is important to note that the `providePortal(portalOptions)` should be imported after any app specific
 routing providers (e.g. `provideRouter(appRoutes)`).
 
 The result may look like this:
