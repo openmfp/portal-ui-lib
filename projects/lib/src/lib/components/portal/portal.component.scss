@@ -18,10 +18,6 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
   font-size: 12px;
 }
 
-.fd-container.fd-form-layout-grid-container .fd-row .fd-col {
-  white-space: inherit !important;
-}
-
 .entity-nav-header {
   padding-left: var(--fdNavigation_Padding_X);
   padding-right: var(--fdNavigation_Padding_X);
@@ -35,4 +31,14 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
 .entity-nav-header-label {
   color: var(--sapAccentColor6);
   padding-top: 8px;
+}
+
+// wrapping text in the about section of user settings
+.fd-container.fd-form-layout-grid-container .fd-row .fd-col {
+  white-space: inherit !important;
+}
+
+// override the top level menu global navigation button, luigi sets it to -.5rem, once fixed remove this
+.btp-layout .fd-shellbar__group--product>.lui-keep-main {
+  margin-left: 0;
 }
