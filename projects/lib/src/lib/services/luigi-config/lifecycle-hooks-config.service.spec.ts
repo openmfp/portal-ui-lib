@@ -90,15 +90,12 @@ describe('LifecycleHooksConfigService', () => {
     });
 
     describe('luigiAfterInit', () => {
-      it('should resetLuigi once the feature toggle is set to have btpLayout', async () => {
+      it('should always resetLuigi', async () => {
         luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
         const config = service.getLifecycleHooksConfig({} as any);
 
         await config.luigiAfterInit();
 
-        expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
-          'btpLayout'
-        );
         expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
       });
 
