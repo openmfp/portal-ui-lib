@@ -60,9 +60,8 @@ export class LifecycleHooksConfigService {
 
         this.luigiCoreService.ux().hideAppLoadingIndicator();
         this.luigiCoreService.setConfig(config);
-        if (this.luigiCoreService.isFeatureToggleActive('btpLayout')) {
-          this.luigiCoreService.resetLuigi();
-        }
+        this.luigiCoreService.resetLuigi();
+        
         this.addLocalDevelopmentModeOnIndicator();
       },
     };
