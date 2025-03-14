@@ -8,7 +8,6 @@ import {
   ViewEncapsulation,
   inject,
 } from '@angular/core';
-import { LinkComponent } from '@fundamental-ngx/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { Apollo, gql } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
@@ -38,7 +37,7 @@ const defaultColumns: ColumnDefinition[] = [
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [HttpLink],
-  imports: [LinkComponent],
+  imports: [],
 })
 export class ListViewComponent implements OnInit {
   private apolloFactory = inject(ApolloFactory);
@@ -87,12 +86,12 @@ export class ListViewComponent implements OnInit {
       });
   }
 
-  navigateToAccount($event: MouseEvent, item: any) {
+  navigateToResource(item: { metadata: { name: string } }) {
     this.LuigiClient.linkManager().navigate(item.metadata.name);
   }
 
-  getNestedValue(item: any, key: string) {
-    const value = jsonpath.query(item, `$.${key}`);
+  getNestedValue(item: any, columnDefinition: ColumnDefinition) {
+    const value = jsonpath.query(item, `$.${columnDefinition.property}`);
     return value.length ? value[0] : undefined;
   }
 }
