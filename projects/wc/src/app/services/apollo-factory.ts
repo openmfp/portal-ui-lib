@@ -16,7 +16,7 @@ import { HttpLink } from 'apollo-angular/http';
 import { print } from 'graphql';
 import { Client, ClientOptions, createClient } from 'graphql-sse';
 
-export class SSELink extends ApolloLink {
+class SSELink extends ApolloLink {
   private client: Client;
 
   constructor(options: ClientOptions) {
@@ -50,13 +50,21 @@ export class ApolloFactory {
     this.createApolloOptions(),
   );
 
+  private getGatewayUrl() {
+    const ctx = this.luigiCoreService.getGlobalContext();
+    let gatewayUrl = ctx.portalContext.crdGatewayApiUrl;
+    if (ctx.accountId) {
+      gatewayUrl = gatewayUrl.replace('/graphql', `:${ctx.accountId}/graphql`);
+    }
+    return gatewayUrl;
+  }
+
   private createApolloOptions(): ApolloClientOptions<any> {
     const contextLink = setContext(() => {
-      const ctx = this.luigiCoreService.getGlobalContext();
       return {
-        uri: ctx.portalContext.crdGatewayApiUrl,
+        uri: () => this.getGatewayUrl(),
         headers: {
-          Authorization: `Bearer ${ctx.token}`,
+          Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
           Accept: 'charset=utf-8',
         },
       };
@@ -71,9 +79,7 @@ export class ApolloFactory {
         );
       },
       new SSELink({
-        url: () =>
-          this.luigiCoreService.getGlobalContext().portalContext
-            .crdGatewayApiUrl,
+        url: () => this.getGatewayUrl(),
         headers: () => ({
           Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
         }),

@@ -168,10 +168,9 @@ describe('ListViewComponent', () => {
 
   it('should navigate to account when clicked', () => {
     component.LuigiClient = mockLuigiClient;
-    const mockEvent = new MouseEvent('click');
     const mockItem = { metadata: { name: 'test-name' } };
 
-    component.navigateToAccount(mockEvent, mockItem);
+    component.navigateToResource(mockItem);
 
     expect(mockLuigiClient.linkManager).toHaveBeenCalled();
     expect(mockLuigiClient.linkManager().navigate).toHaveBeenCalledWith(
@@ -185,7 +184,10 @@ describe('ListViewComponent', () => {
       .mockReturnValue(['test-value']);
 
     const testItem = { metadata: { name: 'test-name' } };
-    const result = component.getNestedValue(testItem, 'metadata.name');
+    const result = component.getNestedValue(testItem, {
+      property: 'metadata.name',
+      label: 'Test name',
+    });
 
     expect(jsonpathSpy).toHaveBeenCalledWith(testItem, '$.metadata.name');
     expect(result).toBe('test-value');
@@ -195,7 +197,10 @@ describe('ListViewComponent', () => {
     jest.spyOn(jsonpath, 'query').mockReturnValue([]);
 
     const testItem = { metadata: { name: 'test-name' } };
-    const result = component.getNestedValue(testItem, 'nonexistent.path');
+    const result = component.getNestedValue(testItem, {
+      property: 'nonexistent.path',
+      label: 'Test name',
+    });
 
     expect(result).toBeUndefined();
   });

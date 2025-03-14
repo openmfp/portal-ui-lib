@@ -1,8 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { APP_INITIALIZER, Injector } from '@angular/core';
 import { ErrorComponent } from '../components/error/error.component';
+import { ListViewComponent } from '../components/generic-ui/list-view/list-view.component';
 import * as wcUtils from '../utils/wc';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
+import { APP_INITIALIZER, Injector } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 jest.mock('../utils/wc', () => ({
   registerLuigiWebComponents: jest.fn(),
@@ -48,8 +49,11 @@ describe('provideLuigiWebComponents', () => {
     factoryFn();
 
     expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledWith(
-      { 'error-component': ErrorComponent },
-      injector
+      {
+        'error-component': ErrorComponent,
+        'generic-list-view': ListViewComponent,
+      },
+      injector,
     );
   });
 
@@ -67,8 +71,9 @@ describe('provideLuigiWebComponents', () => {
     expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledWith(
       {
         'error-component': ErrorComponent,
+        'generic-list-view': ListViewComponent,
       },
-      injector
+      injector,
     );
   });
 
