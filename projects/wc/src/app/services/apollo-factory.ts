@@ -51,7 +51,7 @@ export class ApolloFactory {
   );
 
   private getGatewayUrl() {
-    const ctx = this.luigiCoreService.getGlobalContext();
+    const ctx = this.luigiCoreService.getWcExtendedContext();
     let gatewayUrl = ctx.portalContext.crdGatewayApiUrl;
     if (ctx.accountId) {
       gatewayUrl = gatewayUrl.replace('/graphql', `:${ctx.accountId}/graphql`);
