@@ -1,14 +1,16 @@
-import { APP_INITIALIZER, inject, Injector } from '@angular/core';
 import { ErrorComponent } from '../components/error/error.component';
+import { ListViewComponent } from '../components/generic-ui/list-view/list-view.component';
 import { registerLuigiWebComponents } from '../utils/wc';
+import { APP_INITIALIZER, Injector, inject } from '@angular/core';
 
 function initializeWC() {
   const injector = inject(Injector);
   registerLuigiWebComponents(
     {
       'error-component': ErrorComponent,
+      'generic-list-view': ListViewComponent,
     },
-    injector
+    injector,
   );
 
   return () => undefined;
