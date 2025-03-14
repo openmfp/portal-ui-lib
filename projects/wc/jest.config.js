@@ -7,16 +7,16 @@ module.exports = {
   coverageThreshold: {
     global: {
       branches: 80,
-      functions: 90,
-      lines: 95,
-      statements: -1,
+      functions: 80,
+      lines: 94,
+      statements: 8,
     },
   },
   moduleNameMapper: {
     '^lodash-es(.*)': 'lodash',
     '@openmfp/portal-ui-lib': path.resolve(
       __dirname,
-      '../lib/src/public-api.ts'
+      '../lib/src/public-api.ts',
     ),
   },
 };

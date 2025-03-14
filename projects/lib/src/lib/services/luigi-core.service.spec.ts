@@ -1,3 +1,6 @@
+import { AuthData, LuigiConfig } from '../models';
+import { TestBed } from '@angular/core/testing';
+
 const luigiMock = {
   auth: jest.fn().mockReturnValue({
     store: {
@@ -38,14 +41,13 @@ const luigiMock = {
 
 (globalThis as any).Luigi = luigiMock;
 
-import { TestBed } from '@angular/core/testing';
-import { AuthData, LuigiConfig } from '../models';
-import { LuigiCoreService } from './luigi-core.service';
-
 describe('LuigiCoreService', () => {
-  let service: LuigiCoreService;
+  let service: any;
+  let LuigiCoreService: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const module = await import('./luigi-core.service');
+    LuigiCoreService = module.LuigiCoreService;
     TestBed.configureTestingModule({
       providers: [LuigiCoreService],
     });
@@ -114,7 +116,7 @@ describe('LuigiCoreService', () => {
         setInGlobalContext: 'setInGlobalContext',
         toChange: 17,
       },
-      true
+      true,
     );
   });
 
@@ -207,7 +209,7 @@ describe('LuigiCoreService', () => {
     const featureToggleName = 'someFeature';
     service.setFeatureToggle(featureToggleName);
     expect(luigiMock.featureToggles().setFeatureToggle).toHaveBeenCalledWith(
-      featureToggleName
+      featureToggleName,
     );
   });
 
@@ -264,6 +266,30 @@ describe('LuigiCoreService', () => {
       service.setFeatureToggles(undefined);
 
       expect(service.setFeatureToggle).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getWcExtendedContext', () => {
+    it('should return the extendedContext context when element exists', () => {
+      const container = document.createElement('div');
+      container.className = 'wcContainer';
+      const webComponent = document.createElement('div');
+      webComponent.setAttribute('lui_web_component', '');
+      const expectedContext = { foo: 'bar' };
+      (webComponent as any).extendedContext = { context: expectedContext };
+      container.appendChild(webComponent);
+      document.body.appendChild(container);
+
+      const context = service.getWcExtendedContext();
+      expect(context).toEqual(expectedContext);
+
+      document.body.removeChild(container);
+    });
+
+    it('should return undefined if the wcContainer or lui_web_component element is missing', () => {
+      document.body.innerHTML = '';
+      const context = service.getWcExtendedContext();
+      expect(context).toBeUndefined();
     });
   });
 });

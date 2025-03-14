@@ -1,0 +1,26 @@
+<ui5-dynamic-page>
+  <ui5-dynamic-page-title slot="titleArea">
+    <ui5-title slot="heading">{{ heading }}</ui5-title>
+    <ui5-text slot="subheading">
+      This page displays the created {{ plural }} in your environment</ui5-text
+    >
+  </ui5-dynamic-page-title>
+  <ui5-table>
+    <ui5-table-header-row slot="headerRow">
+      @for (column of columns; track column.label) {
+        <ui5-table-header-cell>{{ column.label }}</ui5-table-header-cell>
+      }
+    </ui5-table-header-row>
+    <ui5-illustrated-message
+      slot="nodata"
+      name="NoData"
+    ></ui5-illustrated-message>
+    @for (item of items; track item.metadata.name) {
+      <ui5-table-row interactive (click)="navigateToResource(item)">
+        @for (column of columns; track column.label) {
+          <ui5-table-cell>{{ getNestedValue(item, column) }}</ui5-table-cell>
+        }
+      </ui5-table-row>
+    }
+  </ui5-table>
+</ui5-dynamic-page>
