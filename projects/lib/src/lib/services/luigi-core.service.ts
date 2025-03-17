@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
 import { AuthData, LuigiConfig, LuigiCustomMessage } from '../models';
+import { Injectable } from '@angular/core';
+
 const luigi = (globalThis as any).Luigi;
 
 @Injectable({
@@ -72,20 +73,28 @@ export class LuigiCoreService {
     return luigi.getGlobalContext();
   }
 
+  getWcExtendedContext() {
+    return (
+      document
+        .querySelector('.wcContainer')
+        ?.querySelector('[lui_web_component]') as any
+    )?.extendedContext?.context;
+  }
+
   setGlobalContext(
     globalContext: Record<string, any>,
-    preventUpdate: boolean = false
+    preventUpdate: boolean = false,
   ) {
     luigi.setGlobalContext(globalContext, preventUpdate);
   }
 
   setInGlobalContext(
     context: Record<string, any>,
-    preventUpdate: boolean = false
+    preventUpdate: boolean = false,
   ) {
     luigi.setGlobalContext(
       { ...this.getGlobalContext(), ...context },
-      preventUpdate
+      preventUpdate,
     );
   }
 
