@@ -145,7 +145,7 @@ describe('ListViewComponent', () => {
       variables: {},
     });
     expect(mockApollo.subscribe).toHaveBeenCalled();
-    expect(component.items).toEqual([{ id: '1' }]);
+    expect(component.resources).toEqual([{ id: '1' }]);
   });
 
   it('should handle GraphQL subscription errors', () => {
