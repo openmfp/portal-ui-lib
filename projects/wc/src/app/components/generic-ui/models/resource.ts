@@ -1,3 +1,8 @@
+export interface NodeContext extends Record<string, any> {
+  resourceDefinition: ResourceDefinition;
+  ui?: UIDefinition;
+}
+
 export interface ColumnDefinition {
   property: string;
   label: string;

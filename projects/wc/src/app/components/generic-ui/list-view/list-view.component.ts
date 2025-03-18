@@ -1,6 +1,7 @@
 import { generateFields } from '../../../utils/columns-to-gql-fields';
 import {
   ColumnDefinition,
+  NodeContext,
   Resource,
   ResourceDefinition,
   UIDefinition,
@@ -33,11 +34,6 @@ const defaultColumns: ColumnDefinition[] = [
     label: 'Ready',
   },
 ];
-
-export interface NodeContext extends Record<string, any> {
-  resourceDefinition: ResourceDefinition;
-  ui?: UIDefinition;
-}
 
 @Component({
   selector: 'list-view',

@@ -1,6 +1,7 @@
 import { ApolloFactory } from '../../../services/apollo-factory';
 import { generateFields } from '../../../utils/columns-to-gql-fields';
-import { ListViewComponent, NodeContext } from './list-view.component';
+import { NodeContext } from '../models/resource';
+import { ListViewComponent } from './list-view.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LinkComponent } from '@fundamental-ngx/core';
