@@ -15,12 +15,12 @@ export interface ResourceDefinition {
   group: string;
   plural: string;
   kind: string;
-  scope: KubernetesScope;
-  namespace: string;
+  scope?: KubernetesScope;
+  namespace?: string;
 }
 
 export interface UIDefinition {
-  logoUrl: string;
+  logoUrl?: string;
   columns: ColumnDefinition[];
 }
 

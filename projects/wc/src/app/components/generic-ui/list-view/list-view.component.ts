@@ -1,4 +1,3 @@
-import { ApolloFactory } from '../../../services/apollo-factory';
 import { generateFields } from '../../../utils/columns-to-gql-fields';
 import {
   ColumnDefinition,
@@ -35,9 +34,9 @@ const defaultColumns: ColumnDefinition[] = [
   },
 ];
 
-interface NodeContext extends Record<string, any> {
+export interface NodeContext extends Record<string, any> {
   resourceDefinition: ResourceDefinition;
-  ui: UIDefinition;
+  ui?: UIDefinition;
 }
 
 @Component({
@@ -47,7 +46,6 @@ interface NodeContext extends Record<string, any> {
   styleUrls: ['./list-view.component.css'],
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [HttpLink],
   imports: [],
 })
 export class ListViewComponent implements OnInit {
@@ -57,9 +55,6 @@ export class ListViewComponent implements OnInit {
   columns: ColumnDefinition[];
   resources: Resource[];
   heading: string;
-  items: any[];
-  group: string;
-  plural: string;
   operation: string;
   nodeContext: NodeContext;
 
@@ -73,9 +68,6 @@ export class ListViewComponent implements OnInit {
     this.columns = context.ui?.columns || defaultColumns;
     this.heading = `${context.plural.charAt(0).toUpperCase()}${context.plural.slice(1)}`;
   }
-
-  @Input()
-  LuigiClient: LuigiClient;
 
   ngOnInit(): void {
     const fields = generateFields(this.columns);

@@ -1,6 +1,6 @@
 import { ApolloFactory } from '../../../services/apollo-factory';
 import { generateFields } from '../../../utils/columns-to-gql-fields';
-import { ListViewComponent } from './list-view.component';
+import { ListViewComponent, NodeContext } from './list-view.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LinkComponent } from '@fundamental-ngx/core';
@@ -66,18 +66,21 @@ describe('ListViewComponent', () => {
   });
 
   it('should set properties from context input', () => {
-    const context = {
-      group: 'test.group',
-      plural: 'resources',
-      genericUI: {
+    const context: NodeContext = {
+      resourceDefinition: {
+        group: 'test.group',
+        plural: 'resources',
+        kind: 'test',
+      },
+      ui: {
         columns: [{ property: 'test.property', label: 'Test' }],
       },
     };
 
     component.context = context;
 
-    expect(component.group).toBe('test.group');
-    expect(component.plural).toBe('resources');
+    expect(component.nodeContext.resourceDefinition.group).toBe('test.group');
+    expect(component.nodeContext.resourceDefinition.plural).toBe('resources');
     expect(component.operation).toBe('test_group_resources');
     expect(component.columns).toEqual([
       { property: 'test.property', label: 'Test' },
@@ -87,8 +90,11 @@ describe('ListViewComponent', () => {
 
   it('should use default columns when not provided in context', () => {
     const context = {
-      group: 'test.group',
-      plural: 'resources',
+      resourceDefinition: {
+        group: 'test.group',
+        plural: 'resources',
+        kind: 'test',
+      },
     };
 
     component.context = context;
@@ -104,8 +110,11 @@ describe('ListViewComponent', () => {
 
   it('should replace dots with underscores in operation name', () => {
     const context = {
-      group: 'api.test.group',
-      plural: 'resources',
+      resourceDefinition: {
+        group: 'test.group',
+        plural: 'resources',
+        kind: 'test',
+      },
     };
 
     component.context = context;
@@ -115,8 +124,11 @@ describe('ListViewComponent', () => {
 
   it('should capitalize first letter of plural for heading', () => {
     const context = {
-      group: 'test.group',
-      plural: 'resources',
+      resourceDefinition: {
+        group: 'test.group',
+        plural: 'resources',
+        kind: 'test',
+      },
     };
 
     component.context = context;
@@ -133,8 +145,11 @@ describe('ListViewComponent', () => {
       });
 
     component.context = {
-      group: 'test.group',
-      plural: 'resources',
+      resourceDefinition: {
+        group: 'test.group',
+        plural: 'resources',
+        kind: 'test',
+      },
     };
     component.ngOnInit();
 
@@ -155,8 +170,11 @@ describe('ListViewComponent', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
     component.context = {
-      group: 'test.group',
-      plural: 'resources',
+      resourceDefinition: {
+        group: 'test.group',
+        plural: 'resources',
+        kind: 'test',
+      },
     };
     component.ngOnInit();
 
