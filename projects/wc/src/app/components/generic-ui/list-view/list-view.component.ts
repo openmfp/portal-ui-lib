@@ -4,7 +4,6 @@ import {
   NodeContext,
   Resource,
   ResourceDefinition,
-  UIDefinition,
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
 import {
@@ -18,11 +17,6 @@ import {
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import jsonpath from 'jsonpath';
-
-// todo gkr check with ui5 guys
-document
-  .getElementsByClassName('wcContainer')[0]
-  .classList.add('ui5-content-density-compact');
 
 const defaultColumns: ColumnDefinition[] = [
   {
@@ -51,26 +45,28 @@ export class ListViewComponent implements OnInit {
   columns: ColumnDefinition[];
   resources: Resource[];
   heading: string;
-  operation: string;
-  nodeContext: NodeContext;
+  resourceDefinition: ResourceDefinition;
 
   @Input()
   LuigiClient: LuigiClient;
 
   @Input()
   set context(context: NodeContext) {
-    this.nodeContext = context;
-    this.operation = `${context.group.replaceAll('.', '_')}_${context.plural}`;
-    this.columns = context.ui?.columns || defaultColumns;
-    this.heading = `${context.plural.charAt(0).toUpperCase()}${context.plural.slice(1)}`;
+    this.resourceDefinition = context.resourceDefinition;
+    this.columns = context.resourceDefinition.ui?.columns || defaultColumns;
+    this.heading = `${context.resourceDefinition.plural.charAt(0).toUpperCase()}${context.resourceDefinition.plural.slice(1)}`;
   }
 
   ngOnInit(): void {
+    document
+      .getElementsByClassName('wcContainer')[0]
+      .classList.add('ui5-content-density-compact');
     const fields = generateFields(this.columns);
+    const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
-    this.resourceService.read(this.operation, fields).subscribe({
+    this.resourceService.read(queryOperation, fields).subscribe({
       next: (result) => {
-        this.resources = result.data?.[this.operation];
+        this.resources = result.data?.[queryOperation];
       },
       error: (error) => {
         console.error('Error executing GraphQL query', error);
@@ -81,21 +77,17 @@ export class ListViewComponent implements OnInit {
   delete(event: any, resource: Resource) {
     event.stopPropagation();
 
-    this.resourceService
-      .delete(resource, this.nodeContext.resourceDefinition)
-      .subscribe({
-        next: (result) => {
-          this.resources = this.resources.filter(
-            (e) => e.metadata.name !== resource.metadata.name,
-          );
-        },
-        error: (error) => {
-          this.luigiCoreService.showAlert({
-            text: `Failure! Could not delete resource: ${resource.metadata.name}`,
-            type: 'error',
-          });
-        },
-      });
+    this.resourceService.delete(resource, this.resourceDefinition).subscribe({
+      next: (result) => {
+        console.debug('Resource deleted', result);
+      },
+      error: (error) => {
+        this.luigiCoreService.showAlert({
+          text: `Failure! Could not delete resource: ${resource.metadata.name}`,
+          type: 'error',
+        });
+      },
+    });
   }
 
   navigateToResource(resource: Resource) {

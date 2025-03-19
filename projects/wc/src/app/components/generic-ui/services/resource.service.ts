@@ -38,10 +38,11 @@ export class ResourceService {
   }
 
   private createDeleteQueryMutation(resourceDefinition: ResourceDefinition) {
+    const group = resourceDefinition.group.replaceAll('.', '_');
     if (resourceDefinition.scope === 'Cluster') {
       return `
         mutation ($name: String!) {
-          core_openmfp_org {
+          ${group} {
             delete${resourceDefinition.kind}(name: $name)
           }
       }
@@ -49,7 +50,7 @@ export class ResourceService {
     }
     return `
       mutation ($name: String!, $namespace: String) {
-        core_openmfp_org {
+        ${group}  {
           delete${resourceDefinition.kind}(name: $name, namespace: $namespace)
         }
       }

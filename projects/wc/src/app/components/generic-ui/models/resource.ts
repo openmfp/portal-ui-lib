@@ -1,6 +1,5 @@
-export interface NodeContext extends Record<string, any> {
+export interface NodeContext {
   resourceDefinition: ResourceDefinition;
-  ui?: UIDefinition;
 }
 
 export interface ColumnDefinition {
@@ -22,6 +21,7 @@ export interface ResourceDefinition {
   kind: string;
   scope?: KubernetesScope;
   namespace?: string;
+  ui?: UIDefinition;
 }
 
 export interface UIDefinition {

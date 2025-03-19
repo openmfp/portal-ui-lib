@@ -1,104 +1,109 @@
-import { ApolloFactory } from '../../../services/apollo-factory';
-import { generateFields } from '../../../utils/columns-to-gql-fields';
-import { NodeContext } from '../models/resource';
+import { NodeContext, Resource, ResourceDefinition } from '../models/resource';
+import { ResourceService } from '../services/resource.service';
 import { ListViewComponent } from './list-view.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LinkComponent } from '@fundamental-ngx/core';
-import { Apollo } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular/http';
-import * as gqlBuilder from 'gql-query-builder';
-import jsonpath from 'jsonpath';
+import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { of, throwError } from 'rxjs';
 
 jest.mock('../../../utils/columns-to-gql-fields', () => ({
-  generateFields: jest.fn().mockImplementation((columns) => {
-    return [{ metadata: ['name'] }];
-  }),
+  generateFields: jest.fn().mockReturnValue('mockFields'),
 }));
 
 describe('ListViewComponent', () => {
   let component: ListViewComponent;
   let fixture: ComponentFixture<ListViewComponent>;
-  let mockApollo: jest.Mocked<Apollo>;
-  let mockApolloFactory: Partial<ApolloFactory>;
-  let mockLuigiClient: any;
-  let mockSubscriptionResult: any;
+  let resourceServiceMock: jest.Mocked<ResourceService>;
+  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
+  let luigiClientMock: any;
+
+  const mockResourceDefinition: ResourceDefinition = {
+    group: 'test.group',
+    plural: 'resources',
+    kind: 'Resource',
+    scope: 'Namespaced',
+    ui: {
+      columns: [
+        { property: 'metadata.name', label: 'Name' },
+        { property: 'status.phase', label: 'Status' },
+      ],
+    },
+  };
+
+  const mockNodeContext: NodeContext = {
+    resourceDefinition: mockResourceDefinition,
+  };
+
+  const mockResources: Resource[] = [
+    {
+      metadata: { name: 'resource-1' },
+      status: { phase: 'Running' },
+    },
+    {
+      metadata: { name: 'resource-2' },
+      status: { phase: 'Pending' },
+    },
+  ];
 
   beforeEach(async () => {
-    mockApollo = {
-      subscribe: jest.fn(),
-    } as unknown as jest.Mocked<Apollo>;
-
-    mockApolloFactory = {
-      apollo: mockApollo,
+    const resourceService = {
+      read: jest.fn(),
+      delete: jest.fn(),
     };
 
-    mockLuigiClient = {
+    const luigiCoreService = {
+      showAlert: jest.fn(),
+    };
+
+    luigiClientMock = {
       linkManager: jest.fn().mockReturnValue({
         navigate: jest.fn(),
       }),
     };
 
-    mockSubscriptionResult = of({
-      data: { test_group_resources: [{ id: '1' }] },
-    });
-    mockApollo.subscribe.mockReturnValue(mockSubscriptionResult);
-
     await TestBed.configureTestingModule({
-      imports: [ListViewComponent, LinkComponent],
+      imports: [ListViewComponent],
       providers: [
-        { provide: ApolloFactory, useValue: mockApolloFactory },
-        HttpLink,
+        { provide: ResourceService, useValue: resourceService },
+        { provide: LuigiCoreService, useValue: luigiCoreService },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
+
+    resourceServiceMock = TestBed.inject(
+      ResourceService,
+    ) as jest.Mocked<ResourceService>;
+    luigiCoreServiceMock = TestBed.inject(
+      LuigiCoreService,
+    ) as jest.Mocked<LuigiCoreService>;
 
     fixture = TestBed.createComponent(ListViewComponent);
     component = fixture.componentInstance;
-  });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+    document.body.innerHTML = '<div class="wcContainer"></div>';
+
+    component.LuigiClient = luigiClientMock;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set properties from context input', () => {
-    const context: NodeContext = {
-      resourceDefinition: {
-        group: 'test.group',
-        plural: 'resources',
-        kind: 'test',
-      },
-      ui: {
-        columns: [{ property: 'test.property', label: 'Test' }],
-      },
-    };
+  it('should set the context correctly', () => {
+    component.context = mockNodeContext;
 
-    component.context = context;
-
-    expect(component.nodeContext.resourceDefinition.group).toBe('test.group');
-    expect(component.nodeContext.resourceDefinition.plural).toBe('resources');
-    expect(component.operation).toBe('test_group_resources');
-    expect(component.columns).toEqual([
-      { property: 'test.property', label: 'Test' },
-    ]);
+    expect(component.resourceDefinition).toBe(mockResourceDefinition);
+    expect(component.columns).toBe(mockResourceDefinition.ui?.columns);
     expect(component.heading).toBe('Resources');
   });
 
-  it('should use default columns when not provided in context', () => {
-    const context = {
+  it('should use default columns when ui columns are not defined', () => {
+    const contextWithoutUiColumns: NodeContext = {
       resourceDefinition: {
-        group: 'test.group',
-        plural: 'resources',
-        kind: 'test',
+        ...mockResourceDefinition,
+        ui: undefined,
       },
     };
 
-    component.context = context;
+    component.context = contextWithoutUiColumns;
 
     expect(component.columns).toEqual([
       { property: 'metadata.name', label: 'Name' },
@@ -109,118 +114,106 @@ describe('ListViewComponent', () => {
     ]);
   });
 
-  it('should replace dots with underscores in operation name', () => {
-    const context = {
-      resourceDefinition: {
-        group: 'test.group',
-        plural: 'resources',
-        kind: 'test',
-      },
-    };
+  it('should fetch resources on init', () => {
+    component.context = mockNodeContext;
+    const queryResult = { data: { test_group_resources: mockResources } };
+    resourceServiceMock.read.mockReturnValue(of(queryResult));
 
-    component.context = context;
-
-    expect(component.operation).toBe('api_test_group_resources');
-  });
-
-  it('should capitalize first letter of plural for heading', () => {
-    const context = {
-      resourceDefinition: {
-        group: 'test.group',
-        plural: 'resources',
-        kind: 'test',
-      },
-    };
-
-    component.context = context;
-
-    expect(component.heading).toBe('Resources');
-  });
-
-  it('should subscribe to GraphQL query on init', () => {
-    const subscriptionSpy = jest
-      .spyOn(gqlBuilder, 'subscription')
-      .mockReturnValue({
-        query: 'subscription { test_group_resources { metadata { name } } }',
-        variables: {},
-      });
-
-    component.context = {
-      resourceDefinition: {
-        group: 'test.group',
-        plural: 'resources',
-        kind: 'test',
-      },
-    };
     component.ngOnInit();
 
-    expect(generateFields).toHaveBeenCalledWith(component.columns);
-    expect(subscriptionSpy).toHaveBeenCalledWith({
-      operation: 'test_group_resources',
-      fields: [{ metadata: ['name'] }],
-      variables: {},
-    });
-    expect(mockApollo.subscribe).toHaveBeenCalled();
-    expect(component.resources).toEqual([{ id: '1' }]);
+    expect(resourceServiceMock.read).toHaveBeenCalledWith(
+      'test_group_resources',
+      'mockFields',
+    );
+    expect(component.resources).toEqual(mockResources);
   });
 
-  it('should handle GraphQL subscription errors', () => {
-    const mockError = throwError(() => new Error('Test error'));
-    mockApollo.subscribe.mockReturnValue(mockError);
-
+  it('should handle error when fetching resources', () => {
+    component.context = mockNodeContext;
+    const testError = new Error('Test error');
+    resourceServiceMock.read.mockReturnValue(throwError(() => testError));
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    component.context = {
-      resourceDefinition: {
-        group: 'test.group',
-        plural: 'resources',
-        kind: 'test',
-      },
-    };
     component.ngOnInit();
 
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error executing GraphQL query',
-      expect.any(Error),
+      testError,
     );
+    consoleSpy.mockRestore();
   });
 
-  it('should navigate to account when clicked', () => {
-    component.LuigiClient = mockLuigiClient;
-    const mockItem = { metadata: { name: 'test-name' } };
+  it('should delete a resource', () => {
+    component.context = mockNodeContext;
+    const resource = mockResources[0];
+    const mockEvent = { stopPropagation: jest.fn() };
+    resourceServiceMock.delete.mockReturnValue(of({}));
+    const consoleSpy = jest.spyOn(console, 'debug').mockImplementation();
 
-    component.navigateToResource(mockItem);
+    component.delete(mockEvent, resource);
 
-    expect(mockLuigiClient.linkManager).toHaveBeenCalled();
-    expect(mockLuigiClient.linkManager().navigate).toHaveBeenCalledWith(
-      'test-name',
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    expect(resourceServiceMock.delete).toHaveBeenCalledWith(
+      resource,
+      mockResourceDefinition,
     );
+    expect(consoleSpy).toHaveBeenCalledWith('Resource deleted', {});
+    consoleSpy.mockRestore();
+  });
+
+  it('should show alert when delete fails', () => {
+    component.context = mockNodeContext;
+    const resource = mockResources[0];
+    const mockEvent = { stopPropagation: jest.fn() };
+    const testError = new Error('Delete error');
+    resourceServiceMock.delete.mockReturnValue(throwError(() => testError));
+
+    component.delete(mockEvent, resource);
+
+    expect(luigiCoreServiceMock.showAlert).toHaveBeenCalledWith({
+      text: 'Failure! Could not delete resource: resource-1',
+      type: 'error',
+    });
+  });
+
+  it('should navigate to resource details', () => {
+    const resource = mockResources[0];
+    const navigateSpy = jest.fn();
+    luigiClientMock.linkManager.mockReturnValue({ navigate: navigateSpy });
+
+    component.navigateToResource(resource);
+
+    expect(luigiClientMock.linkManager).toHaveBeenCalled();
+    expect(navigateSpy).toHaveBeenCalledWith('resource-1');
   });
 
   it('should get nested value using jsonpath', () => {
-    const jsonpathSpy = jest
-      .spyOn(jsonpath, 'query')
-      .mockReturnValue(['test-value']);
+    const resource = mockResources[0];
+    const column = { property: 'metadata.name', label: 'Name' };
 
-    const testItem = { metadata: { name: 'test-name' } };
-    const result = component.getNestedValue(testItem, {
-      property: 'metadata.name',
-      label: 'Test name',
-    });
+    const result = component.getNestedValue(resource, column);
 
-    expect(jsonpathSpy).toHaveBeenCalledWith(testItem, '$.metadata.name');
-    expect(result).toBe('test-value');
+    expect(result).toBe('resource-1');
   });
 
-  it('should return undefined for non-existent jsonpath', () => {
-    jest.spyOn(jsonpath, 'query').mockReturnValue([]);
+  it('should return undefined for non-existent nested values', () => {
+    const resource = mockResources[0];
+    const column = { property: 'some.non.existent.path', label: 'Missing' };
 
-    const testItem = { metadata: { name: 'test-name' } };
-    const result = component.getNestedValue(testItem, {
-      property: 'nonexistent.path',
-      label: 'Test name',
-    });
+    const result = component.getNestedValue(resource, column);
 
     expect(result).toBeUndefined();
+  });
+
+  it('should add ui5 density class on init', () => {
+    component.context = mockNodeContext;
+    resourceServiceMock.read.mockReturnValue(of({ data: {} }));
+
+    component.ngOnInit();
+
+    const wcContainer = document.getElementsByClassName('wcContainer')[0];
+    expect(wcContainer.classList.contains('ui5-content-density-compact')).toBe(
+      true,
+    );
   });
 });

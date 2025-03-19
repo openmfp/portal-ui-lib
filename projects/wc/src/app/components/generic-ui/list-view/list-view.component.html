@@ -3,14 +3,18 @@
     <ui5-title slot="heading">
       <div class="title-logo">
         <div>{{ heading }}</div>
-        @if (nodeContext.ui?.logoUrl) {
-          <img class="logo" src="{{ nodeContext.ui.logoUrl }}" alt="Logo" />
+        @if (resourceDefinition.ui?.logoUrl) {
+          <img
+            class="logo"
+            src="{{ resourceDefinition.ui.logoUrl }}"
+            alt="Logo"
+          />
         }
       </div>
     </ui5-title>
     <ui5-text class="title-subheading" slot="subheading">
       This page displays the created
-      {{ nodeContext.resourceDefinition.plural }} in your environment
+      {{ resourceDefinition.plural }} in your environment
     </ui5-text>
 
     <ui5-toolbar
