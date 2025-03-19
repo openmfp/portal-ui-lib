@@ -1,4 +1,5 @@
 import { generateFields } from '../../../utils/columns-to-gql-fields';
+import { CreateResourceModalComponent } from '../create-resource-modal/create-resource-modal.component';
 import {
   ColumnDefinition,
   NodeContext,
@@ -13,6 +14,7 @@ import {
   OnInit,
   ViewEncapsulation,
   inject,
+  viewChild,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
@@ -22,6 +24,7 @@ const defaultColumns: ColumnDefinition[] = [
   {
     property: 'metadata.name',
     label: 'Name',
+    required: true,
   },
   {
     property: 'status.conditions[?(@.type=="Ready")].status',
@@ -36,11 +39,13 @@ const defaultColumns: ColumnDefinition[] = [
   styleUrls: ['./list-view.component.css'],
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [],
+  imports: [CreateResourceModalComponent],
 })
 export class ListViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
+
+  private resourceCreateModal = viewChild(CreateResourceModalComponent);
 
   columns: ColumnDefinition[];
   resources: Resource[];
@@ -61,6 +66,10 @@ export class ListViewComponent implements OnInit {
     document
       .getElementsByClassName('wcContainer')[0]
       .classList.add('ui5-content-density-compact');
+    this.read();
+  }
+
+  read() {
     const fields = generateFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
@@ -90,6 +99,10 @@ export class ListViewComponent implements OnInit {
     });
   }
 
+  create(resource: Resource) {
+    console.log(resource);
+  }
+
   navigateToResource(resource: Resource) {
     this.LuigiClient.linkManager().navigate(resource.metadata.name);
   }
@@ -97,5 +110,9 @@ export class ListViewComponent implements OnInit {
   getNestedValue(resource: Resource, columnDefinition: ColumnDefinition) {
     const value = jsonpath.query(resource, `$.${columnDefinition.property}`);
     return value.length ? value[0] : undefined;
+  }
+
+  openCreateResourceModal() {
+    this.resourceCreateModal().open();
   }
 }

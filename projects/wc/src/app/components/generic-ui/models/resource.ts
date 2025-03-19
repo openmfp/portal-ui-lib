@@ -5,6 +5,7 @@ export interface NodeContext {
 export interface ColumnDefinition {
   property: string;
   label: string;
+  required?: boolean;
 }
 
 export interface ResourceMetadata extends Record<string, any> {

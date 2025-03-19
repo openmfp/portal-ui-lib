@@ -23,6 +23,11 @@
       slot="actionsBar"
       design="Transparent"
     >
+      <ui5-toolbar-button
+        design="Emphasized"
+        text="Create"
+        (click)="openCreateResourceModal()"
+      ></ui5-toolbar-button>
     </ui5-toolbar>
   </ui5-dynamic-page-title>
 
@@ -54,3 +59,5 @@
     }
   </ui5-table>
 </ui5-dynamic-page>
+
+<create-resource-modal [columns]="columns" (resource)="create($event)" />
