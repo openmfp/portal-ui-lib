@@ -1,5 +1,11 @@
-import { ApolloFactory } from '../../../services/apollo-factory';
 import { generateFields } from '../../../utils/columns-to-gql-fields';
+import {
+  ColumnDefinition,
+  NodeContext,
+  Resource,
+  ResourceDefinition,
+} from '../models/resource';
+import { ResourceService } from '../services/resource.service';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
@@ -9,15 +15,8 @@ import {
   inject,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import { Apollo, gql } from 'apollo-angular';
-import { HttpLink } from 'apollo-angular/http';
-import * as gqlBuilder from 'gql-query-builder';
+import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import jsonpath from 'jsonpath';
-
-interface ColumnDefinition {
-  property: string;
-  label: string;
-}
 
 const defaultColumns: ColumnDefinition[] = [
   {
@@ -31,67 +30,72 @@ const defaultColumns: ColumnDefinition[] = [
 ];
 
 @Component({
-  selector: 'wc-list-view',
+  selector: 'list-view',
   standalone: true,
   templateUrl: './list-view.component.html',
+  styleUrls: ['./list-view.component.css'],
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [HttpLink],
   imports: [],
 })
 export class ListViewComponent implements OnInit {
-  private apolloFactory = inject(ApolloFactory);
-  private apollo: Apollo = this.apolloFactory.apollo;
+  private resourceService = inject(ResourceService);
+  private luigiCoreService = inject(LuigiCoreService);
 
   columns: ColumnDefinition[];
+  resources: Resource[];
   heading: string;
-  items: any[];
-  group: string;
-  plural: string;
-  operation: string;
-
-  @Input()
-  set context(context: Record<string, any>) {
-    this.group = context.group;
-    this.plural = context.plural;
-    this.operation = `${context.group.replaceAll('.', '_')}_${context.plural}`;
-    this.columns = context.genericUI?.columns || defaultColumns;
-    this.heading = `${context.plural.charAt(0).toUpperCase()}${context.plural.slice(1)}`;
-  }
+  resourceDefinition: ResourceDefinition;
 
   @Input()
   LuigiClient: LuigiClient;
 
+  @Input()
+  set context(context: NodeContext) {
+    this.resourceDefinition = context.resourceDefinition;
+    this.columns = context.resourceDefinition.ui?.columns || defaultColumns;
+    this.heading = `${context.resourceDefinition.plural.charAt(0).toUpperCase()}${context.resourceDefinition.plural.slice(1)}`;
+  }
+
   ngOnInit(): void {
+    document
+      .getElementsByClassName('wcContainer')[0]
+      .classList.add('ui5-content-density-compact');
     const fields = generateFields(this.columns);
-    const query = gqlBuilder.subscription({
-      operation: this.operation,
-      fields,
-      variables: {},
+    const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
+
+    this.resourceService.read(queryOperation, fields).subscribe({
+      next: (result) => {
+        this.resources = result.data?.[queryOperation];
+      },
+      error: (error) => {
+        console.error('Error executing GraphQL query', error);
+      },
     });
-
-    this.apollo
-      .subscribe<any>({
-        query: gql`
-          ${query.query}
-        `,
-      })
-      .subscribe({
-        next: (result) => {
-          this.items = result.data?.[this.operation];
-        },
-        error: (error) => {
-          console.error('Error executing GraphQL query', error);
-        },
-      });
   }
 
-  navigateToResource(item: { metadata: { name: string } }) {
-    this.LuigiClient.linkManager().navigate(item.metadata.name);
+  delete(event: any, resource: Resource) {
+    event.stopPropagation();
+
+    this.resourceService.delete(resource, this.resourceDefinition).subscribe({
+      next: (result) => {
+        console.debug('Resource deleted', result);
+      },
+      error: (error) => {
+        this.luigiCoreService.showAlert({
+          text: `Failure! Could not delete resource: ${resource.metadata.name}`,
+          type: 'error',
+        });
+      },
+    });
   }
 
-  getNestedValue(item: any, columnDefinition: ColumnDefinition) {
-    const value = jsonpath.query(item, `$.${columnDefinition.property}`);
+  navigateToResource(resource: Resource) {
+    this.LuigiClient.linkManager().navigate(resource.metadata.name);
+  }
+
+  getNestedValue(resource: Resource, columnDefinition: ColumnDefinition) {
+    const value = jsonpath.query(resource, `$.${columnDefinition.property}`);
     return value.length ? value[0] : undefined;
   }
 }
