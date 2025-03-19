@@ -6,7 +6,7 @@ module.exports = {
   coveragePathIgnorePatterns: ['<rootDir>/projects/lib/src/'],
   coverageThreshold: {
     global: {
-      branches: 80,
+      branches: 85,
       functions: 80,
       lines: 94,
       statements: -8,

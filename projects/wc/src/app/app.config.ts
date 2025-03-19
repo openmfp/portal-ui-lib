@@ -4,7 +4,6 @@ import { ApplicationConfig } from '@angular/core';
 import '@ui5/webcomponents-fiori/DynamicPage.js';
 import '@ui5/webcomponents-fiori/IllustratedMessage.js';
 import '@ui5/webcomponents-fiori/illustrations/NoData.js';
-// todo gkr clean up the imports
 import '@ui5/webcomponents-icons/dist/delete.js';
 import '@ui5/webcomponents/Table.js';
 import '@ui5/webcomponents/dist/Button.js';
