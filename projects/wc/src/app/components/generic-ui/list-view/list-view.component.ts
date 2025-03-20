@@ -1,4 +1,3 @@
-import { CreateResourceModalComponent } from '../create-resource-modal/create-resource-modal.component';
 import {
   ColumnDefinition,
   NodeContext,
@@ -7,6 +6,7 @@ import {
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
 import { generateFields } from '../utils/columns-to-gql-fields';
+import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,

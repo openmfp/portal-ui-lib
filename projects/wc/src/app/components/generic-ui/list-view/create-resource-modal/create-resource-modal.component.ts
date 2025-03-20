@@ -1,4 +1,4 @@
-import { FieldDefinition, Resource } from '../models/resource';
+import { FieldDefinition, Resource } from '../../models/resource';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
