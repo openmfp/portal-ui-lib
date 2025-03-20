@@ -3,9 +3,15 @@ export interface NodeContext {
 }
 
 export interface ColumnDefinition {
-  property: string;
   label: string;
+  property: string;
+}
+
+export interface FieldDefinition {
+  label: string;
+  property: string;
   required?: boolean;
+  value?: any;
 }
 
 export interface ResourceMetadata extends Record<string, any> {
@@ -25,9 +31,18 @@ export interface ResourceDefinition {
   ui?: UIDefinition;
 }
 
+interface ListView {
+  columns: ColumnDefinition[];
+}
+
+interface CreateView {
+  fields: FieldDefinition[];
+}
+
 export interface UIDefinition {
   logoUrl?: string;
-  columns: ColumnDefinition[];
+  listView: ListView;
+  createView: CreateView;
 }
 
 export type KubernetesScope = 'Cluster' | 'Namespaced';

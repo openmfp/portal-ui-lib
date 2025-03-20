@@ -1,18 +1,18 @@
 <ui5-dialog #dialog header-text="Create">
   <section class="form" [formGroup]="form">
-    @for (column of columns(); track column.property) {
+    @for (field of fields(); track field.property) {
       <div class="inputs">
-        <ui5-label for="username" show-colon [required]="column.required">{{
-          column.label
+        <ui5-label for="username" show-colon [required]="field.required">{{
+          field.label
         }}</ui5-label>
         <ui5-input
           class="input"
-          [value]="form.controls[column.property].value"
-          (blur)="onFieldBlur(column.property)"
-          (change)="setFormControlValue($event, column.property)"
-          (input)="setFormControlValue($event, column.property)"
-          [required]="column.required"
-          [valueState]="getValueState(column.property)"
+          [value]="form.controls[field.property].value"
+          (blur)="onFieldBlur(field.property)"
+          (change)="setFormControlValue($event, field.property)"
+          (input)="setFormControlValue($event, field.property)"
+          [required]="field.required"
+          [valueState]="getValueState(field.property)"
         ></ui5-input>
       </div>
     }

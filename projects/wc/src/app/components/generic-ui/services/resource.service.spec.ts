@@ -1,16 +1,17 @@
 import { ApolloFactory } from '../../../services/apollo-factory';
 import { Resource, ResourceDefinition } from '../models/resource';
+import { getResourceNestedValue } from '../utils/resource-values';
 import { ResourceService } from './resource.service';
 import { TestBed } from '@angular/core/testing';
 import { Apollo } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
 import { of } from 'rxjs';
 
-jest.mock('gql-query-builder', () => ({
-  subscription: jest.fn().mockReturnValue({
-    query: 'subscription { test_operation { field1 field2 } }',
-  }),
-}));
+// jest.mock('gql-query-builder', () => ({
+//   subscription: jest.fn().mockReturnValue({
+//     query: 'subscription { test_operation { field1 field2 } }',
+//   }),
+// }));
 
 describe('ResourceService', () => {
   let service: ResourceService;
@@ -167,6 +168,92 @@ describe('ResourceService', () => {
       );
 
       expect(result).toContain('test_complex_group');
+    });
+
+    it('should ', () => {
+      const resource: Resource = {
+        metadata: {
+          name: 'fine',
+          description: 'description very long',
+        },
+        spec: {
+          displayName: 'display me',
+        },
+      };
+      const resourceDefinition: ResourceDefinition = {
+        group: 'core.openmfp.org',
+        kind: 'Account',
+        namespace: null,
+        plural: 'accounts',
+        scope: 'Cluster',
+        ui: {
+          createView: {
+            fields: [
+              {
+                label: 'Name',
+                property: 'metadata.name',
+                required: true,
+              },
+              {
+                label: 'Display Name',
+                property: 'spec.displayName',
+              },
+              {
+                label: 'Description',
+                property: 'metadata.description',
+              },
+            ],
+          },
+          listView: {
+            columns: [
+              {
+                label: 'Name',
+                property: 'metadata.name',
+              },
+              {
+                label: 'Display Name',
+                property: 'spec.displayName',
+              },
+              {
+                label: 'Type',
+                property: 'spec.type',
+              },
+            ],
+          },
+          logoUrl: 'https://www.kcp.io/icons/logo.svg',
+        },
+      };
+
+      const variables = resourceDefinition.ui.createView.fields.reduce(
+        (o, f) => {
+          const lastElement = f.property.split('.').at(-1);
+          o[lastElement] = lastElement;
+          return o;
+        },
+        {},
+      );
+
+      const variableValues = resourceDefinition.ui.createView.fields.reduce(
+        (o, f) => {
+          const lastElement = f.property.split('.').at(-1);
+          o[lastElement] = getResourceNestedValue(resource, f);
+          return o;
+        },
+        {},
+      );
+
+      const mutation = gqlBuilder.mutation({
+        operation: resourceDefinition.group,
+        fields: [
+          {
+            operation: `create${resourceDefinition.kind}`,
+            variables: { ...resource, type: 'account' },
+            fields: ['__typename'],
+          },
+        ],
+      });
+
+      console.log(mutation.query);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { ColumnDefinition, Resource } from '../models/resource';
+import { FieldDefinition, Resource } from '../models/resource';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
@@ -17,6 +17,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { set } from 'lodash';
 
 @Component({
   selector: 'create-resource-modal',
@@ -28,7 +29,7 @@ import {
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class CreateResourceModalComponent implements OnInit {
-  columns = input<ColumnDefinition[]>([]);
+  fields = input<FieldDefinition[]>([]);
   resource = output<Resource>();
   dialog = viewChild<ElementRef<HTMLElement>>('dialog');
 
@@ -50,18 +51,21 @@ export class CreateResourceModalComponent implements OnInit {
 
   create() {
     if (this.form.valid) {
-      this.resource.emit(this.form.value);
+      const result = {} as Resource;
+      for (const key in this.form.value) {
+        set(result, key, this.form.value[key]);
+      }
+
+      this.resource.emit(result);
       this.close();
     }
   }
 
   private createControls() {
-    return this.columns().reduce((o, c) => {
-      o[c.property] =
-        c.property === 'metadata.name'
-          ? new FormControl('', Validators.required)
-          : new FormControl('');
-      return o;
+    return this.fields().reduce((obj, fieldDefinition) => {
+      const validator = fieldDefinition.required ? Validators.required : null;
+      obj[fieldDefinition.property] = new FormControl('', validator);
+      return obj;
     }, {});
   }
 

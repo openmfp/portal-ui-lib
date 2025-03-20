@@ -1,4 +1,3 @@
-import { generateFields } from '../../../utils/columns-to-gql-fields';
 import { CreateResourceModalComponent } from '../create-resource-modal/create-resource-modal.component';
 import {
   ColumnDefinition,
@@ -7,6 +6,7 @@ import {
   ResourceDefinition,
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
+import { generateFields } from '../utils/columns-to-gql-fields';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
@@ -24,7 +24,6 @@ const defaultColumns: ColumnDefinition[] = [
   {
     property: 'metadata.name',
     label: 'Name',
-    required: true,
   },
   {
     property: 'status.conditions[?(@.type=="Ready")].status',
@@ -58,7 +57,8 @@ export class ListViewComponent implements OnInit {
   @Input()
   set context(context: NodeContext) {
     this.resourceDefinition = context.resourceDefinition;
-    this.columns = context.resourceDefinition.ui?.columns || defaultColumns;
+    this.columns =
+      context.resourceDefinition.ui?.listView?.columns || defaultColumns;
     this.heading = `${context.resourceDefinition.plural.charAt(0).toUpperCase()}${context.resourceDefinition.plural.slice(1)}`;
   }
 
@@ -88,11 +88,11 @@ export class ListViewComponent implements OnInit {
 
     this.resourceService.delete(resource, this.resourceDefinition).subscribe({
       next: (result) => {
-        console.debug('Resource deleted', result);
+        console.debug('Resource deleted');
       },
       error: (error) => {
         this.luigiCoreService.showAlert({
-          text: `Failure! Could not delete resource: ${resource.metadata.name}`,
+          text: `Failure! Could not delete resource: ${resource.metadata.name}.`,
           type: 'error',
         });
       },
@@ -100,7 +100,17 @@ export class ListViewComponent implements OnInit {
   }
 
   create(resource: Resource) {
-    console.log(resource);
+    this.resourceService.create(resource, this.resourceDefinition).subscribe({
+      next: (result) => {
+        console.debug('Resource created', result.data);
+      },
+      error: (error) => {
+        this.luigiCoreService.showAlert({
+          text: `Failure! Could not create resource: ${resource.metadata.name}.`,
+          type: 'error',
+        });
+      },
+    });
   }
 
   navigateToResource(resource: Resource) {
