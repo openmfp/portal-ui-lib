@@ -20,6 +20,7 @@ export interface ResourceMetadata extends Record<string, any> {
 
 export interface Resource extends Record<string, any> {
   metadata: ResourceMetadata;
+  spec?: Record<string, any>;
 }
 
 export interface ResourceDefinition {
