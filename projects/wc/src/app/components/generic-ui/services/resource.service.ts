@@ -26,9 +26,28 @@ export class ResourceService {
   }
 
   delete(resource: Resource, resourceDefinition: ResourceDefinition) {
+    const group = resourceDefinition.group.replaceAll('.', '_');
+    const kind = resourceDefinition.kind;
+
+    const mutation = gqlBuilder.mutation({
+      operation: group,
+      fields: [
+        {
+          operation: `delete${kind}`,
+          variables: {
+            name: { type: 'String!' },
+            ...(resourceDefinition.scope !== 'Cluster' && {
+              namespace: { type: 'String!' },
+            }),
+          },
+          fields: [],
+        },
+      ],
+    });
+
     return this.apollo.mutate<void>({
       mutation: gql`
-        ${this.createDeleteQueryMutation(resourceDefinition)}
+        ${mutation.query}
       `,
       variables: {
         name: resource.metadata.name,
@@ -37,23 +56,27 @@ export class ResourceService {
     });
   }
 
-  private createDeleteQueryMutation(resourceDefinition: ResourceDefinition) {
+  create(resource: Resource, resourceDefinition: ResourceDefinition) {
     const group = resourceDefinition.group.replaceAll('.', '_');
-    if (resourceDefinition.scope === 'Cluster') {
-      return `
-        mutation ($name: String!) {
-          ${group} {
-            delete${resourceDefinition.kind}(name: $name)
-          }
-      }
-    `;
-    }
-    return `
-      mutation ($name: String!, $namespace: String) {
-        ${group}  {
-          delete${resourceDefinition.kind}(name: $name, namespace: $namespace)
-        }
-      }
-    `;
+    const kind = resourceDefinition.kind;
+    const mutation = gqlBuilder.mutation({
+      operation: group,
+      fields: [
+        {
+          operation: `create${kind}`,
+          variables: { object: { type: `${kind}Input!` } },
+          fields: ['__typename'],
+        },
+      ],
+    });
+
+    resource.spec.type = 'account';
+    return this.apollo.mutate<void>({
+      mutation: gql`
+        ${mutation.query}
+      `,
+      fetchPolicy: 'no-cache',
+      variables: { object: resource },
+    });
   }
 }

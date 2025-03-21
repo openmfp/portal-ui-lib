@@ -1,0 +1,37 @@
+<ui5-dialog #dialog header-text="Create">
+  <section class="form" [formGroup]="form">
+    @for (field of fields(); track field.property) {
+      <div class="inputs">
+        <ui5-label for="username" show-colon [required]="field.required">{{
+          field.label
+        }}</ui5-label>
+        <ui5-input
+          class="input"
+          [value]="form.controls[field.property].value"
+          (blur)="onFieldBlur(field.property)"
+          (change)="setFormControlValue($event, field.property)"
+          (input)="setFormControlValue($event, field.property)"
+          [required]="field.required"
+          [valueState]="getValueState(field.property)"
+        ></ui5-input>
+      </div>
+    }
+  </section>
+  <ui5-toolbar class="ui5-content-density-compact" slot="footer">
+    <ui5-toolbar-button
+      class="dialogCloser"
+      design="Emphasized"
+      text="Submit"
+      [disabled]="!form.valid"
+      (click)="create()"
+    >
+    </ui5-toolbar-button>
+    <ui5-toolbar-button
+      class="dialogCloser"
+      design="Transparent"
+      text="Cancel"
+      (click)="close()"
+    >
+    </ui5-toolbar-button>
+  </ui5-toolbar>
+</ui5-dialog>
