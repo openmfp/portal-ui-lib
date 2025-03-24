@@ -53,7 +53,7 @@ export class CreateResourceModalComponent implements OnInit {
     if (this.form.valid) {
       const result = {} as Resource;
       for (const key in this.form.value) {
-        set(result, key, this.form.value[key]);
+        set(result, key.replaceAll('_', '.'), this.form.value[key]);
       }
 
       this.resource.emit(result);
@@ -64,7 +64,10 @@ export class CreateResourceModalComponent implements OnInit {
   private createControls() {
     return this.fields().reduce((obj, fieldDefinition) => {
       const validator = fieldDefinition.required ? Validators.required : null;
-      obj[fieldDefinition.property] = new FormControl('', validator);
+      obj[fieldDefinition.property.replaceAll('.', '_')] = new FormControl(
+        '',
+        validator,
+      );
       return obj;
     }, {});
   }

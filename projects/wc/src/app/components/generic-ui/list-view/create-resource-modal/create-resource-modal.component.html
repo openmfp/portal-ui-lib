@@ -1,18 +1,19 @@
 <ui5-dialog #dialog header-text="Create">
   <section class="form" [formGroup]="form">
     @for (field of fields(); track field.property) {
+      @let fieldProperty = field.property.replaceAll('.', '_');
       <div class="inputs">
         <ui5-label for="username" show-colon [required]="field.required">{{
           field.label
         }}</ui5-label>
         <ui5-input
           class="input"
-          [value]="form.controls[field.property].value"
-          (blur)="onFieldBlur(field.property)"
-          (change)="setFormControlValue($event, field.property)"
-          (input)="setFormControlValue($event, field.property)"
+          [value]="form.controls[fieldProperty].value"
+          (blur)="onFieldBlur(fieldProperty)"
+          (change)="setFormControlValue($event, fieldProperty)"
+          (input)="setFormControlValue($event, fieldProperty)"
           [required]="field.required"
-          [valueState]="getValueState(field.property)"
+          [valueState]="getValueState(fieldProperty)"
         ></ui5-input>
       </div>
     }

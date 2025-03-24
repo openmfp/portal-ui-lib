@@ -88,7 +88,7 @@ export class ListViewComponent implements OnInit {
 
     this.resourceService.delete(resource, this.resourceDefinition).subscribe({
       next: (result) => {
-        console.debug('Resource deleted');
+        console.debug('Resource deleted.');
       },
       error: (error) => {
         this.luigiCoreService.showAlert({
