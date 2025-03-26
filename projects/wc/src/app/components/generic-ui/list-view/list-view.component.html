@@ -23,11 +23,13 @@
       slot="actionsBar"
       design="Transparent"
     >
-      <ui5-toolbar-button
-        design="Emphasized"
-        text="Create"
-        (click)="openCreateResourceModal()"
-      ></ui5-toolbar-button>
+      @if (hasUiCreateViewFields()) {
+        <ui5-toolbar-button
+          design="Emphasized"
+          text="Create"
+          (click)="openCreateResourceModal()"
+        ></ui5-toolbar-button>
+      }
     </ui5-toolbar>
   </ui5-dynamic-page-title>
 
@@ -60,7 +62,9 @@
   </ui5-table>
 </ui5-dynamic-page>
 
-<create-resource-modal
-  [fields]="resourceDefinition.ui?.createView?.fields"
-  (resource)="create($event)"
-/>
+@if (hasUiCreateViewFields()) {
+  <create-resource-modal
+    [fields]="resourceDefinition.ui?.createView?.fields"
+    (resource)="create($event)"
+  />
+}

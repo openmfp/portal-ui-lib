@@ -25,7 +25,9 @@ describe('ListViewComponent', () => {
           { property: 'status.phase', label: 'Status' },
         ],
       },
-      createView: { fields: [{ property: 'metadata.name', label: 'Name' }] },
+      createView: {
+        fields: [{ property: 'metadata.name', label: 'Name', required: true }],
+      },
     },
   };
 
@@ -270,6 +272,19 @@ describe('ListViewComponent', () => {
       component.openCreateResourceModal();
 
       expect(modalMock.open).toHaveBeenCalled();
+    });
+  });
+
+  describe('hasUiCreateViewFields', () => {
+    it('should have create fields', () => {
+      component.context = mockNodeContext;
+      expect(component.hasUiCreateViewFields()).toBe(true);
+    });
+
+    it('should not have create fields', () => {
+      component.context = mockNodeContext;
+      component.resourceDefinition.ui.createView.fields = [];
+      expect(component.hasUiCreateViewFields()).toBe(false);
     });
   });
 });

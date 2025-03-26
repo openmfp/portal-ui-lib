@@ -70,7 +70,6 @@ export class ResourceService {
       ],
     });
 
-    resource.spec.type = 'account';
     return this.apollo.mutate<void>({
       mutation: gql`
         ${mutation.query}

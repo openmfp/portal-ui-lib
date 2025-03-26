@@ -125,4 +125,8 @@ export class ListViewComponent implements OnInit {
   openCreateResourceModal() {
     this.resourceCreateModal().open();
   }
+
+  hasUiCreateViewFields() {
+    return !!this.resourceDefinition?.ui?.createView?.fields?.length;
+  }
 }
