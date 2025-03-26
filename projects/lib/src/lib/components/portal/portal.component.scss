@@ -37,8 +37,3 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
 .fd-container.fd-form-layout-grid-container .fd-row .fd-col {
   white-space: inherit !important;
 }
-
-// override the top level menu global navigation button, luigi sets it to -.5rem, once fixed remove this
-.btp-layout .fd-shellbar__group--product>.lui-keep-main {
-  margin-left: 0;
-}
