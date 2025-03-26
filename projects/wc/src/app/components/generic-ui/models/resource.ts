@@ -11,7 +11,7 @@ export interface FieldDefinition {
   label: string;
   property: string;
   required?: boolean;
-  value?: any;
+  values?: string[];
 }
 
 export interface ResourceMetadata extends Record<string, any> {

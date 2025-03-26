@@ -176,6 +176,7 @@ describe('ResourceService', () => {
         },
         spec: {
           displayName: 'Test Display Name',
+          type: 'account',
         },
       };
 
@@ -190,10 +191,6 @@ describe('ResourceService', () => {
 
       service.create(mockResource, mockResourceDefinition);
 
-      // Verify the resource spec.type was set to 'account'
-      expect(mockResource.spec.type).toBe('account');
-
-      // Check that Apollo mutate was called with the right parameters
       expect(mockApollo.mutate).toHaveBeenCalledWith({
         mutation: expect.anything(),
         fetchPolicy: 'no-cache',
