@@ -1,0 +1,59 @@
+<ui5-dialog #dialog header-text="Create">
+  <section class="form" [formGroup]="form">
+    @for (field of fields(); track field.property) {
+      @let fieldProperty = field.property.replaceAll('.', '_');
+      <div class="inputs">
+        <ui5-label for="username" show-colon [required]="field.required">{{
+          field.label
+        }}</ui5-label>
+
+        @if (field.values?.length) {
+          <ui5-select
+            class="input"
+            [value]="form.controls[fieldProperty].value"
+            (input)="setFormControlValue($event, fieldProperty)"
+            (change)="setFormControlValue($event, fieldProperty)"
+            (blur)="onFieldBlur(fieldProperty)"
+            [required]="field.required"
+            [valueState]="getValueState(fieldProperty)"
+          >
+            @for (value of [''].concat(field.values); track value) {
+              <ui5-option
+                [value]="value"
+                [selected]="value === form.controls[fieldProperty].value"
+                >{{ value }}</ui5-option
+              >
+            }
+          </ui5-select>
+        } @else {
+          <ui5-input
+            class="input"
+            [value]="form.controls[fieldProperty].value"
+            (blur)="onFieldBlur(fieldProperty)"
+            (change)="setFormControlValue($event, fieldProperty)"
+            (input)="setFormControlValue($event, fieldProperty)"
+            [required]="field.required"
+            [valueState]="getValueState(fieldProperty)"
+          ></ui5-input>
+        }
+      </div>
+    }
+  </section>
+  <ui5-toolbar class="ui5-content-density-compact" slot="footer">
+    <ui5-toolbar-button
+      class="dialogCloser"
+      design="Emphasized"
+      text="Submit"
+      [disabled]="!form.valid"
+      (click)="create()"
+    >
+    </ui5-toolbar-button>
+    <ui5-toolbar-button
+      class="dialogCloser"
+      design="Transparent"
+      text="Cancel"
+      (click)="close()"
+    >
+    </ui5-toolbar-button>
+  </ui5-toolbar>
+</ui5-dialog>

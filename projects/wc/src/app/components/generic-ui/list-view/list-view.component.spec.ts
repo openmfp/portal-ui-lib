@@ -5,10 +5,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { of, throwError } from 'rxjs';
 
-jest.mock('../../../utils/columns-to-gql-fields', () => ({
-  generateFields: jest.fn().mockReturnValue('mockFields'),
-}));
-
 describe('ListViewComponent', () => {
   let component: ListViewComponent;
   let fixture: ComponentFixture<ListViewComponent>;
@@ -21,11 +17,17 @@ describe('ListViewComponent', () => {
     plural: 'resources',
     kind: 'Resource',
     scope: 'Namespaced',
+
     ui: {
-      columns: [
-        { property: 'metadata.name', label: 'Name' },
-        { property: 'status.phase', label: 'Status' },
-      ],
+      listView: {
+        columns: [
+          { property: 'metadata.name', label: 'Name' },
+          { property: 'status.phase', label: 'Status' },
+        ],
+      },
+      createView: {
+        fields: [{ property: 'metadata.name', label: 'Name', required: true }],
+      },
     },
   };
 
@@ -48,6 +50,7 @@ describe('ListViewComponent', () => {
     const resourceService = {
       read: jest.fn(),
       delete: jest.fn(),
+      create: jest.fn(),
     };
 
     const luigiCoreService = {
@@ -91,7 +94,7 @@ describe('ListViewComponent', () => {
     component.context = mockNodeContext;
 
     expect(component.resourceDefinition).toBe(mockResourceDefinition);
-    expect(component.columns).toBe(mockResourceDefinition.ui?.columns);
+    expect(component.columns).toBe(mockResourceDefinition.ui.listView.columns);
     expect(component.heading).toBe('Resources');
   });
 
@@ -123,7 +126,7 @@ describe('ListViewComponent', () => {
 
     expect(resourceServiceMock.read).toHaveBeenCalledWith(
       'test_group_resources',
-      'mockFields',
+      [{ metadata: ['name'] }, { status: ['phase'] }],
     );
     expect(component.resources).toEqual(mockResources);
   });
@@ -157,7 +160,7 @@ describe('ListViewComponent', () => {
       resource,
       mockResourceDefinition,
     );
-    expect(consoleSpy).toHaveBeenCalledWith('Resource deleted', {});
+    expect(consoleSpy).toHaveBeenCalledWith('Resource deleted.');
     consoleSpy.mockRestore();
   });
 
@@ -171,7 +174,7 @@ describe('ListViewComponent', () => {
     component.delete(mockEvent, resource);
 
     expect(luigiCoreServiceMock.showAlert).toHaveBeenCalledWith({
-      text: 'Failure! Could not delete resource: resource-1',
+      text: 'Failure! Could not delete resource: resource-1.',
       type: 'error',
     });
   });
@@ -215,5 +218,73 @@ describe('ListViewComponent', () => {
     expect(wcContainer.classList.contains('ui5-content-density-compact')).toBe(
       true,
     );
+  });
+
+  describe('create', () => {
+    it('should create a resource successfully', () => {
+      component.context = mockNodeContext;
+      const mockResource: Resource = {
+        metadata: { name: 'new-resource' },
+        status: { phase: 'Pending' },
+      };
+      resourceServiceMock.create.mockReturnValue(
+        of({ data: { resource: mockResource } } as any),
+      );
+      const consoleSpy = jest.spyOn(console, 'debug').mockImplementation();
+
+      component.create(mockResource);
+
+      expect(resourceServiceMock.create).toHaveBeenCalledWith(
+        mockResource,
+        mockResourceDefinition,
+      );
+      expect(consoleSpy).toHaveBeenCalledWith('Resource created', {
+        resource: mockResource,
+      });
+      consoleSpy.mockRestore();
+    });
+
+    it('should show alert when create fails', () => {
+      component.context = mockNodeContext;
+      const mockResource: Resource = {
+        metadata: { name: 'new-resource' },
+        status: { phase: 'Pending' },
+      };
+      const testError = new Error('Create error');
+      resourceServiceMock.create.mockReturnValue(throwError(() => testError));
+
+      component.create(mockResource);
+
+      expect(luigiCoreServiceMock.showAlert).toHaveBeenCalledWith({
+        text: 'Failure! Could not create resource: new-resource.',
+        type: 'error',
+      });
+    });
+
+    it('should open create resource modal', () => {
+      const modalMock = {
+        open: jest.fn(),
+      };
+      jest
+        .spyOn(component as any, 'resourceCreateModal')
+        .mockReturnValue(modalMock);
+
+      component.openCreateResourceModal();
+
+      expect(modalMock.open).toHaveBeenCalled();
+    });
+  });
+
+  describe('hasUiCreateViewFields', () => {
+    it('should have create fields', () => {
+      component.context = mockNodeContext;
+      expect(component.hasUiCreateViewFields()).toBe(true);
+    });
+
+    it('should not have create fields', () => {
+      component.context = mockNodeContext;
+      component.resourceDefinition.ui.createView.fields = [];
+      expect(component.hasUiCreateViewFields()).toBe(false);
+    });
   });
 });

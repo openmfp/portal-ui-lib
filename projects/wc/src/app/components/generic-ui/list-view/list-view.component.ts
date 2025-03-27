@@ -1,4 +1,3 @@
-import { generateFields } from '../../../utils/columns-to-gql-fields';
 import {
   ColumnDefinition,
   NodeContext,
@@ -6,6 +5,8 @@ import {
   ResourceDefinition,
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
+import { generateFields } from '../utils/columns-to-gql-fields';
+import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   Component,
@@ -13,6 +14,7 @@ import {
   OnInit,
   ViewEncapsulation,
   inject,
+  viewChild,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
@@ -36,11 +38,13 @@ const defaultColumns: ColumnDefinition[] = [
   styleUrls: ['./list-view.component.css'],
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [],
+  imports: [CreateResourceModalComponent],
 })
 export class ListViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
+
+  private resourceCreateModal = viewChild(CreateResourceModalComponent);
 
   columns: ColumnDefinition[];
   resources: Resource[];
@@ -53,7 +57,8 @@ export class ListViewComponent implements OnInit {
   @Input()
   set context(context: NodeContext) {
     this.resourceDefinition = context.resourceDefinition;
-    this.columns = context.resourceDefinition.ui?.columns || defaultColumns;
+    this.columns =
+      context.resourceDefinition.ui?.listView?.columns || defaultColumns;
     this.heading = `${context.resourceDefinition.plural.charAt(0).toUpperCase()}${context.resourceDefinition.plural.slice(1)}`;
   }
 
@@ -61,6 +66,10 @@ export class ListViewComponent implements OnInit {
     document
       .getElementsByClassName('wcContainer')[0]
       .classList.add('ui5-content-density-compact');
+    this.read();
+  }
+
+  read() {
     const fields = generateFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
@@ -79,11 +88,25 @@ export class ListViewComponent implements OnInit {
 
     this.resourceService.delete(resource, this.resourceDefinition).subscribe({
       next: (result) => {
-        console.debug('Resource deleted', result);
+        console.debug('Resource deleted.');
       },
       error: (error) => {
         this.luigiCoreService.showAlert({
-          text: `Failure! Could not delete resource: ${resource.metadata.name}`,
+          text: `Failure! Could not delete resource: ${resource.metadata.name}.`,
+          type: 'error',
+        });
+      },
+    });
+  }
+
+  create(resource: Resource) {
+    this.resourceService.create(resource, this.resourceDefinition).subscribe({
+      next: (result) => {
+        console.debug('Resource created', result.data);
+      },
+      error: (error) => {
+        this.luigiCoreService.showAlert({
+          text: `Failure! Could not create resource: ${resource.metadata.name}.`,
           type: 'error',
         });
       },
@@ -97,5 +120,13 @@ export class ListViewComponent implements OnInit {
   getNestedValue(resource: Resource, columnDefinition: ColumnDefinition) {
     const value = jsonpath.query(resource, `$.${columnDefinition.property}`);
     return value.length ? value[0] : undefined;
+  }
+
+  openCreateResourceModal() {
+    this.resourceCreateModal().open();
+  }
+
+  hasUiCreateViewFields() {
+    return !!this.resourceDefinition?.ui?.createView?.fields?.length;
   }
 }

@@ -12,6 +12,8 @@ import '@ui5/webcomponents/dist/Icon.js';
 import '@ui5/webcomponents/dist/Input.js';
 import '@ui5/webcomponents/dist/Label.js';
 import '@ui5/webcomponents/dist/Link.js';
+import '@ui5/webcomponents/dist/Option.js';
+import '@ui5/webcomponents/dist/Select.js';
 import '@ui5/webcomponents/dist/TableHeaderCell.js';
 import '@ui5/webcomponents/dist/TableHeaderRow.js';
 import '@ui5/webcomponents/dist/Toolbar.js';
