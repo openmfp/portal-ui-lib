@@ -15,12 +15,13 @@ describe('ListViewComponent', () => {
   const mockResourceDefinition: ResourceDefinition = {
     group: 'test.group',
     plural: 'resources',
+    singular: 'resource',
     kind: 'Resource',
     scope: 'Namespaced',
 
     ui: {
       listView: {
-        columns: [
+        fields: [
           { property: 'metadata.name', label: 'Name' },
           { property: 'status.phase', label: 'Status' },
         ],
@@ -94,7 +95,7 @@ describe('ListViewComponent', () => {
     component.context = mockNodeContext;
 
     expect(component.resourceDefinition).toBe(mockResourceDefinition);
-    expect(component.columns).toBe(mockResourceDefinition.ui.listView.columns);
+    expect(component.columns).toBe(mockResourceDefinition.ui.listView.fields);
     expect(component.heading).toBe('Resources');
   });
 
@@ -120,11 +121,11 @@ describe('ListViewComponent', () => {
   it('should fetch resources on init', () => {
     component.context = mockNodeContext;
     const queryResult = { data: { test_group_resources: mockResources } };
-    resourceServiceMock.read.mockReturnValue(of(queryResult));
+    resourceServiceMock.list.mockReturnValue(of(queryResult));
 
     component.ngOnInit();
 
-    expect(resourceServiceMock.read).toHaveBeenCalledWith(
+    expect(resourceServiceMock.list).toHaveBeenCalledWith(
       'test_group_resources',
       [{ metadata: ['name'] }, { status: ['phase'] }],
     );
@@ -134,7 +135,7 @@ describe('ListViewComponent', () => {
   it('should handle error when fetching resources', () => {
     component.context = mockNodeContext;
     const testError = new Error('Test error');
-    resourceServiceMock.read.mockReturnValue(throwError(() => testError));
+    resourceServiceMock.list.mockReturnValue(throwError(() => testError));
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
     component.ngOnInit();
@@ -210,7 +211,7 @@ describe('ListViewComponent', () => {
 
   it('should add ui5 density class on init', () => {
     component.context = mockNodeContext;
-    resourceServiceMock.read.mockReturnValue(of({ data: {} }));
+    resourceServiceMock.list.mockReturnValue(of({ data: {} }));
 
     component.ngOnInit();
 

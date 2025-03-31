@@ -35,7 +35,7 @@
 
   <ui5-table>
     <ui5-table-header-row slot="headerRow">
-      @for (column of columns; track column.label) {
+      @for (column of columns; track column.property) {
         <ui5-table-header-cell>{{ column.label }}</ui5-table-header-cell>
       }
       <ui5-table-header-cell class="actions-column"

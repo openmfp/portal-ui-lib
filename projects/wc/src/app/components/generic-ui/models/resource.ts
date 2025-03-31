@@ -1,15 +1,19 @@
 export interface NodeContext {
   resourceDefinition: ResourceDefinition;
+  token: string;
+  resourceId?: string;
+  portalContext?: PortalContext;
+  parentNavigationContexts: string[];
 }
 
-export interface ColumnDefinition {
-  label: string;
-  property: string;
+export interface PortalContext {
+  crdGatewayApiUrl: string;
 }
 
 export interface FieldDefinition {
-  label: string;
+  label?: string;
   property: string;
+  expression?: string;
   required?: boolean;
   values?: string[];
 }
@@ -18,32 +22,46 @@ export interface ResourceMetadata extends Record<string, any> {
   name: string;
 }
 
+export interface ResourceStatus {
+  conditions: ResourceStatusConditions[];
+}
+
+export interface ResourceStatusConditions {
+  status: string;
+  type: 'Ready';
+}
+
+export interface ResourceSpec extends Record<string, any> {
+  type: string;
+  description?: string;
+  displayName?: string;
+}
+
 export interface Resource extends Record<string, any> {
   metadata: ResourceMetadata;
-  spec?: Record<string, any>;
+  spec?: ResourceSpec;
+  status?: ResourceStatus;
 }
 
 export interface ResourceDefinition {
   group: string;
   plural: string;
+  singular: string;
   kind: string;
   scope?: KubernetesScope;
   namespace?: string;
   ui?: UIDefinition;
 }
 
-interface ListView {
-  columns: ColumnDefinition[];
-}
-
-interface CreateView {
+interface UiView {
   fields: FieldDefinition[];
 }
 
 export interface UIDefinition {
   logoUrl?: string;
-  listView: ListView;
-  createView: CreateView;
+  listView: UiView;
+  createView?: UiView;
+  detailView: UiView;
 }
 
 export type KubernetesScope = 'Cluster' | 'Namespaced';

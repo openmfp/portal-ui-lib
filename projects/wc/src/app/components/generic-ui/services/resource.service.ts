@@ -3,6 +3,8 @@ import { Resource, ResourceDefinition } from '../models/resource';
 import { Injectable, inject } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
+import { Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,18 +13,55 @@ export class ResourceService {
   private apolloFactory = inject(ApolloFactory);
   private apollo: Apollo = this.apolloFactory.apollo;
 
-  read(operation: string, fields: any[]) {
+  read(
+    resourceId: string,
+    operation: string,
+    fields: any[],
+  ): Observable<Resource> {
+    const query = gqlBuilder.subscription({
+      operation: operation,
+      fields,
+      variables: { name: { type: 'String!' } },
+    });
+
+    return this.apollo
+      .subscribe({
+        query: gql`
+          ${query.query}
+        `,
+        variables: {
+          name: resourceId,
+        },
+      })
+      .pipe(
+        map((res: any) => res.data?.[operation]),
+        catchError((error) => {
+          console.error('Error executing GraphQL query', error);
+          return error;
+        }),
+      );
+  }
+
+  list(operation: string, fields: any[]): Observable<Resource[]> {
     const query = gqlBuilder.subscription({
       operation: operation,
       fields,
       variables: {},
     });
 
-    return this.apollo.subscribe<any>({
-      query: gql`
-        ${query.query}
-      `,
-    });
+    return this.apollo
+      .subscribe({
+        query: gql`
+          ${query.query}
+        `,
+      })
+      .pipe(
+        map((res: any) => res.data?.[operation]),
+        catchError((error) => {
+          console.error('Error executing GraphQL query', error);
+          return error;
+        }),
+      );
   }
 
   delete(resource: Resource, resourceDefinition: ResourceDefinition) {
