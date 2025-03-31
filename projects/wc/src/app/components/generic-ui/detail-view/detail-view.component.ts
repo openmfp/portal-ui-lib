@@ -63,14 +63,14 @@ export class DetailViewComponent implements OnInit {
   resourceStatusReady = computed(() => {
     const resource = this.resource();
     if (!resource) {
-      return undefined;
+      return 'Unknown';
     }
 
     const value = jsonpath.query(
       resource,
       `$.status.conditions[?(@.type=="Ready")].status`,
     );
-    return value.length ? value[0] : undefined;
+    return value.length ? value[0] : 'Unknown';
   });
 
   nodeContext: NodeContext;
