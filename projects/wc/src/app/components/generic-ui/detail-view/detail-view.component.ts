@@ -15,7 +15,9 @@ import {
   OnInit,
   ViewChild,
   ViewEncapsulation,
+  computed,
   inject,
+  signal,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import jsonpath from 'jsonpath';
@@ -55,9 +57,22 @@ export class DetailViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   @ViewChild('dynamicPage', { static: true }) dynamicPage!: ElementRef;
 
+  resource = signal<Resource | null>(null);
+  resourceStatusReady = computed(() => {
+    const resource = this.resource();
+    if (!resource) {
+      return undefined;
+    }
+
+    const value = jsonpath.query(
+      resource,
+      `$.status.conditions[?(@.type=="Ready")].status`,
+    );
+    return value.length ? value[0] : undefined;
+  });
+
   nodeContext: NodeContext;
   resourceDefinition: ResourceDefinition;
-  resource: Resource;
   workspacePath: string;
   resourceFields: FieldDefinition[];
 
@@ -80,10 +95,7 @@ export class DetailViewComponent implements OnInit {
     this.resourceService
       .read(this.nodeContext.resourceId, queryOperation, fields)
       .subscribe({
-        next: (result) => {
-          this.resource = result;
-          console.log(result);
-        },
+        next: (result) => this.resource.set(result),
       });
   }
 

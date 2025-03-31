@@ -9,12 +9,12 @@
 
     <ui5-title slot="heading">
       <div class="resource-title">
-        {{ resource?.spec?.displayName || nodeContext.resourceId }}
+        {{ resource()?.spec?.displayName || nodeContext.resourceId }}
       </div>
     </ui5-title>
     <ui5-text class="resource-title-subheading" slot="subheading">
       The {{ resourceDefinition?.singular }} for
-      {{ resource?.spec?.displayName || nodeContext.resourceId }}
+      {{ resource()?.spec?.displayName || nodeContext.resourceId }}
     </ui5-text>
 
     <ui5-toolbar
@@ -41,12 +41,10 @@
           alt="Logo"
         />
       }
-      @if (resource) {
-        <div class="resource-info-cell">
-          <ui5-label>Workspace Status</ui5-label>
-          <p>{{ getStatusReady() }}</p>
-        </div>
-      }
+      <div class="resource-info-cell">
+        <ui5-label>Workspace Status</ui5-label>
+        <p>{{ resourceStatusReady() }}</p>
+      </div>
       <div class="resource-info-cell">
         <ui5-label>Workspace Path</ui5-label>
         <p>{{ workspacePath }}</p>
