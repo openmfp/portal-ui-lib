@@ -9,6 +9,7 @@ import { generateFields } from '../utils/columns-to-gql-fields';
 import { kubeConfigTemplate } from './kubeconfig-template';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   Input,
@@ -52,6 +53,7 @@ const kcpCA =
   imports: [],
   templateUrl: './detail-view.component.html',
   styleUrl: './detail-view.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
