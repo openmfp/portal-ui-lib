@@ -1,4 +1,4 @@
-import { generateFields } from './columns-to-gql-fields';
+import { generateGraphQLFields } from './columns-to-gql-fields';
 
 describe('generateFields', () => {
   it('should generate fields from an array of column definitions', () => {
@@ -10,7 +10,7 @@ describe('generateFields', () => {
       },
     ];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([
       { metadata: ['name'] },
@@ -19,7 +19,7 @@ describe('generateFields', () => {
   });
 
   it('should handle empty columns array', () => {
-    const result = generateFields([]);
+    const result = generateGraphQLFields([]);
     expect(result).toEqual([]);
   });
 
@@ -30,7 +30,7 @@ describe('generateFields', () => {
       { property: 'spec.type', label: 'Type' },
     ];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([
       { metadata: ['name'] },
@@ -45,7 +45,7 @@ describe('generateFields', () => {
       { property: 'metadata.name', label: 'Name' },
     ];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([{ metadata: ['name'] }]);
   });
@@ -53,7 +53,7 @@ describe('generateFields', () => {
   it('should handle deep nesting with multiple levels', () => {
     const columns = [{ property: 'level1.level2.level3.value', label: 'Deep' }];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([{ level1: [{ level2: [{ level3: ['value'] }] }] }]);
   });
@@ -63,7 +63,7 @@ describe('generateFields', () => {
       { property: 'items[?(@.name=="test")].value', label: 'Filtered' },
     ];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([{ items: ['value'] }]);
   });
@@ -71,7 +71,7 @@ describe('generateFields', () => {
   it('should handle array index notation', () => {
     const columns = [{ property: 'items[0].name', label: 'Indexed' }];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([{ items: ['name'] }]);
   });
@@ -85,7 +85,7 @@ describe('generateFields', () => {
       },
     ];
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([
       {
@@ -108,9 +108,9 @@ describe('generateFields', () => {
     const columns = [
       { label: 'Missing Property' },
       { property: 'metadata.name', label: 'Name' },
-    ];
+    ] as any;
 
-    const result = generateFields(columns);
+    const result = generateGraphQLFields(columns);
 
     expect(result).toEqual([{ metadata: ['name'] }]);
   });

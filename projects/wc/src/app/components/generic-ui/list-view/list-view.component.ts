@@ -5,7 +5,7 @@ import {
   ResourceDefinition,
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
-import { generateFields } from '../utils/columns-to-gql-fields';
+import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
@@ -68,7 +68,7 @@ export class ListViewComponent implements OnInit {
   }
 
   read() {
-    const fields = generateFields(this.columns);
+    const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
     this.resourceService.list(queryOperation, fields).subscribe({

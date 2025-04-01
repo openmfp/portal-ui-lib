@@ -5,7 +5,7 @@ import {
   ResourceDefinition,
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
-import { generateFields } from '../utils/columns-to-gql-fields';
+import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { kcpCA, kubeConfigTemplate } from './kubeconfig-template';
 import {
@@ -86,7 +86,7 @@ export class DetailViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const fields = generateFields([
+    const fields = generateGraphQLFields([
       ...requiredFields,
       ...this.additionalFields,
     ]);
