@@ -52,9 +52,9 @@ interface UiView {
 
 export interface UIDefinition {
   logoUrl?: string;
-  listView: UiView;
+  listView?: UiView;
   createView?: UiView;
-  detailView: UiView;
+  detailView?: UiView;
 }
 
 export type KubernetesScope = 'Cluster' | 'Namespaced';

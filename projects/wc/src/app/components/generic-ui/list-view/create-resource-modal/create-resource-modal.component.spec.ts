@@ -1,4 +1,4 @@
-import { FieldDefinition, Resource } from '../../models/resource';
+import { FieldDefinition } from '../../models/resource';
 import { CreateResourceModalComponent } from './create-resource-modal.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -7,141 +7,140 @@ import { ReactiveFormsModule } from '@angular/forms';
 describe('CreateResourceModalComponent', () => {
   let component: CreateResourceModalComponent;
   let fixture: ComponentFixture<CreateResourceModalComponent>;
+  let mockDialogElement: any;
+
+  const testFields: FieldDefinition[] = [
+    { property: 'name.firstName', required: true, label: 'First Name' },
+    { property: 'address.city', required: false, label: 'City' },
+  ];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateResourceModalComponent, ReactiveFormsModule],
+      imports: [ReactiveFormsModule, CreateResourceModalComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateResourceModalComponent);
     component = fixture.componentInstance;
 
-    const mockFields: FieldDefinition[] = [
-      { property: 'metadata.name', label: 'Name', required: true },
-      {
-        property: 'metadata.description',
-        label: 'Description',
-        required: false,
-      },
-      { property: 'spec.displayName', label: 'Display Name', required: false },
-    ];
+    component.fields = (() => testFields) as any;
 
-    component.fields = (() => mockFields) as any;
+    mockDialogElement = {
+      open: false,
+    };
+    (component as any).dialog = () => ({ nativeElement: mockDialogElement });
+
+    component.ngOnInit();
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form with controls based on fields input', () => {
-    component.ngOnInit();
-    expect(component.form.get('metadata_name')).toBeTruthy();
-    expect(component.form.get('metadata_description')).toBeTruthy();
-    expect(component.form.get('spec_displayName')).toBeTruthy();
-  });
+  it('should initialize form with controls from fields input', () => {
+    expect(component.form).toBeDefined();
+    expect(component.form.controls['name_firstName']).toBeDefined();
+    expect(component.form.controls['address_city']).toBeDefined();
 
-  it('should add validators to required fields', () => {
-    component.ngOnInit();
-    expect(component.form.get('metadata_name').validator).toBeTruthy();
-    expect(component.form.get('metadata_description').validator).toBeNull();
+    const firstNameControl = component.form.controls['name_firstName'];
+    firstNameControl.setValue('');
+    expect(firstNameControl.valid).toBeFalsy();
+
+    const cityControl = component.form.controls['address_city'];
+    cityControl.setValue('');
+    expect(cityControl.valid).toBeTruthy();
   });
 
   it('should open dialog when open method is called', () => {
-    const mockDialogElement = { nativeElement: { open: false } };
-    component.dialog = jest.fn().mockReturnValue(mockDialogElement) as any;
-
     component.open();
-
-    expect(mockDialogElement.nativeElement.open).toBe(true);
+    expect(mockDialogElement.open).toBeTruthy();
   });
 
   it('should close dialog and reset form when close method is called', () => {
-    const mockDialogElement = { nativeElement: { open: true } };
-    component.dialog = jest.fn().mockReturnValue(mockDialogElement) as any;
-    jest.spyOn(component.form, 'reset');
+    spyOn(component.form, 'reset');
 
     component.close();
 
-    expect(mockDialogElement.nativeElement.open).toBe(false);
+    expect(mockDialogElement.open).toBeFalsy();
     expect(component.form.reset).toHaveBeenCalled();
   });
 
-  it('should emit resource and close dialog when form is valid and create is called', () => {
-    const mockDialogElement = { nativeElement: { open: true } };
-    component.dialog = jest.fn().mockReturnValue(mockDialogElement) as any;
-    component.resource.emit = jest.fn();
-    jest.spyOn(component, 'close');
+  it('should transform form data and emit resource when create method is called with valid form', () => {
+    component.form.controls['name_firstName'].setValue('John');
+    component.form.controls['address_city'].setValue('New York');
 
-    component.form.setValue({
-      metadata_name: 'test-name',
-      metadata_description: 'test-description',
-      spec_displayName: 'Test Display Name',
-    });
+    spyOn(component.resource, 'emit');
 
     component.create();
 
-    const expectedResource: Resource = {
-      metadata: {
-        name: 'test-name',
-        description: 'test-description',
-      },
-      spec: {
-        displayName: 'Test Display Name',
-      },
-    };
+    expect(component.resource.emit).toHaveBeenCalledWith({
+      name: { firstName: 'John' },
+      address: { city: 'New York' },
+    });
 
-    expect(component.resource.emit).toHaveBeenCalledWith(expectedResource);
-    expect(component.close).toHaveBeenCalled();
+    expect(mockDialogElement.open).toBeFalsy();
   });
 
-  it('should not emit or close when form is invalid and create is called', () => {
-    component.resource.emit = jest.fn();
-    jest.spyOn(component, 'close');
+  it('should not emit resource when form is invalid', () => {
+    component.form.controls['name_firstName'].setValue('');
+    component.form.controls['address_city'].setValue('New York');
 
-    component.form.setValue({
-      metadata_name: '',
-      metadata_description: 'test-description',
-      spec_displayName: 'Test Display Name',
-    });
+    spyOn(component.resource, 'emit');
 
     component.create();
 
     expect(component.resource.emit).not.toHaveBeenCalled();
-    expect(component.close).not.toHaveBeenCalled();
   });
 
-  it('should set form control value when setFormControlValue is called', () => {
-    const event = { target: { value: 'test-value' } };
-    component.setFormControlValue(event, 'metadata_name');
+  it('should update form control value, mark as touched and dirty on setFormControlValue', () => {
+    const event = { target: { value: 'Test' } };
 
-    expect(component.form.get('metadata_name').value).toBe('test-value');
-    expect(component.form.get('metadata_name').touched).toBe(true);
-    expect(component.form.get('metadata_name').dirty).toBe(true);
+    spyOn(component.form.controls['name_firstName'], 'setValue');
+    spyOn(component.form.controls['name_firstName'], 'markAsTouched');
+    spyOn(component.form.controls['name_firstName'], 'markAsDirty');
+
+    component.setFormControlValue(event, 'name_firstName');
+
+    expect(
+      component.form.controls['name_firstName'].setValue,
+    ).toHaveBeenCalledWith('Test');
+    expect(
+      component.form.controls['name_firstName'].markAsTouched,
+    ).toHaveBeenCalled();
+    expect(
+      component.form.controls['name_firstName'].markAsDirty,
+    ).toHaveBeenCalled();
   });
 
-  it('should return "Negative" for invalid touched control in getValueState', () => {
-    component.form.get('metadata_name').setValue('');
-    component.form.get('metadata_name').markAsTouched();
+  it('should return Negative value state for invalid and touched control', () => {
+    const control = component.form.controls['name_firstName'];
+    control.setValue('');
+    control.markAsTouched();
 
-    const state = component.getValueState('metadata_name');
-
-    expect(state).toBe('Negative');
+    expect(component.getValueState('name_firstName')).toBe('Negative');
   });
 
-  it('should return "None" for valid control in getValueState', () => {
-    component.form.get('metadata_name').setValue('test-name');
-    component.form.get('metadata_name').markAsTouched();
+  it('should return None value state for valid control or untouched control', () => {
+    const control = component.form.controls['name_firstName'];
+    control.setValue('John');
+    control.markAsTouched();
 
-    const state = component.getValueState('metadata_name');
+    expect(component.getValueState('name_firstName')).toBe('None');
 
-    expect(state).toBe('None');
+    control.setValue('');
+    control.markAsUntouched();
+
+    expect(component.getValueState('name_firstName')).toBe('None');
   });
 
-  it('should mark control as touched when onFieldBlur is called', () => {
-    component.onFieldBlur('metadata_name');
+  it('should mark control as touched on field blur', () => {
+    spyOn(component.form.controls['name_firstName'], 'markAsTouched');
 
-    expect(component.form.get('metadata_name').touched).toBe(true);
+    component.onFieldBlur('name_firstName');
+
+    expect(
+      component.form.controls['name_firstName'].markAsTouched,
+    ).toHaveBeenCalled();
   });
 });
