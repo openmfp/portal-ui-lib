@@ -6,6 +6,7 @@ import {
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
 import { generateFields } from '../utils/columns-to-gql-fields';
+import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
@@ -18,7 +19,6 @@ import {
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
-import jsonpath from 'jsonpath';
 
 const defaultColumns: FieldDefinition[] = [
   {
@@ -45,6 +45,7 @@ export class ListViewComponent implements OnInit {
   private luigiCoreService = inject(LuigiCoreService);
 
   private resourceCreateModal = viewChild(CreateResourceModalComponent);
+  protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   columns: FieldDefinition[];
   resources: Resource[];
@@ -109,11 +110,6 @@ export class ListViewComponent implements OnInit {
 
   navigateToResource(resource: Resource) {
     this.LuigiClient.linkManager().navigate(resource.metadata.name);
-  }
-
-  getNestedValue(resource: Resource, columnDefinition: FieldDefinition) {
-    const value = jsonpath.query(resource, `$.${columnDefinition.property}`);
-    return value.length ? value[0] : undefined;
   }
 
   openCreateResourceModal() {
