@@ -19,7 +19,7 @@
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
-    "@luigi-project/plugin-auth-oauth2": "^2.19.2",
+    "@luigi-project/plugin-auth-oauth2": "^2.21.2",
     "jwt-decode": "4.0.0",
     "tslib": "^2.3.0"
   },
@@ -81,6 +81,7 @@
     "jest-junit": "16.0.0",
     "jest-mock-extended": "3.0.7",
     "jmespath": "0.16.0",
+    "kubernetes-types": "^1.30.0",
     "mkdirp": "^3.0.1",
     "move-cli": "^2.0.0",
     "ng-packagr": "^18.0.0",
