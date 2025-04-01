@@ -1,3 +1,5 @@
+import { Condition, ObjectMeta } from 'kubernetes-types/meta/v1';
+
 export interface NodeContext {
   resourceDefinition: ResourceDefinition;
   token: string;
@@ -18,17 +20,8 @@ export interface FieldDefinition {
   values?: string[];
 }
 
-export interface ResourceMetadata extends Record<string, any> {
-  name: string;
-}
-
 export interface ResourceStatus {
-  conditions: ResourceStatusConditions[];
-}
-
-export interface ResourceStatusConditions {
-  status: string;
-  type: 'Ready';
+  conditions: Condition[];
 }
 
 export interface ResourceSpec extends Record<string, any> {
@@ -38,7 +31,7 @@ export interface ResourceSpec extends Record<string, any> {
 }
 
 export interface Resource extends Record<string, any> {
-  metadata: ResourceMetadata;
+  metadata: ObjectMeta;
   spec?: ResourceSpec;
   status?: ResourceStatus;
 }

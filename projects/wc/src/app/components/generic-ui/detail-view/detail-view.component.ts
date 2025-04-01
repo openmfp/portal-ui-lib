@@ -54,7 +54,6 @@ const requiredFields: FieldDefinition[] = [
 })
 export class DetailViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
-  @ViewChild('dynamicPage', { static: true }) dynamicPage!: ElementRef;
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   resource = signal<Resource | null>(null);
@@ -63,7 +62,6 @@ export class DetailViewComponent implements OnInit {
     if (!resource) {
       return undefined;
     }
-    console.log(resource);
 
     return getResourceValueByJsonPath(resource, {
       property: 'status.conditions[?(@.type=="Ready")].status',
