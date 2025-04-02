@@ -64,10 +64,8 @@ export class CreateResourceModalComponent implements OnInit {
   private createControls() {
     return this.fields().reduce((obj, fieldDefinition) => {
       const validator = fieldDefinition.required ? Validators.required : null;
-      obj[fieldDefinition.property.replaceAll('.', '_')] = new FormControl(
-        '',
-        validator,
-      );
+      obj[this.sanitizePropertyName(fieldDefinition.property)] =
+        new FormControl('', validator);
       return obj;
     }, {});
   }
@@ -85,5 +83,12 @@ export class CreateResourceModalComponent implements OnInit {
 
   onFieldBlur(formControlName: string) {
     this.form.controls[formControlName].markAsTouched();
+  }
+
+  sanitizePropertyName(property: string | string[]) {
+    if (property instanceof Array) {
+      throw new Error('Wrong property type, array not supported');
+    }
+    return (property as string).replaceAll('.', '_');
   }
 }

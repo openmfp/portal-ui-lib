@@ -14,8 +14,8 @@ export interface PortalContext {
 
 export interface FieldDefinition {
   label?: string;
-  property: string;
-  expression?: string;
+  property: string | string[];
+  jsonPathExpression?: string;
   required?: boolean;
   values?: string[];
 }

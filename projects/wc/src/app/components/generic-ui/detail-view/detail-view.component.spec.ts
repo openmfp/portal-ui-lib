@@ -88,7 +88,7 @@ describe('DetailViewComponent', () => {
   });
 
   it('should set additionalFields and resourceDefinition from context', () => {
-    expect(component.additionalFields).toEqual(
+    expect(component.resourceFields).toEqual(
       mockResourceDefinition.ui!.detailView!.fields,
     );
     expect(component.resourceDefinition).toEqual(mockResourceDefinition);
@@ -161,7 +161,7 @@ describe('DetailViewComponent', () => {
 
     component.context = newContext;
 
-    expect(component.additionalFields).toEqual([]);
+    expect(component.resourceFields).toEqual([]);
   });
 
   it('should handle missing detailView in resourceDefinition', () => {
@@ -171,7 +171,7 @@ describe('DetailViewComponent', () => {
 
     component.context = newContext;
 
-    expect(component.additionalFields).toEqual([]);
+    expect(component.resourceFields).toEqual([]);
   });
 
   it('should extract KCP path correctly from different URLs', () => {

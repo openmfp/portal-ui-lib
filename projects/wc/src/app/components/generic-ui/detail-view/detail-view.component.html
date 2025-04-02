@@ -42,15 +42,11 @@
         />
       }
       <div class="resource-info-cell">
-        <ui5-label>Workspace Status</ui5-label>
-        <p>{{ resourceStatusReady() }}</p>
-      </div>
-      <div class="resource-info-cell">
         <ui5-label>Workspace Path</ui5-label>
         <p>{{ workspacePath }}</p>
       </div>
 
-      @for (field of additionalFields; track field.property) {
+      @for (field of resourceFields; track field.property) {
         <div class="resource-info-cell">
           <ui5-label>{{ field.label }}</ui5-label>
           <p>{{ getResourceValueByJsonPath(resource(), field) }}</p>
