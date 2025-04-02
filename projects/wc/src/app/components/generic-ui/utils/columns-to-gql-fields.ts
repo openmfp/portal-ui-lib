@@ -1,7 +1,9 @@
-export const generateFields = (columns: any): any[] => {
-  const fields = [];
-  columns.map((column) => generate(column.property, fields));
-  return fields;
+import { FieldDefinition } from '../models/resource';
+
+export const generateGraphQLFields = (uiFields: FieldDefinition[]): any[] => {
+  const graphQLFields = [];
+  uiFields.map((field) => generate(field.property, graphQLFields));
+  return graphQLFields;
 };
 
 const generate = (root: string, fields: any = []) => {

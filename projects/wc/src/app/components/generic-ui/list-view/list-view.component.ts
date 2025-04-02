@@ -1,11 +1,12 @@
 import {
-  ColumnDefinition,
+  FieldDefinition,
   NodeContext,
   Resource,
   ResourceDefinition,
 } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
-import { generateFields } from '../utils/columns-to-gql-fields';
+import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
+import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
@@ -18,16 +19,15 @@ import {
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
-import jsonpath from 'jsonpath';
 
-const defaultColumns: ColumnDefinition[] = [
+const defaultColumns: FieldDefinition[] = [
   {
-    property: 'metadata.name',
     label: 'Name',
+    property: 'metadata.name',
   },
   {
-    property: 'status.conditions[?(@.type=="Ready")].status',
     label: 'Ready',
+    property: 'status.conditions[?(@.type=="Ready")].status',
   },
 ];
 
@@ -45,8 +45,9 @@ export class ListViewComponent implements OnInit {
   private luigiCoreService = inject(LuigiCoreService);
 
   private resourceCreateModal = viewChild(CreateResourceModalComponent);
+  protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
-  columns: ColumnDefinition[];
+  columns: FieldDefinition[];
   resources: Resource[];
   heading: string;
   resourceDefinition: ResourceDefinition;
@@ -58,27 +59,21 @@ export class ListViewComponent implements OnInit {
   set context(context: NodeContext) {
     this.resourceDefinition = context.resourceDefinition;
     this.columns =
-      context.resourceDefinition.ui?.listView?.columns || defaultColumns;
+      context.resourceDefinition.ui?.listView?.fields || defaultColumns;
     this.heading = `${context.resourceDefinition.plural.charAt(0).toUpperCase()}${context.resourceDefinition.plural.slice(1)}`;
   }
 
   ngOnInit(): void {
-    document
-      .getElementsByClassName('wcContainer')[0]
-      .classList.add('ui5-content-density-compact');
     this.read();
   }
 
   read() {
-    const fields = generateFields(this.columns);
+    const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
-    this.resourceService.read(queryOperation, fields).subscribe({
+    this.resourceService.list(queryOperation, fields).subscribe({
       next: (result) => {
-        this.resources = result.data?.[queryOperation];
-      },
-      error: (error) => {
-        console.error('Error executing GraphQL query', error);
+        this.resources = result;
       },
     });
   }
@@ -115,11 +110,6 @@ export class ListViewComponent implements OnInit {
 
   navigateToResource(resource: Resource) {
     this.LuigiClient.linkManager().navigate(resource.metadata.name);
-  }
-
-  getNestedValue(resource: Resource, columnDefinition: ColumnDefinition) {
-    const value = jsonpath.query(resource, `$.${columnDefinition.property}`);
-    return value.length ? value[0] : undefined;
   }
 
   openCreateResourceModal() {

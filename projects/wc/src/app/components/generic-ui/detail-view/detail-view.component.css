@@ -1,0 +1,32 @@
+.resource-title {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.resource-title-subheading {
+  display: block;
+  padding-bottom: 1rem;
+}
+
+.resource-logo {
+  width: 5rem;
+  padding-bottom: 1rem;
+}
+
+.resource-title-actions {
+  height: auto;
+}
+
+.resource-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.resource-info-cell {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  max-width: 300px;
+}

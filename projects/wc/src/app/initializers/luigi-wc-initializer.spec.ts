@@ -1,4 +1,5 @@
 import { ErrorComponent } from '../components/error/error.component';
+import { DetailViewComponent } from '../components/generic-ui/detail-view/detail-view.component';
 import { ListViewComponent } from '../components/generic-ui/list-view/list-view.component';
 import * as wcUtils from '../utils/wc';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
@@ -52,6 +53,7 @@ describe('provideLuigiWebComponents', () => {
       {
         'error-component': ErrorComponent,
         'generic-list-view': ListViewComponent,
+        'generic-detail-view': DetailViewComponent,
       },
       injector,
     );
@@ -72,6 +74,7 @@ describe('provideLuigiWebComponents', () => {
       {
         'error-component': ErrorComponent,
         'generic-list-view': ListViewComponent,
+        'generic-detail-view': DetailViewComponent,
       },
       injector,
     );
