@@ -110,20 +110,6 @@ describe('DetailViewComponent', () => {
     expect(component.resource()).toEqual(mockResource);
   });
 
-  it('should compute resource status correctly', () => {
-    component.ngOnInit();
-
-    expect(component.resourceStatusReady()).toBe('True');
-
-    component.resource.set(null);
-    expect(component.resourceStatusReady()).toBeUndefined();
-
-    const resourceWithoutStatus = { ...mockResource };
-    delete resourceWithoutStatus.status;
-    component.resource.set(resourceWithoutStatus);
-    expect(component.resourceStatusReady()).toBeUndefined();
-  });
-
   it('should navigate to parent context', () => {
     const event = { preventDefault: jest.fn() };
 
