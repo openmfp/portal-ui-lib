@@ -10,6 +10,13 @@ export const getResourceValueByJsonPath = (
     return undefined;
   }
 
+  if (property instanceof Array) {
+    console.error(
+      `Property defined as an array: ${JSON.stringify(property)}, provide "jsonPathExpression" field to properly ready resource value`,
+    );
+    return undefined;
+  }
+
   const value = jsonpath.query(resource || {}, `$.${property}`);
   return value.length ? value[0] : undefined;
 };

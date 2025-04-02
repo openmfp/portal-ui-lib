@@ -157,7 +157,13 @@ describe('DetailViewComponent', () => {
 
     component.context = newContext;
 
-    expect(component.resourceFields).toEqual([]);
+    expect(component.resourceFields).toEqual([
+      {
+        jsonPathExpression: 'status.conditions[?(@.type=="Ready")].status',
+        label: 'Workspace Status',
+        property: ['status.conditions.status', 'status.conditions.type'],
+      },
+    ]);
   });
 
   it('should extract KCP path correctly from different URLs', () => {

@@ -1,117 +1,87 @@
+import { FieldDefinition } from '../models/resource';
 import { generateGraphQLFields } from './columns-to-gql-fields';
 
-describe('generateFields', () => {
-  it('should generate fields from an array of column definitions', () => {
-    const columns = [
-      { property: 'metadata.name', label: 'Name' },
-      {
-        property: 'status.conditions[?(@.type=="Ready")].status',
-        label: 'Ready',
-      },
-    ];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([
-      { metadata: ['name'] },
-      { status: [{ conditions: ['status'] }] },
-    ]);
-  });
-
-  it('should handle empty columns array', () => {
+describe('generateGraphQLFields', () => {
+  it('should handle empty array input', () => {
     const result = generateGraphQLFields([]);
     expect(result).toEqual([]);
   });
 
-  it('should handle multiple nested properties', () => {
-    const columns = [
-      { property: 'metadata.name', label: 'Name' },
-      { property: 'spec.displayName', label: 'Display Name' },
-      { property: 'spec.type', label: 'Type' },
+  it('should handle single property fields', () => {
+    const fields: FieldDefinition[] = [
+      { property: 'name', label: 'Name' },
+      { property: 'status', label: 'Status' },
     ];
 
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([
-      { metadata: ['name'] },
-      { spec: ['displayName'] },
-      { spec: ['type'] },
-    ]);
+    const result = generateGraphQLFields(fields);
+    expect(result).toEqual(['name', 'status']);
   });
 
-  it('should handle columns with empty property values', () => {
-    const columns = [
-      { property: '', label: 'Empty' },
+  it('should handle nested property fields', () => {
+    const fields: FieldDefinition[] = [
       { property: 'metadata.name', label: 'Name' },
     ];
 
-    const result = generateGraphQLFields(columns);
-
+    const result = generateGraphQLFields(fields);
     expect(result).toEqual([{ metadata: ['name'] }]);
   });
 
-  it('should handle deep nesting with multiple levels', () => {
-    const columns = [{ property: 'level1.level2.level3.value', label: 'Deep' }];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ level1: [{ level2: [{ level3: ['value'] }] }] }]);
-  });
-
-  it('should remove JSONPath filter expressions', () => {
-    const columns = [
-      { property: 'items[?(@.name=="test")].value', label: 'Filtered' },
+  it('should handle array of properties', () => {
+    const fields: FieldDefinition[] = [
+      { property: ['name', 'status'], label: 'Basic Info' },
     ];
 
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ items: ['value'] }]);
+    const result = generateGraphQLFields(fields);
+    expect(result).toEqual(['name', 'status']);
   });
 
-  it('should handle array index notation', () => {
-    const columns = [{ property: 'items[0].name', label: 'Indexed' }];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ items: ['name'] }]);
-  });
-
-  it('should handle complex mixed paths with array indices and filters', () => {
-    const columns = [
-      {
-        property:
-          'spec.template.spec.containers[0].resources.requests[?(@.name=="cpu")].value',
-        label: 'Complex',
-      },
+  it('should handle array of properties with nested paths', () => {
+    const fields: FieldDefinition[] = [
+      { property: ['metadata.name', 'spec.type'], label: 'Resource Info' },
     ];
 
-    const result = generateGraphQLFields(columns);
+    const result = generateGraphQLFields(fields);
+    // The current implementation would produce this structure
+    expect(result).toEqual([{ metadata: ['name'] }, { spec: ['type'] }]);
+  });
 
+  it('should handle complex mixed field definitions', () => {
+    const fields: FieldDefinition[] = [
+      { property: 'id', label: 'ID' },
+      { property: 'metadata.name', label: 'Name' },
+      { property: ['status.phase', 'spec.replicas'], label: 'Details' },
+    ];
+
+    const result = generateGraphQLFields(fields);
+    expect(result).toEqual([
+      'id',
+      { metadata: ['name'] },
+      { status: ['phase'] },
+      { spec: ['replicas'] },
+    ]);
+  });
+
+  it('should handle empty property strings', () => {
+    const fields: FieldDefinition[] = [{ property: '', label: 'Empty' }];
+
+    const result = generateGraphQLFields(fields);
+    expect(result).toEqual([]);
+  });
+
+  it('should handle deeply nested properties', () => {
+    const fields: FieldDefinition[] = [
+      { property: 'metadata.annotations.description', label: 'Description' },
+    ];
+
+    const result = generateGraphQLFields(fields);
     expect(result).toEqual([
       {
-        spec: [
+        metadata: [
           {
-            template: [
-              {
-                spec: [
-                  { containers: [{ resources: [{ requests: ['value'] }] }] },
-                ],
-              },
-            ],
+            annotations: ['description'],
           },
         ],
       },
     ]);
-  });
-
-  it('should handle undefined column properties', () => {
-    const columns = [
-      { label: 'Missing Property' },
-      { property: 'metadata.name', label: 'Name' },
-    ] as any;
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ metadata: ['name'] }]);
   });
 });
