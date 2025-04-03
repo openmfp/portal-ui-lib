@@ -87,8 +87,8 @@ describe('DetailViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set additionalFields and resourceDefinition from context', () => {
-    expect(component.additionalFields).toEqual(
+  it('should set resourceFields and resourceDefinition from context', () => {
+    expect(component.resourceFields).toEqual(
       mockResourceDefinition.ui!.detailView!.fields,
     );
     expect(component.resourceDefinition).toEqual(mockResourceDefinition);
@@ -108,20 +108,6 @@ describe('DetailViewComponent', () => {
     );
 
     expect(component.resource()).toEqual(mockResource);
-  });
-
-  it('should compute resource status correctly', () => {
-    component.ngOnInit();
-
-    expect(component.resourceStatusReady()).toBe('True');
-
-    component.resource.set(null);
-    expect(component.resourceStatusReady()).toBeUndefined();
-
-    const resourceWithoutStatus = { ...mockResource };
-    delete resourceWithoutStatus.status;
-    component.resource.set(resourceWithoutStatus);
-    expect(component.resourceStatusReady()).toBeUndefined();
   });
 
   it('should navigate to parent context', () => {
@@ -161,7 +147,7 @@ describe('DetailViewComponent', () => {
 
     component.context = newContext;
 
-    expect(component.additionalFields).toEqual([]);
+    expect(component.resourceFields).toEqual([]);
   });
 
   it('should handle missing detailView in resourceDefinition', () => {
@@ -171,7 +157,13 @@ describe('DetailViewComponent', () => {
 
     component.context = newContext;
 
-    expect(component.additionalFields).toEqual([]);
+    expect(component.resourceFields).toEqual([
+      {
+        jsonPathExpression: 'status.conditions[?(@.type=="Ready")].status',
+        label: 'Workspace Status',
+        property: ['status.conditions.status', 'status.conditions.type'],
+      },
+    ]);
   });
 
   it('should extract KCP path correctly from different URLs', () => {

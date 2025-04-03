@@ -2,63 +2,112 @@ import { FieldDefinition, Resource } from '../models/resource';
 import { getResourceValueByJsonPath } from './resource-field-by-path';
 
 describe('getResourceValueByJsonPath', () => {
-  it('should return the correct value for a valid JSON path', () => {
-    const resource: Resource = {
-      metadata: { name: 'test-resource', namespace: 'default' },
-      spec: { type: 'example', description: 'A sample resource' },
-    };
-    const field: FieldDefinition = { property: 'spec.type' };
-    expect(getResourceValueByJsonPath(resource, field)).toBe('example');
+  it('should return undefined when field is undefined', () => {
+    const resource = {} as Resource;
+    const result = getResourceValueByJsonPath(
+      resource,
+      undefined as unknown as FieldDefinition,
+    );
+    expect(result).toBeUndefined();
   });
 
-  it('should return undefined if the property does not exist', () => {
-    const resource: Resource = {
-      metadata: { name: 'test-resource', namespace: 'default' },
-    };
-    const field: FieldDefinition = { property: 'spec.nonExistentField' };
-    expect(getResourceValueByJsonPath(resource, field)).toBeUndefined();
+  it('should return undefined when property is not defined', () => {
+    const resource = {} as Resource;
+    const field = {} as FieldDefinition;
+    const result = getResourceValueByJsonPath(resource, field);
+    expect(result).toBeUndefined();
   });
 
-  it('should return undefined if the resource is undefined', () => {
-    const field: FieldDefinition = { property: 'spec.type' };
-    expect(getResourceValueByJsonPath(undefined as any, field)).toBeUndefined();
+  it('should return undefined when property is an array', () => {
+    const resource = {} as Resource;
+    const field = { property: ['prop1', 'prop2'] } as FieldDefinition;
+
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const result = getResourceValueByJsonPath(resource, field);
+
+    expect(result).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Property defined as an array: ["prop1","prop2"], provide "jsonPathExpression" field to properly ready resource value',
+    );
+    consoleSpy.mockRestore();
   });
 
-  it('should return undefined if the field property is an empty string', () => {
-    const resource: Resource = {
-      metadata: { name: 'test-resource', namespace: 'default' },
-    };
-    const field: FieldDefinition = { property: '' };
-    expect(getResourceValueByJsonPath(resource, field)).toBeUndefined();
+  it('should use jsonPathExpression if provided', () => {
+    const resource = { metadata: { name: 'test' } } as Resource;
+    const field = {
+      property: 'not-used',
+      jsonPathExpression: 'metadata.name',
+    } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(resource, field);
+    expect(result).toBe('test');
   });
 
-  it('should return the first matched value if multiple values exist', () => {
-    const resource: Resource = {
-      metadata: { name: 'test-resource', namespace: 'default' },
-      status: {
-        conditions: [
-          { type: 'Ready', status: 'True' },
-          { type: 'Degraded', status: 'False' },
-        ],
+  it('should use property if jsonPathExpression is not provided', () => {
+    const resource = { metadata: { name: 'test' } } as Resource;
+    const field = { property: 'metadata.name' } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(resource, field);
+    expect(result).toBe('test');
+  });
+
+  it('should return undefined when jsonpath query returns empty array', () => {
+    const resource = { metadata: { name: 'test' } } as Resource;
+    const field = { property: 'metadata.nonexistent' } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(resource, field);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the first value when jsonpath query returns multiple values', () => {
+    const resource = {
+      items: [{ name: 'item1' }, { name: 'item2' }],
+    } as unknown as Resource;
+    const field = { property: 'items[*].name' } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(resource, field);
+    expect(result).toBe('item1');
+  });
+
+  it('should handle null resource input', () => {
+    const field = { property: 'metadata.name' } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(
+      null as unknown as Resource,
+      field,
+    );
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle undefined resource input', () => {
+    const field = { property: 'metadata.name' } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(
+      undefined as unknown as Resource,
+      field,
+    );
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle complex nested paths', () => {
+    const resource = {
+      spec: {
+        template: {
+          spec: {
+            containers: [
+              { name: 'container1', image: 'image1' },
+              { name: 'container2', image: 'image2' },
+            ],
+          },
+        },
       },
-    } as Resource;
-    const field: FieldDefinition = { property: 'status.conditions[0].status' };
-    expect(getResourceValueByJsonPath(resource, field)).toBe('True');
-  });
+    } as unknown as Resource;
 
-  it('should return the matched value for type Ready', () => {
-    const resource: Resource = {
-      metadata: { name: 'test-resource', namespace: 'default' },
-      status: {
-        conditions: [
-          { type: 'Ready', status: 'False' },
-          { type: 'Degraded', status: 'False' },
-        ],
-      },
-    } as Resource;
-    const field: FieldDefinition = {
-      property: 'status.conditions[?(@.type=="Ready")].status',
-    };
-    expect(getResourceValueByJsonPath(resource, field)).toBe('False');
+    const field = {
+      property: 'spec.template.spec.containers[0].image',
+    } as FieldDefinition;
+
+    const result = getResourceValueByJsonPath(resource, field);
+    expect(result).toBe('image1');
   });
 });

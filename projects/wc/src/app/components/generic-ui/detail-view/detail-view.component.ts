@@ -21,22 +21,11 @@ import {
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 
-const requiredFields: FieldDefinition[] = [
+const defaultFields: FieldDefinition[] = [
   {
-    label: 'Display Name',
-    property: 'spec.displayName',
-  },
-  {
-    label: 'Name',
-    property: 'metadata.name',
-  },
-  {
-    label: 'Condition Status',
-    property: 'status.conditions.status',
-  },
-  {
-    label: 'Condition Type',
-    property: 'status.conditions.type',
+    label: 'Workspace Status',
+    jsonPathExpression: 'status.conditions[?(@.type=="Ready")].status',
+    property: ['status.conditions.status', 'status.conditions.type'],
   },
 ];
 
@@ -55,21 +44,11 @@ export class DetailViewComponent implements OnInit {
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   resource = signal<Resource | null>(null);
-  resourceStatusReady = computed(() => {
-    const resource = this.resource();
-    if (!resource) {
-      return undefined;
-    }
-
-    return getResourceValueByJsonPath(resource, {
-      property: 'status.conditions[?(@.type=="Ready")].status',
-    });
-  });
 
   nodeContext: NodeContext;
   resourceDefinition: ResourceDefinition;
   workspacePath: string;
-  additionalFields: FieldDefinition[];
+  resourceFields: FieldDefinition[];
 
   @Input()
   LuigiClient: LuigiClient;
@@ -78,16 +57,13 @@ export class DetailViewComponent implements OnInit {
   set context(context: NodeContext) {
     this.nodeContext = context;
     this.workspacePath = this.getKcpPath();
-    this.additionalFields =
-      context.resourceDefinition.ui?.detailView?.fields || [];
+    this.resourceFields =
+      context.resourceDefinition.ui?.detailView?.fields || defaultFields;
     this.resourceDefinition = context.resourceDefinition;
   }
 
   ngOnInit(): void {
-    const fields = generateGraphQLFields([
-      ...requiredFields,
-      ...this.additionalFields,
-    ]);
+    const fields = generateGraphQLFields(this.resourceFields);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.singular}`;
 
     this.resourceService

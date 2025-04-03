@@ -2,7 +2,13 @@ import { FieldDefinition } from '../models/resource';
 
 export const generateGraphQLFields = (uiFields: FieldDefinition[]): any[] => {
   const graphQLFields = [];
-  uiFields.map((field) => generate(field.property, graphQLFields));
+  uiFields.map((field) => {
+    if (field.property instanceof Array) {
+      field.property.map((property) => generate(property, graphQLFields));
+    } else {
+      generate(field.property, graphQLFields);
+    }
+  });
   return graphQLFields;
 };
 
@@ -11,7 +17,7 @@ const generate = (root: string, fields: any = []) => {
     return [];
   }
 
-  const paths = root.replace(/\[.*?\]/g, '').split('.');
+  const paths = root.split('.');
 
   for (const part of paths) {
     if (paths.length === 1) {

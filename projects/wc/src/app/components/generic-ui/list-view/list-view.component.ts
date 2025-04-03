@@ -26,8 +26,9 @@ const defaultColumns: FieldDefinition[] = [
     property: 'metadata.name',
   },
   {
-    label: 'Ready',
-    property: 'status.conditions[?(@.type=="Ready")].status',
+    label: 'Workspace Status',
+    jsonPathExpression: 'status.conditions[?(@.type=="Ready")].status',
+    property: ['status.conditions.status', 'status.conditions.type'],
   },
 ];
 

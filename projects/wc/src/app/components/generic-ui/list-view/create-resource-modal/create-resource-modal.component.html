@@ -1,7 +1,7 @@
 <ui5-dialog #dialog header-text="Create">
   <section class="form" [formGroup]="form">
     @for (field of fields(); track field.property) {
-      @let fieldProperty = field.property.replaceAll('.', '_');
+      @let fieldProperty = sanitizePropertyName(field.property);
       <div class="inputs">
         <ui5-label for="username" show-colon [required]="field.required">{{
           field.label

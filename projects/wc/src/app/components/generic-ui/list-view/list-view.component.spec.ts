@@ -1,6 +1,5 @@
 import { NodeContext, Resource, ResourceDefinition } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
-import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import { ListViewComponent } from './list-view.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -26,7 +25,7 @@ describe('ListViewComponent', () => {
           { label: 'Test', property: 'metadata.name' },
           {
             label: 'Status',
-            property: 'status.conditions[?(@.type=="Ready")].status',
+            property: 'status.conditions.status',
           },
         ],
       },
@@ -206,8 +205,9 @@ describe('ListViewComponent', () => {
     expect(component.columns).toEqual([
       { label: 'Name', property: 'metadata.name' },
       {
-        label: 'Ready',
-        property: 'status.conditions[?(@.type=="Ready")].status',
+        label: 'Workspace Status',
+        property: ['status.conditions.status', 'status.conditions.type'],
+        jsonPathExpression: 'status.conditions[?(@.type=="Ready")].status',
       },
     ]);
   });

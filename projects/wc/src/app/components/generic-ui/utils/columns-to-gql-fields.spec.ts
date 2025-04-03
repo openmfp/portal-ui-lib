@@ -1,117 +1,84 @@
+import { FieldDefinition } from '../models/resource';
 import { generateGraphQLFields } from './columns-to-gql-fields';
 
-describe('generateFields', () => {
-  it('should generate fields from an array of column definitions', () => {
-    const columns = [
-      { property: 'metadata.name', label: 'Name' },
-      {
-        property: 'status.conditions[?(@.type=="Ready")].status',
-        label: 'Ready',
-      },
-    ];
+describe('columns-to-gql-fields', () => {
+  describe('generateGraphQLFields', () => {
+    it('should handle empty array input', () => {
+      const result = generateGraphQLFields([]);
+      expect(result).toEqual([]);
+    });
 
-    const result = generateGraphQLFields(columns);
+    it('should handle single field with simple property', () => {
+      const fields: FieldDefinition[] = [{ property: 'name', label: 'Name' }];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual(['name']);
+    });
 
-    expect(result).toEqual([
-      { metadata: ['name'] },
-      { status: [{ conditions: ['status'] }] },
-    ]);
-  });
+    it('should handle multiple fields with simple properties', () => {
+      const fields: FieldDefinition[] = [
+        { property: 'name', label: 'Name' },
+        { property: 'age', label: 'Age' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual(['name', 'age']);
+    });
 
-  it('should handle empty columns array', () => {
-    const result = generateGraphQLFields([]);
-    expect(result).toEqual([]);
-  });
+    it('should handle nested properties with dot notation', () => {
+      const fields: FieldDefinition[] = [
+        { property: 'user.name', label: 'User Name' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual([{ user: ['name'] }]);
+    });
 
-  it('should handle multiple nested properties', () => {
-    const columns = [
-      { property: 'metadata.name', label: 'Name' },
-      { property: 'spec.displayName', label: 'Display Name' },
-      { property: 'spec.type', label: 'Type' },
-    ];
+    it('should handle deeply nested properties', () => {
+      const fields: FieldDefinition[] = [
+        { property: 'user.profile.address.city', label: 'City' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual([
+        { user: [{ profile: [{ address: ['city'] }] }] },
+      ]);
+    });
 
-    const result = generateGraphQLFields(columns);
+    it('should handle array of properties', () => {
+      const fields: FieldDefinition[] = [
+        { property: ['name', 'age'], label: 'User Info' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual(['name', 'age']);
+    });
 
-    expect(result).toEqual([
-      { metadata: ['name'] },
-      { spec: ['displayName'] },
-      { spec: ['type'] },
-    ]);
-  });
+    it('should handle mixed array of simple and nested properties', () => {
+      const fields: FieldDefinition[] = [
+        { property: ['name', 'user.profile.age'], label: 'Mixed Info' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual(['name', { user: [{ profile: ['age'] }] }]);
+    });
 
-  it('should handle columns with empty property values', () => {
-    const columns = [
-      { property: '', label: 'Empty' },
-      { property: 'metadata.name', label: 'Name' },
-    ];
+    it('should handle multiple fields with mixed properties', () => {
+      const fields: FieldDefinition[] = [
+        { property: 'name', label: 'Name' },
+        { property: 'user.profile.age', label: 'Age' },
+        { property: ['email', 'phone'], label: 'Contact' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual([
+        'name',
+        { user: [{ profile: ['age'] }] },
+        'email',
+        'phone',
+      ]);
+    });
 
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ metadata: ['name'] }]);
-  });
-
-  it('should handle deep nesting with multiple levels', () => {
-    const columns = [{ property: 'level1.level2.level3.value', label: 'Deep' }];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ level1: [{ level2: [{ level3: ['value'] }] }] }]);
-  });
-
-  it('should remove JSONPath filter expressions', () => {
-    const columns = [
-      { property: 'items[?(@.name=="test")].value', label: 'Filtered' },
-    ];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ items: ['value'] }]);
-  });
-
-  it('should handle array index notation', () => {
-    const columns = [{ property: 'items[0].name', label: 'Indexed' }];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ items: ['name'] }]);
-  });
-
-  it('should handle complex mixed paths with array indices and filters', () => {
-    const columns = [
-      {
-        property:
-          'spec.template.spec.containers[0].resources.requests[?(@.name=="cpu")].value',
-        label: 'Complex',
-      },
-    ];
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([
-      {
-        spec: [
-          {
-            template: [
-              {
-                spec: [
-                  { containers: [{ resources: [{ requests: ['value'] }] }] },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ]);
-  });
-
-  it('should handle undefined column properties', () => {
-    const columns = [
-      { label: 'Missing Property' },
-      { property: 'metadata.name', label: 'Name' },
-    ] as any;
-
-    const result = generateGraphQLFields(columns);
-
-    expect(result).toEqual([{ metadata: ['name'] }]);
+    it('should handle empty or null property values', () => {
+      const fields: FieldDefinition[] = [
+        { property: '', label: 'Empty' },
+        { property: null as any, label: 'Null' },
+      ];
+      const result = generateGraphQLFields(fields);
+      expect(result).toEqual([]);
+    });
   });
 });

@@ -143,4 +143,25 @@ describe('CreateResourceModalComponent', () => {
       component.form.controls['name_firstName'].markAsTouched,
     ).toHaveBeenCalled();
   });
+
+  describe('sanitizePropertyName', () => {
+    it('should replace dots with underscores in property name', () => {
+      const property = 'metadata.name.firstName';
+      const result = (component as any).sanitizePropertyName(property);
+      expect(result).toBe('metadata_name_firstName');
+    });
+
+    it('should handle property names without dots', () => {
+      const property = 'name';
+      const result = (component as any).sanitizePropertyName(property);
+      expect(result).toBe('name');
+    });
+
+    it('should throw error when property is an array', () => {
+      const property = ['name', 'firstName'];
+      expect(() => (component as any).sanitizePropertyName(property)).toThrow(
+        'Wrong property type, array not supported'
+      );
+    });
+  });
 });
