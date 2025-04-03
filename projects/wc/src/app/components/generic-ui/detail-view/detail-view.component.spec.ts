@@ -87,7 +87,7 @@ describe('DetailViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set additionalFields and resourceDefinition from context', () => {
+  it('should set resourceFields and resourceDefinition from context', () => {
     expect(component.resourceFields).toEqual(
       mockResourceDefinition.ui!.detailView!.fields,
     );
