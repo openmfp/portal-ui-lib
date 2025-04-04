@@ -1,8 +1,8 @@
+import { EntityConfig, PortalConfig } from '../../models';
+import { RequestHeadersService } from '../request-headers.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { EntityConfig, PortalConfig } from '../../models';
-import { RequestHeadersService } from '../request-headers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,12 +12,12 @@ export class ConfigService {
 
   private entityConfigCache: Record<
     string /* entity */,
-    Record<string /* ctx */, EntityConfig>
+    Record<string /* ctx */, Promise<EntityConfig>>
   > = {};
 
   constructor(
     private http: HttpClient,
-    private requestHeadersService: RequestHeadersService
+    private requestHeadersService: RequestHeadersService,
   ) {}
 
   async getPortalConfig(): Promise<PortalConfig> {
@@ -27,7 +27,7 @@ export class ConfigService {
 
     const options = this.requestHeadersService.createOptionsWithAuthHeader();
     this.portalConfigCachePromise = firstValueFrom(
-      this.http.get<PortalConfig>('/rest/config', options)
+      this.http.get<PortalConfig>('/rest/config', options),
     ).catch((e) => {
       if (e instanceof HttpErrorResponse && e.status === 403) {
         window.location.assign('/logout?error=invalidToken');
@@ -40,7 +40,7 @@ export class ConfigService {
 
   async getEntityConfig(
     entity: string,
-    context?: Record<string, string>
+    context?: Record<string, string>,
   ): Promise<EntityConfig> {
     if (!this.entityConfigCache[entity]) {
       this.entityConfigCache[entity] = {};
@@ -52,11 +52,11 @@ export class ConfigService {
     }
 
     const options = this.requestHeadersService.createOptionsWithAuthHeader();
-    const entityConfig = await firstValueFrom(
+    const entityConfig = firstValueFrom(
       this.http.get<EntityConfig>(`/rest/config/${entity}`, {
         ...options,
         ...{ params: context },
-      })
+      }),
     );
 
     this.entityConfigCache[entity][entityCacheKey] = entityConfig;

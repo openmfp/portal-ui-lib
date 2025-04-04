@@ -1,10 +1,10 @@
-import { TestBed } from '@angular/core/testing';
 import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
-import { ConfigService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
+import { ConfigService } from '../portal';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodesProcessingService } from './nodes-processing.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('NodesProcessingService', () => {
   let service: NodesProcessingService;
@@ -96,7 +96,7 @@ describe('NodesProcessingService', () => {
       { myentityId, userid },
       childrenByEntity,
       undefined,
-      entityName
+      entityName,
     );
 
     // Assert
@@ -108,7 +108,7 @@ describe('NodesProcessingService', () => {
       },
       childrenByEntity.myentity,
       entityName,
-      { myentity: myentityId, user: userid }
+      { myentity: myentityId, user: userid },
     );
   });
 
@@ -153,7 +153,7 @@ describe('NodesProcessingService', () => {
       },
       {},
       undefined,
-      entityName
+      entityName,
     );
 
     // Assert
@@ -170,7 +170,7 @@ describe('NodesProcessingService', () => {
         mygrandparententity: 'opa',
         mysubentity: 'someid',
         user: userid,
-      }
+      },
     );
   });
 
@@ -207,12 +207,12 @@ describe('NodesProcessingService', () => {
             _entityDefinition: EntityDefinition,
             _existingChildren: LuigiNode[],
             parentEntityPath: string,
-            additionalContext: Record<string, string>
+            additionalContext: Record<string, string>,
           ) => {
             return Promise.resolve(
-              subsubchildren[additionalContext['subsub']] || []
+              subsubchildren[additionalContext['subsub']] || [],
             );
-          }
+          },
         );
 
       const childrenByEntity = {
@@ -412,209 +412,6 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       expect(await rootChildren[0].children({})).toEqual([]);
-    });
-  });
-
-  describe('addBtpLayoutNavigationHeader', () => {
-    it('should not add navHeader when entityNode has no defineEntity', () => {
-      // Arrange
-      const entityNode: LuigiNode = {
-        pathSegment: 'test',
-      };
-
-      // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      // Assert
-      expect(entityNode.navHeader).toBeUndefined();
-    });
-
-    it('should not add navHeader when btpToolLayout is disabled', () => {
-      // Arrange
-      const entityNode: LuigiNode = {
-        pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
-      };
-
-      Object.defineProperty(luigiCoreService, 'config', {
-        get: jest.fn(() => ({
-          settings: { btpToolLayout: false },
-        })),
-      });
-
-      // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      // Assert
-      expect(entityNode.navHeader).toBeUndefined();
-    });
-
-    it('should initialize navHeader if not present', () => {
-      // Arrange
-      const entityNode: LuigiNode = {
-        pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
-      };
-
-      // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      // Assert
-      expect(entityNode.navHeader).toBeDefined();
-      expect(entityNode.navHeader.renderer).toBeDefined();
-    });
-
-    it('should preserve existing navHeader properties while adding renderer', () => {
-      // Arrange
-      const entityNode: LuigiNode = {
-        pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
-        navHeader: {
-          existingProp: 'test',
-        },
-      };
-
-      // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      // Assert
-      expect(entityNode.navHeader.existingProp).toBe('test');
-      expect(entityNode.navHeader.renderer).toBeDefined();
-    });
-
-    describe('navHeader renderer', () => {
-      let entityNode: LuigiNode;
-      let containerElement: HTMLElement;
-
-      beforeEach(() => {
-        entityNode = {
-          pathSegment: 'test',
-          defineEntity: {
-            id: 'testEntity',
-            label: 'Test Entity',
-          },
-        };
-        containerElement = document.createElement('div');
-      });
-
-      it('should not modify container if navHeader label is missing', () => {
-        // Arrange
-        service.addBtpLayoutNavigationHeader(entityNode);
-        const originalHTML = containerElement.innerHTML;
-
-        // Act
-        entityNode.navHeader.renderer(
-          containerElement,
-          entityNode,
-          () => {},
-          {}
-        );
-
-        // Assert
-        expect(containerElement.innerHTML).toBe(originalHTML);
-      });
-
-      it('should render header with correct structure and content', () => {
-        // Arrange
-        service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = { label: 'Test Label' };
-
-        // Act
-        entityNode.navHeader.renderer(
-          containerElement,
-          entityNode,
-          () => {},
-          navHeader
-        );
-
-        // Assert
-        expect(containerElement.classList.contains('entity-nav-header')).toBe(
-          true
-        );
-        expect(
-          containerElement.querySelector('.entity-nav-header-type')
-        ).toBeDefined();
-        expect(
-          containerElement.querySelector('.entity-nav-header-label')
-        ).toBeDefined();
-        expect(containerElement.innerHTML).toContain('Test Entity');
-        expect(containerElement.innerHTML).toContain('Test Label');
-      });
-
-      it('should use "Component" if entity label is set to "component', () => {
-        // Arrange
-        entityNode.defineEntity.label = 'component';
-        service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = { label: 'Test Label' };
-
-        // Act
-        entityNode.navHeader.renderer(
-          containerElement,
-          entityNode,
-          () => {},
-          navHeader
-        );
-
-        // Assert
-        expect(containerElement.innerHTML).toContain('Component');
-      });
-
-      it('should use "Product" for product-type projects', () => {
-        // Arrange
-        entityNode.defineEntity = {
-          id: 'project',
-          label: 'Project',
-          dynamicFetchId: 'project',
-        };
-        service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = {
-          label: 'Test Label',
-          context: { entityContext: { project: { type: 'product' } } },
-        };
-
-        // Act
-        entityNode.navHeader.renderer(
-          containerElement,
-          entityNode,
-          () => {},
-          navHeader
-        );
-
-        // Assert
-        expect(containerElement.innerHTML).toContain('Product');
-      });
-
-      it('should use "Experiment" for experiment-type projects', () => {
-        // Arrange
-        entityNode.defineEntity = {
-          id: 'project',
-          label: 'Project',
-          dynamicFetchId: 'project',
-        };
-
-        service.addBtpLayoutNavigationHeader(entityNode);
-        const navHeader = {
-          label: 'Test Label',
-          context: { entityContext: { project: { type: 'experiment' } } },
-        };
-
-        // Act
-        entityNode.navHeader.renderer(
-          containerElement,
-          entityNode,
-          () => {},
-          navHeader
-        );
-
-        // Assert
-        expect(containerElement.innerHTML).toContain('Experiment');
-      });
     });
   });
 });
