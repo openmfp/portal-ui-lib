@@ -1,15 +1,13 @@
-import { Routes } from '@angular/router';
 import {
+  CallbackComponent,
   LogoutComponent,
   LuigiComponent,
-  CallbackComponent,
-  DevelopmentSettingsComponent,
 } from './components';
+import { Routes } from '@angular/router';
 
 export const portalRouts: Routes = [
   { path: 'callback', component: CallbackComponent },
   { path: 'logout', component: LogoutComponent },
-  { path: 'development-settings', component: DevelopmentSettingsComponent },
   { path: '', component: LuigiComponent },
   { path: '**', component: LuigiComponent },
 ];

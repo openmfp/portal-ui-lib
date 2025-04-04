@@ -1,4 +1,10 @@
-import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   ButtonComponent,
@@ -13,13 +19,13 @@ import {
   ListTitleDirective,
   SwitchComponent,
 } from '@fundamental-ngx/core';
+import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   I18nService,
-  localDevelopmentSettingsLocalStorage,
+  LocalDevelopmentSettings,
   LocalStorageKeys,
-} from '../../services';
-import { LocalDevelopmentSettings } from '../../models';
-import { sendCustomMessage } from '@luigi-project/client';
+  localDevelopmentSettingsLocalStorage,
+} from '@openmfp/portal-ui-lib';
 
 @Component({
   selector: 'development-settings',
@@ -44,8 +50,8 @@ import { sendCustomMessage } from '@luigi-project/client';
 })
 export class DevelopmentSettingsComponent implements OnInit {
   private i18nService = inject(I18nService);
-  protected texts = this.readTranslations();
 
+  protected texts: any = {};
   protected errors = [];
   protected readonly Object = Object;
   protected readonly defaultConfig = [
@@ -62,12 +68,21 @@ export class DevelopmentSettingsComponent implements OnInit {
     serviceProviderConfig: {},
   };
 
+  @Input()
+  set context(context: any) {
+    this.i18nService.translationTable = context.translationTable;
+    this.texts = this.readTranslations();
+  }
+
+  @Input()
+  LuigiClient: LuigiClient;
+
   ngOnInit(): void {
     this.readTranslations();
 
     this.localDevelopmentSettings =
       localDevelopmentSettingsLocalStorage.read(
-        LocalStorageKeys.DEVELOPMENT_MODE_CONFIG
+        LocalStorageKeys.DEVELOPMENT_MODE_CONFIG,
       ) ||
       localDevelopmentSettingsLocalStorage.read() ||
       this.localDevelopmentSettings;
@@ -82,10 +97,13 @@ export class DevelopmentSettingsComponent implements OnInit {
   }
 
   private saveDevelopmentSettings() {
-    sendCustomMessage({
-      id: 'luigi.updateUserSettings',
-      data: { localDevelopmentSettings: this.localDevelopmentSettings },
-    });
+    this.LuigiClient.publishEvent(
+      new CustomEvent('luigi.updateUserSettings', {
+        detail: {
+          localDevelopmentSettings: this.localDevelopmentSettings,
+        },
+      }),
+    );
   }
 
   addUrl(url: string) {
@@ -144,53 +162,53 @@ export class DevelopmentSettingsComponent implements OnInit {
   private readTranslations() {
     return {
       explanation: this.i18nService.getTranslation(
-        'LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION'
+        'LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION',
       ),
       link: this.i18nService.getTranslation('LOCAL_DEVELOPMENT_SETTINGS_LINK'),
       addButton: this.i18nService.getTranslation(
-        'LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON'
+        'LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON',
       ),
       clearButton: this.i18nService.getTranslation(
-        'LOCAL_DEVELOPMENT_SETTINGS_CLEAR_BUTTON'
+        'LOCAL_DEVELOPMENT_SETTINGS_CLEAR_BUTTON',
       ),
       removeButton: this.i18nService.getTranslation(
-        'LOCAL_DEVELOPMENT_SETTINGS_REMOVE_BUTTON'
+        'LOCAL_DEVELOPMENT_SETTINGS_REMOVE_BUTTON',
       ),
       isDevelopmentModeActive: this.i18nService.getTranslation(
-        'LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE'
+        'LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE',
       ),
       urlsInput: {
         title: this.i18nService.getTranslation(
-          'LOCAL_DEVELOPMENT_SETTINGS_URLS_TITLE'
+          'LOCAL_DEVELOPMENT_SETTINGS_URLS_TITLE',
         ),
         label: this.i18nService.getTranslation(
-          'LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL'
+          'LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL',
         ),
         error: this.i18nService.getTranslation(
-          'LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR'
+          'LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR',
         ),
       },
       serviceProviderConfig: {
         title: this.i18nService.getTranslation(
-          'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE'
+          'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE',
         ),
         explanation: this.i18nService.getTranslation(
-          'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION'
+          'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION',
         ),
         keyInput: {
           label: this.i18nService.getTranslation(
-            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL'
+            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL',
           ),
           placeholder: this.i18nService.getTranslation(
-            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER'
+            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER',
           ),
         },
         valueInput: {
           label: this.i18nService.getTranslation(
-            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL'
+            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL',
           ),
           placeholder: this.i18nService.getTranslation(
-            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER'
+            'LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER',
           ),
         },
       },
