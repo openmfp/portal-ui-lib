@@ -1,36 +1,34 @@
-import { inject, Injectable } from '@angular/core';
-import { isMatch } from 'lodash';
 import {
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
-import { matchesJMESPath } from '../../utilities';
-import { ConfigService } from '../portal';
+import {
+  computeFetchContext,
+  visibleForContext,
+} from '../../utilities/context';
+import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeAccessHandlingService } from './node-access-handling.service';
 import { NodeSortingService } from './node-sorting.service';
-import { NodeUtilsService } from './node-utils.service';
-import { LuigiCoreService } from '../luigi-core.service';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
-  private luigiCoreService = inject(LuigiCoreService);
-  private configService = inject(ConfigService);
   private luigiNodesService = inject(LuigiNodesService);
   private nodeSortingService = inject(NodeSortingService);
+  private childrenNodesService = inject(ChildrenNodesService);
   private commonGlobalLuigiNodesService = inject(CommonGlobalLuigiNodesService);
-  private nodeUtilsService = inject(NodeUtilsService);
   private nodeAccessHandlingService = inject<NodeAccessHandlingService>(
     LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN as any,
-    { optional: true }
+    { optional: true },
   );
   private customGlobalNodesService = inject<CustomGlobalNodesService>(
     LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN as any,
-    { optional: true }
+    { optional: true },
   );
 
   async processNodes(childrenByEntity: Record<string, LuigiNode[]>) {
@@ -58,7 +56,7 @@ export class NodesProcessingService {
   applyEntityChildrenRecursively(
     node: LuigiNode,
     childrenByEntity: Record<string, LuigiNode[]>,
-    parentEntityPath: string
+    parentEntityPath: string,
   ) {
     if (Array.isArray(node.children)) {
       this.nodeSortingService.markEntityRootChildren(node.children);
@@ -79,7 +77,7 @@ export class NodesProcessingService {
           ctx,
           childrenByEntity,
           directChildren,
-          newEntityPath
+          newEntityPath,
         );
       };
 
@@ -104,7 +102,7 @@ export class NodesProcessingService {
               };
             });
             return children.filter((child) =>
-              this.visibleForContext(child.context, child)
+              visibleForContext(child.context, child),
             );
           },
           configurable: true,
@@ -115,20 +113,20 @@ export class NodesProcessingService {
         this.applyEntityChildrenRecursively(
           child,
           childrenByEntity,
-          newEntityPath
+          newEntityPath,
         );
       });
       node.children = async (ctx: any) =>
         await Promise.all(
           directChildren
-            .filter((child) => this.visibleForContext(ctx, child))
+            .filter((child) => visibleForContext(ctx, child))
             .map(
               (child) =>
                 this.nodeAccessHandlingService?.nodeAccessHandling(
                   ctx,
-                  child
-                ) || child
-            )
+                  child,
+                ) || child,
+            ),
         );
     }
 
@@ -142,11 +140,11 @@ export class NodesProcessingService {
     ctx: any,
     childrenByEntity: Record<string, LuigiNode[]>,
     directChildren?: LuigiNode[],
-    entityPath?: string
+    entityPath?: string,
   ) {
     const createChildrenList = (
       children: LuigiNode[],
-      staticChildren?: LuigiNode[]
+      staticChildren?: LuigiNode[],
     ) => {
       const entityRootChildren = staticChildren ? [] : children;
       let mergedChildrenByEntity = childrenByEntity;
@@ -182,10 +180,14 @@ export class NodesProcessingService {
         this.applyEntityChildrenRecursively(
           child,
           mergedChildrenByEntity,
-          entityPath
+          entityPath,
         );
       });
-      return this.buildChildrenForEntity(entityNode, entityRootChildren, ctx);
+      return this.childrenNodesService.buildChildrenForEntity(
+        entityNode,
+        entityRootChildren,
+        ctx,
+      );
     };
 
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
@@ -202,14 +204,14 @@ export class NodesProcessingService {
         ];
 
         if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
-          const fetchContext = await this.computeFetchContext(entityNode, ctx);
+          const fetchContext = computeFetchContext(entityNode, ctx);
           const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
           this.luigiNodesService
             .retrieveAndMergeEntityChildren(
               entityNode.defineEntity,
               staticChildren,
               entityPath,
-              fetchContext.get(dynamicFetchId)
+              fetchContext.get(dynamicFetchId),
             )
             .then((children) => {
               resolve(createChildrenList(children, staticChildren));
@@ -223,161 +225,11 @@ export class NodesProcessingService {
           resolve(
             this.luigiNodesService.replaceServerNodesWithLocalOnes(
               childrenList,
-              [entityPath]
-            )
+              [entityPath],
+            ),
           );
         }
       }
     });
-  }
-
-  addBtpLayoutNavigationHeader(entityNode: LuigiNode) {
-    if (
-      entityNode.defineEntity &&
-      this.luigiCoreService.config.settings.btpToolLayout
-    ) {
-      if (!entityNode.navHeader) {
-        entityNode.navHeader = {};
-      }
-
-      entityNode.navHeader.renderer = (
-        containerElement: HTMLElement,
-        nodeItem: LuigiNode,
-        clickHandler: Function,
-        navHeader: any
-      ) => {
-        if (!containerElement || !navHeader?.label) {
-          return;
-        }
-
-        const label = navHeader.label;
-        const type = this.getSideNavigationHeaderType(
-          navHeader.context,
-          nodeItem
-        );
-        containerElement.classList.add('entity-nav-header');
-        containerElement.innerHTML = `
-            <ui5-text class="entity-nav-header-type">${type}</ui5-text>
-            <ui5-title class="entity-nav-header-label" level="H6" size="H6">${label}</ui5-title>
-        `;
-      };
-    }
-  }
-
-  private getSideNavigationHeaderType(
-    nodeContext: Record<string, any> = {},
-    nodeItem: LuigiNode
-  ): string {
-    const dynamicFetchId = nodeItem.defineEntity?.dynamicFetchId || '';
-    let type = (nodeContext.entityContext?.[dynamicFetchId] || {}).type;
-    if (!type || typeof type !== 'string') {
-      type = nodeItem.defineEntity?.label || dynamicFetchId || 'Extension';
-    }
-    type = type.replace(/Id/i, '');
-    return type.at(0).toUpperCase() + type.slice(1);
-  }
-
-  async buildChildrenForEntity(
-    entityNode: LuigiNode,
-    children: LuigiNode[],
-    ctx: any
-  ): Promise<LuigiNode[]> {
-    if (entityNode.defineEntity?.useBack) {
-      if (
-        globalThis.Luigi?.featureToggles()
-          .getActiveFeatureToggleList()
-          ?.includes('navheader-up') &&
-        entityNode.navHeader
-      ) {
-        entityNode.navHeader.showUpLink = true;
-      }
-    }
-
-    this.addBtpLayoutNavigationHeader(entityNode);
-
-    if (!children) {
-      return [];
-    }
-
-    const entityContext = {};
-
-    const fetchContext = await this.computeFetchContext(entityNode, ctx);
-    await Promise.all(
-      Array.from(fetchContext.entries()).map(
-        async ([dynamicFetchId, context]) => {
-          try {
-            entityContext[dynamicFetchId] = (
-              await this.configService.getEntityConfig(dynamicFetchId, context)
-            ).entityContext;
-          } catch (error) {
-            console.error(
-              entityNode.defineEntity.id,
-              'does not exist',
-              context
-            );
-          }
-        }
-      )
-    );
-
-    children.forEach((child) => {
-      child.context = child.context || {};
-      child.context.entityContext = entityContext;
-      child.onNodeActivation =
-        this.nodeUtilsService.retrieveGlobalHelpContext();
-    });
-
-    const nodes = await Promise.all(
-      children
-        .filter((child) => this.visibleForContext(child.context, child))
-        .map(
-          (child) =>
-            this.nodeAccessHandlingService?.nodeAccessHandling(
-              child.context,
-              child
-            ) || child
-        )
-    );
-    return this.nodeSortingService.sortNodes(nodes);
-  }
-
-  private visibleForContext(ctx: any, node: LuigiNode): boolean {
-    // visibleForEntityContext is deprecated
-    if (!isMatch(ctx.entityContext, node.visibleForEntityContext)) {
-      return false;
-    }
-
-    return matchesJMESPath(ctx, node.visibleForContext);
-  }
-
-  private async computeFetchContext(
-    entityNode: LuigiNode,
-    ctx: any
-  ): Promise<Map<string, Record<string, string>>> {
-    const contextForEntityConfig: Map<
-      string,
-      Record<string, string>
-    > = new Map();
-
-    function addToAll(key: string, value: string) {
-      contextForEntityConfig.forEach((record) => {
-        record[key] = value;
-      });
-    }
-
-    let node = entityNode as any;
-    while (node) {
-      if (node.defineEntity?.contextKey && node.defineEntity?.dynamicFetchId) {
-        contextForEntityConfig.set(node.defineEntity.dynamicFetchId, {});
-        addToAll(
-          node.defineEntity.dynamicFetchId,
-          ctx[node.defineEntity.contextKey]
-        );
-      }
-      node = node.parent;
-    }
-
-    addToAll('user', ctx.userid);
-    return contextForEntityConfig;
   }
 }
