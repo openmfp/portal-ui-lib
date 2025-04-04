@@ -58,7 +58,7 @@ describe('ChildrenNodesService', () => {
 
   describe('buildChildrenForEntity', () => {
     it('should return empty array when children is null', async () => {
-      const result = await service.buildChildrenForEntity(
+      const result = await service.processChildrenForEntity(
         {} as LuigiNode,
         null,
         {},
@@ -74,7 +74,7 @@ describe('ChildrenNodesService', () => {
 
       luigiCoreService.isFeatureToggleActive.mockReturnValue(true);
 
-      await service.buildChildrenForEntity(entityNode, [], {});
+      await service.processChildrenForEntity(entityNode, [], {});
 
       expect(entityNode.navHeader.showUpLink).toBe(true);
     });
@@ -100,7 +100,7 @@ describe('ChildrenNodesService', () => {
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
 
-      const childResult = await service.buildChildrenForEntity(
+      const childResult = await service.processChildrenForEntity(
         entityNode,
         children,
         ctx,
@@ -129,7 +129,7 @@ describe('ChildrenNodesService', () => {
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
 
-      const result = await service.buildChildrenForEntity(
+      const result = await service.processChildrenForEntity(
         entityNode,
         children,
         ctx,

@@ -22,7 +22,7 @@ export class ChildrenNodesService {
     { optional: true },
   );
 
-  async buildChildrenForEntity(
+  async processChildrenForEntity(
     entityNode: LuigiNode,
     children: LuigiNode[],
     ctx: any,

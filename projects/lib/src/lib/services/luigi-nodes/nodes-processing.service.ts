@@ -64,6 +64,7 @@ export class NodesProcessingService {
     }
     const directChildren = node._portalDirectChildren || [];
     let newEntityPath = parentEntityPath;
+
     if (node.defineEntity) {
       if (parentEntityPath?.length > 0) {
         newEntityPath = parentEntityPath + '.' + node.defineEntity.id;
@@ -81,33 +82,7 @@ export class NodesProcessingService {
         );
       };
 
-      if (node.compound) {
-        if (!node.compound._staticChildren) {
-          node.compound._staticChildren = node.compound.children || [];
-        }
-        const additionalChildren =
-          childrenByEntity[newEntityPath + '::compound'] || [];
-        let children = [
-          ...node.compound._staticChildren,
-          ...additionalChildren,
-        ].sort(this.nodeSortingService.nodeComparison);
-
-        Object.defineProperty(node.compound, 'children', {
-          set: (newValue) => (children = newValue),
-          get: () => {
-            children.forEach((child) => {
-              child.context.entityContext = {
-                ...child.context.entityContext,
-                ...node.context.entityContext,
-              };
-            });
-            return children.filter((child) =>
-              visibleForContext(child.context, child),
-            );
-          },
-          configurable: true,
-        });
-      }
+      this.processCompoundNode(node, childrenByEntity, newEntityPath);
     } else {
       directChildren.forEach((child) => {
         this.applyEntityChildrenRecursively(
@@ -132,6 +107,40 @@ export class NodesProcessingService {
 
     if (node.virtualTree) {
       node.children = undefined;
+    }
+  }
+
+  processCompoundNode(
+    node: LuigiNode,
+    childrenByEntity: Record<string, LuigiNode[]>,
+    newEntityPath: string,
+  ) {
+    if (node.compound) {
+      if (!node.compound._staticChildren) {
+        node.compound._staticChildren = node.compound.children || [];
+      }
+      const additionalChildren =
+        childrenByEntity[newEntityPath + '::compound'] || [];
+      let children = [
+        ...node.compound._staticChildren,
+        ...additionalChildren,
+      ].sort(this.nodeSortingService.nodeComparison);
+
+      Object.defineProperty(node.compound, 'children', {
+        set: (newValue) => (children = newValue),
+        get: () => {
+          children.forEach((child) => {
+            child.context.entityContext = {
+              ...child.context.entityContext,
+              ...node.context.entityContext,
+            };
+          });
+          return children.filter((child) =>
+            visibleForContext(child.context, child),
+          );
+        },
+        configurable: true,
+      });
     }
   }
 
@@ -183,7 +192,7 @@ export class NodesProcessingService {
           entityPath,
         );
       });
-      return this.childrenNodesService.buildChildrenForEntity(
+      return this.childrenNodesService.processChildrenForEntity(
         entityNode,
         entityRootChildren,
         ctx,
