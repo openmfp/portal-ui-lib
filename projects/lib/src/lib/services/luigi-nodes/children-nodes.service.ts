@@ -63,8 +63,7 @@ export class ChildrenNodesService {
     );
 
     children.forEach((child) => {
-      child.context = child.context || {};
-      child.context.entityContext = entityContext;
+      child.context = { ...child.context, entityContext };
       child.onNodeActivation =
         this.nodeUtilsService.retrieveGlobalHelpContext();
     });
