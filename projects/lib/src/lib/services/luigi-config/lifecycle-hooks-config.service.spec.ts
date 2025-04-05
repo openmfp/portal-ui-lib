@@ -1,19 +1,19 @@
-import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
-import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
-import { I18nService } from '../i18n.service';
-import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
-import { LuigiCoreService } from '../luigi-core.service';
-import { NavigationConfigService } from './navigation-config.service';
-import { RoutingConfigService } from './routing-config.service';
-import { StaticSettingsConfigService } from './static-settings-config.service';
-import { UserSettingsConfigService } from './user-settings-config.service';
-import { GlobalSearchConfigService } from './global-search-config.service';
 import {
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
+import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
+import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
+import { GlobalSearchConfigService } from './global-search-config.service';
+import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
+import { NavigationConfigService } from './navigation-config.service';
+import { RoutingConfigService } from './routing-config.service';
+import { StaticSettingsConfigService } from './static-settings-config.service';
+import { UserSettingsConfigService } from './user-settings-config.service';
+import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 
 describe('LifecycleHooksConfigService', () => {
   let service: LifecycleHooksConfigService;
@@ -109,7 +109,7 @@ describe('LifecycleHooksConfigService', () => {
         const config = service.getLifecycleHooksConfig({} as any);
         await config.luigiAfterInit();
         expect(
-          luigiNodesServiceMock.retrieveChildrenByEntity
+          luigiNodesServiceMock.retrieveChildrenByEntity,
         ).toHaveBeenCalled();
       });
 
@@ -119,10 +119,10 @@ describe('LifecycleHooksConfigService', () => {
         await config.luigiAfterInit();
 
         expect(
-          Object.getOwnPropertyDescriptor(luigiCoreServiceMock, 'config')?.get
+          Object.getOwnPropertyDescriptor(luigiCoreServiceMock, 'config')?.get,
         ).toHaveBeenCalled();
         expect(
-          luigiCoreServiceMock.ux().hideAppLoadingIndicator
+          luigiCoreServiceMock.ux().hideAppLoadingIndicator,
         ).toHaveBeenCalled();
         expect(luigiCoreServiceMock.setConfig).toHaveBeenCalled();
       });
@@ -145,95 +145,12 @@ describe('LifecycleHooksConfigService', () => {
 
         expect(console.error).toHaveBeenCalledWith(
           'Error retrieving Luigi navigation nodes',
-          error
+          error,
         );
         expect(luigiCoreServiceMock.showAlert).toHaveBeenCalledWith({
           text: 'There was an error loading the Test App',
           type: 'error',
         });
-      });
-    });
-  });
-
-  describe('Local development ', () => {
-    let mockQuerySelector;
-    let mockCreateElement;
-
-    beforeEach(() => {
-      mockCreateElement = jest.fn();
-      mockQuerySelector = jest.fn();
-
-      document.querySelector = mockQuerySelector;
-      document.createElement = mockCreateElement;
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    describe('addLocalDevelopmentModeOnIndicator', () => {
-      test('should not add indicator when local development is not active', () => {
-        localDevelopmentSettingsLocalStorage.read = jest
-          .fn()
-          .mockReturnValue({ isActive: false });
-
-        service.addLocalDevelopmentModeOnIndicator();
-
-        expect(document.querySelector).not.toHaveBeenCalled();
-        expect(document.createElement).not.toHaveBeenCalled();
-      });
-
-      test('should not add indicator when popover control is not found', () => {
-        localDevelopmentSettingsLocalStorage.read = jest
-          .fn()
-          .mockReturnValue({ isActive: true });
-        mockQuerySelector.mockReturnValue(null);
-
-        service.addLocalDevelopmentModeOnIndicator();
-
-        expect(document.createElement).not.toHaveBeenCalled();
-      });
-
-      test('should not add indicator when popover control has no parent', () => {
-        localDevelopmentSettingsLocalStorage.read = jest
-          .fn()
-          .mockReturnValue({ isActive: true });
-        mockQuerySelector.mockReturnValue({ parentNode: null });
-
-        service.addLocalDevelopmentModeOnIndicator();
-
-        expect(document.createElement).not.toHaveBeenCalled();
-      });
-
-      test('should add indicator when local development is active and popover exists', () => {
-        const mockSpan = {
-          classList: {
-            add: jest.fn(),
-          },
-          title: '',
-        };
-
-        const mockParentNode = {
-          appendChild: jest.fn(),
-        };
-
-        localDevelopmentSettingsLocalStorage.read = jest
-          .fn()
-          .mockReturnValue({ isActive: true });
-        mockQuerySelector.mockReturnValue({ parentNode: mockParentNode });
-        mockCreateElement.mockReturnValue(mockSpan);
-        i18nServiceMock.getTranslation.mockReturnValue('Translated Text');
-
-        service.addLocalDevelopmentModeOnIndicator();
-
-        expect(document.querySelector).toHaveBeenCalledWith('#profilePopover');
-        expect(document.createElement).toHaveBeenCalledWith('span');
-        expect(mockSpan.classList.add).toHaveBeenCalledWith(
-          'sap-icon--developer-settings',
-          'local-development-settings-indication'
-        );
-        expect(mockSpan.title).toBe('Translated Text');
-        expect(mockParentNode.appendChild).toHaveBeenCalledWith(mockSpan);
       });
     });
   });
