@@ -1,16 +1,16 @@
-import { inject, Injectable } from '@angular/core';
-import { $localize } from '@angular/localize/init';
+import { LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { ClientEnvironment, LuigiNode } from '../../models';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
+import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { NavigationConfigService } from './navigation-config.service';
 import { RoutingConfigService } from './routing-config.service';
 import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
-import { LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { LuigiNode, ClientEnvironment } from '../../models';
-import { localDevelopmentSettingsLocalStorage } from '../storage-service';
+import { Injectable, inject } from '@angular/core';
+import { $localize } from '@angular/localize/init';
 
 @Injectable({ providedIn: 'root' })
 export class LifecycleHooksConfigService {
@@ -23,7 +23,7 @@ export class LifecycleHooksConfigService {
   private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);
   private globalSearchConfigService = inject<GlobalSearchConfigService>(
     LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN as any,
-    { optional: true }
+    { optional: true },
   );
 
   getLifecycleHooksConfig(envConfig: ClientEnvironment) {
@@ -46,14 +46,14 @@ export class LifecycleHooksConfigService {
           lifecycleHooks: {},
           navigation: await this.navigationConfigService.getNavigationConfig(
             childrenByEntity,
-            envConfig
+            envConfig,
           ),
           routing: this.routingConfigService.getRoutingConfig(),
           settings:
             await this.staticSettingsConfigService.getStaticSettingsConfig(),
           userSettings:
             await this.userSettingsConfigService.getUserSettings(
-              childrenByEntity
+              childrenByEntity,
             ),
           globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
         };
@@ -61,8 +61,6 @@ export class LifecycleHooksConfigService {
         this.luigiCoreService.ux().hideAppLoadingIndicator();
         this.luigiCoreService.setConfig(config);
         this.luigiCoreService.resetLuigi();
-        
-        this.addLocalDevelopmentModeOnIndicator();
       },
     };
   }
@@ -73,23 +71,5 @@ export class LifecycleHooksConfigService {
       text: $localize`There was an error loading the ${appTitle}`,
       type: 'error',
     });
-  }
-
-  addLocalDevelopmentModeOnIndicator() {
-    if (localDevelopmentSettingsLocalStorage.read()?.isActive) {
-      const popoverControl = document.querySelector('#profilePopover');
-
-      if (popoverControl && popoverControl.parentNode) {
-        const newSpan = document.createElement('span');
-        newSpan.classList.add(
-          'sap-icon--developer-settings',
-          'local-development-settings-indication'
-        );
-        newSpan.title = this.i18nService.getTranslation(
-          'LOCAL_DEVELOPMENT_SETTINGS_ACTIVE_INDICATOR'
-        );
-        popoverControl.parentNode.appendChild(newSpan);
-      }
-    }
   }
 }

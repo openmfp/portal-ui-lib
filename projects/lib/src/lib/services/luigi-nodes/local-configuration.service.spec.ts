@@ -1,20 +1,23 @@
-import { HttpClient, provideHttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
-import { mock, MockProxy } from 'jest-mock-extended';
-import { of } from 'rxjs';
-import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { ContentConfiguration, LuigiNode } from '../../models';
+import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesService } from '../portal';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
+import { LocalConfigurationServiceImpl } from './local-configuration.service';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { MockProxy, mock } from 'jest-mock-extended';
+import { of } from 'rxjs';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
   let luigiCoreService: LuigiCoreService;
   let httpClient: HttpClient;
   let luigiDataConfigServiceMock: MockProxy<LocalNodesService>;
+  let i18nServiceMock: jest.Mocked<I18nService>;
 
   beforeEach(() => {
+    i18nServiceMock = mock();
     localDevelopmentSettingsLocalStorage.read = jest.fn();
     luigiDataConfigServiceMock = mock<LocalNodesService>();
     TestBed.configureTestingModule({
@@ -23,6 +26,7 @@ describe('LocalConfigurationServiceImpl', () => {
           provide: LocalNodesService,
           useValue: luigiDataConfigServiceMock,
         },
+        { provide: I18nService, useValue: i18nServiceMock },
         provideHttpClient(),
       ],
     });
@@ -59,7 +63,7 @@ describe('LocalConfigurationServiceImpl', () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockImplementation(
         async (conf: ContentConfiguration[]) => {
           return { nodes: conf.map((c) => ({})) };
-        }
+        },
       );
       httpClient.get = jest.fn().mockReturnValue(of({}));
 
@@ -85,7 +89,7 @@ describe('LocalConfigurationServiceImpl', () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
         {
           errors,
-        }
+        },
       );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
@@ -118,7 +122,7 @@ describe('LocalConfigurationServiceImpl', () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
         {
           nodes: [],
-        }
+        },
       );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
@@ -156,7 +160,7 @@ describe('LocalConfigurationServiceImpl', () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
         {
           errors,
-        }
+        },
       );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
@@ -210,7 +214,7 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy.mockResolvedValue([localNode]);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['global', 'home']
+        ['global', 'home'],
       );
 
       expect(localNodes).toContain(localNode);
@@ -226,7 +230,7 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy.mockResolvedValue([localNode]);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['typeA', 'typeB']
+        ['typeA', 'typeB'],
       );
 
       expect(localNodes).toContain(localNode);
@@ -236,7 +240,7 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy.mockResolvedValue([]);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['typeA', 'typeB']
+        ['typeA', 'typeB'],
       );
 
       expect(localNodes).toEqual(serverLuigiNodesTest);
@@ -251,7 +255,7 @@ describe('LocalConfigurationServiceImpl', () => {
       ]);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverNodes,
-        []
+        [],
       );
       expect(localNodes).toEqual(serverNodes);
     });
@@ -260,7 +264,7 @@ describe('LocalConfigurationServiceImpl', () => {
       getLocalNodesSpy.mockResolvedValue(null);
       const localNodes = await service.replaceServerNodesWithLocalOnes(
         serverLuigiNodesTest,
-        ['typeA', 'typeB']
+        ['typeA', 'typeB'],
       );
 
       expect(localNodes).toEqual(serverLuigiNodesTest);
@@ -282,7 +286,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should return the nodes for a dev environment if the request is successful', async () => {
       const luigiNodeMock = mock<LuigiNode>();
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
-        { nodes: [luigiNodeMock] }
+        { nodes: [luigiNodeMock] },
       );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
@@ -307,7 +311,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should apply the serviceProviderConfig to the nodes', async () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
-        { nodes: [luigiNodeMock] }
+        { nodes: [luigiNodeMock] },
       );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
@@ -336,7 +340,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should return empty array if the local settings is not active', async () => {
       const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
-        { nodes: [luigiNodeMock] }
+        { nodes: [luigiNodeMock] },
       );
 
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
@@ -362,7 +366,7 @@ describe('LocalConfigurationServiceImpl', () => {
 
     it('should return an empty array for a dev environment if the request fails', async () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
-        { nodes: [] }
+        { nodes: [] },
       );
 
       const localNodes = await service.getLocalNodes();
@@ -372,7 +376,7 @@ describe('LocalConfigurationServiceImpl', () => {
 
     it('should return an empty array for a dev environment if the request fails', async () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockRejectedValue(
-        null
+        null,
       );
       localDevelopmentSettingsLocalStorage.read = jest.fn().mockReturnValue({
         isActive: true,
@@ -383,6 +387,85 @@ describe('LocalConfigurationServiceImpl', () => {
 
       expect(localNodes).toEqual([]);
       expect(console.warn).toHaveBeenCalled();
+    });
+  });
+
+  describe('Local development ', () => {
+    let mockQuerySelector;
+    let mockCreateElement;
+
+    beforeEach(() => {
+      mockCreateElement = jest.fn();
+      mockQuerySelector = jest.fn();
+
+      document.querySelector = mockQuerySelector;
+      document.createElement = mockCreateElement;
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe('addLocalDevelopmentModeOnIndicator', () => {
+      test('should not add indicator when popover control is not found', () => {
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: true });
+        mockQuerySelector.mockReturnValue(null);
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        expect(document.createElement).not.toHaveBeenCalled();
+      });
+
+      test('should not add indicator when popover control has no parent', () => {
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: true });
+        mockQuerySelector.mockReturnValue({ parentNode: null });
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        expect(document.createElement).not.toHaveBeenCalled();
+      });
+
+      test('should add indicator when local development is active and popover exists', () => {
+        const mockSpan = {
+          classList: {
+            add: jest.fn(),
+          },
+          title: '',
+        };
+
+        const mockParentNode = {
+          appendChild: jest.fn(),
+        };
+
+        localDevelopmentSettingsLocalStorage.read = jest
+          .fn()
+          .mockReturnValue({ isActive: true });
+        mockQuerySelector.mockReturnValue({ parentNode: mockParentNode });
+        mockCreateElement.mockReturnValue(mockSpan);
+        i18nServiceMock.getTranslation.mockReturnValue('Translated Text');
+
+        service.addLocalDevelopmentModeOnIndicator();
+
+        new Promise((resolve) => {
+          setTimeout(() => {
+            expect(document.querySelector).toHaveBeenCalledWith(
+              '#profilePopover',
+            );
+            expect(document.createElement).toHaveBeenCalledWith('span');
+            expect(mockSpan.classList.add).toHaveBeenCalledWith(
+              'sap-icon--developer-settings',
+              'local-development-settings-indication',
+            );
+            expect(mockSpan.title).toBe('Translated Text');
+            expect(mockParentNode.appendChild).toHaveBeenCalledWith(mockSpan);
+            resolve(null);
+          }, 1001);
+        });
+      });
     });
   });
 });
