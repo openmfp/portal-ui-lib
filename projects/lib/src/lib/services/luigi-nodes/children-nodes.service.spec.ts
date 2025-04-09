@@ -56,7 +56,7 @@ describe('ChildrenNodesService', () => {
     service = TestBed.inject(ChildrenNodesService);
   });
 
-  describe('buildChildrenForEntity', () => {
+  describe('processChildrenForEntity', () => {
     it('should return empty array when children is null', async () => {
       const result = await service.processChildrenForEntity(
         {} as LuigiNode,
