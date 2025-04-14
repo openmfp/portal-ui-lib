@@ -7,7 +7,7 @@ import {
 import { ResourceService } from '../services/resource.service';
 import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
-import { kcpCA, kubeConfigTemplate } from './kubeconfig-template';
+import { kubeConfigTemplate } from './kubeconfig-template';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectionStrategy,
@@ -49,6 +49,7 @@ export class DetailViewComponent implements OnInit {
   resourceDefinition: ResourceDefinition;
   workspacePath: string;
   resourceFields: FieldDefinition[];
+  kcpCA: string = '';
 
   @Input()
   LuigiClient: LuigiClient;
@@ -71,6 +72,12 @@ export class DetailViewComponent implements OnInit {
       .subscribe({
         next: (result) => this.resource.set(result),
       });
+
+    this.resourceService.readKcpCA().subscribe({
+      next: (kcpCA) => {
+        this.kcpCA = kcpCA;
+      },
+    });
   }
 
   navigateToParent(event) {
@@ -97,7 +104,7 @@ export class DetailViewComponent implements OnInit {
     const kubeConfig = kubeConfigTemplate
       .replaceAll('<cluster-name>', this.nodeContext.resourceId)
       .replaceAll('<server-url>', this.getKcpPath())
-      .replaceAll('<ca-data>', kcpCA)
+      .replaceAll('<ca-data>', this.kcpCA)
       .replaceAll('<token>', this.nodeContext.token);
 
     const blob = new Blob([kubeConfig], { type: 'application/plain' });
