@@ -26,6 +26,7 @@ Main features of this library are:
   - [Configure proxy for backend rest calls](#Configure-proxy-for-backend-rest-calls)
   - [Start your project](#Start-your-project)
 - [Local Extension Development](#Local-Extension-Development)
+- [Generic UI Feature](#Generic-UI-Feature)
 - [Library development](#Library-development)
 - [Requirements](#Requirements)
 - [Contributing](#Contributing)
@@ -619,11 +620,16 @@ please follow the instruction provided [here](https://github.com/openmfp/portal-
 Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port
 should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
-### Local Extension Development
+## Local Extension Development
 
 You can set up a local instance of your application.
 This allows you to thoroughly test your application before you release it to production.
 Please follow our [local setup guide](./docs/readme-local-setup.md) for this task.
+
+## Generic UI Feature
+
+There is a possibility to reuse generic ui components in form of web components, without building the micro frontend.
+Please follow our [generic ui guide](./docs/readme-generic-ui.md) for this task.
 
 ## Requirements
 
