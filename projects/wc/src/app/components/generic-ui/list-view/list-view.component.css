@@ -1,0 +1,35 @@
+.title-logo {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.logo {
+  width: 2rem;
+  padding: 0 1rem;
+}
+
+.title-subheading {
+  display: block;
+  padding-bottom: 1rem;
+}
+
+.title-actions {
+  height: auto;
+}
+
+.actions-column {
+  width: fit-content !important;
+  min-width: fit-content !important;
+  white-space: nowrap;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.actions-column ui5-icon {
+  min-width: 1rem;
+}
+
+.delete-item {
+  padding: 0 1rem;
+}

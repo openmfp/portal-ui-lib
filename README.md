@@ -1,5 +1,11 @@
 # Portal UI Library
 
+<!-- CI trigger -->
+
+![Build Status](https://github.com/openmfp/portal-ui-lib/actions/workflows/pipeline.yaml/badge.svg)
+[![REUSE status](
+https://api.reuse.software/badge/github.com/openmfp/portal-ui-lib)](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib)
+
 This library helps you to set up your angular project consuming [Luigi](https://luigi-project.io/) configuration.
 
 Main features of this library are:
@@ -17,14 +23,17 @@ Main features of this library are:
     - [Configuration services](#Configuration-services)
     - [Functional services](#Functional-services)
   - [Listen and react to Authentication Events](#Listen-and-react-to-Authentication-Events)
+  - [Configure proxy for backend rest calls](#Configure-proxy-for-backend-rest-calls)
   - [Start your project](#Start-your-project)
-- [Local Application Development](#Local-Application-Development)
+- [Local Extension Development](#Local-Extension-Development)
 - [Library development](#Library-development)
+- [Requirements](#Requirements)
+- [Contributing](#Contributing)
+- [Code of Conduct](#Code-of-Conduct)
+- [Licensing](#Licensing)
 
 
-# Getting started
-
-## Configure the project
+## Getting started
 
 ### Dependencies
 
@@ -33,8 +42,8 @@ and `@luigi-project/plugin-auth-oauth2` in proper versions (along with any other
 
 ### Angular configuration
 
-Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project
-into the project assets, as shown below:
+Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project and assets 
+from `@openmfp/portal-ui-lib` library into the project assets, as shown below:
 
 ```
 {
@@ -45,7 +54,13 @@ into the project assets, as shown below:
       "glob": "**",
       "input": "node_modules/@luigi-project/core",
       "output": "/luigi-core"
-    }
+    },
+    {
+      "glob": "**",
+      "input": "node_modules/@openmfp/portal-ui-lib/assets/",
+      "output": "/assets/"
+    },
+  ]
     // ... other configured assets
   ]
   
@@ -57,8 +72,7 @@ into the project assets, as shown below:
 
 First you have to import the `providePortal` and bootstrap the `PortalComponent` in your `main.ts` file.
 To do this call `providePortal(portalOptions)` method, which takes the `PortalOptions` object as an argument,
-inside the providers section of the application configuration.
-It is important to note that the `providePortal(portalOptions)` should be imported after any app specific
+inside the providers section of the application configuration. It is important to note that the `providePortal(portalOptions)` should be imported after any app specific
 routing providers (e.g. `provideRouter(appRoutes)`).
 
 The result may look like this:
@@ -181,6 +195,47 @@ const portalOptions: PortalOptions = {
   // ... other portal options
 }
 ```
+
+#### The luigiExtendedGlobalContextConfigService option
+
+By default, in the [Luigi's global context](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=globalcontext) following data is set by the library and available:
+
+```json
+{
+  "portalContext": {...} ,
+  "userId": "logged in user id",
+  "userEmail": "logged in user email",
+  "token": "id token of the logged in user"
+}
+```
+
+With the `luigiExtendedGlobalContextConfigService` option you can define global data you want to be available alongside with the default values present.
+The Luigi's global context is available afterwards in all the micro-frontends.
+
+```ts
+import { LuigiExtendedGlobalContextConfigService, LuigiNode } from '@openmfp/portal-ui-lib';
+
+export class LuigiExtendedGlobalContextConfigServiceImpl implements LuigiExtendedGlobalContextConfigService {
+
+  async createLuigiExtendedGlobalContext(): Promise<ExtendedGlobalContext> {
+
+    return {
+      isLocal: true,
+      analyticsConfig: 'global',
+    };
+  }
+}
+```
+
+In your `main.ts` you can provide your custom implementation like so:
+
+```ts
+const portalOptions: PortalOptions = {
+  luigiExtendedGlobalContextConfigService: LuigiExtendedGlobalContextConfigServiceImpl,
+  // ... other portal options
+}
+```
+
 
 #### The userSettingsConfigService option
 
@@ -475,7 +530,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-## Listen and react to Authentication Events
+### Listen and react to Authentication Events
 
 There are following Authentication Events, to which the library consuming application can subscribe and react upon, in case required.
 
@@ -515,8 +570,48 @@ export function actWhenUserAuthSuccedsful(
 }
 ```
 
+### Configure proxy for backend rest calls
 
-## Start your project
+The library executes rest calls `"/rest/**"` against backend running with the library [portal-servet-lib](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library).
+In order for the calls to reach your backend the `proxy.config.json` needs to be provided, 
+with the target reaching the place where and on what port the backend is running `"target": "http://localhost:3000"`.
+
+```json
+{
+  "/rest/**": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}
+```
+
+The proxy file needs to be indicated in the file `angular.json` section `serve`:
+
+```json
+ {       
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.config.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "build:production"
+            },
+            "development": {
+              "browserTarget": "build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+
+}
+```
+
+
+### Start your project
 
 After finishing all the required steps you might want to check your integration with the library and run your local application.
 In order to do that, firstly you need to run the local server part of the portal,
@@ -524,19 +619,26 @@ please follow the instruction provided [here](https://github.com/openmfp/portal-
 Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port
 should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
-# Local Application Development
+### Local Extension Development
 
 You can set up a local instance of your application.
 This allows you to thoroughly test your application before you release it to production.
-Please follow our [local setup guide](./readme-local-setup.md) for this task
+Please follow our [local setup guide](./docs/readme-local-setup.md) for this task.
 
-# Library development
+## Requirements
 
-## Build
+The portal requires a installation of node.js and npm. 
+Checkout the [package.json](package.json) for the required node version and dependencies.
 
-Run `ng build` to build the project.
-The build artifacts will be stored in the `dist/` directory.
+## Contributing
 
-## Running unit tests
+Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file in this repository for instructions on how to contribute to openMFP.
 
-Run `ng test` to execute the unit tests via [Jest](https://jestjs.io/).
+## Code of Conduct
+
+Please refer to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) file in this repository for information on the expected Code of Conduct for contributing to openMFP.
+
+## Licensing
+
+Copyright 2025 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib).
+

@@ -3,10 +3,10 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ui-lib": {
+    "lib": {
       "projectType": "library",
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/lib",
+      "sourceRoot": "projects/lib/src",
       "prefix": "lib",
       "architect": {
         "build": {
@@ -16,10 +16,10 @@
           },
           "configurations": {
             "production": {
-              "tsConfig": "tsconfig.lib.prod.json"
+              "tsConfig": "projects/lib/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "tsconfig.lib.json"
+              "tsConfig": "projects/lib/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -27,25 +27,77 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "tsconfig.spec.json"
+            "tsConfig": "./tsconfig.spec.json"
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
+              "projects/lib/src/**/*.ts",
+              "projects/lib/src/**/*.html"
             ]
+          }
+        }
+      }
+    },
+    "wc": {
+      "projectType": "application",
+      "root": "projects/wc",
+      "sourceRoot": "projects/wc/src",
+      "prefix": "wc",
+      "architect": {
+        "build": {
+          "builder": "ngx-build-plus:browser",
+          "options": {
+            "outputPath": "dist-wc/assets",
+            "singleBundle": true,
+            "outputHashing": "none",
+            "index": "",
+            "main": "projects/wc/src/main.ts",
+            "assets": ["projects/wc/src/assets"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "buildOptimizer": true,
+              "sourceMap": false,
+              "extractLicenses": false,
+              "vendorChunk": false,
+              "namedChunks": false,
+              "tsConfig": "projects/wc/tsconfig.app.prod.json"
+            },
+            "development": {
+              "aot": true,
+              "optimization": false,
+              "buildOptimizer": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "namedChunks": true,
+              "vendorChunk": true,
+              "tsConfig": "projects/wc/tsconfig.app.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "tsConfig": "./tsconfig.spec.json"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/wc/**/*.ts", "projects/wc/**/*.html"]
           }
         }
       }
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }

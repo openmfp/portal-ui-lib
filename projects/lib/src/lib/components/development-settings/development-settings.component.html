@@ -1,0 +1,159 @@
+<div class="page">
+  <div class="container">
+    <p>{{ texts.explanation }}</p>
+    <a
+      fd-link
+      target="_blank"
+      href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
+      >{{ texts.link }}</a
+    >
+    <br />
+    <div class="is-active-switch">
+      <h4>{{ texts.isDevelopmentModeActive }}</h4>
+      <fd-switch
+        class="switch-active"
+        [checked]="localDevelopmentSettings.isActive"
+        (checkedChange)="switchIsActive()"
+      ></fd-switch>
+    </div>
+    <h4>{{ texts.urlsInput?.title }}</h4>
+    <div fd-form-item class="config-input">
+      <label [colon]="true" fd-form-label for="input-url">
+        {{ texts.urlsInput?.label }}
+      </label>
+      <input
+        fd-form-control
+        type="text"
+        id="input-url"
+        placeholder="http://localhost:4200/assets/content-configuration.json"
+        aria-required="true"
+        #urlInput
+      />
+      @if (errors.length) {
+        <div>{{ texts.urlsInput?.error }}</div>
+      }
+      <div class="config-input-buttons">
+        <button
+          fd-button
+          label="{{ texts.addButton }}"
+          fdType="emphasized"
+          fdCompact
+          (click)="addUrl(urlInput.elementRef.nativeElement.value)"
+        ></button>
+        <button
+          fd-button
+          label="{{ texts.clearButton }}"
+          fdType="ghost"
+          fdCompact
+          (click)="urlInput.elementRef.nativeElement.value = ''"
+        ></button>
+      </div>
+    </div>
+    <div class="config-list">
+      <ul fd-list>
+        @for (
+          item of localDevelopmentSettings.configs;
+          track item;
+          let ind = $index
+        ) {
+          <li fd-list-item>
+            <!--            <span fd-list-thumbnail><fd-icon glyph="accept"></fd-icon></span>-->
+            <!--            <span fd-list-thumbnail><fd-icon glyph="decline"></fd-icon></span>-->
+            <span fd-list-title>
+              {{ item.url }}
+            </span>
+            <span fd-list-secondary>
+              <button
+                fd-button
+                fdType="transparent"
+                glyph="decline"
+                title="{{ texts.removeButton }}"
+                (click)="removeUrl(ind)"
+              ></button>
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+    <h4>{{ texts.serviceProviderConfig?.title }}</h4>
+    <div fd-form-item class="config-input">
+      <label [colon]="false" fd-form-label for="input-key">
+        {{ texts.serviceProviderConfig?.explanation }}
+      </label>
+      <br />
+      <label [colon]="true" fd-form-label for="input-key">
+        {{ texts.serviceProviderConfig?.keyInput.label }}
+      </label>
+      <input
+        fd-form-control
+        type="text"
+        id="input-key"
+        placeholder="{{ texts.serviceProviderConfig?.keyInput.placeholder }}"
+        aria-required="true"
+        #inputKey
+      />
+      <br />
+      <label [colon]="true" fd-form-label for="input-value">
+        {{ texts.serviceProviderConfig?.valueInput.label }}
+      </label>
+      <input
+        fd-form-control
+        type="text"
+        id="input-value"
+        placeholder="{{ texts.serviceProviderConfig?.valueInput.placeholder }}"
+        aria-required="true"
+        #inputValue
+      />
+      <div class="config-input-buttons">
+        <button
+          fd-button
+          label="{{ texts.addButton }}"
+          fdType="emphasized"
+          fdCompact
+          (click)="
+            addServiceProviderConfig(
+              inputKey.elementRef.nativeElement.value,
+              inputValue.elementRef.nativeElement.value
+            )
+          "
+        ></button>
+        <button
+          fd-button
+          label="{{ texts.clearButton }}"
+          fdType="ghost"
+          fdCompact
+          (click)="
+            inputKey.elementRef.nativeElement.value = '';
+            inputValue.elementRef.nativeElement.value = ''
+          "
+        ></button>
+      </div>
+    </div>
+    <div class="config-list">
+      <ul fd-list>
+        @for (
+          item of Object.entries(
+            localDevelopmentSettings.serviceProviderConfig
+          );
+          track item[0];
+          let ind = $index
+        ) {
+          <li fd-list-item>
+            <span fd-list-title>
+              Key: {{ item[0] }}, Value: {{ item[1] }}
+            </span>
+            <span fd-list-secondary>
+              <button
+                fd-button
+                fdType="transparent"
+                glyph="decline"
+                title="{{ texts.removeButton }}"
+                (click)="removeServiceProviderConfig(item[0])"
+              ></button>
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

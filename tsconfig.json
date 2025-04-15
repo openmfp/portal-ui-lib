@@ -11,7 +11,7 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": false,
     "paths": {
-      "lib": ["./dist/lib"]
+      "@openmfp/portal-ui-lib": ["./projects/lib/src/public-api.ts"],
     },
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
@@ -20,7 +20,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "useDefineForClassFields": false,
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

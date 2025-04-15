@@ -1,0 +1,72 @@
+<ui5-dynamic-page>
+  <ui5-dynamic-page-title slot="titleArea">
+    <ui5-title slot="heading">
+      <div class="title-logo">
+        <div>{{ heading }}</div>
+        @if (resourceDefinition.ui?.logoUrl) {
+          <img
+            class="logo"
+            src="{{ resourceDefinition.ui.logoUrl }}"
+            alt="Logo"
+          />
+        }
+      </div>
+    </ui5-title>
+    <ui5-text class="title-subheading" slot="subheading">
+      This page displays the created
+      {{ resourceDefinition.plural }} in your environment
+    </ui5-text>
+
+    <ui5-toolbar
+      class="title-actions"
+      id="actionsBar"
+      slot="actionsBar"
+      design="Transparent"
+    >
+      @if (hasUiCreateViewFields()) {
+        <ui5-toolbar-button
+          design="Emphasized"
+          text="Create"
+          (click)="openCreateResourceModal()"
+        ></ui5-toolbar-button>
+      }
+    </ui5-toolbar>
+  </ui5-dynamic-page-title>
+
+  <ui5-table>
+    <ui5-table-header-row slot="headerRow">
+      @for (column of columns; track column.property) {
+        <ui5-table-header-cell>{{ column.label }}</ui5-table-header-cell>
+      }
+      <ui5-table-header-cell class="actions-column"
+        >Actions</ui5-table-header-cell
+      >
+    </ui5-table-header-row>
+    <ui5-illustrated-message
+      slot="nodata"
+      name="NoData"
+    ></ui5-illustrated-message>
+    @for (item of resources; track item.metadata.name) {
+      <ui5-table-row interactive (click)="navigateToResource(item)">
+        @for (column of columns; track column.label) {
+          <ui5-table-cell>{{
+            getResourceValueByJsonPath(item, column)
+          }}</ui5-table-cell>
+        }
+        <ui5-table-cell
+          class="actions-column delete-item"
+          (click)="delete($event, item)"
+        >
+          <ui5-icon name="delete"></ui5-icon>
+        </ui5-table-cell>
+      </ui5-table-row>
+    }
+  </ui5-table>
+</ui5-dynamic-page>
+
+@if (hasUiCreateViewFields()) {
+  <create-resource-modal
+    [fields]="resourceDefinition.ui?.createView?.fields"
+    (resource)="create($event)"
+  />
+}
