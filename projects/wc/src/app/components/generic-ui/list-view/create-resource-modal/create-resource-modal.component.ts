@@ -1,7 +1,6 @@
 import { FieldDefinition, Resource } from '../../models/resource';
 import {
   Component,
-  ElementRef,
   OnInit,
   ViewEncapsulation,
   inject,

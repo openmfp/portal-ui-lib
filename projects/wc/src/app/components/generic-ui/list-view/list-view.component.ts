@@ -18,7 +18,6 @@ import {
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
-import '@ui5/webcomponents-fiori/illustrations/NoData.js';
 import {
   DynamicPageComponent,
   DynamicPageTitleComponent,
@@ -78,7 +77,41 @@ export class ListViewComponent implements OnInit {
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   columns: FieldDefinition[];
-  resources: Resource[] = [];
+  resources: Resource[] = [
+    {
+      __typename: 'Account',
+      metadata: {
+        name: 'mcp-demo',
+      },
+      spec: {
+        __typename: 'Accountspec',
+        displayName: 'MCP Demo',
+        type: 'account',
+      },
+    },
+    {
+      __typename: 'Account',
+      metadata: {
+        name: 'openmfp',
+      },
+      spec: {
+        __typename: 'Accountspec',
+        displayName: 'OpenMFP',
+        type: 'account',
+      },
+    },
+    {
+      __typename: 'Account',
+      metadata: {
+        name: 'vasu',
+      },
+      spec: {
+        __typename: 'Accountspec',
+        displayName: 'vasu',
+        type: 'account',
+      },
+    },
+  ];
   heading: string;
   resourceDefinition: ResourceDefinition;
 
@@ -101,11 +134,11 @@ export class ListViewComponent implements OnInit {
     const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
-    this.resourceService.list(queryOperation, fields).subscribe({
-      next: (result) => {
-        this.resources = result;
-      },
-    });
+    // this.resourceService.list(queryOperation, fields).subscribe({
+    //   next: (result) => {
+    //     this.resources = result;
+    //   },
+    // });
   }
 
   delete(event: any, resource: Resource) {

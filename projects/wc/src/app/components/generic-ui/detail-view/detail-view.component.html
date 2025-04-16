@@ -1,6 +1,6 @@
 <ui5-dynamic-page>
   <ui5-dynamic-page-title slot="titleArea">
-    <ui5-breadcrumbs (item-click)="navigateToParent($event)" slot="breadcrumbs">
+    <ui5-breadcrumbs (ui5ItemClick)="navigateToParent()" slot="breadcrumbs">
       <ui5-breadcrumbs-item>{{
         resourceDefinition?.plural
       }}</ui5-breadcrumbs-item>
