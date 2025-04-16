@@ -9,7 +9,6 @@ import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
-  CUSTOM_ELEMENTS_SCHEMA,
   Component,
   Input,
   OnInit,
@@ -19,6 +18,22 @@ import {
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
+import '@ui5/webcomponents-fiori/illustrations/NoData.js';
+import {
+  DynamicPageComponent,
+  DynamicPageTitleComponent,
+  IconComponent,
+  IllustratedMessageComponent,
+  TableCellComponent,
+  TableComponent,
+  TableHeaderCellComponent,
+  TableHeaderRowComponent,
+  TableRowComponent,
+  TextComponent,
+  TitleComponent,
+  ToolbarButtonComponent,
+  ToolbarComponent,
+} from '@ui5/webcomponents-ngx';
 
 const defaultColumns: FieldDefinition[] = [
   {
@@ -38,18 +53,32 @@ const defaultColumns: FieldDefinition[] = [
   templateUrl: './list-view.component.html',
   styleUrls: ['./list-view.component.css'],
   encapsulation: ViewEncapsulation.ShadowDom,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [CreateResourceModalComponent],
+  imports: [
+    CreateResourceModalComponent,
+    DynamicPageComponent,
+    DynamicPageTitleComponent,
+    IconComponent,
+    IllustratedMessageComponent,
+    TableComponent,
+    TableCellComponent,
+    TableHeaderCellComponent,
+    TableHeaderRowComponent,
+    TableRowComponent,
+    TextComponent,
+    TitleComponent,
+    ToolbarButtonComponent,
+    ToolbarComponent,
+  ],
 })
 export class ListViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
 
-  private resourceCreateModal = viewChild(CreateResourceModalComponent);
+  private createModal = viewChild<CreateResourceModalComponent>('createModal');
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   columns: FieldDefinition[];
-  resources: Resource[];
+  resources: Resource[] = [];
   heading: string;
   resourceDefinition: ResourceDefinition;
 
@@ -114,7 +143,7 @@ export class ListViewComponent implements OnInit {
   }
 
   openCreateResourceModal() {
-    this.resourceCreateModal().open();
+    this.createModal()?.open();
   }
 
   hasUiCreateViewFields() {

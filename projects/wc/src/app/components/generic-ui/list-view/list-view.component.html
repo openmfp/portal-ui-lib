@@ -42,10 +42,12 @@
         >Actions</ui5-table-header-cell
       >
     </ui5-table-header-row>
-    <ui5-illustrated-message
-      slot="nodata"
-      name="NoData"
-    ></ui5-illustrated-message>
+
+    <ui5-illustrated-message slot="nodata" name="NoData">
+      <span slot="title">No Resources</span>
+      <span slot="subtitle">There are currently no items to show.</span>
+    </ui5-illustrated-message>
+
     @for (item of resources; track item.metadata.name) {
       <ui5-table-row interactive (click)="navigateToResource(item)">
         @for (column of columns; track column.label) {
@@ -66,6 +68,7 @@
 
 @if (hasUiCreateViewFields()) {
   <create-resource-modal
+    #createModal
     [fields]="resourceDefinition.ui?.createView?.fields"
     (resource)="create($event)"
   />
