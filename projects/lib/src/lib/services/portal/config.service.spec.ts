@@ -1,13 +1,12 @@
+import { RequestHeadersService } from '../request-headers.service';
+import { ConfigService } from './config.service';
 import { provideHttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { PortalConfig } from '../../models';
-import { RequestHeadersService } from '../request-headers.service';
-import { ConfigService } from './config.service';
 import { mock } from 'jest-mock-extended';
 
 describe('ConfigService', () => {
@@ -65,8 +64,24 @@ describe('ConfigService', () => {
     });
 
     it('should handle 403 error', async () => {
+      const mockLocation = {
+        assign: jest.fn(),
+        href: '',
+        pathname: '',
+        search: '',
+        hash: '',
+        host: '',
+        hostname: '',
+        port: '',
+        protocol: '',
+        origin: '',
+        reload: jest.fn(),
+        replace: jest.fn(),
+        toString: jest.fn(),
+      } as any;
+
       delete window.location;
-      window.location = mock<Location>({ assign: jest.fn() });
+      window.location = mockLocation;
 
       const configPromise = service.getPortalConfig();
       const testRequest = httpTestingController.expectOne('/rest/config');
@@ -74,7 +89,7 @@ describe('ConfigService', () => {
 
       await expect(configPromise).rejects.toBeTruthy();
       expect(window.location.assign).toHaveBeenCalledWith(
-        '/logout?error=invalidToken'
+        '/logout?error=invalidToken',
       );
     });
 
@@ -113,7 +128,7 @@ describe('ConfigService', () => {
         project: projectId,
       });
       const testRequest = httpTestingController.expectOne(
-        `/rest/config/project?project=${projectId}`
+        `/rest/config/project?project=${projectId}`,
       );
       testRequest.flush(response);
 
@@ -128,7 +143,7 @@ describe('ConfigService', () => {
         project: projectId,
       });
       const testRequest = httpTestingController.expectOne(
-        `/rest/config/project?project=${projectId}`
+        `/rest/config/project?project=${projectId}`,
       );
       const error403 = { status: 403, statusText: 'Forbidden' };
       testRequest.flush({}, error403);
@@ -149,7 +164,7 @@ describe('ConfigService', () => {
       });
 
       const testRequest = httpTestingController.expectOne(
-        '/rest/config/project?project=' + projectId
+        '/rest/config/project?project=' + projectId,
       );
       testRequest.flush([]);
       const rawConf1 = await rawConf1Promise;

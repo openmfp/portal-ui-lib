@@ -1,19 +1,19 @@
-import { TestBed } from '@angular/core/testing';
+import { THEMING_SERVICE } from '../../injection-tokens';
+import { LuigiNode, LuigiUserSettings, UserData } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
+import { I18nService } from '../i18n.service';
+import { AuthService } from '../portal';
+import {
+  LocalStorageKeys,
+  localDevelopmentSettingsLocalStorage,
+  userSettingsLocalStorage,
+} from '../storage-service';
+import { ThemingService } from '../theming.service';
 import {
   UserSettingsConfigService,
   UserSettingsValues,
 } from './user-settings-config.service';
-import { ThemingService } from '../theming.service';
-import { AuthService } from '../portal';
-import { I18nService } from '../i18n.service';
-import { THEMING_SERVICE } from '../../injection-tokens';
-import {
-  userSettingsLocalStorage,
-  localDevelopmentSettingsLocalStorage,
-  LocalStorageKeys,
-} from '../storage-service';
-import { LuigiNode, LuigiUserSettings, UserData } from '../../models';
+import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 
 jest.mock('../storage-service');
@@ -31,7 +31,7 @@ describe('UserSettingsConfigService', () => {
     window.location = {
       ...originalLocation,
       reload: jest.fn(),
-    };
+    } as any;
 
     dependenciesVersionsService.read.mockResolvedValue({});
 
@@ -114,7 +114,7 @@ describe('UserSettingsConfigService', () => {
       const result = await service.getUserSettings(childrenByEntity);
       expect((result.userSettingGroups as any).custom_group).toBeDefined();
       expect((result.userSettingGroups as any).custom_group.label).toBe(
-        'Custom Group'
+        'Custom Group',
       );
     });
 
@@ -166,13 +166,13 @@ describe('UserSettingsConfigService', () => {
       const result = await service.getUserSettings(childrenByEntity);
 
       expect(
-        result.userSettingGroups.frame_userAccount.settings.language
+        result.userSettingGroups.frame_userAccount.settings.language,
       ).toBeDefined();
       expect(
-        result.userSettingGroups.frame_userAccount.settings.language.type
+        result.userSettingGroups.frame_userAccount.settings.language.type,
       ).toBe('enum');
       expect(
-        result.userSettingGroups.frame_userAccount.settings.language.options
+        result.userSettingGroups.frame_userAccount.settings.language.options,
       ).toEqual([
         { value: 'en', label: '' },
         { value: 'de', label: '' },
@@ -188,7 +188,7 @@ describe('UserSettingsConfigService', () => {
       const result = await service.getUserSettings(childrenByEntity);
 
       expect(
-        result.userSettingGroups.frame_userAccount.settings.language
+        result.userSettingGroups.frame_userAccount.settings.language,
       ).toBeUndefined();
     });
 
@@ -235,7 +235,7 @@ describe('UserSettingsConfigService', () => {
       const result = await service.getUserSettings(childrenByEntity);
 
       expect(result.userSettingGroups.frame_appearance.sublabel).toBe(
-        'Custom Theme'
+        'Custom Theme',
       );
     });
 
@@ -250,7 +250,7 @@ describe('UserSettingsConfigService', () => {
       const result = await service.getUserSettings(childrenByEntity);
 
       expect(result.userSettingGroups.frame_appearance.sublabel).toBe(
-        'Default Theme'
+        'Default Theme',
       );
     });
   });

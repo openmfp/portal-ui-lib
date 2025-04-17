@@ -1,8 +1,6 @@
 import { FieldDefinition, Resource } from '../../models/resource';
 import {
-  CUSTOM_ELEMENTS_SCHEMA,
   Component,
-  ElementRef,
   OnInit,
   ViewEncapsulation,
   inject,
@@ -17,21 +15,38 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import {
+  DialogComponent,
+  InputComponent,
+  LabelComponent,
+  OptionComponent,
+  SelectComponent,
+  ToolbarButtonComponent,
+  ToolbarComponent,
+} from '@ui5/webcomponents-ngx';
 import { set } from 'lodash';
 
 @Component({
   selector: 'create-resource-modal',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    DialogComponent,
+    OptionComponent,
+    SelectComponent,
+    InputComponent,
+    LabelComponent,
+    ToolbarButtonComponent,
+    ToolbarComponent,
+  ],
   templateUrl: './create-resource-modal.component.html',
   styleUrl: './create-resource-modal.component.css',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class CreateResourceModalComponent implements OnInit {
   fields = input<FieldDefinition[]>([]);
   resource = output<Resource>();
-  dialog = viewChild<ElementRef<HTMLElement>>('dialog');
+  dialog = viewChild<DialogComponent>('dialog');
 
   fb = inject(FormBuilder);
   form: FormGroup;
@@ -41,12 +56,18 @@ export class CreateResourceModalComponent implements OnInit {
   }
 
   open() {
-    this.dialog().nativeElement['open'] = true;
+    const dialog = this.dialog();
+    if (dialog) {
+      dialog.open = true;
+    }
   }
 
   close() {
-    this.dialog().nativeElement['open'] = false;
-    this.form.reset();
+    const dialog = this.dialog();
+    if (dialog) {
+      dialog.open = false;
+      this.form.reset();
+    }
   }
 
   create() {

@@ -112,11 +112,8 @@ describe('DetailViewComponent', () => {
   });
 
   it('should navigate to parent context', () => {
-    const event = { preventDefault: jest.fn() };
+    component.navigateToParent();
 
-    component.navigateToParent(event);
-
-    expect(event.preventDefault).toHaveBeenCalled();
     expect(mockLuigiClient.linkManager).toHaveBeenCalled();
     expect(mockLuigiClient.linkManager().fromContext).toHaveBeenCalledWith(
       'parent-context',
