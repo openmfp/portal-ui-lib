@@ -56,6 +56,7 @@ describe('DetailViewComponent', () => {
   beforeEach(async () => {
     mockResourceService = {
       read: jest.fn().mockReturnValue(of(mockResource)),
+      readKcpCA: jest.fn().mockReturnValue(of('kcpCA')),
     };
 
     mockLuigiClient = {
