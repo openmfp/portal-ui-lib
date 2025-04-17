@@ -1,6 +1,9 @@
-const path = require('path');
+import defaultConfig from '../../jest.config';
+import { Config } from '@jest/types';
+import path from 'path';
 
-module.exports = {
+const config: Config.InitialOptions = {
+  ...defaultConfig,
   displayName: 'lib',
   coverageDirectory: path.resolve(__dirname, '../../coverage/lib'),
   coverageThreshold: {
@@ -15,3 +18,5 @@ module.exports = {
     '^lodash-es(.*)': 'lodash',
   },
 };
+
+export default config;
