@@ -1,9 +1,9 @@
-import defaultConfig from '../../jest.config';
+// import defaultConfig from '../../jest.config';
 import { Config } from '@jest/types';
 import path from 'path';
 
 const config: Config.InitialOptions = {
-  ...defaultConfig,
+  // ...defaultConfig,
   displayName: 'lib',
   coverageDirectory: path.resolve(__dirname, '../../coverage/lib'),
   coverageThreshold: {
