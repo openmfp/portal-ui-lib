@@ -1,6 +1,5 @@
 import { FieldDefinition } from '../../models/resource';
 import { CreateResourceModalComponent } from './create-resource-modal.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -17,7 +16,6 @@ describe('CreateResourceModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, CreateResourceModalComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateResourceModalComponent);
@@ -160,7 +158,7 @@ describe('CreateResourceModalComponent', () => {
     it('should throw error when property is an array', () => {
       const property = ['name', 'firstName'];
       expect(() => (component as any).sanitizePropertyName(property)).toThrow(
-        'Wrong property type, array not supported'
+        'Wrong property type, array not supported',
       );
     });
   });
