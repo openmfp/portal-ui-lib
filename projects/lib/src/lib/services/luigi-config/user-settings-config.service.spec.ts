@@ -15,8 +15,6 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 
-jest.mock('../storage-service');
-
 describe('UserSettingsConfigService', () => {
   let service: UserSettingsConfigService;
   const themingServiceMock = mock<ThemingService>();
@@ -25,6 +23,10 @@ describe('UserSettingsConfigService', () => {
   const dependenciesVersionsService = mock<DependenciesVersionsService>();
 
   beforeEach(() => {
+    localDevelopmentSettingsLocalStorage.store = jest.fn();
+    userSettingsLocalStorage.store = jest.fn();
+    userSettingsLocalStorage.read = jest.fn();
+
     const originalLocation = window.location;
     delete window.location;
     window.location = {
@@ -92,7 +94,7 @@ describe('UserSettingsConfigService', () => {
 
       expect(result.userSettingsDialog).toBeDefined();
       expect(service['versionsConfig']).toEqual({
-        browser: jasmine.any(String),
+        browser: expect.any(String),
       });
     });
 
