@@ -1,15 +1,18 @@
+import {
+  AuthData,
+  AuthEvent,
+  AuthTokenData,
+  UserTokenData,
+} from '../../models';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, take, toArray } from 'rxjs';
-import {
-  AuthTokenData,
-  AuthData,
-  UserTokenData,
-  AuthEvent,
-} from '../../models';
-import { jwtDecode } from 'jwt-decode';
 
-jest.mock('jwt-decode');
+const mockJwtDecode = jest.fn();
+
+jest.mock('jwt-decode', () => ({
+  jwtDecode: mockJwtDecode,
+}));
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -22,6 +25,8 @@ describe('AuthService', () => {
     } as any;
 
     service = new AuthService(httpClientMock);
+    // Reset jwt-decode mock before each test
+    mockJwtDecode.mockReset();
   });
 
   it('should be created', () => {
@@ -41,7 +46,7 @@ describe('AuthService', () => {
 
       expect(httpClientMock.post).toHaveBeenCalledWith(
         '/rest/auth?code=mock_code&state=mock_state',
-        {}
+        {},
       );
       expect(service.getAuthData()).toEqual({
         accessTokenExpirationDate: expect.any(Number),
@@ -122,7 +127,9 @@ describe('AuthService', () => {
   describe('getUser', () => {
     it('should return decoded token if auth data exists', () => {
       const mockDecodedToken = { sub: 'user123' };
-      (jwtDecode as jest.Mock).mockReturnValue(mockDecodedToken);
+
+      // Directly mock the parseJwt method
+      jest.spyOn(service as any, 'parseJwt').mockReturnValue(mockDecodedToken);
 
       const mockAuthData: AuthData = {
         accessTokenExpirationDate: 123456789,
@@ -133,13 +140,27 @@ describe('AuthService', () => {
       const user = service['getUser']();
 
       expect(user).toEqual(mockDecodedToken);
-      expect(jwtDecode).toHaveBeenCalledWith('mock_token');
+      expect(service['parseJwt']).toHaveBeenCalledWith('mock_token');
+    });
+
+    it('should return null when token parsing fails', () => {
+      // Directly mock the parseJwt method to return null (simulating failure)
+      jest.spyOn(service as any, 'parseJwt').mockReturnValue(null);
+
+      const mockAuthData: AuthData = {
+        accessTokenExpirationDate: 123456789,
+        idToken: 'invalid_token',
+      };
+      jest.spyOn(service, 'getAuthData').mockReturnValue(mockAuthData);
+
+      const user = service['getUser']();
+      expect(user).toBeNull();
     });
 
     it('should return decoded user data', () => {
-      (jwtDecode as jest.Mock).mockImplementationOnce(() => {
-        throw new Error('Invalid token');
-      });
+      // Set up the mock to throw an error on this test
+      jest.spyOn(service as any, 'parseJwt').mockReturnValue(null);
+
       service['setAuthData']({
         access_token: 'test_token',
         id_token: 'mock_id_token',
