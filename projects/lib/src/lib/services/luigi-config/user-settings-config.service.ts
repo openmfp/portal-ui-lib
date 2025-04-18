@@ -1,5 +1,3 @@
-import { inject, Injectable } from '@angular/core';
-import { isEqual } from 'lodash';
 import { THEMING_SERVICE } from '../../injection-tokens';
 import {
   LocalDevelopmentSettings,
@@ -14,6 +12,8 @@ import {
   userSettingsLocalStorage,
 } from '../storage-service';
 import { ThemingService } from '../theming.service';
+import { Injectable, inject } from '@angular/core';
+import _ from 'lodash';
 
 export interface UserSettings {
   frame_userAccount?: any;
@@ -68,7 +68,7 @@ export class UserSettingsConfigService {
       readUserSettings: async () => {
         const setting: any =
           (await userSettingsLocalStorage.read(
-            this.authService.getUserInfo()
+            this.authService.getUserInfo(),
           )) || {};
         setting.frame_versions = this.versionsConfig;
         return setting;
@@ -76,7 +76,7 @@ export class UserSettingsConfigService {
 
       storeUserSettings: async (
         settings: UserSettingsValues,
-        previous: UserSettingsValues
+        previous: UserSettingsValues,
       ) => {
         userSettingsLocalStorage.store(settings);
         this.applyNewTheme(settings, previous);
@@ -99,7 +99,7 @@ export class UserSettingsConfigService {
 
   private saveLocalDevelopmentSettings(
     settings: UserSettingsValues,
-    previous: UserSettingsValues
+    previous: UserSettingsValues,
   ) {
     const currentLocalDevelopmentSettings =
       settings?.frame_development?.localDevelopmentSettings;
@@ -108,13 +108,13 @@ export class UserSettingsConfigService {
     if (
       currentLocalDevelopmentSettings &&
       (!localDevelopmentSettingsLocalStorage.read() ||
-        !isEqual(
+        !_.isEqual(
           currentLocalDevelopmentSettings,
-          previousLocalDevelopmentSettings
+          previousLocalDevelopmentSettings,
         ))
     ) {
       localDevelopmentSettingsLocalStorage.store(
-        currentLocalDevelopmentSettings
+        currentLocalDevelopmentSettings,
       );
 
       globalThis.location.reload();
@@ -122,7 +122,7 @@ export class UserSettingsConfigService {
   }
 
   private extractUserSettings(
-    childrenByEntity: Record<string, LuigiNode[]>
+    childrenByEntity: Record<string, LuigiNode[]>,
   ): LuigiUserSettings[] {
     const userSettings = Object.values(childrenByEntity)
       .reduce((accumulator, value) => accumulator.concat(value), [])
@@ -138,7 +138,7 @@ export class UserSettingsConfigService {
 
   private changeToSelectedLanguage(
     settings: UserSettingsValues,
-    previous: UserSettingsValues
+    previous: UserSettingsValues,
   ) {
     if (
       settings?.frame_userAccount?.language &&
@@ -151,7 +151,7 @@ export class UserSettingsConfigService {
 
   private applyNewTheme(
     settings: UserSettingsValues,
-    previous: UserSettingsValues
+    previous: UserSettingsValues,
   ) {
     if (
       settings?.frame_appearance?.selectedTheme &&
@@ -159,7 +159,7 @@ export class UserSettingsConfigService {
         settings?.frame_appearance?.selectedTheme
     ) {
       this.luigiThemingService?.applyTheme(
-        settings.frame_appearance.selectedTheme
+        settings.frame_appearance.selectedTheme,
       );
     }
   }
@@ -252,7 +252,7 @@ export class UserSettingsConfigService {
   private addInfoSettings(settings: UserSettings) {
     const settingsTransformed =
       this.dependenciesVersionsService.transformVersionsConfig(
-        this.versionsConfig
+        this.versionsConfig,
       );
 
     settings.frame_versions = {

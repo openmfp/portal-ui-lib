@@ -4,7 +4,6 @@ import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { AuthService } from '../portal';
 import {
-  LocalStorageKeys,
   localDevelopmentSettingsLocalStorage,
   userSettingsLocalStorage,
 } from '../storage-service';

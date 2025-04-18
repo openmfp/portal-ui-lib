@@ -6,10 +6,10 @@ import { search } from 'jmespath';
  * @param jmesPathExpression The JMESPath expression to evaluate
  * @returns true if the result of the JMESPath expression is true, otherwise (or if there was an exception while matching with JMESPath) false
  * */
-export function matchesJMESPath(
+export const matchesJMESPath = (
   context: object,
-  jmesPathExpression: string
-): boolean {
+  jmesPathExpression: string,
+): boolean => {
   if (!jmesPathExpression) {
     return true;
   }
@@ -20,12 +20,12 @@ export function matchesJMESPath(
     logJMESException(context, jmesPathExpression, e);
     return false;
   }
-}
+};
 
 function logJMESException(
   context: object,
   jmesPathExpression: string,
-  error: unknown
+  error: unknown,
 ): void {
   console.warn(
     'Error while evaluating JMESPath expression.',
@@ -44,6 +44,6 @@ function logJMESException(
     '\n',
     'Exception: ',
     '\n',
-    error
+    error,
   );
 }

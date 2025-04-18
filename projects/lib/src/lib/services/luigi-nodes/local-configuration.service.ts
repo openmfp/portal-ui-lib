@@ -1,21 +1,21 @@
-import { inject, Injectable } from '@angular/core';
-import { merge } from 'lodash';
 import {
   ContentConfiguration,
-  LuigiNode,
   LocalDevelopmentSettings,
+  LuigiNode,
 } from '../../models';
 import { ValidationResult } from '../../models/node-transform';
 import { LuigiCoreService } from '../luigi-core.service';
-import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { LocalNodesService } from '../portal';
+import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
 export interface LocalConfigurationService {
   replaceServerNodesWithLocalOnes(
     serverLuigiNodes: LuigiNode[],
-    currentEntities: string[]
+    currentEntities: string[],
   ): Promise<LuigiNode[]>;
   getLocalNodes(): Promise<LuigiNode[]>;
 }
@@ -45,11 +45,11 @@ export class LocalConfigurationServiceImpl
 
     try {
       const configurations = await this.getLocalConfigurations(
-        localDevelopmentSettings
+        localDevelopmentSettings,
       );
       const result =
         (await this.luigiConfigService.getLuigiNodesFromConfigurations(
-          configurations
+          configurations,
         )) || {};
 
       if (result.errors) {
@@ -95,10 +95,10 @@ export class LocalConfigurationServiceImpl
 
   public async replaceServerNodesWithLocalOnes(
     serverLuigiNodes: LuigiNode[],
-    currentEntities: string[]
+    currentEntities: string[],
   ): Promise<LuigiNode[]> {
     console.debug(
-      `Processing local nodes for the entities ${currentEntities.join(',')}`
+      `Processing local nodes for the entities ${currentEntities.join(',')}`,
     );
     const localNodes = await this.getLocalNodes();
 
@@ -108,7 +108,7 @@ export class LocalConfigurationServiceImpl
 
     const localLuigiNodes = this.extendContextOfLocalNodes(
       localNodes,
-      serverLuigiNodes
+      serverLuigiNodes,
     );
 
     console.debug(
@@ -119,18 +119,18 @@ export class LocalConfigurationServiceImpl
        ].join(',')}]
       The entities of local nodes are: [${[
         ...new Set(localLuigiNodes.map((n) => n.entityType)),
-      ].join(',')}]`
+      ].join(',')}]`,
     );
 
     const filteredServerNodes = serverLuigiNodes.filter(
       (node) =>
         !localLuigiNodes.some((localNode) =>
-          this.localNodeMatchesServerNode(localNode, node)
-        )
+          this.localNodeMatchesServerNode(localNode, node),
+        ),
     );
 
     console.debug(
-      `${filteredServerNodes.length} server nodes have no matching local nodes`
+      `${filteredServerNodes.length} server nodes have no matching local nodes`,
     );
 
     const nodesToAdd = localLuigiNodes.filter((n) => {
@@ -142,7 +142,7 @@ export class LocalConfigurationServiceImpl
 
     if (!nodesToAdd.length) {
       console.debug(
-        `Found no local nodes for the entities: ${currentEntities.join(',')}`
+        `Found no local nodes for the entities: ${currentEntities.join(',')}`,
       );
       return filteredServerNodes;
     }
@@ -150,24 +150,24 @@ export class LocalConfigurationServiceImpl
     console.debug(
       `Added ${
         nodesToAdd.length
-      } local nodes to the luigi config for ${currentEntities.join(',')}`
+      } local nodes to the luigi config for ${currentEntities.join(',')}`,
     );
     return filteredServerNodes.concat(nodesToAdd);
   }
 
   private extendContextOfLocalNodes(
     localLuigiNodes: LuigiNode[],
-    serverLuigiNodes: LuigiNode[]
+    serverLuigiNodes: LuigiNode[],
   ): LuigiNode[] {
     localLuigiNodes.forEach((localNode) => {
       const matchingServerNode = serverLuigiNodes.find((serverNode) =>
-        this.localNodeMatchesServerNode(localNode, serverNode)
+        this.localNodeMatchesServerNode(localNode, serverNode),
       );
       if (matchingServerNode && matchingServerNode.context) {
-        localNode.context = merge(
+        localNode.context = _.merge(
           {},
           matchingServerNode.context,
-          localNode.context
+          localNode.context,
         );
       }
     });
@@ -176,7 +176,7 @@ export class LocalConfigurationServiceImpl
 
   private localNodeMatchesServerNode(
     localNode: LuigiNode,
-    node: LuigiNode
+    node: LuigiNode,
   ): boolean {
     return (
       localNode.pathSegment === node.pathSegment &&
@@ -185,7 +185,7 @@ export class LocalConfigurationServiceImpl
   }
 
   private async getLocalConfigurations(
-    localDevelopmentSettings: LocalDevelopmentSettings
+    localDevelopmentSettings: LocalDevelopmentSettings,
   ): Promise<ContentConfiguration[]> {
     const initialConfigurations = localDevelopmentSettings.configs
       .filter((config) => config.data)
@@ -201,14 +201,14 @@ export class LocalConfigurationServiceImpl
                 ({
                   ...contentConfiguration,
                   url: config.url,
-                }) as ContentConfiguration
-            )
-          )
+                }) as ContentConfiguration,
+            ),
+          ),
       )
     )
       .filter(
         (result): result is PromiseFulfilledResult<ContentConfiguration> =>
-          result.status === 'fulfilled'
+          result.status === 'fulfilled',
       )
       .map((result) => result.value)
       .concat(initialConfigurations);

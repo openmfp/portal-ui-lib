@@ -1,9 +1,8 @@
 import { LuigiGlobalContext, LuigiNode } from '../models';
 import { computeFetchContext, visibleForContext } from './context';
-import { matchesJMESPath } from './jmespath';
-import { isMatch } from 'lodash';
+import * as t from './jmespath';
+import _ from 'lodash';
 
-jest.mock('./jmespath');
 jest.mock('lodash', () => ({
   isMatch: jest.fn(),
 }));
@@ -11,19 +10,19 @@ jest.mock('lodash', () => ({
 describe('visibleForContext', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    (isMatch as jest.Mock).mockReturnValue(true);
-    (matchesJMESPath as jest.Mock).mockReturnValue(true);
+    _.isMatch = jest.fn().mockReturnValue(true);
+    spyOn(t, 'matchesJMESPath').and.returnValue(true);
   });
 
   it('should return false when entityContext does not match', () => {
     const ctx = { entityContext: { type: 'user' } };
     const node = { visibleForEntityContext: { type: 'admin' } } as LuigiNode;
 
-    (isMatch as jest.Mock).mockReturnValue(false);
+    _.isMatch = jest.fn().mockReturnValue(false);
 
     const result = visibleForContext(ctx, node);
 
-    expect(isMatch).toHaveBeenCalledWith(
+    expect(_.isMatch).toHaveBeenCalledWith(
       ctx.entityContext,
       node.visibleForEntityContext,
     );
@@ -37,16 +36,16 @@ describe('visibleForContext', () => {
       visibleForContext: { expression: 'someExpression' },
     } as any as LuigiNode;
 
-    (isMatch as jest.Mock).mockReturnValue(true);
-    (matchesJMESPath as jest.Mock).mockReturnValue(true);
+    _.isMatch = jest.fn().mockReturnValue(true);
+    jest.spyOn(t, 'matchesJMESPath').mockReturnValue(true);
 
     const result = visibleForContext(ctx, node);
 
-    expect(isMatch).toHaveBeenCalledWith(
+    expect(_.isMatch).toHaveBeenCalledWith(
       ctx.entityContext,
       node.visibleForEntityContext,
     );
-    expect(matchesJMESPath).toHaveBeenCalledWith(ctx, node.visibleForContext);
+    expect(t.matchesJMESPath).toHaveBeenCalledWith(ctx, node.visibleForContext);
     expect(result).toBe(true);
   });
 
@@ -57,16 +56,16 @@ describe('visibleForContext', () => {
       visibleForContext: { expression: 'someExpression' },
     } as any as LuigiNode;
 
-    (isMatch as jest.Mock).mockReturnValue(true);
-    (matchesJMESPath as jest.Mock).mockReturnValue(false);
+    _.isMatch = jest.fn().mockReturnValue(true);
+    jest.spyOn(t, 'matchesJMESPath').mockReturnValue(false);
 
     const result = visibleForContext(ctx, node);
 
-    expect(isMatch).toHaveBeenCalledWith(
+    expect(_.isMatch).toHaveBeenCalledWith(
       ctx.entityContext,
       node.visibleForEntityContext,
     );
-    expect(matchesJMESPath).toHaveBeenCalledWith(ctx, node.visibleForContext);
+    expect(t.matchesJMESPath).toHaveBeenCalledWith(ctx, node.visibleForContext);
     expect(result).toBe(false);
   });
 });

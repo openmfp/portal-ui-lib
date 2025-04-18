@@ -24,7 +24,7 @@ import {
   ToolbarButtonComponent,
   ToolbarComponent,
 } from '@ui5/webcomponents-ngx';
-import { set } from 'lodash';
+import _ from 'lodash';
 
 @Component({
   selector: 'create-resource-modal',
@@ -74,7 +74,7 @@ export class CreateResourceModalComponent implements OnInit {
     if (this.form.valid) {
       const result = {} as Resource;
       for (const key in this.form.value) {
-        set(result, key.replaceAll('_', '.'), this.form.value[key]);
+        _.set(result, key.replaceAll('_', '.'), this.form.value[key]);
       }
 
       this.resource.emit(result);

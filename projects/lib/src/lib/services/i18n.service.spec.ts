@@ -159,7 +159,7 @@ describe('I18nService', () => {
   });
 
   it('getTranslation', () => {
-    spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
+    jest.replaceProperty(i18nService, 'translationTable', translationTable);
     const spyFindTranslation = spyOn(
       i18nService,
       'findTranslation'
@@ -170,7 +170,7 @@ describe('I18nService', () => {
   });
 
   it('getTranslationAsync', async () => {
-    spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
+    jest.replaceProperty(i18nService, 'translationTable', translationTable);
     spyOn(i18nService, 'findTranslation').and.returnValue('some test key');
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
@@ -188,10 +188,8 @@ describe('I18nService', () => {
         SOME_TEST_KEY3: 'some test key 3',
       },
     };
-    spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
-    spyOn(i18nService, 'translationTable').and.returnValue(
-      fallbackTranslationTable
-    );
+    jest.replaceProperty(i18nService, 'fallbackLanguage', 'en');
+    jest.replaceProperty(i18nService, 'translationTable', fallbackTranslationTable);
     i18nService.fetchTranslationFile = jest
       .fn()
       .mockResolvedValue('some test key 3');
@@ -233,10 +231,8 @@ describe('I18nService', () => {
         SOME_TEST_KEY: 'some test key',
       },
     };
-    spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
-    spyOn(i18nService, 'translationTable').and.returnValue(
-      fallbackTranslationTable
-    );
+    jest.replaceProperty(i18nService, 'fallbackLanguage', 'en');
+    jest.replaceProperty(i18nService, 'translationTable', fallbackTranslationTable);
     globalThis.fetch = jest.fn(() => Promise.reject('Fetch error'));
 
     const result = await i18nService.getTranslationAsync(

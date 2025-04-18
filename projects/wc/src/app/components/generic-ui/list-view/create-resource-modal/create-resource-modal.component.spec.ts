@@ -26,7 +26,7 @@ describe('CreateResourceModalComponent', () => {
     mockDialogElement = {
       open: false,
     };
-    (component as any).dialog = () => ({ nativeElement: mockDialogElement });
+    (component as any).dialog = () => mockDialogElement;
 
     component.ngOnInit();
     fixture.detectChanges();
