@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
 import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
+import { Injectable } from '@angular/core';
 
-export interface NodeChangeHookConfigService {
-  nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode): void;
+export class NodeChangeHookConfigService {
+  nodeChangeHook(prevNode: LuigiNode, nextNode: LuigiNode): void {}
 }
 
 @Injectable({ providedIn: 'root' })

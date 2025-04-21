@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
+import { Injectable, inject } from '@angular/core';
 
-export interface AppSwitcherConfigService {
-  getAppSwitcher(luigiNodes: LuigiNode[]);
+export class AppSwitcherConfigService {
+  getAppSwitcher(luigiNodes: LuigiNode[]) {}
 }
 
 interface NodeConfig {

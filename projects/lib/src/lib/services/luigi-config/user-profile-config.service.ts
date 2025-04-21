@@ -9,6 +9,8 @@ export interface UserProfile {
   items: UserProfileItem[];
 }
 
-export interface UserProfileConfigService {
-  getProfile(): Promise<UserProfile>;
+export class UserProfileConfigService {
+  getProfile(): Promise<UserProfile> {
+    return null;
+  }
 }

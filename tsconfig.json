@@ -18,9 +18,7 @@
     "useDefineForClassFields": false,
     "isolatedModules": true,
     "paths": {
-      "@openmfp/portal-ui-lib": ["./projects/lib/src/public-api.ts"],
-      "lodash-es": ["node_modules/lodash"],
-      "lodash-es/*": ["node_modules/lodash/*"]
+      "@openmfp/portal-ui-lib": ["./projects/lib/src/public-api.ts"]
     }
   },
   "angularCompilerOptions": {

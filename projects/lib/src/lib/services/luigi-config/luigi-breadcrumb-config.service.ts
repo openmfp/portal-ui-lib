@@ -13,10 +13,12 @@ export interface LuigiBreadcrumb {
   renderer: (
     containerElement: HTMLElement,
     nodeItems: NodeItem[],
-    clickHandler: (item: NodeItem) => void
+    clickHandler: (item: NodeItem) => void,
   ) => HTMLElement;
 }
 
-export interface LuigiBreadcrumbConfigService {
-  getBreadcrumbsConfig(): Promise<LuigiBreadcrumb>;
+export class LuigiBreadcrumbConfigService {
+  getBreadcrumbsConfig(): Promise<LuigiBreadcrumb> {
+    return null;
+  }
 }

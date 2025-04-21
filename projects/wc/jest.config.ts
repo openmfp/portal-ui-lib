@@ -1,6 +1,9 @@
-const path = require('path');
+// import defaultConfig from '../../jest.config';
+import { Config } from '@jest/types';
+import path from 'path';
 
-module.exports = {
+const config: Config.InitialOptions = {
+  // ...defaultConfig,
   displayName: 'wc',
   coverageDirectory: path.resolve(__dirname, '../../coverage/wc'),
   coveragePathIgnorePatterns: ['<rootDir>/projects/lib/src/'],
@@ -20,3 +23,5 @@ module.exports = {
     ),
   },
 };
+
+export default config;
