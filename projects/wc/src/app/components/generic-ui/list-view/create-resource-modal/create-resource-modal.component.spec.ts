@@ -1,20 +1,8 @@
 import { FieldDefinition } from '../../models/resource';
 import { CreateResourceModalComponent } from './create-resource-modal.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-
-// jest.mock('@ui5/webcomponents-ngx', () => {
-//   const stubs = jest.requireActual('./ui5‑stubs');
-//   return {
-//     DialogComponent: stubs.MockDialogComponent,
-//     OptionComponent: stubs.MockOptionComponent,
-//     SelectComponent: stubs.MockSelectComponent,
-//     InputComponent: stubs.MockInputComponent,
-//     LabelComponent: stubs.MockLabelComponent,
-//     ToolbarButtonComponent: stubs.MockToolbarButtonComponent,
-//     ToolbarComponent: stubs.MockToolbarComponent,
-//   };
-// });
 
 describe('CreateResourceModalComponent', () => {
   let component: CreateResourceModalComponent;
@@ -29,6 +17,7 @@ describe('CreateResourceModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, CreateResourceModalComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateResourceModalComponent);
