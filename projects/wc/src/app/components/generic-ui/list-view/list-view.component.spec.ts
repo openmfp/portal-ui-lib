@@ -1,7 +1,7 @@
 import { NodeContext, Resource, ResourceDefinition } from '../models/resource';
 import { ResourceService } from '../services/resource.service';
 import { ListViewComponent } from './list-view.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { Condition } from 'kubernetes-types/meta/v1';
@@ -83,7 +83,7 @@ describe('ListViewComponent', () => {
         { provide: ResourceService, useValue: mockResourceService },
         { provide: LuigiCoreService, useValue: mockLuigiCoreService },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ListViewComponent);
