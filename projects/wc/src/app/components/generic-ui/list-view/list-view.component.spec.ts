@@ -184,13 +184,11 @@ describe('ListViewComponent', () => {
     const mockModal = {
       open: jest.fn(),
     };
-    (component as any).resourceCreateModal = jest
-      .fn()
-      .mockReturnValue(mockModal);
+    (component as any).createModal = jest.fn().mockReturnValue(mockModal);
 
     component.openCreateResourceModal();
 
-    expect((component as any).resourceCreateModal).toHaveBeenCalled();
+    expect((component as any).createModal).toHaveBeenCalled();
     expect(mockModal.open).toHaveBeenCalled();
   });
 

@@ -3,10 +3,23 @@ import { CreateResourceModalComponent } from './create-resource-modal.component'
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
+// jest.mock('@ui5/webcomponents-ngx', () => {
+//   const stubs = jest.requireActual('./ui5‑stubs');
+//   return {
+//     DialogComponent: stubs.MockDialogComponent,
+//     OptionComponent: stubs.MockOptionComponent,
+//     SelectComponent: stubs.MockSelectComponent,
+//     InputComponent: stubs.MockInputComponent,
+//     LabelComponent: stubs.MockLabelComponent,
+//     ToolbarButtonComponent: stubs.MockToolbarButtonComponent,
+//     ToolbarComponent: stubs.MockToolbarComponent,
+//   };
+// });
+
 describe('CreateResourceModalComponent', () => {
   let component: CreateResourceModalComponent;
   let fixture: ComponentFixture<CreateResourceModalComponent>;
-  let mockDialogElement: any;
+  let mockDialog: any;
 
   const testFields: FieldDefinition[] = [
     { property: 'name.firstName', required: true, label: 'First Name' },
@@ -23,10 +36,10 @@ describe('CreateResourceModalComponent', () => {
 
     component.fields = (() => testFields) as any;
 
-    mockDialogElement = {
+    mockDialog = {
       open: false,
     };
-    (component as any).dialog = () => ({ nativeElement: mockDialogElement });
+    (component as any).dialog = () => mockDialog;
 
     component.ngOnInit();
     fixture.detectChanges();
@@ -52,7 +65,7 @@ describe('CreateResourceModalComponent', () => {
 
   it('should open dialog when open method is called', () => {
     component.open();
-    expect(mockDialogElement.open).toBeTruthy();
+    expect(mockDialog.open).toBeTruthy();
   });
 
   it('should close dialog and reset form when close method is called', () => {
@@ -60,7 +73,7 @@ describe('CreateResourceModalComponent', () => {
 
     component.close();
 
-    expect(mockDialogElement.open).toBeFalsy();
+    expect(mockDialog.open).toBeFalsy();
     expect(component.form.reset).toHaveBeenCalled();
   });
 
@@ -77,7 +90,7 @@ describe('CreateResourceModalComponent', () => {
       address: { city: 'New York' },
     });
 
-    expect(mockDialogElement.open).toBeFalsy();
+    expect(mockDialog.open).toBeFalsy();
   });
 
   it('should not emit resource when form is invalid', () => {
