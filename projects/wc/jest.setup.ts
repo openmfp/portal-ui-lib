@@ -1,5 +1,5 @@
 jest.mock('@ui5/webcomponents-ngx', () => {
-  const stubs = jest.requireActual('./ui5‑stubs');
+  const stubs = jest.requireActual('./_mocks_/ui5‑stubs');
   return {
     DialogComponent: stubs.MockDialogComponent,
     OptionComponent: stubs.MockOptionComponent,
