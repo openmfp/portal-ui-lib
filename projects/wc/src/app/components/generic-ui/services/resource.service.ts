@@ -117,4 +117,24 @@ export class ResourceService {
       variables: { object: resource },
     });
   }
+
+  readKcpCA(): Observable<string> {
+    return this.apollo
+      .query<string>({
+        query: gql`
+          {
+            core {
+              ConfigMap(name: "kube-root-ca.crt", namespace: "default") {
+                metadata {
+                  name
+                  namespace
+                }
+                data
+              }
+            }
+          }
+        `,
+      })
+      .pipe(map((res: any) => res.data.core.ConfigMap.data));
+  }
 }
