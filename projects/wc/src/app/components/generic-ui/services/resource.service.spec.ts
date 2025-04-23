@@ -15,6 +15,7 @@ describe('ResourceService', () => {
     mockApollo = {
       subscribe: jest.fn(),
       mutate: jest.fn(),
+      query: jest.fn(),
     } as unknown as jest.Mocked<Apollo>;
 
     mockApolloFactory = {
@@ -481,6 +482,82 @@ describe('ResourceService', () => {
       });
 
       expect(mockApollo.mutate).toHaveBeenCalled();
+    });
+  });
+
+  describe('readKcpCA', () => {
+    it('should call Apollo query with correct query for reading KCP CA', () => {
+      const mockResponse = {
+        data: {
+          core: {
+            ConfigMap: {
+              metadata: {
+                name: 'kube-root-ca.crt',
+                namespace: 'default',
+              },
+              data: 'mock-cert-data',
+            },
+          },
+        },
+        loading: false,
+        networkStatus: 7,
+      };
+
+      mockApollo.query.mockReturnValue(of(mockResponse));
+
+      service.readKcpCA();
+
+      expect(mockApollo.query).toHaveBeenCalledWith({
+        query: expect.anything(),
+      });
+
+      const callArgs = mockApollo.query.mock.calls[0][0];
+      const queryString = callArgs.query.loc.source.body;
+
+      // Verify query structure
+      expect(queryString).toContain('core');
+      expect(queryString).toContain('ConfigMap');
+      expect(queryString).toContain('kube-root-ca.crt');
+      expect(queryString).toContain('default');
+    });
+
+    it('should return the correct response data', (done) => {
+      const mockResponse = {
+        data: {
+          core: {
+            ConfigMap: {
+              metadata: {
+                name: 'kube-root-ca.crt',
+                namespace: 'default',
+              },
+              data: 'mock-cert-data',
+            },
+          },
+        },
+        loading: false,
+        networkStatus: 7,
+      };
+
+      mockApollo.query.mockReturnValue(of(mockResponse));
+
+      service.readKcpCA().subscribe((result) => {
+        expect(result).toEqual('mock-cert-data');
+        done();
+      });
+    });
+
+    it('should handle errors', (done) => {
+      const mockError = new Error('GraphQL error');
+      mockApollo.query.mockImplementation(() => {
+        return throwError(() => mockError);
+      });
+
+      service.readKcpCA().subscribe({
+        error: (error) => {
+          expect(error).toBe(mockError);
+          done();
+        },
+      });
     });
   });
 });

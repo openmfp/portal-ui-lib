@@ -4,6 +4,7 @@ module.exports = {
   displayName: 'wc',
   coverageDirectory: path.resolve(__dirname, '../../coverage/wc'),
   coveragePathIgnorePatterns: ['<rootDir>/projects/lib/src/'],
+  setupFilesAfterEnv: [`${__dirname}/jest.setup.ts`],
   coverageThreshold: {
     global: {
       branches: 85,

@@ -7,19 +7,29 @@ import {
 import { ResourceService } from '../services/resource.service';
 import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
-import { kcpCA, kubeConfigTemplate } from './kubeconfig-template';
+import { kubeConfigTemplate } from './kubeconfig-template';
 import {
-  CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectionStrategy,
   Component,
   Input,
   OnInit,
   ViewEncapsulation,
-  computed,
   inject,
   signal,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
+import {
+  BreadcrumbsComponent,
+  BreadcrumbsItemComponent,
+  DynamicPageComponent,
+  DynamicPageHeaderComponent,
+  DynamicPageTitleComponent,
+  LabelComponent,
+  TextComponent,
+  TitleComponent,
+  ToolbarButtonComponent,
+  ToolbarComponent,
+} from '@ui5/webcomponents-ngx';
 
 const defaultFields: FieldDefinition[] = [
   {
@@ -31,10 +41,20 @@ const defaultFields: FieldDefinition[] = [
 
 @Component({
   selector: 'detail-view',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: true,
-  imports: [],
+  imports: [
+    DynamicPageComponent,
+    DynamicPageTitleComponent,
+    BreadcrumbsComponent,
+    BreadcrumbsItemComponent,
+    TitleComponent,
+    TextComponent,
+    ToolbarComponent,
+    ToolbarButtonComponent,
+    DynamicPageHeaderComponent,
+    LabelComponent,
+  ],
   templateUrl: './detail-view.component.html',
   styleUrl: './detail-view.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +69,7 @@ export class DetailViewComponent implements OnInit {
   resourceDefinition: ResourceDefinition;
   workspacePath: string;
   resourceFields: FieldDefinition[];
+  kcpCA: string = '';
 
   @Input()
   LuigiClient: LuigiClient;
@@ -71,10 +92,15 @@ export class DetailViewComponent implements OnInit {
       .subscribe({
         next: (result) => this.resource.set(result),
       });
+
+    this.resourceService.readKcpCA().subscribe({
+      next: (kcpCA) => {
+        this.kcpCA = kcpCA;
+      },
+    });
   }
 
-  navigateToParent(event) {
-    event.preventDefault();
+  navigateToParent() {
     this.LuigiClient.linkManager()
       .fromContext(this.nodeContext.parentNavigationContexts.at(-1))
       .navigate('/');
@@ -97,7 +123,7 @@ export class DetailViewComponent implements OnInit {
     const kubeConfig = kubeConfigTemplate
       .replaceAll('<cluster-name>', this.nodeContext.resourceId)
       .replaceAll('<server-url>', this.getKcpPath())
-      .replaceAll('<ca-data>', kcpCA)
+      .replaceAll('<ca-data>', this.kcpCA)
       .replaceAll('<token>', this.nodeContext.token);
 
     const blob = new Blob([kubeConfig], { type: 'application/plain' });
