@@ -83,7 +83,7 @@
     "move-cli": "^2.0.0",
     "ng-packagr": "^18.0.0 || ^19.0.0",
     "ngx-build-plus": "^18.0.0 || ^19.0.0",
-    "nodemon": "3.1.9",
+    "nodemon": "3.1.10",
     "prettier": "^3.3.2",
     "rimraf": "6.0.1",
     "ts-jest": "29.3.2",
