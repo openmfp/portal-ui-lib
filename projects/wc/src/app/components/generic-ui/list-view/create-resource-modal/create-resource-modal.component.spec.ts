@@ -7,7 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 describe('CreateResourceModalComponent', () => {
   let component: CreateResourceModalComponent;
   let fixture: ComponentFixture<CreateResourceModalComponent>;
-  let mockDialogElement: any;
+  let mockDialog: any;
 
   const testFields: FieldDefinition[] = [
     { property: 'name.firstName', required: true, label: 'First Name' },
@@ -25,10 +25,10 @@ describe('CreateResourceModalComponent', () => {
 
     component.fields = (() => testFields) as any;
 
-    mockDialogElement = {
+    mockDialog = {
       open: false,
     };
-    (component as any).dialog = () => ({ nativeElement: mockDialogElement });
+    (component as any).dialog = () => mockDialog;
 
     component.ngOnInit();
     fixture.detectChanges();
@@ -54,7 +54,7 @@ describe('CreateResourceModalComponent', () => {
 
   it('should open dialog when open method is called', () => {
     component.open();
-    expect(mockDialogElement.open).toBeTruthy();
+    expect(mockDialog.open).toBeTruthy();
   });
 
   it('should close dialog and reset form when close method is called', () => {
@@ -62,7 +62,7 @@ describe('CreateResourceModalComponent', () => {
 
     component.close();
 
-    expect(mockDialogElement.open).toBeFalsy();
+    expect(mockDialog.open).toBeFalsy();
     expect(component.form.reset).toHaveBeenCalled();
   });
 
@@ -79,7 +79,7 @@ describe('CreateResourceModalComponent', () => {
       address: { city: 'New York' },
     });
 
-    expect(mockDialogElement.open).toBeFalsy();
+    expect(mockDialog.open).toBeFalsy();
   });
 
   it('should not emit resource when form is invalid', () => {
@@ -160,7 +160,7 @@ describe('CreateResourceModalComponent', () => {
     it('should throw error when property is an array', () => {
       const property = ['name', 'firstName'];
       expect(() => (component as any).sanitizePropertyName(property)).toThrow(
-        'Wrong property type, array not supported'
+        'Wrong property type, array not supported',
       );
     });
   });
