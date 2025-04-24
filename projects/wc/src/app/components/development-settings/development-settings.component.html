@@ -1,13 +1,16 @@
-<div class="page">
+<div>
   <div class="container">
-    <p>{{ texts.explanation }}</p>
-    <a
-      fd-link
-      target="_blank"
-      href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
-      >{{ texts.link }}</a
-    >
-    <br />
+    <div>
+      <div class="explanation">{{ texts.explanation }}</div>
+      <a
+        class="explanation"
+        fd-link
+        target="_blank"
+        href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
+        >{{ texts.link }}</a
+      >
+    </div>
+
     <div class="is-active-switch">
       <h4>{{ texts.isDevelopmentModeActive }}</h4>
       <fd-switch
@@ -16,8 +19,9 @@
         (checkedChange)="switchIsActive()"
       ></fd-switch>
     </div>
-    <h4>{{ texts.urlsInput?.title }}</h4>
+
     <div fd-form-item class="config-input">
+      <h4>{{ texts.urlsInput?.title }}</h4>
       <label [colon]="true" fd-form-label for="input-url">
         {{ texts.urlsInput?.label }}
       </label>
@@ -48,35 +52,34 @@
           (click)="urlInput.elementRef.nativeElement.value = ''"
         ></button>
       </div>
+      <div class="config-list">
+        <ul fd-list>
+          @for (
+            item of localDevelopmentSettings.configs;
+            track item;
+            let ind = $index
+          ) {
+            <li fd-list-item>
+              <span fd-list-title>
+                {{ item.url }}
+              </span>
+              <span fd-list-secondary>
+                <button
+                  fd-button
+                  fdType="transparent"
+                  glyph="decline"
+                  title="{{ texts.removeButton }}"
+                  (click)="removeUrl(ind)"
+                ></button>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
     </div>
-    <div class="config-list">
-      <ul fd-list>
-        @for (
-          item of localDevelopmentSettings.configs;
-          track item;
-          let ind = $index
-        ) {
-          <li fd-list-item>
-            <!--            <span fd-list-thumbnail><fd-icon glyph="accept"></fd-icon></span>-->
-            <!--            <span fd-list-thumbnail><fd-icon glyph="decline"></fd-icon></span>-->
-            <span fd-list-title>
-              {{ item.url }}
-            </span>
-            <span fd-list-secondary>
-              <button
-                fd-button
-                fdType="transparent"
-                glyph="decline"
-                title="{{ texts.removeButton }}"
-                (click)="removeUrl(ind)"
-              ></button>
-            </span>
-          </li>
-        }
-      </ul>
-    </div>
-    <h4>{{ texts.serviceProviderConfig?.title }}</h4>
+
     <div fd-form-item class="config-input">
+      <h4>{{ texts.serviceProviderConfig?.title }}</h4>
       <label [colon]="false" fd-form-label for="input-key">
         {{ texts.serviceProviderConfig?.explanation }}
       </label>
@@ -128,32 +131,32 @@
           "
         ></button>
       </div>
-    </div>
-    <div class="config-list">
-      <ul fd-list>
-        @for (
-          item of Object.entries(
-            localDevelopmentSettings.serviceProviderConfig
-          );
-          track item[0];
-          let ind = $index
-        ) {
-          <li fd-list-item>
-            <span fd-list-title>
-              Key: {{ item[0] }}, Value: {{ item[1] }}
-            </span>
-            <span fd-list-secondary>
-              <button
-                fd-button
-                fdType="transparent"
-                glyph="decline"
-                title="{{ texts.removeButton }}"
-                (click)="removeServiceProviderConfig(item[0])"
-              ></button>
-            </span>
-          </li>
-        }
-      </ul>
+      <div class="config-list">
+        <ul fd-list>
+          @for (
+            item of Object.entries(
+              localDevelopmentSettings.serviceProviderConfig
+            );
+            track item[0];
+            let ind = $index
+          ) {
+            <li fd-list-item>
+              <span fd-list-title>
+                Key: {{ item[0] }}, Value: {{ item[1] }}
+              </span>
+              <span fd-list-secondary>
+                <button
+                  fd-button
+                  fdType="transparent"
+                  glyph="decline"
+                  title="{{ texts.removeButton }}"
+                  (click)="removeServiceProviderConfig(item[0])"
+                ></button>
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
     </div>
   </div>
 </div>
