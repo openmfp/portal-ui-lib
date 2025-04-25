@@ -83,6 +83,16 @@
         <target>Profile</target>
       </segment>
     </unit>
+    <unit id="PROFILE_ORGANIZATION">
+      <segment>
+        <target>Organization</target>
+      </segment>
+    </unit>
+    <unit id="PROFILE_ORGANIZATION_MANAGEMENT">
+      <segment>
+        <target>Manage Organization</target>
+      </segment>
+    </unit>
     <unit id="PROFILE_FEEDBACK">
       <segment>
         <target>Give Feedback</target>
