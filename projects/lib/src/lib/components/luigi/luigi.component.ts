@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
 import { AuthService, LuigiConfigService } from '../../services';
 import { LuigiCoreService } from '../../services';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   template: '',
@@ -10,7 +10,7 @@ export class LuigiComponent implements OnInit {
   constructor(
     private luigiConfigService: LuigiConfigService,
     private luigiCoreService: LuigiCoreService,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   async ngOnInit(): Promise<void> {

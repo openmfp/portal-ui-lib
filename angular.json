@@ -61,7 +61,6 @@
             "index": "",
             "main": "projects/wc/src/main.ts",
             "assets": ["projects/wc/src/assets"],
-            "styles": ["projects/wc/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
