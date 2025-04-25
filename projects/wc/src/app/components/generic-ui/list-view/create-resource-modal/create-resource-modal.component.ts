@@ -40,7 +40,7 @@ import { set } from 'lodash';
     ToolbarComponent,
   ],
   templateUrl: './create-resource-modal.component.html',
-  styleUrl: './create-resource-modal.component.css',
+  styleUrl: './create-resource-modal.component.scss',
   encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class CreateResourceModalComponent implements OnInit {

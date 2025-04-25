@@ -56,7 +56,7 @@ const defaultFields: FieldDefinition[] = [
     LabelComponent,
   ],
   templateUrl: './detail-view.component.html',
-  styleUrl: './detail-view.component.css',
+  styleUrl: './detail-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailViewComponent implements OnInit {
