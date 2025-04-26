@@ -42,7 +42,7 @@
     "@ui5/webcomponents-ngx": "0.4.5",
     "apollo-angular": "^7.0.0 || ^8.0.0 || ^10.0.0",
     "gql-query-builder": "^3.8.0",
-    "graphql": "16.10.0 || ^17.0.0",
+    "graphql": "16.10.0 || ^17.0.0 || ^16.10.0",
     "graphql-sse": "2.5.4",
     "jsonpath": "^1.1.1",
     "rxjs": "~7.8.0",
