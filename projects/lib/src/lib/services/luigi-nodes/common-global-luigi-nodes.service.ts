@@ -51,6 +51,9 @@ export class CommonGlobalLuigiNodesService {
         webcomponent: {
           selfRegistered: true,
         },
+        context: {
+          translationTable: this.i18nService.translationTable,
+        },
       },
     ];
   }

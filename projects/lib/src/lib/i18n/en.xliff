@@ -114,6 +114,37 @@
         <target>Sign in again to continue working on awesome things!</target>
       </segment>
     </unit>
+    <!-- ORGANIZATION MANAGEMENT MODAL -->
+    <unit id="ORGANIZATION_MANAGEMENT_EXPLANATION">
+      <segment>
+        <target>Please use the form below to onboard a new organization or switch to an existing one.</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_SWITCH_LABEL">
+      <segment>
+        <target>Switch to a different organization</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_SWITCH_BUTTON">
+      <segment>
+        <target>Switch</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_LABEL">
+      <segment>
+        <target>Onboard a new organization</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_BUTTON">
+      <segment>
+        <target>Onboard</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_PLACEHOLDER">
+      <segment>
+        <target>Enter organization name</target>
+      </segment>
+    </unit>
     <!-- CONFIRMATION MODAL -->
     <unit id="luigi.confirmationModal.header">
       <segment>

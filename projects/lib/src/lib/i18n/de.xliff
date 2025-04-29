@@ -114,6 +114,37 @@
         <target>Melde dich wieder an um deine fantastische Arbeit fortzusetzen!</target>
       </segment>
     </unit>
+    <!-- ORGANIZATION MANAGEMENT MODAL -->
+    <unit id="ORGANIZATION_MANAGEMENT_EXPLANATION">
+      <segment>
+        <target>Bitte verwenden Sie das folgende Formular, um eine neue Organisation aufzunehmen oder zu einer bestehenden zu wechseln.</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_SWITCH_LABEL">
+      <segment>
+        <target>Zu einer anderen Organisation wechseln</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_SWITCH_BUTTON">
+      <segment>
+        <target>Wechseln</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_LABEL">
+      <segment>
+        <target>Neue Organisation aufnehmen</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_BUTTON">
+      <segment>
+        <target>Aufnehmen</target>
+      </segment>
+    </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_PLACEHOLDER">
+      <segment>
+        <target>Organisationsname eingeben</target>
+      </segment>
+    </unit>
     <!--Confirmation modal-->
     <unit id="luigi.confirmationModal.header">
       <segment>

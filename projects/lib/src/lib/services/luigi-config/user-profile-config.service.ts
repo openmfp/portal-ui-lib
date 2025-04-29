@@ -39,7 +39,8 @@ export class UserProfileConfigServiceImpl implements UserProfileConfigService {
           icon: 'building',
           link: '/organization-management',
           openNodeInModal: {
-            size: 'm',
+            width: '450px',
+            height: '260px',
           },
         },
       ],
