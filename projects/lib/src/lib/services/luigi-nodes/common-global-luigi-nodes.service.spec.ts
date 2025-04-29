@@ -1,9 +1,9 @@
-import { provideHttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
-import { I18nService } from '../i18n.service';
-import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import { EntityType } from '../../models/entity';
+import { I18nService } from '../i18n.service';
+import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
+import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 describe('CommonGlobalLuigiNodesService', () => {
   let service: CommonGlobalLuigiNodesService;
@@ -62,6 +62,20 @@ describe('CommonGlobalLuigiNodesService', () => {
               },
             },
           ],
+        },
+        {
+          context: {
+            translationTable,
+          },
+          hideFromNav: true,
+          hideSideNav: true,
+          label: 'PROFILE_ORGANIZATION_MANAGEMENT',
+          order: '1001',
+          pathSegment: 'organization-management',
+          viewUrl: '/assets/openmfp-portal-ui-wc.js#organization-management',
+          webcomponent: {
+            selfRegistered: true,
+          },
         },
       ]);
     });

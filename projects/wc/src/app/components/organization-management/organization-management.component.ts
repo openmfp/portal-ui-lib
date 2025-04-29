@@ -26,7 +26,7 @@ import {
 export class OrganizationManagementComponent {
   private i18nService = inject(I18nService);
 
-  protected texts: any = {};
+  texts: any = {};
   organizations: string[] = ['org1', 'org2'];
   organizationToSwitch: string;
 
