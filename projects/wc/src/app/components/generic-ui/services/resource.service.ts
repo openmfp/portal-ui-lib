@@ -109,9 +109,6 @@ export class ResourceService {
       ],
     });
 
-    resource.spec.type = 'org';
-    resource.metadata.name = 'taken from input';
-
     return this.apollo.mutate<void>({
       mutation: gql`
         ${mutation.query}
