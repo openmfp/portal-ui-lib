@@ -3,7 +3,6 @@ import { ClientEnvironment, LuigiNode } from '../../models';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
-import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { NavigationConfigService } from './navigation-config.service';
 import { RoutingConfigService } from './routing-config.service';

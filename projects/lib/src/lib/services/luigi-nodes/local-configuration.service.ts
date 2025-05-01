@@ -11,7 +11,7 @@ import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { merge } from 'lodash';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, timer } from 'rxjs';
 
 export interface LocalConfigurationService {
   replaceServerNodesWithLocalOnes(
@@ -101,15 +101,17 @@ export class LocalConfigurationServiceImpl
               .join('<br/>')}`;
       })
       .join('<br/><br/><br/>');
-    this.luigiCoreService.showAlert({
-      text: `
+    timer(1000).subscribe(() => {
+      this.luigiCoreService.showAlert({
+        text: `
             Your local development configuration contains error(s).
-            You will not be able to see you local changes and local development results unless you correct the data and reload the page. 
+            You will not be able to see your local changes and local development results unless you correct the data and reload the page. 
             Please see below the detailed information: <br/><br/>
             
             ${message}
           `,
-      type: 'error',
+        type: 'error',
+      });
     });
   }
 

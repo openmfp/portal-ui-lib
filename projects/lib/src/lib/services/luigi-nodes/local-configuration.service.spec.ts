@@ -7,7 +7,7 @@ import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MockProxy, mock } from 'jest-mock-extended';
-import { of } from 'rxjs';
+import { of, timer } from 'rxjs';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
@@ -110,10 +110,12 @@ describe('LocalConfigurationServiceImpl', () => {
       await service.getLocalNodes();
 
       // Assert
-      expect(luigiCoreService.showAlert).toHaveBeenCalled();
-      expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
-        text: expect.stringContaining('Error 1'),
-        type: 'error',
+      timer(1001).subscribe(() => {
+        expect(luigiCoreService.showAlert).toHaveBeenCalled();
+        expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
+          text: expect.stringContaining('Error 1'),
+          type: 'error',
+        });
       });
     });
 
@@ -181,14 +183,17 @@ describe('LocalConfigurationServiceImpl', () => {
       await service.getLocalNodes();
 
       // Assert
-      expect(luigiCoreService.showAlert).toHaveBeenCalled();
-      const alertText = (luigiCoreService.showAlert as any).mock.calls[0][0]
-        .text;
-      expect(alertText).toContain('http://test1.com');
-      expect(alertText).toContain('Config 1 Error 1');
-      expect(alertText).toContain('Config 1 Error 2');
-      expect(alertText).toContain('http://test2.com');
-      expect(alertText).toContain('Config 2 Error 1');
+
+      timer(1001).subscribe(() => {
+        expect(luigiCoreService.showAlert).toHaveBeenCalled();
+        const alertText = (luigiCoreService.showAlert as any).mock.calls[0][0]
+          .text;
+        expect(alertText).toContain('http://test1.com');
+        expect(alertText).toContain('Config 1 Error 1');
+        expect(alertText).toContain('Config 1 Error 2');
+        expect(alertText).toContain('http://test2.com');
+        expect(alertText).toContain('Config 2 Error 1');
+      });
     });
   });
 
