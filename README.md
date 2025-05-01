@@ -15,32 +15,44 @@ Main features of this library are:
 * Dynamic development capabilities by embedding your locally running microfrontend into a Luigi frame.
 
 ## Table of Contents
-- [Getting started](#Getting-started)
-  - [Configure the project](#Configure-the-project)
-  - [Import the Portal providers and Bootstrap the app with PortalComponent](#Import-the-Portal-providers-and-Bootstrap-the-app-with-PortalComponent)
-  - [Update index.html file](#Update-index-html-file-of-the-project)
-  - [Implement the Custom Service](#Implement-the-Custom-Service)
-    - [Configuration services](#Configuration-services)
-    - [Functional services](#Functional-services)
-  - [Listen and react to Authentication Events](#Listen-and-react-to-Authentication-Events)
-  - [Configure proxy for backend rest calls](#Configure-proxy-for-backend-rest-calls)
-  - [Start your project](#Start-your-project)
-- [Local Extension Development](#Local-Extension-Development)
-- [Library development](#Library-development)
-- [Requirements](#Requirements)
-- [Contributing](#Contributing)
-- [Code of Conduct](#Code-of-Conduct)
-- [Licensing](#Licensing)
+- [Portal UI Library](#portal-ui-library)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+    - [Dependencies](#dependencies)
+    - [Angular Configuration](#angular-configuration)
+  - [Import the Portal providers and Bootstrap the app with PortalComponent](#import-the-portal-providers-and-bootstrap-the-app-with-portalcomponent)
+  - [Update index html file of the project](#update-index-html-file-of-the-project)
+  - [Implement the Custom Service](#implement-the-custom-service)
+    - [Configuration services](#configuration-services)
+      - [The staticSettingsConfigService Option](#the-staticsettingsconfigservice-option)
+      - [The luigiExtendedGlobalContextConfigService Option](#the-luigiextendedglobalcontextconfigservice-option)
+      - [The userSettingsConfigService Option](#the-usersettingsconfigservice-option)
+      - [The globalSearchConfigService option](#the-globalsearchconfigservice-option)
+      - [The luigiBreadcrumbConfigService Option](#the-luigibreadcrumbconfigservice-option)
+      - [The userProfileConfigService Option](#the-userprofileconfigservice-option)
+    - [Functional Services](#functional-services)
+      - [The luigiAuthEventsCallbacksService Option](#the-luigiautheventscallbacksservice-option)
+      - [The customMessageListeners Option](#the-custommessagelisteners-option)
+      - [The customGlobalNodesService Option](#the-customglobalnodesservice-option)
+    - [Listen and react to Authentication Events](#listen-and-react-to-authentication-events)
+    - [Configure Proxy for Backend REST Calls](#configure-proxy-for-backend-rest-calls)
+    - [Start your Project](#start-your-project)
+  - [Local Extension Development](#local-extension-development)
+  - [Generic UI Feature](#generic-ui-feature)
+  - [Requirements](#requirements)
+  - [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+  - [Licensing](#licensing)
 
 
-## Getting started
+## Getting Started
 
 ### Dependencies
 
 Besides putting the `@openmfp/portal-ui-lib` dependency into the `package.json` be sure as well to include the `@luigi-project/core`
 and `@luigi-project/plugin-auth-oauth2` in proper versions (along with any other dependency required).
 
-### Angular configuration
+### Angular Configuration
 
 Configure the angular build process (in the `angular.json` file) to include the content of the Luigi core project and assets 
 from `@openmfp/portal-ui-lib` library into the project assets, as shown below:
@@ -66,7 +78,6 @@ from `@openmfp/portal-ui-lib` library into the project assets, as shown below:
   
 }
 ```
-
 
 ## Import the Portal providers and Bootstrap the app with PortalComponent
 
@@ -98,7 +109,7 @@ bootstrapApplication(PortalComponent, {
       importProvidersFrom(AnyRequiredModule),
       providePortal(portalOptions),
        
-      // ... any ohter providers imports
+      // ... any other providers imports
     ]
   }
 );
@@ -142,7 +153,7 @@ Afterward you provide your specific implementation in the `providePortal(portalO
 
 ### Configuration services
 
-#### The staticSettingsConfigService option
+#### The staticSettingsConfigService Option
 
 With this you can customize [Luigis general settings](https://docs.luigi-project.io/docs/general-settings) and override any defaults.
 Make sure to return a valid Luigi configuration object.
@@ -196,7 +207,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The luigiExtendedGlobalContextConfigService option
+#### The luigiExtendedGlobalContextConfigService Option
 
 By default, in the [Luigi's global context](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=globalcontext) following data is set by the library and available:
 
@@ -237,7 +248,7 @@ const portalOptions: PortalOptions = {
 ```
 
 
-#### The userSettingsConfigService option
+#### The userSettingsConfigService Option
 
 With this you can define the [Luigi user settings and a corresponding userSettingGroups configuration](https://docs.luigi-project.io/docs/user-settings?section=user-settings)
 Make sure to return a valid Luigi configuration object.
@@ -311,7 +322,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The luigiBreadcrumbConfigService option
+#### The luigiBreadcrumbConfigService Option
 
 This enables you to define [Luigi breadcrumbs for your application](https://docs.luigi-project.io/docs/navigation-advanced?section=breadcrumbs)
 Make sure to return a valid Luigi configuration object.
@@ -355,7 +366,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The userProfileConfigService option
+#### The userProfileConfigService Option
 
 This option allows you to define the [Luigi user profile](https://docs.luigi-project.io/docs/navigation-advanced?section=profile).
 Make sure to return a valid Luigi configuration object.
@@ -393,9 +404,9 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-### Functional services
+### Functional Services
 
-#### The luigiAuthEventsCallbacksService option
+#### The luigiAuthEventsCallbacksService Option
 
 This option allows you to provide a service that listens to [Luigi authorization events](https://docs.luigi-project.io/docs/authorization-events)
 Make sure to return a valid Luigi configuration object.
@@ -428,7 +439,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The customMessageListeners option
+#### The customMessageListeners Option
 
 With this option it is possible to define listeners for [Luigi custom messages](https://docs.luigi-project.io/docs/communication?section=custom-messages).
 
@@ -483,7 +494,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The customGlobalNodesService option
+#### The customGlobalNodesService Option
 
 This option adds the possibility to define and add the global level Luigi nodes to your application.
 
@@ -570,9 +581,9 @@ export function actWhenUserAuthSuccedsful(
 }
 ```
 
-### Configure proxy for backend rest calls
+### Configure Proxy for Backend REST Calls
 
-The library executes rest calls `"/rest/**"` against backend running with the library [portal-servet-lib](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library).
+The library executes rest calls `"/rest/**"` against backend running with the library [portal-server-lib](https://github.com/openmfp/portal-server-lib?tab=readme-ov-file#portal-server-library).
 In order for the calls to reach your backend the `proxy.config.json` needs to be provided, 
 with the target reaching the place where and on what port the backend is running `"target": "http://localhost:3000"`.
 
@@ -611,7 +622,7 @@ The proxy file needs to be indicated in the file `angular.json` section `serve`:
 ```
 
 
-### Start your project
+### Start your Project
 
 After finishing all the required steps you might want to check your integration with the library and run your local application.
 In order to do that, firstly you need to run the local server part of the portal,
@@ -619,11 +630,16 @@ please follow the instruction provided [here](https://github.com/openmfp/portal-
 Once the server is running execute your ui starting script (e.g. `ng serve --port 4300` ) remembering that the default localhost port
 should be `4300` otherwise you need to set the environment variable to expected `FRONTEND_PORT=ZZZZ` and restart the server.
 
-### Local Extension Development
+## Local Extension Development
 
 You can set up a local instance of your application.
 This allows you to thoroughly test your application before you release it to production.
 Please follow our [local setup guide](./docs/readme-local-setup.md) for this task.
+
+## Generic UI Feature
+
+There is a possibility to reuse generic ui components in form of web components, without building the micro frontend.
+Please follow our [generic ui guide](./docs/readme-generic-ui.md) for this task.
 
 ## Requirements
 
