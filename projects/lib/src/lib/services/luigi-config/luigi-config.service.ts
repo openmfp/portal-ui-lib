@@ -1,11 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { ClientEnvironment, LuigiConfig } from '../../models';
-import { AuthConfigService } from './auth-config.service';
 import { EnvConfigService } from '../portal';
-import { RoutingConfigService } from './routing-config.service';
-import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
+import { AuthConfigService } from './auth-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
+import { RoutingConfigService } from './routing-config.service';
+import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -22,10 +22,7 @@ export class LuigiConfigService {
     const envConfig: ClientEnvironment =
       await this.envConfigService.getEnvConfig();
     return {
-      auth: this.authConfigService.getAuthConfig(
-        envConfig.oauthServerUrl,
-        envConfig.clientId
-      ),
+      auth: this.authConfigService.getAuthConfig(envConfig),
       routing: this.routingConfigService.getInitialRoutingConfig(),
       communication: this.customMessageListenersService.getMessageListeners(),
       settings:

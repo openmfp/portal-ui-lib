@@ -10,6 +10,8 @@ export interface AuthData {
 }
 
 export interface ClientEnvironment {
+  idpName: string;
+  baseDomain: string;
   oauthServerUrl: string;
   clientId: string;
   isLocal: boolean;

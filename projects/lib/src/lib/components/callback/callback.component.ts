@@ -1,7 +1,7 @@
+import { AuthService, LoginEventService, LoginEventType } from '../../services';
 import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import * as url from 'url';
-import { AuthService, LoginEventService, LoginEventType } from '../../services';
 
 @Component({
   template: '',
@@ -13,7 +13,7 @@ export class CallbackComponent {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private loginEventService: LoginEventService
+    private loginEventService: LoginEventService,
   ) {
     this.route.queryParams.subscribe((queryParams) => {
       const code = queryParams['code'];
@@ -32,23 +32,42 @@ export class CallbackComponent {
   private async processAuthData(code: string, state: string) {
     try {
       const appStateUrl = this.createAppStateUrl(state);
-
-      if (!code || !this.stateOriginMatchesOrigin(appStateUrl)) {
+      if (
+        !code ||
+        (!this.isSameOrigin(appStateUrl) && !this.isSubDomain(appStateUrl))
+      ) {
         return this.triggerLogoutEventWithError();
       }
 
       await this.authService.auth(code, state);
-      return this.router.navigate(
-        [appStateUrl.pathname],
-        this.createNavigationParams(appStateUrl)
-      );
+      if (this.isSubDomain(appStateUrl)) {
+        window.location.href = appStateUrl.href;
+      } else {
+        return this.router.navigate(
+          [appStateUrl.pathname],
+          this.createNavigationParams(appStateUrl),
+        );
+      }
     } catch (e) {
       this.triggerLogoutEventWithError();
     }
   }
 
-  private stateOriginMatchesOrigin(appStateUrl: url.URL) {
-    return appStateUrl.origin === globalThis.location.origin;
+  private isSameOrigin(appStateUrl: url.URL) {
+    const current = new URL(globalThis.location.href);
+    return appStateUrl.origin === current.origin;
+  }
+
+  private isSubDomain(appStateUrl: url.URL) {
+    const current = new URL(globalThis.location.href);
+    const app = appStateUrl;
+    const isSameProtocolAndPort =
+      app.protocol === current.protocol && app.port === current.port;
+    const isSubdomain =
+      app.hostname !== current.hostname &&
+      app.hostname.endsWith('.' + current.hostname);
+
+    return isSubdomain && isSameProtocolAndPort;
   }
 
   private createAppStateUrl(state: string): url.URL {
