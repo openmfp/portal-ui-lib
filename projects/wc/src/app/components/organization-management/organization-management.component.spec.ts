@@ -39,8 +39,8 @@ describe('OrganizationManagementComponent', () => {
   });
 
   it('should set organizationToSwitch from event', () => {
-    const event = { target: { value: 'org2' } };
+    const event = { target: { value: 'Organization 2' } };
     component.setOrganizationToSwitch(event);
-    expect(component.organizationToSwitch).toBe('org2');
+    expect(component.organizationToSwitch).toBe('Organization 2');
   });
 });

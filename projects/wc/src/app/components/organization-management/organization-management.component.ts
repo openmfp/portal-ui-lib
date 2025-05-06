@@ -27,7 +27,7 @@ export class OrganizationManagementComponent {
   private i18nService = inject(I18nService);
 
   texts: any = {};
-  organizations: string[] = ['org1', 'org2'];
+  organizations: string[] = ['Organization 1', 'Organization 2'];
   organizationToSwitch: string;
 
   @Input()

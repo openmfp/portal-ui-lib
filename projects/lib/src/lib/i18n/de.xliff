@@ -132,7 +132,7 @@
     </unit>
     <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_LABEL">
       <segment>
-        <target>Neue Organisation aufnehmen</target>
+        <target>Neue Organisation hinzufügen</target>
       </segment>
     </unit>
     <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_BUTTON">

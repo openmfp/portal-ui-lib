@@ -124,6 +124,21 @@ describe('AppSwitcherConfigServiceImpl', () => {
       expect(result.items).toEqual([]);
     });
 
+    it('should handle one element node array, the menu is not displayed when there is only one element in the array', () => {
+      const mockLuigiOneGlobalNode = [
+        {
+          label: 'Node 1',
+          icon: 'home',
+          pathSegment: 'home',
+          entityType: EntityType.GLOBAL,
+          hideFromNav: false,
+        },
+      ];
+      const result = service.getAppSwitcher(mockLuigiOneGlobalNode);
+
+      expect(result.items).toEqual([]);
+    });
+
     it('should check node visibility using NodeUtilsService', () => {
       nodeUtilsServiceMock.isVisible
         .mockReturnValueOnce(true)
