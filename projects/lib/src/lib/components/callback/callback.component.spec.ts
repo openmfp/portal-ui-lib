@@ -1,10 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
 import { AuthService, LoginEventService, LoginEventType } from '../../services';
 import { CallbackComponent } from './callback.component';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { mock } from 'jest-mock-extended';
 
 @Component({
   selector: 'app-test-root-component',
@@ -43,7 +43,7 @@ describe('CallbackComponent', () => {
             { path: 'logout', component: LogoutComponent },
             { path: 'callback', component: CallbackComponent },
           ],
-          {}
+          {},
         ),
       ],
     })
@@ -116,5 +116,30 @@ describe('CallbackComponent', () => {
     expect(router.getCurrentNavigation()).toBe(null);
     expect(component).toBeTruthy();
     expect(location.path()).toBe('?p1=v1');
+  });
+
+  it('redirect to sub domain', async () => {
+    const subUrl = 'http://sub.localhost/?p1=v1#hash';
+    const state = btoa(encodeURI(subUrl));
+
+    const originalLocation = window.location;
+    delete (window as any).location;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      writable: true,
+      value: { href: originalLocation.href },
+    });
+
+    await router.navigate(['/callback'], {
+      queryParams: { code: 'foo', state },
+    });
+
+    expect(window.location.href).toBe(subUrl);
+
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      writable: true,
+      value: originalLocation,
+    });
   });
 });

@@ -1,22 +1,24 @@
-import { Inject, Injectable, Optional } from '@angular/core';
-import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent } from '../../models';
-import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 import { AuthService } from '../portal';
+import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
+import { Injectable, inject } from '@angular/core';
+import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthConfigService {
-  constructor(
-    private authService: AuthService,
-    @Optional()
-    @Inject(LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN)
-    private luigiAuthEventsCallbacksService: LuigiAuthEventsCallbacksService
-  ) {}
+  private authService = inject(AuthService);
+  private luigiAuthEventsCallbacksService =
+    inject<LuigiAuthEventsCallbacksService>(
+      LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN as any,
+      { optional: true },
+    );
 
-  public getAuthConfig(oauthServerUrl: string, clientId: string) {
+  public getAuthConfig({ oauthServerUrl, clientId, baseDomain }) {
+    const port = window.location.port ? `:${window.location.port}` : '';
+    const redirectUrl = `${window.location.protocol}//${baseDomain}${port}/callback`;
     return {
       use: 'oAuth2AuthCode',
       storage: 'none',
@@ -27,7 +29,7 @@ export class AuthConfigService {
         oAuthData: {
           client_id: clientId,
           scope: 'openid',
-          redirect_uri: '/callback',
+          redirect_uri: redirectUrl,
           response_type: 'code',
         },
         accessTokenExpiringNotificationTime: 60,
@@ -56,7 +58,7 @@ export class AuthConfigService {
           this.authService.authEvent(AuthEvent.AUTH_SUCCESSFUL);
           this.luigiAuthEventsCallbacksService?.onAuthSuccessful(
             settings,
-            authData
+            authData,
           );
         },
         onAuthError: (settings, err) => {
@@ -79,7 +81,7 @@ export class AuthConfigService {
           this.authService.authEvent(AuthEvent.AUTH_CONFIG_ERROR);
           this.luigiAuthEventsCallbacksService?.onAuthConfigError(
             settings,
-            err
+            err,
           );
         },
       },
