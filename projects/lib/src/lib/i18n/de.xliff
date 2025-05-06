@@ -137,7 +137,7 @@
     </unit>
     <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_BUTTON">
       <segment>
-        <target>Aufnehmen</target>
+        <target>Hinzufügen</target>
       </segment>
     </unit>
     <unit id="ORGANIZATION_MANAGEMENT_ONBOARD_PLACEHOLDER">
