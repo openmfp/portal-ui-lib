@@ -1,15 +1,15 @@
-import { TestBed } from '@angular/core/testing';
-import { LuigiConfigService } from './luigi-config.service';
+import { ClientEnvironment } from '../../models';
 import { EnvConfigService } from '../portal';
 import { AuthConfigService } from './auth-config.service';
-import { ClientEnvironment } from '../../models';
+import { CustomMessageListenersService } from './custom-message-listeners.service';
+import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
+import { LuigiConfigService } from './luigi-config.service';
 import { RoutingConfigService } from './routing-config.service';
 import {
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
 } from './static-settings-config.service';
-import { CustomMessageListenersService } from './custom-message-listeners.service';
-import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('LuigiConfigService', () => {
   let service: LuigiConfigService;
@@ -80,6 +80,7 @@ describe('LuigiConfigService', () => {
       const mockEnvConfig: ClientEnvironment = {
         oauthServerUrl: 'https://example.com/oauth',
         clientId: 'test-client-id',
+        baseDomain: 'test-base-domain',
       } as ClientEnvironment;
 
       const mockAuthConfig = {
@@ -112,16 +113,16 @@ describe('LuigiConfigService', () => {
       envConfigServiceMock.getEnvConfig.mockResolvedValue(mockEnvConfig);
       authConfigServiceMock.getAuthConfig.mockReturnValue(mockAuthConfig);
       lifecycleHooksConfigServiceMock.getLifecycleHooksConfig.mockReturnValue(
-        mockLifecycleHooks
+        mockLifecycleHooks,
       );
       staticSettingsConfigServiceMock.getStaticSettingsConfig.mockResolvedValue(
-        mockStaticSettings
+        mockStaticSettings,
       );
       customMessageListenersMock.getMessageListeners.mockReturnValue(
-        mockCommunicationConfig
+        mockCommunicationConfig,
       );
       routingConfigServiceMock.getInitialRoutingConfig.mockReturnValue(
-        mockRoutingConfig
+        mockRoutingConfig,
       );
 
       // Act
@@ -130,11 +131,10 @@ describe('LuigiConfigService', () => {
       // Assert
       expect(envConfigServiceMock.getEnvConfig).toHaveBeenCalled();
       expect(
-        staticSettingsConfigServiceMock.getStaticSettingsConfig
+        staticSettingsConfigServiceMock.getStaticSettingsConfig,
       ).toHaveBeenCalled();
       expect(authConfigServiceMock.getAuthConfig).toHaveBeenCalledWith(
-        mockEnvConfig.oauthServerUrl,
-        mockEnvConfig.clientId
+        mockEnvConfig,
       );
 
       expect(config).toEqual({

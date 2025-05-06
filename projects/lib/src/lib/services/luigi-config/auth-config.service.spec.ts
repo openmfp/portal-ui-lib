@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { AuthConfigService } from './auth-config.service';
-import { AuthService } from '../portal';
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent, UserData } from '../../models';
+import { AuthService } from '../portal';
+import { AuthConfigService } from './auth-config.service';
 import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('AuthConfigService', () => {
   let service: AuthConfigService;
@@ -48,7 +48,12 @@ describe('AuthConfigService', () => {
       const oauthServerUrl = 'https://example.com/oauth';
       const clientId = 'test-client-id';
 
-      const config = service.getAuthConfig(oauthServerUrl, clientId);
+      const baseDomain = 'https://example.com';
+      const config = service.getAuthConfig({
+        oauthServerUrl,
+        clientId,
+        baseDomain,
+      });
 
       expect(config.use).toBe('oAuth2AuthCode');
       expect(config.storage).toBe('none');
@@ -64,7 +69,11 @@ describe('AuthConfigService', () => {
       } as UserData;
       authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
-      const config = service.getAuthConfig('https://example.com', 'client-id');
+      const config = service.getAuthConfig({
+        oauthServerUrl: 'https://example.com/oauth',
+        clientId: 'client-id',
+        baseDomain: 'https://example.com',
+      });
       const userInfoFn = config.oAuth2AuthCode.userInfoFn;
 
       global.fetch = jest.fn().mockResolvedValue({ ok: true });
@@ -74,7 +83,7 @@ describe('AuthConfigService', () => {
       expect(result).toEqual(userInfo);
       expect(global.fetch).toHaveBeenCalledWith(
         userInfo.picture,
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -86,7 +95,11 @@ describe('AuthConfigService', () => {
       } as UserData;
       authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
-      const config = service.getAuthConfig('https://example.com', 'client-id');
+      const config = service.getAuthConfig({
+        oauthServerUrl: 'https://example.com/oauth',
+        clientId: 'client-id',
+        baseDomain: 'https://example.com',
+      });
       const userInfoFn = config.oAuth2AuthCode.userInfoFn;
 
       global.fetch = jest.fn().mockRejectedValue(new Error('Fetch failed'));
@@ -96,7 +109,7 @@ describe('AuthConfigService', () => {
       expect(result).toEqual({ ...userInfo, picture: '' });
       expect(global.fetch).toHaveBeenCalledWith(
         userPicture,
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -108,17 +121,21 @@ describe('AuthConfigService', () => {
     const testError = new Error('Test error');
 
     beforeEach(() => {
-      config = service.getAuthConfig('https://example.com', 'client-id');
+      config = service.getAuthConfig({
+        oauthServerUrl: 'https://example.com/oauth',
+        clientId: 'client-id',
+        baseDomain: 'https://example.com',
+      });
     });
 
     it('should handle onAuthSuccessful', () => {
       config.events.onAuthSuccessful(testSettings, testAuthData);
 
       expect(authServiceMock.authEvent).toHaveBeenCalledWith(
-        AuthEvent.AUTH_SUCCESSFUL
+        AuthEvent.AUTH_SUCCESSFUL,
       );
       expect(
-        luigiAuthEventsCallbacksServiceMock.onAuthSuccessful
+        luigiAuthEventsCallbacksServiceMock.onAuthSuccessful,
       ).toHaveBeenCalledWith(testSettings, testAuthData);
     });
 
@@ -126,10 +143,10 @@ describe('AuthConfigService', () => {
       config.events.onAuthError(testSettings, testError);
 
       expect(authServiceMock.authEvent).toHaveBeenCalledWith(
-        AuthEvent.AUTH_ERROR
+        AuthEvent.AUTH_ERROR,
       );
       expect(
-        luigiAuthEventsCallbacksServiceMock.onAuthError
+        luigiAuthEventsCallbacksServiceMock.onAuthError,
       ).toHaveBeenCalledWith(testSettings, testError);
     });
 
@@ -137,10 +154,10 @@ describe('AuthConfigService', () => {
       config.events.onAuthExpired(testSettings);
 
       expect(authServiceMock.authEvent).toHaveBeenCalledWith(
-        AuthEvent.AUTH_EXPIRED
+        AuthEvent.AUTH_EXPIRED,
       );
       expect(
-        luigiAuthEventsCallbacksServiceMock.onAuthExpired
+        luigiAuthEventsCallbacksServiceMock.onAuthExpired,
       ).toHaveBeenCalledWith(testSettings);
     });
 
@@ -149,7 +166,7 @@ describe('AuthConfigService', () => {
 
       expect(authServiceMock.authEvent).toHaveBeenCalledWith(AuthEvent.LOGOUT);
       expect(luigiAuthEventsCallbacksServiceMock.onLogout).toHaveBeenCalledWith(
-        testSettings
+        testSettings,
       );
     });
 
@@ -157,10 +174,10 @@ describe('AuthConfigService', () => {
       config.events.onAuthExpireSoon(testSettings);
 
       expect(authServiceMock.authEvent).toHaveBeenCalledWith(
-        AuthEvent.AUTH_EXPIRE_SOON
+        AuthEvent.AUTH_EXPIRE_SOON,
       );
       expect(
-        luigiAuthEventsCallbacksServiceMock.onAuthExpireSoon
+        luigiAuthEventsCallbacksServiceMock.onAuthExpireSoon,
       ).toHaveBeenCalledWith(testSettings);
     });
 
@@ -168,10 +185,10 @@ describe('AuthConfigService', () => {
       config.events.onAuthConfigError(testSettings, testError);
 
       expect(authServiceMock.authEvent).toHaveBeenCalledWith(
-        AuthEvent.AUTH_CONFIG_ERROR
+        AuthEvent.AUTH_CONFIG_ERROR,
       );
       expect(
-        luigiAuthEventsCallbacksServiceMock.onAuthConfigError
+        luigiAuthEventsCallbacksServiceMock.onAuthConfigError,
       ).toHaveBeenCalledWith(testSettings, testError);
     });
   });
