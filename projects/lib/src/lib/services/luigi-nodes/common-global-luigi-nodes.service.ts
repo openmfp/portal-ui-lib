@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
 import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import { ErrorComponentConfig, LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
 import { I18nService } from '../i18n.service';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class CommonGlobalLuigiNodesService {
@@ -11,7 +11,7 @@ export class CommonGlobalLuigiNodesService {
     ERROR_COMPONENT_CONFIG as any,
     {
       optional: true,
-    }
+    },
   );
 
   public getContentNotFoundGlobalNode(): LuigiNode[] {
@@ -40,6 +40,20 @@ export class CommonGlobalLuigiNodesService {
             },
           },
         ],
+      },
+      {
+        label: 'PROFILE_ORGANIZATION_MANAGEMENT',
+        pathSegment: 'organization-management',
+        hideFromNav: true,
+        hideSideNav: true,
+        order: '1001',
+        viewUrl: '/assets/openmfp-portal-ui-wc.js#organization-management',
+        webcomponent: {
+          selfRegistered: true,
+        },
+        context: {
+          translationTable: this.i18nService.translationTable,
+        },
       },
     ];
   }

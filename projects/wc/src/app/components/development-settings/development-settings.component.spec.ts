@@ -14,8 +14,6 @@ import {
   ListTitleDirective,
   SwitchComponent,
 } from '@fundamental-ngx/core';
-import { sendCustomMessage } from '@luigi-project/client';
-import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   I18nService,
   localDevelopmentSettingsLocalStorage,
@@ -342,31 +340,35 @@ describe('DevelopmentSettingsComponent', () => {
       const mockContext = {
         translationTable: {
           key1: 'value1',
-          key2: 'value2'
-        }
+          key2: 'value2',
+        },
       };
 
       component.context = mockContext;
 
-      expect(i18nServiceMock.translationTable).toBe(mockContext.translationTable);
+      expect(i18nServiceMock.translationTable).toBe(
+        mockContext.translationTable,
+      );
       expect((component as any).texts).toBeDefined();
       expect(i18nServiceMock.getTranslation).toHaveBeenCalled();
     });
 
     it('should handle empty translation table', () => {
       const mockContext = {
-        translationTable: {}
+        translationTable: {},
       };
 
       component.context = mockContext;
 
-      expect(i18nServiceMock.translationTable).toBe(mockContext.translationTable);
+      expect(i18nServiceMock.translationTable).toBe(
+        mockContext.translationTable,
+      );
       expect((component as any).texts).toBeDefined();
     });
 
     it('should handle undefined translation table', () => {
       const mockContext = {
-        translationTable: undefined
+        translationTable: undefined,
       };
 
       component.context = mockContext;
@@ -388,12 +390,17 @@ describe('DevelopmentSettingsComponent', () => {
           LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL: 'urls label',
           LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR: 'urls error',
           LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE: 'provider title',
-          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION: 'provider explanation',
-          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL: 'key label',
-          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER: 'key placeholder',
-          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL: 'value label',
-          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER: 'value placeholder'
-        }
+          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION:
+            'provider explanation',
+          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL:
+            'key label',
+          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER:
+            'key placeholder',
+          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL:
+            'value label',
+          LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER:
+            'value placeholder',
+        },
       };
 
       component.context = mockContext;
@@ -404,24 +411,30 @@ describe('DevelopmentSettingsComponent', () => {
         addButton: 'translated_LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON',
         clearButton: 'translated_LOCAL_DEVELOPMENT_SETTINGS_CLEAR_BUTTON',
         removeButton: 'translated_LOCAL_DEVELOPMENT_SETTINGS_REMOVE_BUTTON',
-        isDevelopmentModeActive: 'translated_LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE',
+        isDevelopmentModeActive:
+          'translated_LOCAL_DEVELOPMENT_SETTINGS_IS_ACTIVE',
         urlsInput: {
           title: 'translated_LOCAL_DEVELOPMENT_SETTINGS_URLS_TITLE',
           label: 'translated_LOCAL_DEVELOPMENT_SETTINGS_URLS_LABEL',
-          error: 'translated_LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR'
+          error: 'translated_LOCAL_DEVELOPMENT_SETTINGS_URLS_ERROR',
         },
         serviceProviderConfig: {
           title: 'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_TITLE',
-          explanation: 'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION',
+          explanation:
+            'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_EXPLANATION',
           keyInput: {
-            label: 'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL',
-            placeholder: 'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER'
+            label:
+              'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_LABEL',
+            placeholder:
+              'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_KEY_INPUT_PLACEHOLDER',
           },
           valueInput: {
-            label: 'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL',
-            placeholder: 'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER'
-          }
-        }
+            label:
+              'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_LABEL',
+            placeholder:
+              'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER',
+          },
+        },
       });
     });
   });

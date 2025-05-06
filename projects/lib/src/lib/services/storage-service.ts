@@ -14,7 +14,7 @@ export const localDevelopmentSettingsLocalStorage = {
     let localDevelopmentSettingsFromLocalStore: string;
     try {
       localDevelopmentSettingsFromLocalStore = localStorage.getItem(
-        localStorageKey || LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS
+        localStorageKey || LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
       );
       localStorageKey && localStorage.removeItem(localStorageKey);
     } catch (e) {
@@ -27,7 +27,7 @@ export const localDevelopmentSettingsLocalStorage = {
     } catch (e) {
       console.error(
         'Failed to parse the local development settings in your localstorage.',
-        e
+        e,
       );
     }
     return null;
@@ -37,12 +37,12 @@ export const localDevelopmentSettingsLocalStorage = {
     try {
       localStorage.setItem(
         LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
-        JSON.stringify(localDevelopmentSetting)
+        JSON.stringify(localDevelopmentSetting),
       );
     } catch (e) {
       console.error(
         'Failed to stringify the local development settings setting into your localstorage.',
-        e
+        e,
       );
     }
   },
@@ -60,7 +60,7 @@ export const userSettingsLocalStorage = {
     return new Promise((resolve, reject) => {
       try {
         const storedSettings = localStorage.getItem(
-          LocalStorageKeys.USER_SETTINGS
+          LocalStorageKeys.USER_SETTINGS,
         );
         const settings = storedSettings ? JSON.parse(storedSettings) : {};
 
@@ -98,7 +98,7 @@ export const userSettingsLocalStorage = {
       try {
         localStorage.setItem(
           LocalStorageKeys.USER_SETTINGS,
-          JSON.stringify(settings)
+          JSON.stringify(settings),
         );
         resolve(settings);
       } catch (e) {

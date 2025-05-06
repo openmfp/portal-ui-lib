@@ -1,42 +1,35 @@
-import { provideHttpClient } from '@angular/common/http';
-import {
-  EnvironmentProviders,
-  makeEnvironmentProviders,
-  Provider,
-  provideZoneChangeDetection,
-  Type,
-} from '@angular/core';
-import { provideRouter, RouteReuseStrategy } from '@angular/router';
 import {
   provideBootstrap,
+  provideLanguageServices,
   provideNavigationTracker,
   provideSessionRefresh,
-  provideLanguageServices,
 } from './initializers';
 import {
+  ERROR_COMPONENT_CONFIG,
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+  LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
-  LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-  ERROR_COMPONENT_CONFIG,
   THEMING_SERVICE,
 } from './injection-tokens';
 import { ErrorComponentConfig } from './models';
 import { portalRouts } from './portal-routing';
 import {
   AppSwitcherConfigService,
+  AppSwitcherConfigServiceImpl,
   CustomGlobalNodesService,
   CustomMessageListener,
   GlobalSearchConfigService,
   LocalConfigurationService,
+  LocalConfigurationServiceImpl,
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
@@ -44,13 +37,21 @@ import {
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
   StaticSettingsConfigService,
-  UserProfileConfigService,
-  UserSettingsConfigService,
-  LocalConfigurationServiceImpl,
   ThemingService,
-  AppSwitcherConfigServiceImpl,
+  UserProfileConfigService,
+  UserProfileConfigServiceImpl,
+  UserSettingsConfigService,
 } from './services';
 import { CustomReuseStrategy } from './utilities';
+import { provideHttpClient } from '@angular/common/http';
+import {
+  EnvironmentProviders,
+  Provider,
+  Type,
+  makeEnvironmentProviders,
+  provideZoneChangeDetection,
+} from '@angular/core';
+import { RouteReuseStrategy, provideRouter } from '@angular/router';
 
 export interface PortalOptions {
   /** Service containing and providing the luigi settings configuration **/
@@ -100,7 +101,7 @@ export interface PortalOptions {
 }
 
 export function providePortal(
-  options: PortalOptions = {}
+  options: PortalOptions = {},
 ): EnvironmentProviders {
   const providers: (Provider | EnvironmentProviders)[] = [
     provideHttpClient(),
@@ -118,7 +119,7 @@ export function providePortal(
 }
 
 const addOptionalProviders = (
-  options: PortalOptions
+  options: PortalOptions,
 ): (Provider | EnvironmentProviders)[] => {
   const providers = [];
   (options.customMessageListeners || []).forEach((customMessageListenerClass) =>
@@ -126,7 +127,7 @@ const addOptionalProviders = (
       provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
       multi: true,
       useClass: customMessageListenerClass,
-    })
+    }),
   );
 
   providers.push(
@@ -144,7 +145,12 @@ const addOptionalProviders = (
       provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
       useClass:
         options.localConfigurationService || LocalConfigurationServiceImpl,
-    }
+    },
+    {
+      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass:
+        options.userProfileConfigService || UserProfileConfigServiceImpl,
+    },
   );
 
   if (options.staticSettingsConfigService) {
@@ -172,13 +178,6 @@ const addOptionalProviders = (
     providers.push({
       provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: options.luigiBreadcrumbConfigService,
-    });
-  }
-
-  if (options.userProfileConfigService) {
-    providers.push({
-      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.userProfileConfigService,
     });
   }
 
