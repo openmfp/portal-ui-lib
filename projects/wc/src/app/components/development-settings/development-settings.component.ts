@@ -31,7 +31,7 @@ import {
   selector: 'development-settings',
   standalone: true,
   templateUrl: './development-settings.component.html',
-  styleUrl: './development-settings.component.css',
+  styleUrl: './development-settings.component.scss',
   imports: [
     ListComponent,
     ButtonComponent,

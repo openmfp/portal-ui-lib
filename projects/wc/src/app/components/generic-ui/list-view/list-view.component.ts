@@ -50,7 +50,7 @@ const defaultColumns: FieldDefinition[] = [
   selector: 'list-view',
   standalone: true,
   templateUrl: './list-view.component.html',
-  styleUrls: ['./list-view.component.css'],
+  styleUrls: ['./list-view.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
   imports: [
     CreateResourceModalComponent,

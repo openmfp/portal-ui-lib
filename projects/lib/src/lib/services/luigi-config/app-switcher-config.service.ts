@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
+import { Injectable, inject } from '@angular/core';
 
 export interface AppSwitcherConfigService {
   getAppSwitcher(luigiNodes: LuigiNode[]);
@@ -53,22 +53,28 @@ export class AppSwitcherConfigServiceImpl implements AppSwitcherConfigService {
         slot.innerHTML = '';
         slot.appendChild(a);
       },
-      items: (luigiNodes || [])
-        .filter((node: LuigiNode) => {
-          return (
-            !node.hideFromNav &&
-            node.entityType === EntityType.GLOBAL &&
-            this.nodeUtilsService.isVisible(node)
-          );
-        })
-        .map((node) => {
-          const nodeConfig: NodeConfig = {
-            title: node.label,
-            icon: node.icon,
-            link: '/' + node.pathSegment,
-          };
-          return nodeConfig;
-        }),
+      items: this.getNodeItems(luigiNodes),
     };
+  }
+
+  private getNodeItems(luigiNodes: LuigiNode[]) {
+    const items = (luigiNodes || [])
+      .filter((node: LuigiNode) => {
+        return (
+          !node.hideFromNav &&
+          node.entityType === EntityType.GLOBAL &&
+          this.nodeUtilsService.isVisible(node)
+        );
+      })
+      .map((node) => {
+        const nodeConfig: NodeConfig = {
+          title: node.label,
+          icon: node.icon,
+          link: '/' + node.pathSegment,
+        };
+        return nodeConfig;
+      });
+
+    return items?.length === 1 ? [] : items;
   }
 }

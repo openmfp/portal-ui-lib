@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { AppSwitcherConfigServiceImpl } from './app-switcher-config.service';
-import { LuigiCoreService } from '../luigi-core.service';
-import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
+import { LuigiCoreService } from '../luigi-core.service';
+import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
+import { AppSwitcherConfigServiceImpl } from './app-switcher-config.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('AppSwitcherConfigServiceImpl', () => {
   let service: AppSwitcherConfigServiceImpl;
@@ -124,6 +124,21 @@ describe('AppSwitcherConfigServiceImpl', () => {
       expect(result.items).toEqual([]);
     });
 
+    it('should handle one element node array, the menu is not displayed when there is only one element in the array', () => {
+      const mockLuigiOneGlobalNode = [
+        {
+          label: 'Node 1',
+          icon: 'home',
+          pathSegment: 'home',
+          entityType: EntityType.GLOBAL,
+          hideFromNav: false,
+        },
+      ];
+      const result = service.getAppSwitcher(mockLuigiOneGlobalNode);
+
+      expect(result.items).toEqual([]);
+    });
+
     it('should check node visibility using NodeUtilsService', () => {
       nodeUtilsServiceMock.isVisible
         .mockReturnValueOnce(true)
@@ -132,8 +147,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
       const result = service.getAppSwitcher(mockLuigiNodes);
 
       expect(nodeUtilsServiceMock.isVisible).toHaveBeenCalledTimes(2);
-      expect(result.items.length).toBe(1);
-      expect(result.items[0].title).toBe('Node 1');
+      expect(result.items.length).toBe(0);
     });
   });
 
