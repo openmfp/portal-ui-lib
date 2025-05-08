@@ -1,7 +1,4 @@
-import {
-  Resource,
-  ResourceDefinition,
-} from '../components/generic-ui/models/resource';
+import { Resource, ResourceDefinition } from '../models/resource';
 import { ApolloFactory } from './apollo-factory';
 import { Injectable, inject } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';

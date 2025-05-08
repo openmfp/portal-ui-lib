@@ -1,4 +1,4 @@
-import { FieldDefinition } from '../models/resource';
+import { FieldDefinition } from '../../../models/resource';
 
 export const generateGraphQLFields = (uiFields: FieldDefinition[]): any[] => {
   const graphQLFields = [];

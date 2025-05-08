@@ -1,4 +1,4 @@
-import { FieldDefinition, Resource } from '../models/resource';
+import { FieldDefinition, Resource } from '../../../models/resource';
 import jsonpath from 'jsonpath';
 
 export const getResourceValueByJsonPath = (

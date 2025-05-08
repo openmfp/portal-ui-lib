@@ -1,5 +1,5 @@
+import { Resource, ResourceDefinition } from '../../models/resource';
 import { ResourceService } from '../../services/resource.service';
-import { Resource, ResourceDefinition } from '../generic-ui/models/resource';
 import { generateGraphQLFields } from '../generic-ui/utils/columns-to-gql-fields';
 import {
   ChangeDetectionStrategy,
@@ -13,7 +13,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import { I18nService, LuigiCoreService } from '@openmfp/portal-ui-lib';
+import {
+  EnvConfigService,
+  I18nService,
+  LuigiCoreService,
+} from '@openmfp/portal-ui-lib';
 import {
   ButtonComponent,
   InputComponent,
@@ -46,6 +50,7 @@ export class OrganizationManagementComponent implements OnInit {
   private i18nService = inject(I18nService);
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
+  private envConfigService = inject(EnvConfigService);
   context = input<OrganizationManagementContext>();
   LuigiClient = input<LuigiClient>();
 
@@ -155,10 +160,10 @@ export class OrganizationManagementComponent implements OnInit {
     };
   }
 
-  switchOrganization() {
-    const currentHost = window.location.hostname;
+  async switchOrganization() {
+    const { baseDomain } = await this.envConfigService.getEnvConfig();
     const protocol = window.location.protocol;
-    const fullSubdomain = `${this.organizationToSwitch}.${currentHost}`;
+    const fullSubdomain = `${this.organizationToSwitch}.${baseDomain}`;
     const port = window.location.port ? `:${window.location.port}` : '';
 
     window.location.href = `${protocol}//${fullSubdomain}${port}`;

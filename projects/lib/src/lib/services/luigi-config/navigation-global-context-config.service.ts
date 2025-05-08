@@ -25,7 +25,7 @@ export class NavigationGlobalContextConfigService {
       userId: userInfo.userId,
       userEmail: userInfo.email,
       token: this.authService.getToken(),
-      organization: envConfig.idpName,
+      organization: envConfig.organization,
     };
   }
 }

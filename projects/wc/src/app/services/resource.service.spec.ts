@@ -1,5 +1,5 @@
-import { ApolloFactory } from '../../../services/apollo-factory';
 import { Resource, ResourceDefinition } from '../models/resource';
+import { ApolloFactory } from './apollo-factory';
 import { ResourceService } from './resource.service';
 import { TestBed } from '@angular/core/testing';
 import { Apollo } from 'apollo-angular';

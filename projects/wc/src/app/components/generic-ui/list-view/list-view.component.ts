@@ -1,10 +1,10 @@
-import { ResourceService } from '../../../services/resource.service';
 import {
   FieldDefinition,
   NodeContext,
   Resource,
   ResourceDefinition,
-} from '../models/resource';
+} from '../../../models/resource';
+import { ResourceService } from '../../../services/resource.service';
 import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';

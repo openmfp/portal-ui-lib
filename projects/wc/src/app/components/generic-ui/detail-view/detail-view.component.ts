@@ -1,11 +1,11 @@
-import { GatewayService } from '../../../services/gateway.service';
-import { ResourceService } from '../../../services/resource.service';
 import {
   FieldDefinition,
   NodeContext,
   Resource,
   ResourceDefinition,
-} from '../models/resource';
+} from '../../../models/resource';
+import { GatewayService } from '../../../services/gateway.service';
+import { ResourceService } from '../../../services/resource.service';
 import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { kubeConfigTemplate } from './kubeconfig-template';
