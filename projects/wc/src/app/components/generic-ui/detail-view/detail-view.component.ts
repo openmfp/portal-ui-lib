@@ -1,10 +1,11 @@
+import { GatewayService } from '../../../services/gateway.service';
+import { ResourceService } from '../../../services/resource.service';
 import {
   FieldDefinition,
   NodeContext,
   Resource,
   ResourceDefinition,
 } from '../models/resource';
-import { ResourceService } from '../services/resource.service';
 import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { kubeConfigTemplate } from './kubeconfig-template';
@@ -61,6 +62,7 @@ const defaultFields: FieldDefinition[] = [
 })
 export class DetailViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
+  private gatewayService = inject(GatewayService);
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   resource = signal<Resource | null>(null);
@@ -77,7 +79,7 @@ export class DetailViewComponent implements OnInit {
   @Input()
   set context(context: NodeContext) {
     this.nodeContext = context;
-    this.workspacePath = this.getKcpPath();
+    this.workspacePath = this.gatewayService.getKcpPath();
     this.resourceFields =
       context.resourceDefinition.ui?.detailView?.fields || defaultFields;
     this.resourceDefinition = context.resourceDefinition;
@@ -106,23 +108,10 @@ export class DetailViewComponent implements OnInit {
       .navigate('/');
   }
 
-  private getKcpPath() {
-    return (
-      new URL(
-        this.nodeContext.portalContext.crdGatewayApiUrl.replace(
-          '/graphql',
-          `:${this.nodeContext.resourceId}/graphql`,
-        ),
-      ).pathname
-        .split('/')
-        .filter((s) => s.includes(':'))[0] ?? ''
-    );
-  }
-
   async downloadKubeConfig() {
     const kubeConfig = kubeConfigTemplate
       .replaceAll('<cluster-name>', this.nodeContext.resourceId)
-      .replaceAll('<server-url>', this.getKcpPath())
+      .replaceAll('<server-url>', this.gatewayService.getKcpPath())
       .replaceAll('<ca-data>', this.kcpCA)
       .replaceAll('<token>', this.nodeContext.token);
 

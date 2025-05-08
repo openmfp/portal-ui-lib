@@ -1,21 +1,23 @@
+import { ResourceService } from '../../../services/resource.service';
 import {
   FieldDefinition,
   NodeContext,
   Resource,
   ResourceDefinition,
 } from '../models/resource';
-import { ResourceService } from '../services/resource.service';
 import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
 import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   Component,
+  DestroyRef,
   Input,
   OnInit,
   ViewEncapsulation,
   inject,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import {
@@ -72,6 +74,7 @@ const defaultColumns: FieldDefinition[] = [
 export class ListViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
+  private destroyRef = inject(DestroyRef);
 
   private createModal = viewChild<CreateResourceModalComponent>('createModal');
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
@@ -100,11 +103,14 @@ export class ListViewComponent implements OnInit {
     const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
-    this.resourceService.list(queryOperation, fields).subscribe({
-      next: (result) => {
-        this.resources = result;
-      },
-    });
+    this.resourceService
+      .list(queryOperation, fields)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.resources = result;
+        },
+      });
   }
 
   delete(event: any, resource: Resource) {
