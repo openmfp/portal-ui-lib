@@ -1,4 +1,9 @@
-import { AuthData, LuigiConfig, LuigiCustomMessage } from '../models';
+import {
+  AuthData,
+  LuigiConfig,
+  LuigiCustomMessage,
+  LuigiGlobalContext,
+} from '../models';
 import { Injectable } from '@angular/core';
 
 const luigi = (globalThis as any).Luigi;
@@ -69,7 +74,7 @@ export class LuigiCoreService {
     return luigi.globalSearch();
   }
 
-  getGlobalContext() {
+  getGlobalContext(): LuigiGlobalContext {
     return luigi.getGlobalContext();
   }
 
@@ -77,6 +82,14 @@ export class LuigiCoreService {
     return (
       document
         .querySelector('.wcContainer')
+        ?.querySelector('[lui_web_component]') as any
+    )?.extendedContext?.context;
+  }
+
+  getWcModalExtendedContext() {
+    return (
+      document
+        .querySelector('.iframeModalCtn')
         ?.querySelector('[lui_web_component]') as any
     )?.extendedContext?.context;
   }

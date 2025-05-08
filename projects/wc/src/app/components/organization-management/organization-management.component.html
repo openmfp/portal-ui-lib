@@ -15,13 +15,13 @@
         (input)="setOrganizationToSwitch($event)"
         (change)="setOrganizationToSwitch($event)"
       >
-        @for (org of organizations; track org) {
+        @for (org of organizations(); track org) {
           <ui5-option [value]="org" [selected]="org === organizationToSwitch">{{
             org
           }}</ui5-option>
         }
       </ui5-select>
-      <ui5-button design="Emphasized">{{
+      <ui5-button design="Emphasized" (ui5Click)="switchOrganization()">{{
         texts.switchOrganization.button
       }}</ui5-button>
     </div>
@@ -36,8 +36,9 @@
       <ui5-input
         id="input-onboard"
         placeholder="{{ texts.onboardOrganization.placeholder }}"
+        [(ngModel)]="newOrganization"
       ></ui5-input>
-      <ui5-button design="Emphasized">{{
+      <ui5-button design="Emphasized" (ui5Click)="onboardOrganization()">{{
         texts.onboardOrganization.button
       }}</ui5-button>
     </div>

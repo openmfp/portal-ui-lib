@@ -53,6 +53,7 @@ export class CommonGlobalLuigiNodesService {
         },
         context: {
           translationTable: this.i18nService.translationTable,
+          kcpPath: 'root:orgs',
         },
       },
     ];

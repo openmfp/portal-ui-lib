@@ -1,4 +1,4 @@
-import { FieldDefinition, Resource } from '../models/resource';
+import { FieldDefinition, Resource } from '../../../models/resource';
 import { getResourceValueByJsonPath } from './resource-field-by-path';
 
 describe('getResourceValueByJsonPath', () => {

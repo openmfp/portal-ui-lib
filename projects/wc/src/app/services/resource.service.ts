@@ -1,5 +1,5 @@
-import { ApolloFactory } from '../../../services/apollo-factory';
 import { Resource, ResourceDefinition } from '../models/resource';
+import { ApolloFactory } from './apollo-factory';
 import { Injectable, inject } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
@@ -51,6 +51,28 @@ export class ResourceService {
 
     return this.apollo
       .subscribe({
+        query: gql`
+          ${query.query}
+        `,
+      })
+      .pipe(
+        map((res: any) => res.data?.[operation]),
+        catchError((error) => {
+          console.error('Error executing GraphQL query: ', error);
+          return error;
+        }),
+      );
+  }
+
+  readOrganizations(operation: string, fields: any[]): Observable<any[]> {
+    const query = gqlBuilder.query({
+      operation: operation,
+      fields,
+      variables: {},
+    });
+
+    return this.apollo
+      .query({
         query: gql`
           ${query.query}
         `,
