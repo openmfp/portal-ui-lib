@@ -26,7 +26,7 @@ import {
   SelectComponent,
 } from '@ui5/webcomponents-ngx';
 
-interface OrganizationManagementContext extends Record<string, any> {
+export interface OrganizationManagementContext extends Record<string, any> {
   translationTable: any;
 }
 

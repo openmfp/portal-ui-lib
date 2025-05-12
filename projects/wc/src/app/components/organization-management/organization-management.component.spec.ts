@@ -1,6 +1,14 @@
 import { ResourceService } from '../../services/resource.service';
-import { OrganizationManagementComponent } from './organization-management.component';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, input } from '@angular/core';
+import {
+  OrganizationManagementComponent,
+  OrganizationManagementContext,
+} from './organization-management.component';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  NO_ERRORS_SCHEMA,
+  input,
+  signal,
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MutationResult } from '@apollo/client';
@@ -58,7 +66,11 @@ describe('OrganizationManagementComponent', () => {
         { provide: EnvConfigService, useValue: envConfigServiceMock },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
-    }).createComponent(OrganizationManagementComponent);
+    })
+      .overrideComponent(OrganizationManagementComponent, {
+        set: { template: '' },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrganizationManagementComponent);
     component = fixture.componentInstance;
@@ -67,6 +79,25 @@ describe('OrganizationManagementComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should react to context input change', () => {
+    const mockContext: OrganizationManagementContext = {
+      translationTable: { hello: 'world' },
+    } as any;
+
+    resourceServiceMock.readOrganizations.mockReturnValue(of({} as any));
+
+    const contextSignal = signal<OrganizationManagementContext | null>(
+      mockContext,
+    );
+    component.context = contextSignal as any;
+
+    fixture.detectChanges();
+
+    expect(component['i18nService'].translationTable).toEqual(
+      mockContext.translationTable,
+    );
   });
 
   it('should initialize with empty organizations', () => {
