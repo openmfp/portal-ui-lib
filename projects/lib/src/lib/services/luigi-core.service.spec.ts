@@ -292,4 +292,28 @@ describe('LuigiCoreService', () => {
       expect(context).toBeUndefined();
     });
   });
+
+  describe('getWcModalExtendedContext', () => {
+    it('should return the extendedContext context when element exists', () => {
+      const container = document.createElement('div');
+      container.className = 'iframeModalCtn';
+      const webComponent = document.createElement('div');
+      webComponent.setAttribute('lui_web_component', '');
+      const expectedContext = { foo: 'bar' };
+      (webComponent as any).extendedContext = { context: expectedContext };
+      container.appendChild(webComponent);
+      document.body.appendChild(container);
+
+      const context = service.getWcModalExtendedContext();
+      expect(context).toEqual(expectedContext);
+
+      document.body.removeChild(container);
+    });
+
+    it('should return undefined if the iframeModalCtn or lui_web_component element is missing', () => {
+      document.body.innerHTML = '';
+      const context = service.getWcModalExtendedContext();
+      expect(context).toBeUndefined();
+    });
+  });
 });
