@@ -7,8 +7,8 @@ export class GatewayService {
 
   public getGatewayUrl() {
     const ctx = this.luigiCoreService.getWcExtendedContext() || {};
-    let gatewayUrl = ctx.portalContext.crdGatewayApiUrl;
-    return gatewayUrl.replace('${kcp-path}', this.getKcpPath());
+    let gatewayUrl = ctx?.portalContext?.crdGatewayApiUrl;
+    return gatewayUrl?.replace('${kcp-path}', this.getKcpPath());
   }
 
   public getKcpPath() {

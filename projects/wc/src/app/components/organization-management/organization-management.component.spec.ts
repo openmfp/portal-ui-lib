@@ -29,7 +29,7 @@ describe('OrganizationManagementComponent', () => {
     const context = {
       translationTable: {},
     };
-    component.context = context;
+    component.context = (() => context) as any;
     expect(component.texts.explanation).toBe(
       'translated_ORGANIZATION_MANAGEMENT_EXPLANATION',
     );

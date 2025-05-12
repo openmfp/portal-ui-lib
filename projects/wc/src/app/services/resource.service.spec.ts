@@ -171,7 +171,7 @@ describe('ResourceService', () => {
       service.list(mockOperation, mockFields).subscribe({
         error: (result) => {
           expect(console.error).toHaveBeenCalledWith(
-            'Error executing GraphQL query',
+            'Error executing GraphQL query: ',
             mockError,
           );
           done();
