@@ -4,6 +4,7 @@ import {
   ResourceDefinition,
 } from '../../../models/resource';
 import { ResourceService } from '../../../services/resource.service';
+import { GatewayService } from '../../../services/gateway.service';
 import { DetailViewComponent } from './detail-view.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -14,6 +15,7 @@ describe('DetailViewComponent', () => {
   let component: DetailViewComponent;
   let fixture: ComponentFixture<DetailViewComponent>;
   let mockResourceService: any;
+  let mockGatewayService: any;
   let mockLuigiClient: any;
   let mockAnchorElement: HTMLAnchorElement;
 
@@ -63,6 +65,10 @@ describe('DetailViewComponent', () => {
       readKcpCA: jest.fn().mockReturnValue(of('kcpCA')),
     };
 
+    mockGatewayService = {
+      getKcpPath: jest.fn().mockReturnValue('test:test:resource-1'),
+    };
+
     mockLuigiClient = {
       linkManager: jest.fn().mockReturnValue({
         fromContext: jest.fn().mockReturnValue({
@@ -73,7 +79,10 @@ describe('DetailViewComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [DetailViewComponent],
-      providers: [{ provide: ResourceService, useValue: mockResourceService }],
+      providers: [
+        { provide: ResourceService, useValue: mockResourceService },
+        { provide: GatewayService, useValue: mockGatewayService },
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
@@ -99,7 +108,8 @@ describe('DetailViewComponent', () => {
     expect(component.resourceDefinition).toEqual(mockResourceDefinition);
   });
 
-  it('should set workspacePath from context', () => {
+  it('should set workspacePath using gatewayService', () => {
+    expect(mockGatewayService.getKcpPath).toHaveBeenCalled();
     expect(component.workspacePath).toBe('test:test:resource-1');
   });
 
@@ -168,38 +178,14 @@ describe('DetailViewComponent', () => {
     ]);
   });
 
-  it('should extract KCP path correctly from different URLs', () => {
-    const testCases = [
-      {
-        url: 'https://example.com/api/namespaces/test:test/graphql',
-        expected: 'test:test:resource-1',
-      },
-      {
-        url: 'https://example.com/api/namespaces/a:b:c/graphql',
-        expected: 'a:b:c:resource-1',
-      },
-      {
-        url: 'https://example.com/something/namespaces/test:hello/graphql',
-        expected: 'test:hello:resource-1',
-      },
-    ];
+  it('should use gatewayService for KCP path in kubeconfig download', async () => {
+    mockAnchorElement = document.createElement('a');
+    jest.spyOn(mockAnchorElement, 'click');
+    jest.spyOn(document, 'createElement').mockReturnValue(mockAnchorElement);
+    global.URL.createObjectURL = jest.fn().mockReturnValue('blob-url');
 
-    for (const testCase of testCases) {
-      const newContext = { ...mockContext };
-      newContext.portalContext = { crdGatewayApiUrl: testCase.url };
-      component.context = newContext;
+    await component.downloadKubeConfig();
 
-      expect(component['getKcpPath']()).toBe(testCase.expected);
-    }
-  });
-
-  it('should handle URLs without colon segments', () => {
-    const newContext = { ...mockContext };
-    newContext.portalContext = {
-      crdGatewayApiUrl: 'https://example.com/api/namespaces/test/graphql',
-    };
-    component.context = newContext;
-
-    expect(component['getKcpPath']()).toBe('test:resource-1');
+    expect(mockGatewayService.getKcpPath).toHaveBeenCalled();
   });
 });
