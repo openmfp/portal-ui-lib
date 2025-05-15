@@ -1,6 +1,6 @@
-import { NodeUtilsService } from './node-utils.service';
-import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNode } from '../../models';
+import { LuigiCoreService } from '../luigi-core.service';
+import { NodeUtilsService } from './node-utils.service';
 
 describe('NodeUtilsService', () => {
   let service: NodeUtilsService;
@@ -21,7 +21,7 @@ describe('NodeUtilsService', () => {
 
   describe('retrieveHelpContext', () => {
     it('should set the helpContext on the node and return true', () => {
-      const context = { helpContext: { displayName: 'Test Help' } };
+      const context = { helpContext: { displayName: 'Test Help' } } as any;
       const node: LuigiNode = { context: {} };
       mockLuigiCoreService.getGlobalContext.mockReturnValue(context);
 
@@ -46,10 +46,10 @@ describe('NodeUtilsService', () => {
 
       expect(service.isVisible(node)).toBe(true);
       expect(mockLuigiCoreService.isFeatureToggleActive).toHaveBeenCalledWith(
-        'feature1'
+        'feature1',
       );
       expect(mockLuigiCoreService.isFeatureToggleActive).toHaveBeenCalledWith(
-        'feature2'
+        'feature2',
       );
     });
 
@@ -74,10 +74,10 @@ describe('NodeUtilsService', () => {
 
       expect(service.isVisible(node)).toBe(true);
       expect(mockLuigiCoreService.isFeatureToggleActive).toHaveBeenCalledWith(
-        'feature1'
+        'feature1',
       );
       expect(mockLuigiCoreService.isFeatureToggleActive).toHaveBeenCalledWith(
-        'feature2'
+        'feature2',
       );
     });
 

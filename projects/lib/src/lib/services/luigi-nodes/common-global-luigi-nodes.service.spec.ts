@@ -66,6 +66,7 @@ describe('CommonGlobalLuigiNodesService', () => {
         {
           context: {
             translationTable,
+            kcpPath: 'root:orgs',
           },
           hideFromNav: true,
           hideSideNav: true,

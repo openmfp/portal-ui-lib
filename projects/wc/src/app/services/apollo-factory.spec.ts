@@ -1,10 +1,12 @@
 import { ApolloFactory } from './apollo-factory';
+import { GatewayService } from './gateway.service';
 import { NgZone } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { InMemoryCache } from '@apollo/client/core';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
+import { mock } from 'jest-mock-extended';
 
 global.fetch = (...args) =>
   // @ts-ignore
@@ -14,6 +16,7 @@ describe('ApolloFactory', () => {
   let factory: ApolloFactory;
   let luigiCoreServiceMock: any;
   let httpLinkMock: any;
+  let gatewayServiceMock: jest.Mocked<GatewayService>;
   let ngZone: NgZone;
 
   beforeEach(() => {
@@ -27,6 +30,7 @@ describe('ApolloFactory', () => {
       }),
       getGlobalContext: jest.fn().mockReturnValue({ token: 'fake-token' }),
     };
+    gatewayServiceMock = mock();
     TestBed.configureTestingModule({
       providers: [
         ApolloFactory,
@@ -36,6 +40,7 @@ describe('ApolloFactory', () => {
           useValue: new NgZone({ enableLongStackTrace: false }),
         },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+        { provide: GatewayService, useValue: gatewayServiceMock },
       ],
     });
     factory = TestBed.inject(ApolloFactory);
@@ -44,19 +49,6 @@ describe('ApolloFactory', () => {
 
   it('should create an Apollo instance', () => {
     expect(factory.apollo).toBeInstanceOf(Apollo);
-  });
-
-  it('should return correct gateway url when accountId is provided', () => {
-    const gatewayUrl = (factory as any).getGatewayUrl();
-    expect(gatewayUrl).toBe('http://example.com:123/graphql');
-  });
-
-  it('should return correct gateway url when accountId is not provided', () => {
-    luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({
-      portalContext: { crdGatewayApiUrl: 'http://example.com/graphql' },
-    });
-    const gatewayUrl = (factory as any).getGatewayUrl();
-    expect(gatewayUrl).toBe('http://example.com/graphql');
   });
 
   it('should create Apollo options with InMemoryCache', () => {

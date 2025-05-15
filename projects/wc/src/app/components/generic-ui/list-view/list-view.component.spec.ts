@@ -1,5 +1,9 @@
-import { NodeContext, Resource, ResourceDefinition } from '../models/resource';
-import { ResourceService } from '../services/resource.service';
+import {
+  NodeContext,
+  Resource,
+  ResourceDefinition,
+} from '../../../models/resource';
+import { ResourceService } from '../../../services/resource.service';
 import { ListViewComponent } from './list-view.component';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
