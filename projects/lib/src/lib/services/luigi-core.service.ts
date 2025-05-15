@@ -78,7 +78,7 @@ export class LuigiCoreService {
     return luigi.getGlobalContext();
   }
 
-  getWcExtendedContext() {
+  getWcExtendedContext(): Record<string, any> {
     return (
       document
         .querySelector('.wcContainer')
@@ -86,7 +86,7 @@ export class LuigiCoreService {
     )?.extendedContext?.context;
   }
 
-  getWcModalExtendedContext() {
+  getWcModalExtendedContext(): Record<string, any> {
     return (
       document
         .querySelector('.iframeModalCtn')

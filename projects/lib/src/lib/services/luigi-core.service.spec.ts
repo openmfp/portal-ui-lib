@@ -270,7 +270,7 @@ describe('LuigiCoreService', () => {
   });
 
   describe('getWcExtendedContext', () => {
-    it('should return the extendedContext context when element exists', () => {
+    it('should return the node context of luigi web component node', () => {
       const container = document.createElement('div');
       container.className = 'wcContainer';
       const webComponent = document.createElement('div');
@@ -294,7 +294,7 @@ describe('LuigiCoreService', () => {
   });
 
   describe('getWcModalExtendedContext', () => {
-    it('should return the extendedContext context when element exists', () => {
+    it('should return the context for opened luigi modal node', () => {
       const container = document.createElement('div');
       container.className = 'iframeModalCtn';
       const webComponent = document.createElement('div');
