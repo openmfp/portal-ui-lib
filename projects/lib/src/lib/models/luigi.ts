@@ -191,6 +191,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   context?: Record<string, any>;
   visibleForFeatureToggles?: string[];
   statusBadge?: LuigiStatusBadge;
+  isProjectLevelExtension?: boolean;
   onNodeActivation?: (node: LuigiNode) => boolean;
   isolateView?: boolean;
   webcomponent?: {
