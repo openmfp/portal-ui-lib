@@ -114,7 +114,7 @@ export interface PortalLuigiNodeExtensions {
   visibleForEntityContext?: Record<string, any>; // experimental/deprecated
   visibleForContext?: string; // experimental
   visibleForPlugin?: boolean; // experimental
-  isProjectLevelExtension?: boolean;; // experimental
+  isProjectLevelExtension?: boolean; // experimental
   configurationMissing?: string; // experimental
   networkVisibility?: NetworkVisibility; //experimental
   isMissingMandatoryData?: boolean; // experimental
