@@ -270,7 +270,7 @@ describe('LuigiCoreService', () => {
   });
 
   describe('getWcExtendedContext', () => {
-    it('should return the extendedContext context when element exists', () => {
+    it('should return the node context of luigi web component node', () => {
       const container = document.createElement('div');
       container.className = 'wcContainer';
       const webComponent = document.createElement('div');
@@ -289,6 +289,30 @@ describe('LuigiCoreService', () => {
     it('should return undefined if the wcContainer or lui_web_component element is missing', () => {
       document.body.innerHTML = '';
       const context = service.getWcExtendedContext();
+      expect(context).toBeUndefined();
+    });
+  });
+
+  describe('getWcModalExtendedContext', () => {
+    it('should return the context for opened luigi modal node', () => {
+      const container = document.createElement('div');
+      container.className = 'iframeModalCtn';
+      const webComponent = document.createElement('div');
+      webComponent.setAttribute('lui_web_component', '');
+      const expectedContext = { foo: 'bar' };
+      (webComponent as any).extendedContext = { context: expectedContext };
+      container.appendChild(webComponent);
+      document.body.appendChild(container);
+
+      const context = service.getWcModalExtendedContext();
+      expect(context).toEqual(expectedContext);
+
+      document.body.removeChild(container);
+    });
+
+    it('should return undefined if the iframeModalCtn or lui_web_component element is missing', () => {
+      document.body.innerHTML = '';
+      const context = service.getWcModalExtendedContext();
       expect(context).toBeUndefined();
     });
   });

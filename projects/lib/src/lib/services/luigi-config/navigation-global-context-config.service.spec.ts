@@ -1,28 +1,33 @@
+import { LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { PortalConfig, UserData } from '../../models';
+import { LuigiExtendedGlobalContextConfigService } from '../luigi-nodes/luigi-extended-global-context-config.service';
+import { AuthService, ConfigService, EnvConfigService } from '../portal';
+import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 import { UserInfo } from 'node:os';
-import { PortalConfig, UserData } from '../../models';
-import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
-import { AuthService, ConfigService } from '../portal';
-import { LuigiExtendedGlobalContextConfigService } from '../luigi-nodes/luigi-extended-global-context-config.service';
-import { LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 
 describe('NavigationGlobalContextConfigService', () => {
   let navigationGlobalContextConfigService: NavigationGlobalContextConfigService;
   let authService: jest.Mocked<AuthService>;
   let configService: jest.Mocked<ConfigService>;
+  let envConfigService: jest.Mocked<EnvConfigService>;
   let extendedGlobalContextService: jest.Mocked<LuigiExtendedGlobalContextConfigService>;
 
   beforeEach(() => {
     authService = mock();
     configService = mock();
+    envConfigService = mock();
     extendedGlobalContextService = mock();
 
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
         NavigationGlobalContextConfigService,
         { provide: AuthService, useValue: authService },
         { provide: ConfigService, useValue: configService },
+        { provide: EnvConfigService, useValue: envConfigService },
         {
           provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
           useValue: extendedGlobalContextService,
@@ -31,7 +36,7 @@ describe('NavigationGlobalContextConfigService', () => {
     });
 
     navigationGlobalContextConfigService = TestBed.inject(
-      NavigationGlobalContextConfigService
+      NavigationGlobalContextConfigService,
     );
   });
 
@@ -43,7 +48,7 @@ describe('NavigationGlobalContextConfigService', () => {
     it('should throw exception up the stack', async () => {
       const error = new Error('could not get createLuigiExtendedGlobalContext');
       extendedGlobalContextService.createLuigiExtendedGlobalContext.mockRejectedValue(
-        error
+        error,
       );
 
       try {
@@ -64,7 +69,7 @@ describe('NavigationGlobalContextConfigService', () => {
 
       configService.getPortalConfig.mockResolvedValue(mockPortalConfig);
       extendedGlobalContextService.createLuigiExtendedGlobalContext.mockResolvedValue(
-        mockExtendedContext
+        mockExtendedContext,
       );
 
       authService.getUserInfo.mockReturnValue({
@@ -72,6 +77,9 @@ describe('NavigationGlobalContextConfigService', () => {
         userId: 'test-user',
       } as UserData);
       authService.getToken.mockReturnValue('test-token');
+      envConfigService.getEnvConfig.mockResolvedValue({
+        organization: 'openmfp',
+      } as any);
 
       const result =
         await navigationGlobalContextConfigService.getGlobalContext();
@@ -82,6 +90,7 @@ describe('NavigationGlobalContextConfigService', () => {
         userId: 'test-user',
         userEmail: 'user@test.com',
         token: 'test-token',
+        organization: 'openmfp',
       });
     });
 
@@ -97,13 +106,18 @@ describe('NavigationGlobalContextConfigService', () => {
         userId: 'test-user',
       } as UserData);
       authService.getToken.mockReturnValue('test-token');
+      envConfigService.getEnvConfig.mockResolvedValue({
+        organization: 'openmfp',
+      } as any);
 
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
+          provideHttpClient(),
           NavigationGlobalContextConfigService,
           { provide: AuthService, useValue: authService },
           { provide: ConfigService, useValue: configService },
+          { provide: EnvConfigService, useValue: envConfigService },
           {
             provide:
               LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -113,7 +127,7 @@ describe('NavigationGlobalContextConfigService', () => {
       });
 
       navigationGlobalContextConfigService = TestBed.inject(
-        NavigationGlobalContextConfigService
+        NavigationGlobalContextConfigService,
       );
 
       const result =
@@ -124,6 +138,7 @@ describe('NavigationGlobalContextConfigService', () => {
         userId: 'test-user',
         userEmail: 'user@test.com',
         token: 'test-token',
+        organization: 'openmfp',
       });
     });
   });

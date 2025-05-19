@@ -1,3 +1,4 @@
+import { GatewayService } from './gateway.service';
 import { Injectable, NgZone, inject } from '@angular/core';
 import {
   type ApolloClientOptions,
@@ -45,24 +46,17 @@ export class ApolloFactory {
   private httpLink = inject(HttpLink);
   private ngZone = inject(NgZone);
   private luigiCoreService = inject(LuigiCoreService);
+  private gatewayService = inject(GatewayService);
+
   public readonly apollo: Apollo = new Apollo(
     this.ngZone,
     this.createApolloOptions(),
   );
 
-  private getGatewayUrl() {
-    const ctx = this.luigiCoreService.getWcExtendedContext();
-    let gatewayUrl = ctx.portalContext.crdGatewayApiUrl;
-    if (ctx.accountId) {
-      gatewayUrl = gatewayUrl.replace('/graphql', `:${ctx.accountId}/graphql`);
-    }
-    return gatewayUrl;
-  }
-
   private createApolloOptions(): ApolloClientOptions<any> {
     const contextLink = setContext(() => {
       return {
-        uri: () => this.getGatewayUrl(),
+        uri: () => this.gatewayService.getGatewayUrl(),
         headers: {
           Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
           Accept: 'charset=utf-8',
@@ -79,7 +73,7 @@ export class ApolloFactory {
         );
       },
       new SSELink({
-        url: () => this.getGatewayUrl(),
+        url: () => this.gatewayService.getGatewayUrl(),
         headers: () => ({
           Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
         }),
