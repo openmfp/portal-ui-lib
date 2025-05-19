@@ -114,6 +114,7 @@ export interface PortalLuigiNodeExtensions {
   visibleForEntityContext?: Record<string, any>; // experimental/deprecated
   visibleForContext?: string; // experimental
   visibleForPlugin?: boolean; // experimental
+  isProjectLevelExtension?: boolean;; // experimental
   configurationMissing?: string; // experimental
   networkVisibility?: NetworkVisibility; //experimental
   isMissingMandatoryData?: boolean; // experimental
@@ -190,7 +191,6 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   context?: Record<string, any>;
   visibleForFeatureToggles?: string[];
   statusBadge?: LuigiStatusBadge;
-  isProjectLevelExtension?: boolean;
   onNodeActivation?: (node: LuigiNode) => boolean;
   isolateView?: boolean;
   webcomponent?: {
