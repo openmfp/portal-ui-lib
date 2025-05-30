@@ -12,7 +12,7 @@ import {
   LuigiBreadcrumb,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
-  NodeAccessHandlingService,
+  CustomNodeProcessingService,
   NodeChangeHookConfigService,
   StaticSettingsConfigService,
   ThemingService,
@@ -121,7 +121,7 @@ describe('Provide Portal', () => {
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: {} as any,
       staticSettingsConfigService: {} as any,
-      nodeAccessHandlingService: {} as any,
+      CustomNodeProcessingService: {} as any,
       nodeChangeHookConfigService: {} as any,
       globalSearchConfigService: {} as any,
       appSwitcherConfigService: {} as any,

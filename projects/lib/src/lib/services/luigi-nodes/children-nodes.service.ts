@@ -6,7 +6,7 @@ import {
 } from '../../utilities/context';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
-import { NodeAccessHandlingService } from './node-access-handling.service';
+import { CustomNodeProcessingService } from './node-access-handling.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
 import { Injectable, inject } from '@angular/core';
@@ -17,7 +17,7 @@ export class ChildrenNodesService {
   private configService = inject(ConfigService);
   private nodeUtilsService = inject(NodeUtilsService);
   private nodeSortingService = inject(NodeSortingService);
-  private nodeAccessHandlingService = inject<NodeAccessHandlingService>(
+  private CustomNodeProcessingService = inject<CustomNodeProcessingService>(
     LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
   );
@@ -73,7 +73,7 @@ export class ChildrenNodesService {
         .filter((child) => visibleForContext(child.context, child))
         .map(
           (child) =>
-            this.nodeAccessHandlingService?.nodeAccessHandling(
+            this.CustomNodeProcessingService?.nodeAccessHandling(
               child.context,
               child,
             ) || child,
