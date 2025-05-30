@@ -40,12 +40,12 @@ export class GatewayService {
     if (nodeContext.kcpPath) {
       kcpPath = nodeContext.kcpPath;
     } else if (readFromParentKcpPath) {
-      kcpPath = currentKcpPath.replace(`:${nodeContext.accountId}`, '');
+      const lastIndex = currentKcpPath.lastIndexOf(`:${nodeContext.accountId}`);
+      if (lastIndex !== -1) {
+        kcpPath = currentKcpPath.slice(0, lastIndex);
+      }
     }
 
-    console.log(
-      `kcpPath: ${kcpPath}, readFromParentKcpPath: ${readFromParentKcpPath}`,
-    );
     return kcpPath;
   }
 }
