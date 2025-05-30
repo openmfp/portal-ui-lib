@@ -121,7 +121,7 @@ describe('Provide Portal', () => {
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: {} as any,
       staticSettingsConfigService: {} as any,
-      CustomNodeProcessingService: {} as any,
+      customNodeProcessingService: {} as any,
       nodeChangeHookConfigService: {} as any,
       globalSearchConfigService: {} as any,
       appSwitcherConfigService: {} as any,

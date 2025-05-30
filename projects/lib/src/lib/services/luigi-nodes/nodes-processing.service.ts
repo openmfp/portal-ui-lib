@@ -22,7 +22,7 @@ export class NodesProcessingService {
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
   private commonGlobalLuigiNodesService = inject(CommonGlobalLuigiNodesService);
-  private CustomNodeProcessingService = inject<CustomNodeProcessingService>(
+  private customNodeProcessingService = inject<CustomNodeProcessingService>(
     LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
   );
@@ -97,7 +97,7 @@ export class NodesProcessingService {
             .filter((child) => visibleForContext(ctx, child))
             .map(
               (child) =>
-                this.CustomNodeProcessingService?.nodeAccessHandling(
+                this.customNodeProcessingService?.nodeAccessHandling(
                   ctx,
                   child,
                 ) || child,
