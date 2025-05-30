@@ -1,7 +1,7 @@
-import { inject, Injectable } from '@angular/core';
-import { EntityType } from '../../models/entity';
-import { I18nService } from '../i18n.service';
-import { ConfigService } from '../portal';
+import {
+  ERROR_COMPONENT_CONFIG,
+  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import {
   EntityConfig,
   EntityDefinition,
@@ -9,11 +9,11 @@ import {
   LuigiNode,
   PortalConfig,
 } from '../../models';
-import {
-  ERROR_COMPONENT_CONFIG,
-  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-} from '../../injection-tokens';
+import { EntityType } from '../../models/entity';
+import { I18nService } from '../i18n.service';
+import { ConfigService } from '../portal';
 import { LocalConfigurationService } from './local-configuration.service';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -25,14 +25,14 @@ export class LuigiNodesService {
     ERROR_COMPONENT_CONFIG as any,
     {
       optional: true,
-    }
+    },
   );
   private localConfigurationService = inject<LocalConfigurationService>(
-    LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN as any
+    LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN as any,
   );
 
   private getChildrenByEntity(
-    allChildren: LuigiNode[]
+    allChildren: LuigiNode[],
   ): Record<string, LuigiNode[]> {
     const childrenByEntity = {
       home: [],
@@ -53,11 +53,11 @@ export class LuigiNodesService {
 
   public async replaceServerNodesWithLocalOnes(
     serverLuigiNodes: LuigiNode[],
-    currentEntities: string[]
+    currentEntities: string[],
   ): Promise<LuigiNode[]> {
     return await this.localConfigurationService.replaceServerNodesWithLocalOnes(
       serverLuigiNodes,
-      currentEntities
+      currentEntities,
     );
   }
 
@@ -70,7 +70,7 @@ export class LuigiNodesService {
     entityDefinition: EntityDefinition,
     existingChildren: LuigiNode[],
     parentEntityPath: string,
-    additionalContext?: Record<string, string>
+    additionalContext?: Record<string, string>,
   ): Promise<LuigiNode[]> {
     let errorCode = 0;
     let configsForEntity: EntityConfig;
@@ -78,13 +78,13 @@ export class LuigiNodesService {
     try {
       configsForEntity = await this.configService.getEntityConfig(
         entityType,
-        additionalContext
+        additionalContext,
       );
     } catch (e) {
       errorCode = e.status || 500;
       console.warn(
         `Could not retrieve nodes for entity: ${entityType}, error: `,
-        e
+        e,
       );
     }
 
@@ -92,16 +92,16 @@ export class LuigiNodesService {
       return this.createErrorNodes(
         entityDefinition,
         additionalContext,
-        errorCode
+        errorCode,
       );
     }
 
     const serverLuigiNodes: LuigiNode[] = configsForEntity.providers.flatMap(
-      (p) => p.nodes
+      (p) => p.nodes,
     );
     const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
       serverLuigiNodes,
-      [parentEntityPath]
+      [parentEntityPath],
     );
     return [...(existingChildren || []), ...(rawEntityNodes || [])];
   }
@@ -109,7 +109,7 @@ export class LuigiNodesService {
   private createErrorNodes(
     entityDefinition: EntityDefinition,
     additionalContext: Record<string, string>,
-    errorCode: number
+    errorCode: number,
   ): LuigiNode[] {
     return [
       {
@@ -126,7 +126,7 @@ export class LuigiNodesService {
             additionalContext,
           },
           translationTable: this.i18nService.translationTable,
-        },
+        } as any,
         isolateView: true,
         showBreadcrumbs: false,
         webcomponent: {
@@ -159,7 +159,7 @@ export class LuigiNodesService {
     }
 
     const serverLuigiNodes: LuigiNode[] = portalConfig.providers.flatMap(
-      (p) => p.nodes
+      (p) => p.nodes,
     );
     return this.replaceServerNodesWithLocalOnes(serverLuigiNodes, [
       'global',

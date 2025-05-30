@@ -1,13 +1,13 @@
-import {
-  NodeContext,
-  Resource,
-  ResourceDefinition,
-} from '../../../models/resource';
-import { ResourceService } from '../../../services/resource.service';
-import { GatewayService } from '../../../services/gateway.service';
 import { DetailViewComponent } from './detail-view.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  GatewayService,
+  NodeContext,
+  Resource,
+  ResourceDefinition,
+  ResourceService,
+} from '@openmfp/portal-ui-lib';
 import { Condition } from 'kubernetes-types/meta/v1';
 import { of } from 'rxjs';
 
@@ -34,7 +34,7 @@ describe('DetailViewComponent', () => {
     },
   };
 
-  const mockContext: NodeContext = {
+  const mockContext = {
     resourceDefinition: mockResourceDefinition,
     token: 'test-token',
     resourceId: 'resource-1',
@@ -42,7 +42,7 @@ describe('DetailViewComponent', () => {
     portalContext: {
       crdGatewayApiUrl: 'https://example.com/api/namespaces/test:test/graphql',
     },
-  };
+  } as NodeContext;
 
   const mockResource: Resource = {
     metadata: {
@@ -89,7 +89,7 @@ describe('DetailViewComponent', () => {
     fixture = TestBed.createComponent(DetailViewComponent);
     component = fixture.componentInstance;
     component.LuigiClient = mockLuigiClient;
-    component.context = mockContext;
+    component.context = (() => mockContext) as any;
     fixture.detectChanges();
   });
 
@@ -114,7 +114,7 @@ describe('DetailViewComponent', () => {
   });
 
   it('should load resource data on initialization', () => {
-    component.ngOnInit();
+    // component.ngOnInit();
 
     expect(mockResourceService.read).toHaveBeenCalledWith(
       'resource-1',
@@ -157,7 +157,7 @@ describe('DetailViewComponent', () => {
     newContext.resourceDefinition = { ...mockResourceDefinition };
     newContext.resourceDefinition.ui = { detailView: { fields: [] } };
 
-    component.context = newContext;
+    component.context = (() => newContext) as any;
 
     expect(component.resourceFields).toEqual([]);
   });
@@ -167,7 +167,7 @@ describe('DetailViewComponent', () => {
     newContext.resourceDefinition = { ...mockResourceDefinition };
     delete newContext.resourceDefinition.ui;
 
-    component.context = newContext;
+    component.context = (() => newContext) as any;
 
     expect(component.resourceFields).toEqual([
       {

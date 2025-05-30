@@ -32,6 +32,10 @@ export class LuigiCoreService {
     return luigi.sendCustomMessage(customMessage);
   }
 
+  updateContextValues(contextValues: Record<string, any>) {
+    luigi.updateContextValues(contextValues);
+  }
+
   configChanged(scope?: string) {
     luigi.configChanged(scope);
   }

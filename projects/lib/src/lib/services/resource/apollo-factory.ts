@@ -1,3 +1,5 @@
+import { NodeContext } from '../../models';
+import { LuigiCoreService } from '../luigi-core.service';
 import { GatewayService } from './gateway.service';
 import { Injectable, NgZone, inject } from '@angular/core';
 import {
@@ -11,7 +13,6 @@ import {
 } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { getMainDefinition } from '@apollo/client/utilities';
-import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { print } from 'graphql';
@@ -48,15 +49,23 @@ export class ApolloFactory {
   private luigiCoreService = inject(LuigiCoreService);
   private gatewayService = inject(GatewayService);
 
-  public readonly apollo: Apollo = new Apollo(
-    this.ngZone,
-    this.createApolloOptions(),
-  );
+  public readonly apollo = (
+    nodeContext: NodeContext,
+    readFromParentKcpPath = false,
+  ): Apollo =>
+    new Apollo(
+      this.ngZone,
+      this.createApolloOptions(nodeContext, readFromParentKcpPath),
+    );
 
-  private createApolloOptions(): ApolloClientOptions<any> {
+  private createApolloOptions(
+    nodeContext: NodeContext,
+    readFromParentKcpPath = false,
+  ): ApolloClientOptions<any> {
     const contextLink = setContext(() => {
       return {
-        uri: () => this.gatewayService.getGatewayUrl(),
+        uri: () =>
+          this.gatewayService.getGatewayUrl(nodeContext, readFromParentKcpPath),
         headers: {
           Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
           Accept: 'charset=utf-8',
@@ -73,7 +82,8 @@ export class ApolloFactory {
         );
       },
       new SSELink({
-        url: () => this.gatewayService.getGatewayUrl(),
+        url: () =>
+          this.gatewayService.getGatewayUrl(nodeContext, readFromParentKcpPath),
         headers: () => ({
           Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
         }),

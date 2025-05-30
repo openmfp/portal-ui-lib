@@ -1,6 +1,3 @@
-import { Resource, ResourceDefinition } from '../../models/resource';
-import { ResourceService } from '../../services/resource.service';
-import { generateGraphQLFields } from '../generic-ui/utils/columns-to-gql-fields';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,6 +14,11 @@ import {
   EnvConfigService,
   I18nService,
   LuigiCoreService,
+  NodeContext,
+  Resource,
+  ResourceDefinition,
+  ResourceService,
+  generateGraphQLFields,
 } from '@openmfp/portal-ui-lib';
 import {
   ButtonComponent,
@@ -26,7 +28,7 @@ import {
   SelectComponent,
 } from '@ui5/webcomponents-ngx';
 
-export interface OrganizationManagementContext extends Record<string, any> {
+export interface OrganizationManagementContext extends NodeContext {
   translationTable: any;
 }
 
@@ -85,18 +87,20 @@ export class OrganizationManagementComponent implements OnInit {
     ]);
     const queryOperation = 'core_openmfp_org';
 
-    this.resourceService.readOrganizations(queryOperation, fields).subscribe({
-      next: (result) => {
-        this.organizations.set(
-          result['Accounts']
-            .map((o) => o.metadata.name)
-            .filter(
-              (o) =>
-                o !== this.luigiCoreService.getGlobalContext().organization,
-            ),
-        );
-      },
-    });
+    this.resourceService
+      .readOrganizations(queryOperation, fields, this.context())
+      .subscribe({
+        next: (result) => {
+          this.organizations.set(
+            result['Accounts']
+              .map((o) => o.metadata.name)
+              .filter(
+                (o) =>
+                  o !== this.luigiCoreService.getGlobalContext().organization,
+              ),
+          );
+        },
+      });
   }
 
   onboardOrganization() {
@@ -112,24 +116,29 @@ export class OrganizationManagementComponent implements OnInit {
       scope: 'Cluster',
     };
 
-    this.resourceService.create(resource, resourceDefinition).subscribe({
-      next: (result) => {
-        console.debug('Resource created', result.data);
-        this.organizations.set([this.newOrganization, ...this.organizations()]);
-        this.organizationToSwitch = this.newOrganization;
-        this.newOrganization = '';
-        this.LuigiClient().uxManager().showAlert({
-          text: 'New organization has been created, select it from the list to switch to it.',
-          type: 'info',
-        });
-      },
-      error: (error) => {
-        this.luigiCoreService.showAlert({
-          text: `Failure! Could not create organization: ${resource.metadata.name}.`,
-          type: 'error',
-        });
-      },
-    });
+    this.resourceService
+      .create(resource, resourceDefinition, this.context())
+      .subscribe({
+        next: (result) => {
+          console.debug('Resource created', result.data);
+          this.organizations.set([
+            this.newOrganization,
+            ...this.organizations(),
+          ]);
+          this.organizationToSwitch = this.newOrganization;
+          this.newOrganization = '';
+          this.LuigiClient().uxManager().showAlert({
+            text: 'New organization has been created, select it from the list to switch to it.',
+            type: 'info',
+          });
+        },
+        error: (error) => {
+          this.luigiCoreService.showAlert({
+            text: `Failure! Could not create organization: ${resource.metadata.name}.`,
+            type: 'error',
+          });
+        },
+      });
   }
 
   private readTranslations() {

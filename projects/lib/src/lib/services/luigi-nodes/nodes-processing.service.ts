@@ -2,12 +2,14 @@ import {
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import {
   computeFetchContext,
   visibleForContext,
 } from '../../utilities/context';
+import { LuigiCoreService } from '../luigi-core.service';
+import { GatewayService, ResourceService } from '../resource';
 import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
@@ -18,6 +20,9 @@ import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
+  private resourceService = inject(ResourceService);
+  private luigiCoreService = inject(LuigiCoreService);
+  private gatewayService = inject(GatewayService);
   private luigiNodesService = inject(LuigiNodesService);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
@@ -219,6 +224,8 @@ export class NodesProcessingService {
                 ),
               );
             });
+
+          this.readAndStoreEntityInNodeContext(entityId, entityNode, ctx);
         } else {
           const childrenList = await this.createChildrenList(
             entityNode,
@@ -289,5 +296,44 @@ export class NodesProcessingService {
       entityRootChildren,
       ctx,
     );
+  }
+
+  readAndStoreEntityInNodeContext(
+    entityId: string,
+    entityNode: LuigiNode,
+    ctx: NodeContext,
+  ) {
+    const group =
+      entityNode.defineEntity?.graphqlEntity?.group || 'core.openmfp.org';
+    const kind = entityNode.defineEntity?.graphqlEntity?.kind || 'Account';
+    const queryPart =
+      entityNode.defineEntity?.graphqlEntity?.query ||
+      '{ metadata { name annotations }}';
+
+    if (!entityId || !group || !kind || !queryPart) {
+      return;
+    }
+
+    const operation = group.replaceAll('.', '_');
+    try {
+      this.resourceService
+        .read(
+          entityId,
+          operation,
+          kind,
+          `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,
+          this.luigiCoreService.getGlobalContext(),
+        )
+        .subscribe({
+          next: (entity) => {
+            // update the current calculated context
+            ctx.entity = entity;
+            // update the node context to contain the entity for future context calculations
+            entityNode.context.entity = entity;
+          },
+        });
+    } catch (error) {
+      console.error(`Not able to read entity ${entityId} from ${operation}`);
+    }
   }
 }
