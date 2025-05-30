@@ -189,7 +189,7 @@ describe('Provide Portal', () => {
     });
 
     expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+      provide: tokens.LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
       useClass: {},
     });
 

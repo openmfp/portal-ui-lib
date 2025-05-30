@@ -1,5 +1,5 @@
 import {
-  LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+  LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
@@ -12,7 +12,7 @@ import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
 import { LuigiNodesService } from './luigi-nodes.service';
-import { CustomNodeProcessingService } from './node-access-handling.service';
+import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { NodeSortingService } from './node-sorting.service';
 import { Injectable, inject } from '@angular/core';
 
@@ -23,7 +23,7 @@ export class NodesProcessingService {
   private childrenNodesService = inject(ChildrenNodesService);
   private commonGlobalLuigiNodesService = inject(CommonGlobalLuigiNodesService);
   private customNodeProcessingService = inject<CustomNodeProcessingService>(
-    LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN as any,
+    LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
   );
   private customGlobalNodesService = inject<CustomGlobalNodesService>(
@@ -97,7 +97,7 @@ export class NodesProcessingService {
             .filter((child) => visibleForContext(ctx, child))
             .map(
               (child) =>
-                this.customNodeProcessingService?.nodeAccessHandling(
+                this.customNodeProcessingService?.processNode(
                   ctx,
                   child,
                 ) || child,
