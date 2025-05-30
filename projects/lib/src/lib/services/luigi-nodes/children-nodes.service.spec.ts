@@ -36,7 +36,7 @@ describe('ChildrenNodesService', () => {
     } as any;
 
     customNodeProcessingService = {
-      nodeAccessHandling: jest.fn(),
+      customNodeProcessingService: jest.fn(),
     } as any;
 
     TestBed.configureTestingModule({
