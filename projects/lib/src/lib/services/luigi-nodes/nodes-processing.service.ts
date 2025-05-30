@@ -9,7 +9,7 @@ import {
   visibleForContext,
 } from '../../utilities/context';
 import { LuigiCoreService } from '../luigi-core.service';
-import { GatewayService, ResourceService } from '../resource';
+import { ResourceService } from '../resource';
 import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
@@ -22,7 +22,6 @@ import { Injectable, inject } from '@angular/core';
 export class NodesProcessingService {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
-  private gatewayService = inject(GatewayService);
   private luigiNodesService = inject(LuigiNodesService);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);

@@ -28,10 +28,6 @@ import {
   SelectComponent,
 } from '@ui5/webcomponents-ngx';
 
-export interface OrganizationManagementContext extends NodeContext {
-  translationTable: any;
-}
-
 @Component({
   selector: 'organization-management',
   standalone: true,
@@ -53,7 +49,7 @@ export class OrganizationManagementComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
   private envConfigService = inject(EnvConfigService);
-  context = input<OrganizationManagementContext>();
+  context = input<NodeContext>();
   LuigiClient = input<LuigiClient>();
 
   texts: any = {};
