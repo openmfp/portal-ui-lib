@@ -15,7 +15,7 @@ describe('ChildrenNodesService', () => {
   let configService: jest.Mocked<ConfigService>;
   let nodeUtilsService: jest.Mocked<NodeUtilsService>;
   let nodeSortingService: jest.Mocked<NodeSortingService>;
-  let CustomNodeProcessingService: jest.Mocked<CustomNodeProcessingService>;
+  let customNodeProcessingService: jest.Mocked<CustomNodeProcessingService>;
 
   beforeEach(() => {
     luigiCoreService = {
@@ -35,7 +35,7 @@ describe('ChildrenNodesService', () => {
       sortNodes: jest.fn(),
     } as any;
 
-    CustomNodeProcessingService = {
+    customNodeProcessingService = {
       nodeAccessHandling: jest.fn(),
     } as any;
 
@@ -48,7 +48,7 @@ describe('ChildrenNodesService', () => {
         { provide: NodeSortingService, useValue: nodeSortingService },
         {
           provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
-          useValue: CustomNodeProcessingService,
+          useValue: customNodeProcessingService,
         },
       ],
     });
@@ -95,7 +95,7 @@ describe('ChildrenNodesService', () => {
         entityContext: { myKey: 'value' },
         providers: null,
       });
-      CustomNodeProcessingService.nodeAccessHandling.mockImplementation(
+      customNodeProcessingService.nodeAccessHandling.mockImplementation(
         async (ctx: Context, node: LuigiNode) => node,
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
@@ -124,7 +124,7 @@ describe('ChildrenNodesService', () => {
       configService.getEntityConfig.mockRejectedValue(
         new Error('Config error'),
       );
-      CustomNodeProcessingService.nodeAccessHandling.mockImplementation(
+      customNodeProcessingService.nodeAccessHandling.mockImplementation(
         async (node) => node,
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);

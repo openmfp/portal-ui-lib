@@ -88,7 +88,7 @@ export interface PortalOptions {
   nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
 
   /** Service handling every node access policies **/
-  CustomNodeProcessingService?: Type<CustomNodeProcessingService>;
+  customNodeProcessingService?: Type<CustomNodeProcessingService>;
 
   /** Service handling luigi authentication events **/
   luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
@@ -167,10 +167,10 @@ const addOptionalProviders = (
     });
   }
 
-  if (options.CustomNodeProcessingService) {
+  if (options.customNodeProcessingService) {
     providers.push({
       provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
-      useClass: options.CustomNodeProcessingService,
+      useClass: options.customNodeProcessingService,
     });
   }
 

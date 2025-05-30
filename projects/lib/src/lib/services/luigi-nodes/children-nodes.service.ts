@@ -17,7 +17,7 @@ export class ChildrenNodesService {
   private configService = inject(ConfigService);
   private nodeUtilsService = inject(NodeUtilsService);
   private nodeSortingService = inject(NodeSortingService);
-  private CustomNodeProcessingService = inject<CustomNodeProcessingService>(
+  private customNodeProcessingService = inject<CustomNodeProcessingService>(
     LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
   );
@@ -73,7 +73,7 @@ export class ChildrenNodesService {
         .filter((child) => visibleForContext(child.context, child))
         .map(
           (child) =>
-            this.CustomNodeProcessingService?.nodeAccessHandling(
+            this.customNodeProcessingService?.nodeAccessHandling(
               child.context,
               child,
             ) || child,
