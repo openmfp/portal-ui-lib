@@ -5,11 +5,12 @@ import {
 import {
   EntityConfig,
   EntityDefinition,
+  EntityType,
   ErrorComponentConfig,
   LuigiNode,
+  NodeContext,
   PortalConfig,
 } from '../../models';
-import { EntityType } from '../../models/entity';
 import { I18nService } from '../i18n.service';
 import { ConfigService } from '../portal';
 import { LocalConfigurationService } from './local-configuration.service';
@@ -126,7 +127,7 @@ export class LuigiNodesService {
             additionalContext,
           },
           translationTable: this.i18nService.translationTable,
-        } as any,
+        } as NodeContext,
         isolateView: true,
         showBreadcrumbs: false,
         webcomponent: {
