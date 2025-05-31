@@ -1,24 +1,24 @@
-import {
-  FieldDefinition,
-  NodeContext,
-  Resource,
-  ResourceDefinition,
-} from '../../../models/resource';
-import { GatewayService } from '../../../services/gateway.service';
-import { ResourceService } from '../../../services/resource.service';
-import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
-import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { kubeConfigTemplate } from './kubeconfig-template';
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  OnInit,
   ViewEncapsulation,
+  effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
+import {
+  FieldDefinition,
+  GatewayService,
+  NodeContext,
+  Resource,
+  ResourceDefinition,
+  ResourceService,
+  generateGraphQLFields,
+  getResourceValueByJsonPath,
+} from '@openmfp/portal-ui-lib';
 import {
   BreadcrumbsComponent,
   BreadcrumbsItemComponent,
@@ -60,42 +60,49 @@ const defaultFields: FieldDefinition[] = [
   styleUrl: './detail-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DetailViewComponent implements OnInit {
+export class DetailViewComponent {
   private resourceService = inject(ResourceService);
   private gatewayService = inject(GatewayService);
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
+  LuigiClient = input<LuigiClient>();
+  context = input<NodeContext>();
   resource = signal<Resource | null>(null);
 
-  nodeContext: NodeContext;
   resourceDefinition: ResourceDefinition;
   workspacePath: string;
   resourceFields: FieldDefinition[];
   kcpCA: string = '';
 
-  @Input()
-  LuigiClient: LuigiClient;
-
-  @Input()
-  set context(context: NodeContext) {
-    this.nodeContext = context;
-    this.workspacePath = this.gatewayService.getKcpPath();
-    this.resourceFields =
-      context.resourceDefinition.ui?.detailView?.fields || defaultFields;
-    this.resourceDefinition = context.resourceDefinition;
+  constructor() {
+    effect(() => {
+      this.workspacePath = this.gatewayService.getKcpPath(this.context());
+      this.resourceFields =
+        this.context().resourceDefinition.ui?.detailView?.fields ||
+        defaultFields;
+      this.resourceDefinition = this.context().resourceDefinition;
+      this.readResource();
+    });
   }
 
-  ngOnInit(): void {
+  private readResource(): void {
     const fields = generateGraphQLFields(this.resourceFields);
-    const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.singular}`;
+    const queryOperation = this.resourceDefinition.group.replaceAll('.', '_');
+    const kind = this.resourceDefinition.kind;
 
     this.resourceService
-      .read(this.nodeContext.resourceId, queryOperation, fields)
+      .read(
+        this.context().resourceId,
+        queryOperation,
+        kind,
+        fields,
+        this.context(),
+      )
       .subscribe({
         next: (result) => this.resource.set(result),
       });
 
-    this.resourceService.readKcpCA().subscribe({
+    this.resourceService.readKcpCA(this.context()).subscribe({
       next: (kcpCA) => {
         this.kcpCA = kcpCA;
       },
@@ -103,17 +110,18 @@ export class DetailViewComponent implements OnInit {
   }
 
   navigateToParent() {
-    this.LuigiClient.linkManager()
-      .fromContext(this.nodeContext.parentNavigationContexts.at(-1))
+    this.LuigiClient()
+      .linkManager()
+      .fromContext(this.context().parentNavigationContexts.at(-1))
       .navigate('/');
   }
 
   async downloadKubeConfig() {
     const kubeConfig = kubeConfigTemplate
-      .replaceAll('<cluster-name>', this.nodeContext.resourceId)
-      .replaceAll('<server-url>', this.gatewayService.getKcpPath())
+      .replaceAll('<cluster-name>', this.context().resourceId)
+      .replaceAll('<server-url>', this.workspacePath)
       .replaceAll('<ca-data>', this.kcpCA)
-      .replaceAll('<token>', this.nodeContext.token);
+      .replaceAll('<token>', this.context().token);
 
     const blob = new Blob([kubeConfig], { type: 'application/plain' });
     const url = URL.createObjectURL(blob);

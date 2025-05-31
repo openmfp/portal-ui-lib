@@ -2,12 +2,14 @@ import {
   LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import {
   computeFetchContext,
   visibleForContext,
 } from '../../utilities/context';
+import { LuigiCoreService } from '../luigi-core.service';
+import { ResourceService } from '../resource';
 import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
@@ -18,6 +20,8 @@ import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
+  private resourceService = inject(ResourceService);
+  private luigiCoreService = inject(LuigiCoreService);
   private luigiNodesService = inject(LuigiNodesService);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
@@ -63,32 +67,20 @@ export class NodesProcessingService {
       node._portalDirectChildren = node.children;
     }
     const directChildren = node._portalDirectChildren || [];
-    let newEntityPath = parentEntityPath;
 
     if (node.defineEntity) {
-      if (parentEntityPath?.length > 0) {
-        newEntityPath = parentEntityPath + '.' + node.defineEntity.id;
-      } else {
-        newEntityPath = node.defineEntity.id;
-      }
-
-      node.children = (ctx: any) => {
-        return this.entityChildrenProvider(
-          node,
-          ctx,
-          childrenByEntity,
-          directChildren,
-          newEntityPath,
-        );
-      };
-
-      this.processCompoundNode(node, childrenByEntity, newEntityPath);
+      this.processNodeDefineEntity(
+        node,
+        childrenByEntity,
+        parentEntityPath,
+        directChildren,
+      );
     } else {
       directChildren.forEach((child) => {
         this.applyEntityChildrenRecursively(
           child,
           childrenByEntity,
-          newEntityPath,
+          parentEntityPath,
         );
       });
       node.children = async (ctx: any) =>
@@ -108,6 +100,32 @@ export class NodesProcessingService {
     if (node.virtualTree) {
       node.children = undefined;
     }
+  }
+
+  private processNodeDefineEntity(
+    node: LuigiNode,
+    childrenByEntity: Record<string, LuigiNode[]>,
+    parentEntityPath: string,
+    directChildren: LuigiNode[],
+  ) {
+    let newEntityPath = parentEntityPath;
+    if (parentEntityPath?.length > 0) {
+      newEntityPath = parentEntityPath + '.' + node.defineEntity.id;
+    } else {
+      newEntityPath = node.defineEntity.id;
+    }
+
+    node.children = (ctx: any) => {
+      return this.entityChildrenProvider(
+        node,
+        ctx,
+        childrenByEntity,
+        directChildren,
+        newEntityPath,
+      );
+    };
+
+    this.processCompoundNode(node, childrenByEntity, newEntityPath);
   }
 
   processCompoundNode(
@@ -151,60 +169,20 @@ export class NodesProcessingService {
     directChildren?: LuigiNode[],
     entityPath?: string,
   ) {
-    const createChildrenList = (
-      children: LuigiNode[],
-      staticChildren?: LuigiNode[],
-    ) => {
-      const entityRootChildren = staticChildren ? [] : children;
-      let mergedChildrenByEntity = childrenByEntity;
-      if (staticChildren) {
-        const entityChildrenByEntity: Record<string, LuigiNode[]> = {};
-
-        children?.forEach((child) => {
-          if (
-            child.entityType === entityPath ||
-            child.entityType === EntityType.ENTITY_ERROR ||
-            staticChildren.includes(child)
-          ) {
-            entityRootChildren.push(child);
-          } else if (child.entityType) {
-            if (!entityChildrenByEntity[child.entityType]) {
-              entityChildrenByEntity[child.entityType] = [];
-            }
-            entityChildrenByEntity[child.entityType].push(child);
-          } else {
-            console.warn('Ignored entity child, no entity type defined', child);
-          }
-        });
-        mergedChildrenByEntity = { ...childrenByEntity };
-        Object.keys(entityChildrenByEntity).forEach((key) => {
-          const existingNodes = mergedChildrenByEntity[key];
-          mergedChildrenByEntity[key] = existingNodes
-            ? [...existingNodes, ...entityChildrenByEntity[key]]
-            : entityChildrenByEntity[key];
-        });
-      }
-
-      entityRootChildren.forEach((child) => {
-        this.applyEntityChildrenRecursively(
-          child,
-          mergedChildrenByEntity,
-          entityPath,
-        );
-      });
-      return this.childrenNodesService.processChildrenForEntity(
-        entityNode,
-        entityRootChildren,
-        ctx,
-      );
-    };
-
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
       const entityTypeId = entityPath || entityNode?.defineEntity?.id;
       const entityIdContextKey = entityNode?.defineEntity?.contextKey;
       if (!entityTypeId) {
         console.warn('No entity node!'); //TODO: check if needed or assured before
-        resolve(createChildrenList(directChildren));
+        resolve(
+          this.createChildrenList(
+            entityNode,
+            ctx,
+            childrenByEntity,
+            directChildren,
+            entityPath,
+          ),
+        );
       } else {
         const entityId = ctx[entityIdContextKey];
         const staticChildren = [
@@ -223,13 +201,38 @@ export class NodesProcessingService {
               fetchContext.get(dynamicFetchId),
             )
             .then((children) => {
-              resolve(createChildrenList(children, staticChildren));
+              resolve(
+                this.createChildrenList(
+                  entityNode,
+                  ctx,
+                  childrenByEntity,
+                  children,
+                  entityPath,
+                  staticChildren,
+                ),
+              );
             })
             .catch((error) => {
-              resolve(createChildrenList(staticChildren));
+              resolve(
+                this.createChildrenList(
+                  entityNode,
+                  ctx,
+                  childrenByEntity,
+                  staticChildren,
+                  entityPath,
+                ),
+              );
             });
+
+          this.readAndStoreEntityInNodeContext(entityId, entityNode, ctx);
         } else {
-          const childrenList = await createChildrenList(staticChildren);
+          const childrenList = await this.createChildrenList(
+            entityNode,
+            ctx,
+            childrenByEntity,
+            staticChildren,
+            entityPath,
+          );
           console.debug(`children list ${childrenList.length}`);
           resolve(
             this.luigiNodesService.replaceServerNodesWithLocalOnes(
@@ -240,5 +243,96 @@ export class NodesProcessingService {
         }
       }
     });
+  }
+
+  private createChildrenList(
+    entityNode: LuigiNode,
+    ctx: any,
+    childrenByEntity: Record<string, LuigiNode[]>,
+    children: LuigiNode[],
+    entityPath?: string,
+    staticChildren?: LuigiNode[],
+  ) {
+    const entityRootChildren = staticChildren ? [] : children;
+    let mergedChildrenByEntity = childrenByEntity;
+    if (staticChildren) {
+      const entityChildrenByEntity: Record<string, LuigiNode[]> = {};
+
+      children?.forEach((child) => {
+        if (
+          child.entityType === entityPath ||
+          child.entityType === EntityType.ENTITY_ERROR ||
+          staticChildren.includes(child)
+        ) {
+          entityRootChildren.push(child);
+        } else if (child.entityType) {
+          if (!entityChildrenByEntity[child.entityType]) {
+            entityChildrenByEntity[child.entityType] = [];
+          }
+          entityChildrenByEntity[child.entityType].push(child);
+        } else {
+          console.warn('Ignored entity child, no entity type defined', child);
+        }
+      });
+      mergedChildrenByEntity = { ...childrenByEntity };
+      Object.keys(entityChildrenByEntity).forEach((key) => {
+        const existingNodes = mergedChildrenByEntity[key];
+        mergedChildrenByEntity[key] = existingNodes
+          ? [...existingNodes, ...entityChildrenByEntity[key]]
+          : entityChildrenByEntity[key];
+      });
+    }
+
+    entityRootChildren.forEach((child) => {
+      this.applyEntityChildrenRecursively(
+        child,
+        mergedChildrenByEntity,
+        entityPath,
+      );
+    });
+    return this.childrenNodesService.processChildrenForEntity(
+      entityNode,
+      entityRootChildren,
+      ctx,
+    );
+  }
+
+  readAndStoreEntityInNodeContext(
+    entityId: string,
+    entityNode: LuigiNode,
+    ctx: NodeContext,
+  ) {
+    const group =
+      entityNode.defineEntity?.graphqlEntity?.group || 'core.openmfp.org';
+    const kind = entityNode.defineEntity?.graphqlEntity?.kind || 'Account';
+    const queryPart =
+      entityNode.defineEntity?.graphqlEntity?.query ||
+      '{ metadata { name annotations }}';
+
+    if (!entityId || !group || !kind || !queryPart) {
+      return;
+    }
+
+    const operation = group.replaceAll('.', '_');
+    try {
+      this.resourceService
+        .read(
+          entityId,
+          operation,
+          kind,
+          `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,
+          this.luigiCoreService.getGlobalContext(),
+        )
+        .subscribe({
+          next: (entity) => {
+            // update the current calculated context
+            ctx.entity = entity;
+            // update the node context to contain the entity for future context calculations
+            entityNode.context.entity = entity;
+          },
+        });
+    } catch (error) {
+      console.error(`Not able to read entity ${entityId} from ${operation}`);
+    }
   }
 }

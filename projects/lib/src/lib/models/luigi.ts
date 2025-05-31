@@ -1,10 +1,4 @@
-export interface LuigiGlobalContext extends Record<string, any> {
-  portalContext: any;
-  userId: string;
-  userEmail: string;
-  token: string;
-  organization: string;
-}
+import { NodeContext } from './luigi-context';
 
 export interface LuigiNavigationConfig {
   nodes?: LuigiNode[];
@@ -50,7 +44,7 @@ export interface LuigiConfig {
   globalSearch?: any;
 }
 
-export interface LuigiCustomMessage {
+export interface LuigiCustomMessage extends Record<string, any> {
   id: string;
 }
 
@@ -64,6 +58,11 @@ export interface EntityDefinition {
   notFoundConfig?: {
     entityListNavigationContext: string;
     sapIllusSVG: string;
+  };
+  graphqlEntity?: {
+    group: 'string';
+    kind: 'string';
+    query: 'string';
   };
 }
 
@@ -188,7 +187,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   compound?: any;
   badgeCounter?: LuigiBadgeCounter;
   category?: LuigiNodeCategory | string;
-  context?: Record<string, any>;
+  context?: NodeContext;
   visibleForFeatureToggles?: string[];
   statusBadge?: LuigiStatusBadge;
   onNodeActivation?: (node: LuigiNode) => boolean;
@@ -202,6 +201,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
     | { (context?: any): LuigiNode[] };
   titleResolver?: any;
   globalNav?: boolean;
+  parent?: LuigiNode;
 }
 
 export interface IntentSpecification {

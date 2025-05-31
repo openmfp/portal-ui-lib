@@ -1,5 +1,10 @@
 import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
-import { ErrorComponentConfig, LuigiNode } from '../../models';
+import {
+  ErrorComponentConfig,
+  LuigiNode,
+  NodeContext,
+  kcpRootOrgsPath,
+} from '../../models';
 import { EntityType } from '../../models/entity';
 import { I18nService } from '../i18n.service';
 import { Injectable, inject } from '@angular/core';
@@ -34,7 +39,7 @@ export class CommonGlobalLuigiNodesService {
                 errorComponentConfig: this.errorComponentConfig,
               },
               translationTable: this.i18nService.translationTable,
-            },
+            } as NodeContext,
             webcomponent: {
               selfRegistered: true,
             },
@@ -53,8 +58,8 @@ export class CommonGlobalLuigiNodesService {
         },
         context: {
           translationTable: this.i18nService.translationTable,
-          kcpPath: 'root:orgs',
-        },
+          kcpPath: kcpRootOrgsPath,
+        } as NodeContext,
       },
     ];
   }

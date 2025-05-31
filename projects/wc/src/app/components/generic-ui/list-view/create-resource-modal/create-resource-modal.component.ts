@@ -1,4 +1,3 @@
-import { FieldDefinition, Resource } from '../../../../models/resource';
 import {
   Component,
   OnInit,
@@ -15,6 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { FieldDefinition, Resource } from '@openmfp/portal-ui-lib';
 import {
   DialogComponent,
   InputComponent,

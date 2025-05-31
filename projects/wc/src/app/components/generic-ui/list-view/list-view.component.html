@@ -48,7 +48,7 @@
       <span slot="subtitle">There are currently no items to show.</span>
     </ui5-illustrated-message>
 
-    @for (item of resources; track item.metadata.name) {
+    @for (item of resources(); track item.metadata.name) {
       <ui5-table-row interactive (click)="navigateToResource(item)">
         @for (column of columns; track column.label) {
           <ui5-table-cell>{{
