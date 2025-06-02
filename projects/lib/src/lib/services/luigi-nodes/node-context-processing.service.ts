@@ -27,25 +27,25 @@ export class NodeContextProcessingService {
     }
 
     const operation = group.replaceAll('.', '_');
-    try {
-      this.resourceService
-        .read(
-          entityId,
-          operation,
-          kind,
-          `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,
-          this.luigiCoreService.getGlobalContext(),
-        )
-        .subscribe({
-          next: (entity) => {
-            // update the current already calculated by Luigi context for a node
-            ctx.entity = entity;
-            // update the node context of sa node to contain the entity for future context calculations
-            entityNode.context.entity = entity;
-          },
-        });
-    } catch (error) {
-      console.error(`Not able to read entity ${entityId} from ${operation}`);
-    }
+    this.resourceService
+      .read(
+        entityId,
+        operation,
+        kind,
+        `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,
+        this.luigiCoreService.getGlobalContext(),
+      )
+      .subscribe({
+        next: (entity) => {
+          // update the current already calculated by Luigi context for a node
+          ctx.entity = entity;
+          // update the node context of sa node to contain the entity for future context calculations
+          entityNode.context.entity = entity;
+        },
+        error: (err) =>
+          console.error(
+            `Not able to read entity ${entityId} from ${operation}`,
+          ),
+      });
   }
 }

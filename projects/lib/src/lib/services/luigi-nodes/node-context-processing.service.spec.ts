@@ -117,7 +117,7 @@ describe('NodeContextProcessingService', () => {
 
       expect(() =>
         service.readAndStoreEntityInNodeContext(entityId, node, ctx),
-      ).not.toThrow();
+      ).toThrow();
     });
   });
 });
