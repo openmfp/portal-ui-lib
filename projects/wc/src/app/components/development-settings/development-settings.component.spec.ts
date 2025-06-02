@@ -51,7 +51,11 @@ describe('DevelopmentSettingsComponent', () => {
         LinkComponent,
       ],
       providers: [{ provide: I18nService, useValue: i18nServiceMock }],
-    }).compileComponents();
+    })
+      .overrideComponent(DevelopmentSettingsComponent, {
+        set: { template: '' },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(DevelopmentSettingsComponent);
     component = fixture.componentInstance;
