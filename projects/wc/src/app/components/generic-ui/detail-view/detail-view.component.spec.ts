@@ -17,7 +17,7 @@ describe('DetailViewComponent', () => {
     };
 
     mockGatewayService = {
-      getKcpPath: jest.fn().mockReturnValue('https://example.com'),
+      resolveKcpPath: jest.fn().mockReturnValue('https://example.com'),
     };
 
     TestBed.configureTestingModule({
