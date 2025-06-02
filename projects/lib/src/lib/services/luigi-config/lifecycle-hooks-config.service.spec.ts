@@ -90,13 +90,13 @@ describe('LifecycleHooksConfigService', () => {
     });
 
     describe('luigiAfterInit', () => {
-      it('should always resetLuigi', async () => {
+      it('should not call resetLuigi kright after the config is set', async () => {
         luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
         const config = service.getLifecycleHooksConfig({} as any);
 
         await config.luigiAfterInit();
 
-        expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
+        expect(luigiCoreServiceMock.resetLuigi).not.toHaveBeenCalled();
       });
 
       it('should call i18nServiceMock.afterInit', async () => {

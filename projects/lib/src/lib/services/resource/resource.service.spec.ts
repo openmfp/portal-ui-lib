@@ -38,91 +38,70 @@ describe('ResourceService', () => {
     service = TestBed.inject(ResourceService);
   });
 
-  it('should read resource using fields', (done) => {
-    mockApollo.query.mockReturnValue(
-      of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
-    );
+  describe('read', () => {
+    it('should read resource using fields', (done) => {
+      mockApollo.query.mockReturnValue(
+        of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
+      );
 
-    service
-      .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
-      .subscribe((res) => {
-        expect(res).toEqual({ name: 'test' });
-        done();
-      });
-  });
+      service
+        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual({ name: 'test' });
+          done();
+        });
+    });
 
-  it('should read resource using raw query', (done) => {
-    const rawQuery = `query { core_k8s_io { TestKind(name: "test-name") { name } } }`;
-    mockApollo.query.mockReturnValue(
-      of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
-    );
+    it('should read resource using raw query', (done) => {
+      const rawQuery = `query { core_k8s_io { TestKind(name: "test-name") { name } } }`;
+      mockApollo.query.mockReturnValue(
+        of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
+      );
 
-    service
-      .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext)
-      .subscribe((res) => {
-        expect(res).toEqual({ name: 'test' });
-        done();
-      });
-  });
+      service
+        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual({ name: 'test' });
+          done();
+        });
+    });
 
-  it('should list resources', (done) => {
-    mockApollo.subscribe.mockReturnValue(
-      of({ data: { myList: [{ name: 'res1' }] } }),
-    );
-    service.list('myList', ['name'], nodeContext).subscribe((res) => {
-      expect(res).toEqual([{ name: 'res1' }]);
-      done();
+    it('should handle read error', (done) => {
+      const error = new Error('fail');
+      mockApollo.query.mockReturnValue(throwError(() => error));
+      console.error = jest.fn();
+
+      service
+        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
+        .subscribe({
+          error: (err) => {
+            expect(console.error).toHaveBeenCalledWith(
+              'Error executing GraphQL query.',
+              error,
+            );
+            done();
+          },
+        });
     });
   });
 
-  it('should read organizations', (done) => {
-    mockApollo.query.mockReturnValue(of({ data: { orgList: [{ id: 1 }] } }));
-    service
-      .readOrganizations('orgList', ['id'], nodeContext)
-      .subscribe((res) => {
-        expect(res).toEqual([{ id: 1 }]);
+  describe('list', () => {
+    it('should list resources', (done) => {
+      mockApollo.subscribe.mockReturnValue(
+        of({ data: { myList: [{ name: 'res1' }] } }),
+      );
+      service.list('myList', ['name'], nodeContext).subscribe((res) => {
+        expect(res).toEqual([{ name: 'res1' }]);
         done();
       });
-  });
-
-  it('should delete resource', (done) => {
-    mockApollo.mutate.mockReturnValue(of({}));
-    service
-      .delete(resource, resourceDefinition, nodeContext)
-      .subscribe((res) => {
-        expect(mockApollo.mutate).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it('should create resource', (done) => {
-    mockApollo.mutate.mockReturnValue(of({ data: { __typename: 'TestKind' } }));
-    service
-      .create(resource, resourceDefinition, nodeContext)
-      .subscribe((res) => {
-        expect(mockApollo.mutate).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it('should read KCP CA', (done) => {
-    mockApollo.query.mockReturnValue(
-      of({ data: { core: { ConfigMap: { data: 'cert-data' } } } }),
-    );
-    service.readKcpCA(nodeContext).subscribe((res) => {
-      expect(res).toBe('cert-data');
-      done();
     });
-  });
 
-  it('should handle read error', (done) => {
-    const error = new Error('fail');
-    mockApollo.query.mockReturnValue(throwError(() => error));
-    console.error = jest.fn();
+    it('should handle list error', (done) => {
+      const error = new Error('fail');
+      mockApollo.subscribe.mockReturnValue(throwError(() => error));
+      console.error = jest.fn();
 
-    service
-      .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
-      .subscribe({
+      service.list('myList', ['name'], nodeContext).subscribe({
         error: (err) => {
           expect(console.error).toHaveBeenCalledWith(
             'Error executing GraphQL query.',
@@ -131,21 +110,72 @@ describe('ResourceService', () => {
           done();
         },
       });
+    });
   });
 
-  it('should handle list error', (done) => {
-    const error = new Error('fail');
-    mockApollo.subscribe.mockReturnValue(throwError(() => error));
-    console.error = jest.fn();
+  describe('readOrganizations', () => {
+    it('should read organizations', (done) => {
+      mockApollo.query.mockReturnValue(of({ data: { orgList: [{ id: 1 }] } }));
+      service
+        .readOrganizations('orgList', ['id'], nodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual([{ id: 1 }]);
+          done();
+        });
+    });
 
-    service.list('myList', ['name'], nodeContext).subscribe({
-      error: (err) => {
-        expect(console.error).toHaveBeenCalledWith(
-          'Error executing GraphQL query.',
-          error,
-        );
+    it('should handle read organizations error', (done) => {
+      const error = new Error('fail');
+      mockApollo.query.mockReturnValue(throwError(() => error));
+      console.error = jest.fn();
+
+      service.readOrganizations('orgList', ['id'], nodeContext).subscribe({
+        error: (err) => {
+          expect(console.error).toHaveBeenCalledWith(
+            'Error executing GraphQL query.',
+            error,
+          );
+          done();
+        },
+      });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete resource', (done) => {
+      mockApollo.mutate.mockReturnValue(of({}));
+      service
+        .delete(resource, resourceDefinition, nodeContext)
+        .subscribe((res) => {
+          expect(mockApollo.mutate).toHaveBeenCalled();
+          done();
+        });
+    });
+  });
+
+  describe('create', () => {
+    it('should create resource', (done) => {
+      mockApollo.mutate.mockReturnValue(
+        of({ data: { __typename: 'TestKind' } }),
+      );
+      service
+        .create(resource, resourceDefinition, nodeContext)
+        .subscribe((res) => {
+          expect(mockApollo.mutate).toHaveBeenCalled();
+          done();
+        });
+    });
+  });
+
+  describe('readKcpCA', () => {
+    it('should read KCP CA', (done) => {
+      mockApollo.query.mockReturnValue(
+        of({ data: { core: { ConfigMap: { data: 'cert-data' } } } }),
+      );
+      service.readKcpCA(nodeContext).subscribe((res) => {
+        expect(res).toBe('cert-data');
         done();
-      },
+      });
     });
   });
 });

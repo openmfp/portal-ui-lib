@@ -76,7 +76,7 @@ export class DetailViewComponent {
 
   constructor() {
     effect(() => {
-      this.workspacePath = this.gatewayService.getKcpPath(this.context());
+      this.workspacePath = this.gatewayService.resolveKcpPath(this.context());
       this.resourceFields =
         this.context().resourceDefinition.ui?.detailView?.fields ||
         defaultFields;

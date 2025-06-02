@@ -1,74 +1,88 @@
-import { NodeChangeHookConfigServiceImpl } from './node-change-hook-config.service';
+import { kcpRootOrgsPath } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
-import { HelpContext, LuigiNode } from '../../models';
+import { GatewayService } from '../resource';
+import { NodeChangeHookConfigServiceImpl } from './node-change-hook-config.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('NodeChangeHookConfigServiceImpl', () => {
   let service: NodeChangeHookConfigServiceImpl;
-  let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
+  let mockLuigiCoreService: any;
+  let mockGatewayService: any;
 
   beforeEach(() => {
     mockLuigiCoreService = {
       navigation: jest.fn().mockReturnValue({
         navigate: jest.fn(),
       }),
-    } as unknown as jest.Mocked<LuigiCoreService>;
+      getGlobalContext: jest.fn().mockReturnValue({ organization: 'org1' }),
+    };
 
-    service = new NodeChangeHookConfigServiceImpl(mockLuigiCoreService);
+    mockGatewayService = {
+      updateCrdGatewayUrlWithEntityPath: jest.fn(),
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        NodeChangeHookConfigServiceImpl,
+        { provide: LuigiCoreService, useValue: mockLuigiCoreService },
+        { provide: GatewayService, useValue: mockGatewayService },
+      ],
+    });
+
+    service = TestBed.inject(NodeChangeHookConfigServiceImpl);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('should navigate when initialRoute and virtualTree exist and _virtualTree does not exist', () => {
+    const prevNode = {} as any;
+    const nextNode = {
+      initialRoute: '/some/path',
+      virtualTree: true,
+      context: {},
+    } as any;
+
+    service.nodeChangeHook(prevNode, nextNode);
+
+    expect(mockLuigiCoreService.navigation().navigate).toHaveBeenCalledWith(
+      '/some/path',
+    );
   });
 
-  describe('nodeChangeHook', () => {
-    it('should navigate to initialRoute if conditions are met', () => {
-      const prevNode: LuigiNode = {};
-      const nextNode: LuigiNode = {
-        initialRoute: '/initial-route',
-        virtualTree: true,
-      };
+  it('should call updateCrdGatewayUrlWithEntityPath with constructed path', () => {
+    const prevNode = {} as any;
+    const nextNode = {
+      context: {},
+      parent: {
+        context: {
+          entityContext: {
+            account: {
+              id: 'acc123',
+            },
+          },
+        },
+        parent: null,
+      },
+    } as any;
 
-      service.nodeChangeHook(prevNode, nextNode);
+    service.nodeChangeHook(prevNode, nextNode);
 
-      expect(mockLuigiCoreService.navigation().navigate).toHaveBeenCalledWith(
-        '/initial-route'
-      );
-    });
+    expect(
+      mockGatewayService.updateCrdGatewayUrlWithEntityPath,
+    ).toHaveBeenCalledWith(`${kcpRootOrgsPath}:org1:acc123`);
+  });
 
-    it('should not navigate if initialRoute is not set', () => {
-      const prevNode: LuigiNode = {};
-      const nextNode: LuigiNode = {
-        virtualTree: true,
-      };
+  it('should use context.kcpPath if present', () => {
+    const prevNode = {} as any;
+    const nextNode = {
+      context: {
+        kcpPath: 'custom/path',
+      },
+      parent: null,
+    } as any;
 
-      service.nodeChangeHook(prevNode, nextNode);
+    service.nodeChangeHook(prevNode, nextNode);
 
-      expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
-    });
-
-    it('should not navigate if virtualTree is not set', () => {
-      const prevNode: LuigiNode = {};
-      const nextNode: LuigiNode = {
-        initialRoute: '/initial-route',
-      };
-
-      service.nodeChangeHook(prevNode, nextNode);
-
-      expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
-    });
-
-    it('should not navigate if _virtualTree is set', () => {
-      const prevNode: LuigiNode = {};
-      const nextNode: LuigiNode = {
-        initialRoute: '/initial-route',
-        virtualTree: true,
-        _virtualTree: true,
-      } as LuigiNode & { _virtualTree: boolean };
-      const ctx = { helpContext: {} as HelpContext };
-
-      service.nodeChangeHook(prevNode, nextNode);
-
-      expect(mockLuigiCoreService.navigation().navigate).not.toHaveBeenCalled();
-    });
+    expect(
+      mockGatewayService.updateCrdGatewayUrlWithEntityPath,
+    ).toHaveBeenCalledWith('custom/path');
   });
 });

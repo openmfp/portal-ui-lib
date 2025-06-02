@@ -1,101 +1,71 @@
+import { NodeContext } from '../../models';
+import { LuigiCoreService } from '../luigi-core.service';
 import { GatewayService } from './gateway.service';
 import { TestBed } from '@angular/core/testing';
-import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 
 describe('GatewayService', () => {
   let service: GatewayService;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
+  let mockLuigiCoreService: any;
 
   beforeEach(() => {
-    luigiCoreServiceMock = {
-      getWcExtendedContext: jest.fn(),
-      getGlobalContext: jest.fn(),
-      getWcModalExtendedContext: jest.fn(),
-    } as any;
+    mockLuigiCoreService = {
+      getGlobalContext: jest.fn().mockReturnValue({
+        portalContext: {
+          crdGatewayApiUrl: 'https://example.com/:org1:acc1/graphql',
+        },
+      }),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         GatewayService,
-        { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+        { provide: LuigiCoreService, useValue: mockLuigiCoreService },
       ],
     });
 
     service = TestBed.inject(GatewayService);
   });
 
-  describe('getKcpPath', () => {
-    it('should return kcpPath from modal context if available', () => {
-      luigiCoreServiceMock.getWcModalExtendedContext.mockReturnValue({
-        kcpPath: 'modal:test:path',
-      });
-      luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({});
-      luigiCoreServiceMock.getGlobalContext.mockReturnValue({} as any);
-
-      const result = service.getKcpPath();
-      expect(result).toBe('modal:test:path');
+  describe('getGatewayUrl', () => {
+    it('should replace current kcp path with new one', () => {
+      const nodeContext = { kcpPath: ':org1:acc2' } as NodeContext;
+      const result = service.getGatewayUrl(nodeContext);
+      expect(result).toBe('https://example.com/:org1:acc2/graphql');
     });
 
-    it('should return kcpPath from context if modal context is empty', () => {
-      luigiCoreServiceMock.getWcModalExtendedContext.mockReturnValue({});
-      luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({
-        kcpPath: 'context:test:path',
-      });
-      luigiCoreServiceMock.getGlobalContext.mockReturnValue({
-        organization: 'testorg',
-      } as any);
-
-      const result = service.getKcpPath();
-      expect(result).toBe('context:test:path');
-    });
-
-    it('should return default path with organization and accountId', () => {
-      luigiCoreServiceMock.getWcModalExtendedContext.mockReturnValue({});
-      luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({
-        accountId: '123',
-      });
-      luigiCoreServiceMock.getGlobalContext.mockReturnValue({
-        organization: 'testorg',
-      } as any);
-
-      const result = service.getKcpPath();
-      expect(result).toBe('root:orgs:testorg:123');
-    });
-
-    it('should return default path with only organization', () => {
-      luigiCoreServiceMock.getWcModalExtendedContext.mockReturnValue({});
-      luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({});
-      luigiCoreServiceMock.getGlobalContext.mockReturnValue({
-        organization: 'testorg',
-      } as any);
-
-      const result = service.getKcpPath();
-      expect(result).toBe('root:orgs:testorg');
+    it('should slice current kcp path when readFromParentKcpPath is true', () => {
+      const nodeContext = { accountId: 'acc1' };
+      const result = service.getGatewayUrl(nodeContext as any, true);
+      expect(result).toBe('https://example.com/:org1/graphql');
     });
   });
 
-  describe('getGatewayUrl', () => {
-    it('should replace ${kcp-path} with correct kcp path', () => {
-      luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({
-        portalContext: {
-          crdGatewayApiUrl: 'https://test.com/${kcp-path}/api',
-        },
-      });
-      luigiCoreServiceMock.getGlobalContext.mockReturnValue({
-        organization: 'testorg',
-      } as any);
+  describe('updateCrdGatewayUrlWithEntityPath', () => {
+    it('should update crdGatewayApiUrl with new kcp path', () => {
+      const globalContext = mockLuigiCoreService.getGlobalContext();
+      service.updateCrdGatewayUrlWithEntityPath(':org1:acc3');
+      expect(globalContext.portalContext.crdGatewayApiUrl).toBe(
+        'https://example.com/:org1:acc3/graphql',
+      );
+    });
+  });
 
-      const result = service.getGatewayUrl();
-      expect(result).toBe(`https://test.com/root:orgs:testorg/api`);
+  describe('resolveKcpPath', () => {
+    it('should return kcpPath from context if present', () => {
+      const nodeContext = { kcpPath: ':org1:acc2' } as NodeContext;
+      const result = service.resolveKcpPath(nodeContext);
+      expect(result).toBe(':org1:acc2');
     });
 
-    it('should handle empty context gracefully', () => {
-      luigiCoreServiceMock.getWcExtendedContext.mockReturnValue({});
-      luigiCoreServiceMock.getGlobalContext.mockReturnValue({
-        organization: 'testorg',
-      } as any);
+    it('should slice path by accountId if readFromParentKcpPath is true', () => {
+      const nodeContext = { accountId: 'acc1' };
+      const result = service.resolveKcpPath(nodeContext as any, true);
+      expect(result).toBe(':org1');
+    });
 
-      const result = service.getGatewayUrl();
-      expect(result).toBeUndefined();
+    it('should return current kcp path if no override provided', () => {
+      const result = service.resolveKcpPath({} as any);
+      expect(result).toBe(':org1:acc1');
     });
   });
 });

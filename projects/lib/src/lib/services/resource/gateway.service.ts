@@ -15,7 +15,7 @@ export class GatewayService {
     const currentKcpPath = gatewayUrl?.match(/\/([^\/]+)\/graphql$/)[1];
     return gatewayUrl?.replace(
       currentKcpPath,
-      this.getKcpPath(nodeContext, readFromParentKcpPath),
+      this.resolveKcpPath(nodeContext, readFromParentKcpPath),
     );
   }
 
@@ -31,7 +31,10 @@ export class GatewayService {
     );
   }
 
-  public getKcpPath(nodeContext: NodeContext, readFromParentKcpPath = false) {
+  public resolveKcpPath(
+    nodeContext: NodeContext,
+    readFromParentKcpPath = false,
+  ) {
     const gatewayUrl =
       this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl;
     const currentKcpPath = gatewayUrl?.match(/\/([^\/]+)\/graphql$/)[1];
