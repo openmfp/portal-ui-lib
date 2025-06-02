@@ -2,7 +2,7 @@ import { LuigiCoreService } from '../luigi-core.service';
 import { ResourceService } from '../resource';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('NodeContextProcessingService', () => {
   let service: NodeContextProcessingService;
@@ -97,8 +97,9 @@ describe('NodeContextProcessingService', () => {
       expect(node.context.entity).toEqual(entity);
     });
 
-    it('should handle errors gracefully', () => {
+    it('should handle errors gracefully and log to console', (done) => {
       const entityId = 'entity789';
+
       const node: any = {
         defineEntity: {
           graphqlEntity: {
@@ -109,15 +110,22 @@ describe('NodeContextProcessingService', () => {
         },
         context: {},
       };
+
       const ctx: any = {};
 
-      mockResourceService.read.mockImplementation(() => {
-        throw new Error('Test error');
-      });
+      const error = new Error('Test error');
+      mockResourceService.read.mockReturnValue(throwError(() => error));
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      expect(() =>
-        service.readAndStoreEntityInNodeContext(entityId, node, ctx),
-      ).toThrow();
+      service.readAndStoreEntityInNodeContext(entityId, node, ctx);
+
+      setTimeout(() => {
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Not able to read entity entity789 from broken_group',
+        );
+        consoleSpy.mockRestore();
+        done();
+      }, 0);
     });
   });
 });
