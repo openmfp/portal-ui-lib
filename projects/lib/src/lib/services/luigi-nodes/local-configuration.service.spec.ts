@@ -196,7 +196,7 @@ describe('LocalConfigurationServiceImpl', () => {
     const serverLuigiNodesTest = [
       { pathSegment: '/path', entityType: 'typeA', label: 'A', context: {} },
       { pathSegment: '/path', entityType: 'typeB', label: 'B', context: {} },
-    ];
+    ] as LuigiNode[];
 
     let getLocalNodesSpy;
     beforeEach(() => {
@@ -249,7 +249,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should return empty server nodes when no matching local nodes', async () => {
       const serverNodes = [
         { pathSegment: '/path', entityType: null, label: 'Y', context: {} },
-      ];
+      ] as LuigiNode[];
       getLocalNodesSpy.mockResolvedValue([
         { pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} },
       ]);

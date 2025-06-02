@@ -1,7 +1,7 @@
 import { NodeContext, Resource, ResourceDefinition } from '../../models';
 import { ApolloFactory } from './apollo-factory';
 import { Injectable, inject } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
+import { gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -48,7 +48,7 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]?.[kind]),
         catchError((error) => {
-          console.error('Error executing GraphQL query', error);
+          console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );
@@ -75,7 +75,7 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]),
         catchError((error) => {
-          console.error('Error executing GraphQL query: ', error);
+          console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );
@@ -102,7 +102,7 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]),
         catchError((error) => {
-          console.error('Error executing GraphQL query', error);
+          console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );

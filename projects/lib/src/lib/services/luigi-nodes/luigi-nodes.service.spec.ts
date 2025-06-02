@@ -1,22 +1,23 @@
-import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
-import { EntityType } from '../../models/entity';
-import { LuigiNodesService } from './luigi-nodes.service';
-import { RouterModule } from '@angular/router';
-import {
-  ServiceProvider,
-  EntityDefinition,
-  LuigiNode,
-  PortalConfig,
-  EntityConfig,
-} from '../../models';
 import {
   ERROR_COMPONENT_CONFIG,
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import {
+  EntityConfig,
+  EntityDefinition,
+  LuigiNode,
+  NodeContext,
+  PortalConfig,
+  ServiceProvider,
+} from '../../models';
+import { EntityType } from '../../models/entity';
 import { ConfigService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
+import { LuigiNodesService } from './luigi-nodes.service';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { RouterModule } from '@angular/router';
+import { mock } from 'jest-mock-extended';
 
 describe('LuigiNodesService', () => {
   let service: LuigiNodesService;
@@ -30,7 +31,7 @@ describe('LuigiNodesService', () => {
     localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockImplementation(
       async (serverLuigiNodes: LuigiNode[], currentEntities: string[]) => {
         return serverLuigiNodes;
-      }
+      },
     );
 
     TestBed.configureTestingModule({
@@ -59,7 +60,7 @@ describe('LuigiNodesService', () => {
     it('should call the serviceProviderService.clearCache method', () => {
       const serviceProviderServiceSpy = jest.spyOn(
         configService,
-        'clearEntityConfigCache'
+        'clearEntityConfigCache',
       );
       service.clearNodeCache();
       expect(serviceProviderServiceSpy).toHaveBeenCalled();
@@ -102,13 +103,13 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockResolvedValue(mockEntityConfig);
       localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockResolvedValue(
-        [...mockServiceProvider.nodes]
+        [...mockServiceProvider.nodes],
       );
 
       const result = await service.retrieveAndMergeEntityChildren(
         mockEntityDefinition,
         mockExistingChildren,
-        'parentPath'
+        'parentPath',
       );
 
       expect(result.length).toBe(3);
@@ -119,10 +120,10 @@ describe('LuigiNodesService', () => {
 
       expect(configService.getEntityConfig).toHaveBeenCalledWith(
         'testEntityType',
-        undefined
+        undefined,
       );
       expect(
-        localConfigurationServiceMock.replaceServerNodesWithLocalOnes
+        localConfigurationServiceMock.replaceServerNodesWithLocalOnes,
       ).toHaveBeenCalled();
     });
 
@@ -135,7 +136,7 @@ describe('LuigiNodesService', () => {
       const result = await service.retrieveAndMergeEntityChildren(
         mockEntityDefinition,
         mockExistingChildren,
-        'parentPath'
+        'parentPath',
       );
 
       expect(result.length).toBe(1);
@@ -151,7 +152,7 @@ describe('LuigiNodesService', () => {
           webcomponent: {
             selfRegistered: true,
           },
-        })
+        }),
       );
       expect(result[0].context.error.code).toEqual(404);
     });
@@ -166,7 +167,7 @@ describe('LuigiNodesService', () => {
       const result = await service.retrieveAndMergeEntityChildren(
         mockEntityDefinition,
         mockExistingChildren,
-        'parentPath'
+        'parentPath',
       );
 
       expect(result.length).toBe(1);
@@ -177,12 +178,12 @@ describe('LuigiNodesService', () => {
           hideFromNav: true,
           hideSideNav: true,
           viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
-        })
+        }),
       );
       expect(result[0].context.error.code).toEqual(500);
       expect(console.warn).toHaveBeenCalledWith(
         'Could not retrieve nodes for entity: testEntityType, error: ',
-        genericError
+        genericError,
       );
     });
 
@@ -193,19 +194,19 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockResolvedValue(mockEntityConfig);
       localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockResolvedValue(
-        [...mockServiceProvider.nodes]
+        [...mockServiceProvider.nodes],
       );
 
       await service.retrieveAndMergeEntityChildren(
         mockEntityDefinition,
         mockExistingChildren,
         'parentPath',
-        additionalContext
+        additionalContext,
       );
 
       expect(configService.getEntityConfig).toHaveBeenCalledWith(
         'testEntityType',
-        additionalContext
+        additionalContext,
       );
     });
 
@@ -214,13 +215,13 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockResolvedValue(mockEntityConfig);
       localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockResolvedValue(
-        [...mockServiceProvider.nodes]
+        [...mockServiceProvider.nodes],
       );
 
       const result = await service.retrieveAndMergeEntityChildren(
         mockEntityDefinition,
         null,
-        'parentPath'
+        'parentPath',
       );
 
       expect(result.length).toBe(2);
@@ -244,12 +245,12 @@ describe('LuigiNodesService', () => {
         entityDefinition,
         existingChildren,
         parentEntityPath,
-        additionalContext
+        additionalContext,
       );
 
       expect(serviceProviderServiceSpy).toHaveBeenCalledWith(
         'someEntity',
-        additionalContext
+        additionalContext,
       );
       expect(result).toEqual(
         expect.arrayContaining([
@@ -260,7 +261,7 @@ describe('LuigiNodesService', () => {
             hideSideNav: true,
             viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
           }),
-        ])
+        ]),
       );
       expect(result[0].context.error.code).toEqual(404);
     });
@@ -283,16 +284,16 @@ describe('LuigiNodesService', () => {
         entityDefinition,
         existingChildren,
         parentEntityPath,
-        additionalContext
+        additionalContext,
       );
 
       expect(serviceProviderServiceSpy).toHaveBeenCalledWith(
         'someEntity',
-        additionalContext
+        additionalContext,
       );
       expect(console.warn).toHaveBeenCalledWith(
         'Could not retrieve nodes for entity: someEntity, error: ',
-        expect.any(Error)
+        expect.any(Error),
       );
     });
 
@@ -314,16 +315,16 @@ describe('LuigiNodesService', () => {
         entityDefinition,
         existingChildren,
         parentEntityPath,
-        additionalContext
+        additionalContext,
       );
 
       expect(serviceProviderServiceSpy).toHaveBeenCalledWith(
         'someEntity',
-        additionalContext
+        additionalContext,
       );
       expect(console.warn).toHaveBeenCalledWith(
         'Could not retrieve nodes for entity: someEntity, error: ',
-        expect.any(Error)
+        expect.any(Error),
       );
     });
   });
@@ -335,12 +336,12 @@ describe('LuigiNodesService', () => {
       entityType: string,
       pathSegment: string,
       categoryOrder?: number,
-      serviceProviderConfig?: Record<string, string>
+      serviceProviderConfig?: Record<string, string>,
     ) => {
       const mockLuigiNode = mock<LuigiNode>();
       mockLuigiNode.entityType = entityType;
       mockLuigiNode.pathSegment = pathSegment;
-      mockLuigiNode.context = { serviceProviderConfig };
+      mockLuigiNode.context = { serviceProviderConfig } as any;
       if (categoryOrder) {
         mockLuigiNode.category = {
           label: entityType,
@@ -393,7 +394,7 @@ describe('LuigiNodesService', () => {
         expect(serviceProviderServiceSpy).toHaveBeenCalled();
         expect(consoleWarnSpy).toHaveBeenCalledWith(
           'Could not retrieve nodes, error: ',
-          expect.any(Error)
+          expect.any(Error),
         );
       }
     });
