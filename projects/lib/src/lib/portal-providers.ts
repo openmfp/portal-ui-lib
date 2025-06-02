@@ -13,7 +13,7 @@ import {
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+  LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -33,7 +33,7 @@ import {
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
-  NodeAccessHandlingService,
+  CustomNodeProcessingService,
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
   StaticSettingsConfigService,
@@ -88,7 +88,7 @@ export interface PortalOptions {
   nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
 
   /** Service handling every node access policies **/
-  nodeAccessHandlingService?: Type<NodeAccessHandlingService>;
+  customNodeProcessingService?: Type<CustomNodeProcessingService>;
 
   /** Service handling luigi authentication events **/
   luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
@@ -167,10 +167,10 @@ const addOptionalProviders = (
     });
   }
 
-  if (options.nodeAccessHandlingService) {
+  if (options.customNodeProcessingService) {
     providers.push({
-      provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
-      useClass: options.nodeAccessHandlingService,
+      provide: LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
+      useClass: options.customNodeProcessingService,
     });
   }
 

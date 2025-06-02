@@ -12,7 +12,7 @@ import {
   LuigiBreadcrumb,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
-  NodeAccessHandlingService,
+  CustomNodeProcessingService,
   NodeChangeHookConfigService,
   StaticSettingsConfigService,
   ThemingService,
@@ -121,7 +121,7 @@ describe('Provide Portal', () => {
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: {} as any,
       staticSettingsConfigService: {} as any,
-      nodeAccessHandlingService: {} as any,
+      customNodeProcessingService: {} as any,
       nodeChangeHookConfigService: {} as any,
       globalSearchConfigService: {} as any,
       appSwitcherConfigService: {} as any,
@@ -189,7 +189,7 @@ describe('Provide Portal', () => {
     });
 
     expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
+      provide: tokens.LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
       useClass: {},
     });
 
