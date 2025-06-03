@@ -1,9 +1,9 @@
-import { LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { ChildrenNodesService } from './children-nodes.service';
-import { NodeAccessHandlingService } from './node-access-handling.service';
+import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
 import { TestBed } from '@angular/core/testing';
@@ -15,7 +15,7 @@ describe('ChildrenNodesService', () => {
   let configService: jest.Mocked<ConfigService>;
   let nodeUtilsService: jest.Mocked<NodeUtilsService>;
   let nodeSortingService: jest.Mocked<NodeSortingService>;
-  let nodeAccessHandlingService: jest.Mocked<NodeAccessHandlingService>;
+  let customNodeProcessingService: jest.Mocked<CustomNodeProcessingService>;
 
   beforeEach(() => {
     luigiCoreService = {
@@ -35,8 +35,8 @@ describe('ChildrenNodesService', () => {
       sortNodes: jest.fn(),
     } as any;
 
-    nodeAccessHandlingService = {
-      nodeAccessHandling: jest.fn(),
+    customNodeProcessingService = {
+      processNode: jest.fn(),
     } as any;
 
     TestBed.configureTestingModule({
@@ -47,8 +47,8 @@ describe('ChildrenNodesService', () => {
         { provide: NodeUtilsService, useValue: nodeUtilsService },
         { provide: NodeSortingService, useValue: nodeSortingService },
         {
-          provide: LUIGI_NODES_ACCESS_HANDLING_SERVICE_INJECTION_TOKEN,
-          useValue: nodeAccessHandlingService,
+          provide: LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
+          useValue: customNodeProcessingService,
         },
       ],
     });
@@ -95,7 +95,7 @@ describe('ChildrenNodesService', () => {
         entityContext: { myKey: 'value' },
         providers: null,
       });
-      nodeAccessHandlingService.nodeAccessHandling.mockImplementation(
+      customNodeProcessingService.processNode.mockImplementation(
         async (ctx: Context, node: LuigiNode) => node,
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
@@ -124,7 +124,7 @@ describe('ChildrenNodesService', () => {
       configService.getEntityConfig.mockRejectedValue(
         new Error('Config error'),
       );
-      nodeAccessHandlingService.nodeAccessHandling.mockImplementation(
+      customNodeProcessingService.processNode.mockImplementation(
         async (node) => node,
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
