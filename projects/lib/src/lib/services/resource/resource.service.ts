@@ -5,7 +5,6 @@ import { Injectable, inject } from '@angular/core';
 import { TypedDocumentNode } from '@apollo/client/core';
 import { gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
-import { parse, validate } from 'graphql';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
