@@ -1,9 +1,12 @@
 import { NodeContext, Resource, ResourceDefinition } from '../../models';
+import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { Injectable, inject } from '@angular/core';
+import { TypedDocumentNode } from '@apollo/client/core';
 import { gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
-import { Observable } from 'rxjs';
+import { parse, validate } from 'graphql';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -11,6 +14,7 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class ResourceService {
   private apolloFactory = inject(ApolloFactory);
+  private luigiCoreService = inject(LuigiCoreService);
 
   read(
     resourceId: string,
@@ -19,19 +23,29 @@ export class ResourceService {
     fieldsOrRawQuery: any[] | string,
     nodeContext: NodeContext,
   ): Observable<Resource> {
-    let query = this.resolveReadQuery(
+    let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
       fieldsOrRawQuery,
       kind,
       resourceId,
       operation,
     );
 
+    try {
+      query = gql`
+        ${query}
+      `;
+    } catch (error) {
+      this.luigiCoreService.showAlert({
+        text: `Could not read an account: ${resourceId}. Wrong read query: <br/><br/> ${query}`,
+        type: 'error',
+      });
+      return of(null);
+    }
+
     return this.apolloFactory
       .apollo(nodeContext, true)
       .query({
-        query: gql`
-          ${query}
-        `,
+        query,
         variables: {
           name: resourceId,
         },

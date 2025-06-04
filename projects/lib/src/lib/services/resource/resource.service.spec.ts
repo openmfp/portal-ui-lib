@@ -1,12 +1,15 @@
+import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { ResourceService } from './resource.service';
 import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 import { of, throwError } from 'rxjs';
 
 describe('ResourceService', () => {
   let service: ResourceService;
   let mockApollo: any;
   let mockApolloFactory: any;
+  let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
 
   const nodeContext: any = { cluster: 'test' };
   const resource: any = { metadata: { name: 'test-name' } };
@@ -18,6 +21,7 @@ describe('ResourceService', () => {
   };
 
   beforeEach(() => {
+    mockLuigiCoreService = mock();
     mockApollo = {
       query: jest.fn(),
       subscribe: jest.fn(),
@@ -32,6 +36,7 @@ describe('ResourceService', () => {
       providers: [
         ResourceService,
         { provide: ApolloFactory, useValue: mockApolloFactory },
+        { provide: LuigiCoreService, useValue: mockLuigiCoreService },
       ],
     });
 
@@ -39,6 +44,25 @@ describe('ResourceService', () => {
   });
 
   describe('read', () => {
+    it('should catch gql parsing error and return null observable', (done) => {
+      const invalidQuery =
+        `query { core_k8s_io { TestKind(name: "test-name") {` as unknown as any;
+
+      const mockShowAlert = jest.fn();
+      service['luigiCoreService'].showAlert = mockShowAlert;
+
+      service
+        .read('test-name', 'core_k8s_io', 'TestKind', invalidQuery, nodeContext)
+        .subscribe((res) => {
+          expect(res).toBeNull();
+          expect(mockLuigiCoreService.showAlert).toHaveBeenCalledWith({
+            text: expect.any(String),
+            type: 'error',
+          });
+          done();
+        });
+    });
+
     it('should read resource using fields', (done) => {
       mockApollo.query.mockReturnValue(
         of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
