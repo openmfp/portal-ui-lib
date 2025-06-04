@@ -30,7 +30,7 @@ export class NodeChangeHookConfigServiceImpl
     let entityKcpPath = '';
     let node = nextNode;
     do {
-      const id = node.context.entityContext?.account?.id;
+      const id = node.context?.entityContext?.account?.id;
       if (id) {
         entityKcpPath = `:${id}${entityKcpPath}`;
       }

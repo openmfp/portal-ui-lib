@@ -1,3 +1,5 @@
+import { LuigiGlobalContext } from '../../models';
+import { Resource } from '../../models/resource';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ResourceService } from '../resource';
 import { NodeContextProcessingService } from './node-context-processing.service';
@@ -6,17 +8,17 @@ import { of, throwError } from 'rxjs';
 
 describe('NodeContextProcessingService', () => {
   let service: NodeContextProcessingService;
-  let mockResourceService: any;
-  let mockLuigiCoreService: any;
+  let mockResourceService: jest.Mocked<ResourceService>;
+  let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
 
   beforeEach(() => {
     mockResourceService = {
       read: jest.fn(),
-    };
+    } as unknown as jest.Mocked<ResourceService>;
 
     mockLuigiCoreService = {
-      getGlobalContext: jest.fn().mockReturnValue({}),
-    };
+      getGlobalContext: jest.fn(),
+    } as unknown as jest.Mocked<LuigiCoreService>;
 
     TestBed.configureTestingModule({
       providers: [
@@ -29,103 +31,118 @@ describe('NodeContextProcessingService', () => {
     service = TestBed.inject(NodeContextProcessingService);
   });
 
-  describe('readAndStoreEntityInNodeContext', () => {
-    it('should not call read if required params are missing', () => {
-      const node = { defineEntity: null } as any;
-      const ctx = {} as any;
-      service.readAndStoreEntityInNodeContext('', node, ctx);
-      expect(mockResourceService.read).not.toHaveBeenCalled();
-    });
-
-    it('should call resourceService.read with correct parameters', () => {
-      const entityId = 'entity123';
-      const entity = { metadata: { name: 'entity123' } };
-
-      const node: any = {
-        defineEntity: {
-          graphqlEntity: {
-            group: 'test.group',
-            kind: 'Account',
-            query: '{ metadata { name } }',
-          },
+  it('should not call read if entityId or graphqlEntity fields are missing', () => {
+    const ctx: any = {};
+    const node: any = {
+      defineEntity: {
+        graphqlEntity: {
+          group: '',
+          kind: 'Kind',
+          query: '{ id }',
         },
-        context: {},
-      };
+      },
+      context: {},
+    };
 
-      const ctx: any = {};
+    service.readAndStoreEntityInNodeContext('', node, ctx);
+    expect(mockResourceService.read).not.toHaveBeenCalled();
 
-      mockResourceService.read.mockReturnValue(of(entity));
+    service.readAndStoreEntityInNodeContext(
+      'id',
+      { defineEntity: {} } as any,
+      ctx,
+    );
+    expect(mockResourceService.read).not.toHaveBeenCalled();
+  });
 
-      service.readAndStoreEntityInNodeContext(entityId, node, ctx);
-
-      expect(mockResourceService.read).toHaveBeenCalledWith(
-        'entity123',
-        'test_group',
-        'Account',
-        'query ($name: String!) { test_group { Account(name: $name) { metadata { name } } }}',
-        {},
-      );
-
-      expect(ctx.entity).toEqual(entity);
-      expect(node.context.entity).toEqual(entity);
-    });
-
-    it('should use default values when defineEntity properties are missing', () => {
-      const entityId = 'entity456';
-      const entity = { metadata: { name: 'entity456' } };
-
-      const node: any = {
-        defineEntity: {},
-        context: {},
-      };
-
-      const ctx: any = {};
-
-      mockResourceService.read.mockReturnValue(of(entity));
-
-      service.readAndStoreEntityInNodeContext(entityId, node, ctx);
-
-      expect(mockResourceService.read).toHaveBeenCalledWith(
-        'entity456',
-        'core_openmfp_org',
-        'Account',
-        'query ($name: String!) { core_openmfp_org { Account(name: $name) { metadata { name annotations }} }}',
-        {},
-      );
-
-      expect(ctx.entity).toEqual(entity);
-      expect(node.context.entity).toEqual(entity);
-    });
-
-    it('should handle errors gracefully and log to console', (done) => {
-      const entityId = 'entity789';
-
-      const node: any = {
-        defineEntity: {
-          graphqlEntity: {
-            group: 'broken.group',
-            kind: 'Thing',
-            query: '{ metadata { id } }',
-          },
+  it('should call read and update entity in context', () => {
+    const ctx: any = {};
+    const node: any = {
+      defineEntity: {
+        graphqlEntity: {
+          group: 'test.group',
+          kind: 'EntityKind',
+          query: '{ id name }',
         },
-        context: {},
-      };
+      },
+      context: {},
+    };
 
-      const ctx: any = {};
+    const entity: Resource = {
+      metadata: {
+        name: 'entity-name',
+        namespace: 'default',
+        uid: 'uid-123',
+      },
+      spec: {
+        type: '2',
+      },
+      status: {
+        conditions: [],
+      },
+    };
 
-      const error = new Error('Test error');
-      mockResourceService.read.mockReturnValue(throwError(() => error));
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const globalContext: LuigiGlobalContext = {
+      portalContext: {
+        someValue: 'abc',
+      },
+      userId: 'user-123',
+      userEmail: 'user@example.com',
+      token: 'token123',
+      organization: 'org-name',
+    };
 
-      service.readAndStoreEntityInNodeContext(entityId, node, ctx);
+    mockResourceService.read.mockReturnValue(of(entity));
+    mockLuigiCoreService.getGlobalContext.mockReturnValue(globalContext);
 
-      setTimeout(() => {
-        expect(consoleSpy).toHaveBeenCalledWith(
-          'Not able to read entity entity789 from broken_group',
-        );
-        consoleSpy.mockRestore();
-        done();
-      }, 0);
+    service.readAndStoreEntityInNodeContext('1', node, ctx);
+
+    expect(mockResourceService.read).toHaveBeenCalledWith(
+      '1',
+      'test_group',
+      'EntityKind',
+      'query ($name: String!) { test_group { EntityKind(name: $name) { id name } }}',
+      globalContext,
+    );
+    expect(ctx.entity).toEqual(entity);
+    expect(node.context.entity).toEqual(entity);
+  });
+
+  it('should handle read error and not update context', () => {
+    const ctx: any = {};
+    const node: any = {
+      defineEntity: {
+        graphqlEntity: {
+          group: 'some.group',
+          kind: 'SomeKind',
+          query: '{ name }',
+        },
+      },
+      context: {},
+    };
+
+    mockResourceService.read.mockReturnValue(
+      throwError(() => new Error('fail')),
+    );
+    mockLuigiCoreService.getGlobalContext.mockReturnValue({
+      portalContext: {},
+      userId: 'u',
+      userEmail: 'e',
+      token: 't',
+      organization: 'o',
     });
+
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    service.readAndStoreEntityInNodeContext('x', node, ctx);
+
+    expect(mockResourceService.read).toHaveBeenCalled();
+    expect(ctx.entity).toBeUndefined();
+    expect(node.context.entity).toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Not able to read entity x from some_group',
+    );
+
+    errorSpy.mockRestore();
   });
 });

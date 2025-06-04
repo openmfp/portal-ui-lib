@@ -15,12 +15,9 @@ export class NodeContextProcessingService {
     entityNode: LuigiNode,
     ctx: NodeContext,
   ) {
-    const group =
-      entityNode.defineEntity?.graphqlEntity?.group || 'core.openmfp.org';
-    const kind = entityNode.defineEntity?.graphqlEntity?.kind || 'Account';
-    const queryPart =
-      entityNode.defineEntity?.graphqlEntity?.query ||
-      '{ metadata { name annotations }}';
+    const group = entityNode.defineEntity?.graphqlEntity?.group;
+    const kind = entityNode.defineEntity?.graphqlEntity?.kind;
+    const queryPart = entityNode.defineEntity?.graphqlEntity?.query;
 
     if (!entityId || !group || !kind || !queryPart) {
       return;

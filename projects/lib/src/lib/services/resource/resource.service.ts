@@ -19,21 +19,12 @@ export class ResourceService {
     fieldsOrRawQuery: any[] | string,
     nodeContext: NodeContext,
   ): Observable<Resource> {
-    let query: string;
-
-    if (fieldsOrRawQuery instanceof Array) {
-      query =
-        gqlBuilder
-          .query({
-            operation: kind,
-            variables: { name: { value: resourceId, type: 'String!' } },
-            fields: fieldsOrRawQuery,
-          })
-          .query.replace(kind, `${operation} { ${kind}`)
-          .trim() + '}';
-    } else {
-      query = fieldsOrRawQuery;
-    }
+    let query = this.resolveReadQuery(
+      fieldsOrRawQuery,
+      kind,
+      resourceId,
+      operation,
+    );
 
     return this.apolloFactory
       .apollo(nodeContext, true)
@@ -52,6 +43,28 @@ export class ResourceService {
           return error;
         }),
       );
+  }
+
+  private resolveReadQuery(
+    fieldsOrRawQuery: any[] | string,
+    kind: string,
+    resourceId: string,
+    operation: string,
+  ) {
+    if (fieldsOrRawQuery instanceof Array) {
+      return (
+        gqlBuilder
+          .query({
+            operation: kind,
+            variables: { name: { value: resourceId, type: 'String!' } },
+            fields: fieldsOrRawQuery,
+          })
+          .query.replace(kind, `${operation} { ${kind}`)
+          .trim() + '}'
+      );
+    } else {
+      return fieldsOrRawQuery;
+    }
   }
 
   list(

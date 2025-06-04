@@ -12,7 +12,8 @@ export class GatewayService {
   ) {
     const gatewayUrl =
       this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl;
-    const currentKcpPath = gatewayUrl?.match(/\/([^\/]+)\/graphql$/)[1];
+    const kcpPathRegexp = /\/([^\/]+)\/graphql$/;
+    const currentKcpPath = gatewayUrl?.match(kcpPathRegexp)[1];
     return gatewayUrl?.replace(
       currentKcpPath,
       this.resolveKcpPath(nodeContext, readFromParentKcpPath),
@@ -22,13 +23,9 @@ export class GatewayService {
   public updateCrdGatewayUrlWithEntityPath(kcpPath: string) {
     const gatewayUrl =
       this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl;
+    const kcpPathRegexp = /(.*\/)[^/]+(?=\/graphql$)/;
     this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl =
-      gatewayUrl.replace(/(.*\/)[^/]+(?=\/graphql$)/, `$1${kcpPath}`);
-
-    console.log('PATH');
-    console.log(
-      this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl,
-    );
+      gatewayUrl.replace(kcpPathRegexp, `$1${kcpPath}`);
   }
 
   public resolveKcpPath(

@@ -47,19 +47,45 @@ describe('NodeChangeHookConfigServiceImpl', () => {
     );
   });
 
-  it('should call updateCrdGatewayUrlWithEntityPath with constructed path', () => {
+  it('should call update the crd gateway url constructed kcp path, based on the succession of entities read', () => {
     const prevNode = {} as any;
     const nextNode = {
-      context: {},
+      context: {
+        entityContext: {
+          account: {
+            id: 'child',
+          },
+        },
+      },
       parent: {
         context: {
           entityContext: {
             account: {
-              id: 'acc123',
+              id: 'parent-2',
             },
           },
         },
-        parent: null,
+        parent: {
+          context: {},
+          parent: {
+            context: {
+              entityContext: {
+                account: {
+                  id: 'parent-1',
+                },
+              },
+            },
+            parent: {
+              context: {
+                entityContext: {
+                  account: {
+                    id: 'parent-0',
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     } as any;
 
@@ -67,7 +93,7 @@ describe('NodeChangeHookConfigServiceImpl', () => {
 
     expect(
       mockGatewayService.updateCrdGatewayUrlWithEntityPath,
-    ).toHaveBeenCalledWith(`${kcpRootOrgsPath}:org1:acc123`);
+    ).toHaveBeenCalledWith('root:orgs:org1:parent-0:parent-1:parent-2:child');
   });
 
   it('should use context.kcpPath if present', () => {
