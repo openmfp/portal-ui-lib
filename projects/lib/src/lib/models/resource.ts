@@ -1,17 +1,5 @@
 import { Condition, ObjectMeta } from 'kubernetes-types/meta/v1';
 
-export interface NodeContext {
-  resourceDefinition: ResourceDefinition;
-  token: string;
-  resourceId?: string;
-  portalContext?: PortalContext;
-  parentNavigationContexts: string[];
-}
-
-export interface PortalContext {
-  crdGatewayApiUrl: string;
-}
-
 export interface FieldDefinition {
   label?: string;
   property: string | string[];

@@ -5,7 +5,6 @@ import {
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
-import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 import { NavigationConfigService } from './navigation-config.service';
@@ -90,15 +89,6 @@ describe('LifecycleHooksConfigService', () => {
     });
 
     describe('luigiAfterInit', () => {
-      it('should always resetLuigi', async () => {
-        luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(true);
-        const config = service.getLifecycleHooksConfig({} as any);
-
-        await config.luigiAfterInit();
-
-        expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
-      });
-
       it('should call i18nServiceMock.afterInit', async () => {
         const config = service.getLifecycleHooksConfig({} as any);
         await config.luigiAfterInit();

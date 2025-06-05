@@ -1,4 +1,4 @@
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from './node-utils.service';
 
@@ -22,7 +22,7 @@ describe('NodeUtilsService', () => {
   describe('retrieveHelpContext', () => {
     it('should set the helpContext on the node and return true', () => {
       const context = { helpContext: { displayName: 'Test Help' } } as any;
-      const node: LuigiNode = { context: {} };
+      const node: LuigiNode = { context: {} as NodeContext };
       mockLuigiCoreService.getGlobalContext.mockReturnValue(context);
 
       const result = service.retrieveGlobalHelpContext()(node);

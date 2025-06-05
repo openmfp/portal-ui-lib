@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { ContentConfiguration, LuigiNode } from '../../models';
-import { lastValueFrom } from 'rxjs';
-import { inject, Injectable } from '@angular/core';
 import { TransformResult } from '../../models/node-transform';
 import { LuigiCoreService } from '../luigi-core.service';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class LocalNodesService {
   private luigiCoreService = inject(LuigiCoreService);
 
   async getLuigiNodesFromConfigurations(
-    contentConfigurations: ContentConfiguration[]
+    contentConfigurations: ContentConfiguration[],
   ): Promise<TransformResult> {
     if (contentConfigurations.length === 0) {
       return null;
@@ -24,7 +24,7 @@ export class LocalNodesService {
       this.http.post<TransformResult>(`/rest/localnodes`, {
         language,
         contentConfigurations,
-      })
+      }),
     );
   }
 }

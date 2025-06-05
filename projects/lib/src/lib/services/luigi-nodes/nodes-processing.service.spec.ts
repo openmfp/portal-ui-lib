@@ -3,6 +3,7 @@ import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { LuigiNodesService } from './luigi-nodes.service';
+import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodesProcessingService } from './nodes-processing.service';
 import { TestBed } from '@angular/core/testing';
 
@@ -11,6 +12,7 @@ describe('NodesProcessingService', () => {
   let luigiNodesService: LuigiNodesService;
   let luigiCoreService: LuigiCoreService;
   let configService: ConfigService;
+  let nodeContextProcessingService: NodeContextProcessingService;
   const entityName = 'myentity';
 
   const homeChildren: LuigiNode[] = [
@@ -30,13 +32,20 @@ describe('NodesProcessingService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [providePortal()],
+      providers: [
+        providePortal(),
+        {
+          provide: NodeContextProcessingService,
+          useValue: { readAndStoreEntityInNodeContext: jest.fn() },
+        },
+      ],
     }).compileComponents();
 
     service = TestBed.inject(NodesProcessingService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
     luigiNodesService = TestBed.inject(LuigiNodesService);
     configService = TestBed.inject(ConfigService);
+    nodeContextProcessingService = TestBed.inject(NodeContextProcessingService);
 
     const portalConfig: PortalConfig = {
       providers: [{ nodes: [], creationTimestamp: '' }],
@@ -44,6 +53,7 @@ describe('NodesProcessingService', () => {
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
+    luigiCoreService.getGlobalContext = jest.fn();
     Object.defineProperty(luigiCoreService, 'config', {
       get: jest.fn(() => ({
         settings: { btpToolLayout: true },
@@ -143,14 +153,15 @@ describe('NodesProcessingService', () => {
     };
 
     // Act
+    const ctx = {
+      mysubentityId: 'someid',
+      myparententityId: 'parentid',
+      mygrandparententityId: 'opa',
+      userid,
+    };
     await service.entityChildrenProvider(
       entityNode,
-      {
-        mysubentityId: 'someid',
-        myparententityId: 'parentid',
-        mygrandparententityId: 'opa',
-        userid,
-      },
+      ctx,
       {},
       undefined,
       entityName,
@@ -166,12 +177,15 @@ describe('NodesProcessingService', () => {
       [],
       entityName,
       {
+        mysubentity: 'someid',
         myparententity: 'parentid',
         mygrandparententity: 'opa',
-        mysubentity: 'someid',
         user: userid,
       },
     );
+    expect(
+      nodeContextProcessingService.readAndStoreEntityInNodeContext,
+    ).toHaveBeenCalledWith('someid', entityNode, ctx);
   });
 
   describe('entity children', () => {
