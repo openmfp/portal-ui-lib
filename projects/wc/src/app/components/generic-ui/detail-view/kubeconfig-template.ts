@@ -20,7 +20,7 @@ export const kubeConfigTemplate = `
           args:
           - oidc-login
           - get-token
-          - --oidc-issuer-url=https://auth.portal.cc-one.showroom.apeirora.eu/realms/openmfp
+          - --oidc-issuer-url=https://portal.cc-one.showroom.apeirora.eu/keycloak/realms/openmfp
           - --oidc-client-id=openmfp-public
           - --oidc-extra-scope=email
           - --oidc-extra-scope=groups

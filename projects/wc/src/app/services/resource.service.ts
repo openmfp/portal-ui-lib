@@ -145,18 +145,21 @@ export class ResourceService {
       .query<string>({
         query: gql`
           {
-            core {
-              ConfigMap(name: "kube-root-ca.crt", namespace: "default") {
+            core_openmfp_org {
+              AccountInfo(name: "account") {
                 metadata {
                   name
-                  namespace
                 }
-                data
+                spec {
+                  clusterInfo {
+                    ca
+                  }
+                }
               }
             }
           }
         `,
       })
-      .pipe(map((res: any) => res.data.core.ConfigMap.data));
+      .pipe(map((res: any) => res.data.core_openmfp_org.AccountInfo.spec.clusterInfo.ca || ''));
   }
 }
