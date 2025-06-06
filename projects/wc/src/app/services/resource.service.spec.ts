@@ -489,13 +489,16 @@ describe('ResourceService', () => {
     it('should call Apollo query with correct query for reading KCP CA', () => {
       const mockResponse = {
         data: {
-          core: {
-            ConfigMap: {
+          core_openmfp_org: {
+            AccountInfo: {
               metadata: {
-                name: 'kube-root-ca.crt',
-                namespace: 'default',
+                name: 'account',
               },
-              data: 'mock-cert-data',
+              spec: {
+                clusterInfo: {
+                  ca: 'mock-ca-data',
+                }
+              },
             },
           },
         },
@@ -515,22 +518,24 @@ describe('ResourceService', () => {
       const queryString = callArgs.query.loc.source.body;
 
       // Verify query structure
-      expect(queryString).toContain('core');
-      expect(queryString).toContain('ConfigMap');
-      expect(queryString).toContain('kube-root-ca.crt');
-      expect(queryString).toContain('default');
+      expect(queryString).toContain('core_openmfp_org');
+      expect(queryString).toContain('AccountInfo');
+      expect(queryString).toContain('account');
     });
 
     it('should return the correct response data', (done) => {
       const mockResponse = {
-        data: {
-          core: {
-            ConfigMap: {
+       data: {
+          core_openmfp_org: {
+            AccountInfo: {
               metadata: {
-                name: 'kube-root-ca.crt',
-                namespace: 'default',
+                name: 'account',
               },
-              data: 'mock-cert-data',
+              spec: {
+                clusterInfo: {
+                  ca: 'mock-ca-data',
+                }
+              },
             },
           },
         },
@@ -541,7 +546,7 @@ describe('ResourceService', () => {
       mockApollo.query.mockReturnValue(of(mockResponse));
 
       service.readKcpCA().subscribe((result) => {
-        expect(result).toEqual('mock-cert-data');
+        expect(result).toEqual('mock-ca-data');
         done();
       });
     });
