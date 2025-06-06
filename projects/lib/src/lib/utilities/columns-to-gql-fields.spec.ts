@@ -1,4 +1,4 @@
-import { FieldDefinition } from '../../../models/resource';
+import { FieldDefinition } from '../models';
 import { generateGraphQLFields } from './columns-to-gql-fields';
 
 describe('columns-to-gql-fields', () => {

@@ -1,9 +1,11 @@
-import { Resource, ResourceDefinition } from '../models/resource';
+import { NodeContext, Resource, ResourceDefinition } from '../../models';
+import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { Injectable, inject } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
+import { TypedDocumentNode } from '@apollo/client/core';
+import { gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -11,45 +13,86 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class ResourceService {
   private apolloFactory = inject(ApolloFactory);
-  private apollo: Apollo = this.apolloFactory.apollo;
+  private luigiCoreService = inject(LuigiCoreService);
 
   read(
     resourceId: string,
     operation: string,
-    fields: any[],
+    kind: string,
+    fieldsOrRawQuery: any[] | string,
+    nodeContext: NodeContext,
   ): Observable<Resource> {
-    const query = gqlBuilder.subscription({
-      operation: operation,
-      fields,
-      variables: { name: { type: 'String!' } },
-    });
+    let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
+      fieldsOrRawQuery,
+      kind,
+      resourceId,
+      operation,
+    );
 
-    return this.apollo
-      .subscribe({
-        query: gql`
-          ${query.query}
-        `,
+    try {
+      query = gql`
+        ${query}
+      `;
+    } catch (error) {
+      this.luigiCoreService.showAlert({
+        text: `Could not read an account: ${resourceId}. Wrong read query: <br/><br/> ${query}`,
+        type: 'error',
+      });
+      return of(null);
+    }
+
+    return this.apolloFactory
+      .apollo(nodeContext, true)
+      .query({
+        query,
         variables: {
           name: resourceId,
         },
       })
       .pipe(
-        map((res: any) => res.data?.[operation]),
+        map((res: any) => res.data?.[operation]?.[kind]),
         catchError((error) => {
-          console.error('Error executing GraphQL query', error);
+          console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );
   }
 
-  list(operation: string, fields: any[]): Observable<Resource[]> {
+  private resolveReadQuery(
+    fieldsOrRawQuery: any[] | string,
+    kind: string,
+    resourceId: string,
+    operation: string,
+  ) {
+    if (fieldsOrRawQuery instanceof Array) {
+      return (
+        gqlBuilder
+          .query({
+            operation: kind,
+            variables: { name: { value: resourceId, type: 'String!' } },
+            fields: fieldsOrRawQuery,
+          })
+          .query.replace(kind, `${operation} { ${kind}`)
+          .trim() + '}'
+      );
+    } else {
+      return fieldsOrRawQuery;
+    }
+  }
+
+  list(
+    operation: string,
+    fields: any[],
+    nodeContext: NodeContext,
+  ): Observable<Resource[]> {
     const query = gqlBuilder.subscription({
       operation: operation,
       fields,
       variables: {},
     });
 
-    return this.apollo
+    return this.apolloFactory
+      .apollo(nodeContext)
       .subscribe({
         query: gql`
           ${query.query}
@@ -58,20 +101,25 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]),
         catchError((error) => {
-          console.error('Error executing GraphQL query: ', error);
+          console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );
   }
 
-  readOrganizations(operation: string, fields: any[]): Observable<any[]> {
+  readOrganizations(
+    operation: string,
+    fields: any[],
+    nodeContext: NodeContext,
+  ): Observable<any[]> {
     const query = gqlBuilder.query({
       operation: operation,
       fields,
       variables: {},
     });
 
-    return this.apollo
+    return this.apolloFactory
+      .apollo(nodeContext)
       .query({
         query: gql`
           ${query.query}
@@ -80,13 +128,17 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]),
         catchError((error) => {
-          console.error('Error executing GraphQL query', error);
+          console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );
   }
 
-  delete(resource: Resource, resourceDefinition: ResourceDefinition) {
+  delete(
+    resource: Resource,
+    resourceDefinition: ResourceDefinition,
+    nodeContext: NodeContext,
+  ) {
     const group = resourceDefinition.group.replaceAll('.', '_');
     const kind = resourceDefinition.kind;
 
@@ -106,7 +158,7 @@ export class ResourceService {
       ],
     });
 
-    return this.apollo.mutate<void>({
+    return this.apolloFactory.apollo(nodeContext).mutate<void>({
       mutation: gql`
         ${mutation.query}
       `,
@@ -117,7 +169,11 @@ export class ResourceService {
     });
   }
 
-  create(resource: Resource, resourceDefinition: ResourceDefinition) {
+  create(
+    resource: Resource,
+    resourceDefinition: ResourceDefinition,
+    nodeContext: NodeContext,
+  ) {
     const group = resourceDefinition.group.replaceAll('.', '_');
     const kind = resourceDefinition.kind;
     const mutation = gqlBuilder.mutation({
@@ -131,7 +187,7 @@ export class ResourceService {
       ],
     });
 
-    return this.apollo.mutate<void>({
+    return this.apolloFactory.apollo(nodeContext).mutate<void>({
       mutation: gql`
         ${mutation.query}
       `,
@@ -140,8 +196,9 @@ export class ResourceService {
     });
   }
 
-  readKcpCA(): Observable<string> {
-    return this.apollo
+  readKcpCA(nodeContext: NodeContext): Observable<string> {
+    return this.apolloFactory
+      .apollo(nodeContext, true)
       .query<string>({
         query: gql`
           {

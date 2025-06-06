@@ -1,8 +1,4 @@
-import { ResourceService } from '../../services/resource.service';
-import {
-  OrganizationManagementComponent,
-  OrganizationManagementContext,
-} from './organization-management.component';
+import { OrganizationManagementComponent } from './organization-management.component';
 import {
   CUSTOM_ELEMENTS_SCHEMA,
   NO_ERRORS_SCHEMA,
@@ -13,6 +9,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MutationResult } from '@apollo/client';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
+import { NodeContext, ResourceService } from '@openmfp/portal-ui-lib';
 import {
   EnvConfigService,
   I18nService,
@@ -82,15 +79,13 @@ describe('OrganizationManagementComponent', () => {
   });
 
   it('should react to context input change', () => {
-    const mockContext: OrganizationManagementContext = {
+    const mockContext = {
       translationTable: { hello: 'world' },
-    } as any;
+    } as any as NodeContext;
 
     resourceServiceMock.readOrganizations.mockReturnValue(of({} as any));
 
-    const contextSignal = signal<OrganizationManagementContext | null>(
-      mockContext,
-    );
+    const contextSignal = signal<NodeContext | null>(mockContext);
     component.context = contextSignal as any;
 
     fixture.detectChanges();

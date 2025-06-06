@@ -1,25 +1,28 @@
-import {
-  FieldDefinition,
-  NodeContext,
-  Resource,
-  ResourceDefinition,
-} from '../../../models/resource';
-import { ResourceService } from '../../../services/resource.service';
-import { generateGraphQLFields } from '../utils/columns-to-gql-fields';
-import { getResourceValueByJsonPath } from '../utils/resource-field-by-path';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  Input,
   OnInit,
   ViewEncapsulation,
+  effect,
   inject,
+  input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import { LuigiCoreService } from '@openmfp/portal-ui-lib';
+import {
+  FieldDefinition,
+  LuigiCoreService,
+  NodeContext,
+  Resource,
+  ResourceDefinition,
+  ResourceService,
+  generateGraphQLFields,
+  getResourceValueByJsonPath,
+} from '@openmfp/portal-ui-lib';
 import {
   DynamicPageComponent,
   DynamicPageTitleComponent,
@@ -54,6 +57,7 @@ const defaultColumns: FieldDefinition[] = [
   templateUrl: './list-view.component.html',
   styleUrls: ['./list-view.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CreateResourceModalComponent,
     DynamicPageComponent,
@@ -75,40 +79,40 @@ export class ListViewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
   private destroyRef = inject(DestroyRef);
-
+  LuigiClient = input<LuigiClient>();
+  context = input<NodeContext>();
   private createModal = viewChild<CreateResourceModalComponent>('createModal');
-  protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
+  resources = signal<Resource[]>([]);
   columns: FieldDefinition[];
-  resources: Resource[] = [];
   heading: string;
   resourceDefinition: ResourceDefinition;
+  protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
-  @Input()
-  LuigiClient: LuigiClient;
+  constructor() {
+    effect(() => {
+      this.resourceDefinition = this.context().resourceDefinition;
+      this.columns =
+        this.context().resourceDefinition.ui?.listView?.fields ||
+        defaultColumns;
+      this.heading = `${this.context().resourceDefinition.plural.charAt(0).toUpperCase()}${this.context().resourceDefinition.plural.slice(1)}`;
 
-  @Input()
-  set context(context: NodeContext) {
-    this.resourceDefinition = context.resourceDefinition;
-    this.columns =
-      context.resourceDefinition.ui?.listView?.fields || defaultColumns;
-    this.heading = `${context.resourceDefinition.plural.charAt(0).toUpperCase()}${context.resourceDefinition.plural.slice(1)}`;
+      this.read();
+    });
   }
 
-  ngOnInit(): void {
-    this.read();
-  }
+  ngOnInit(): void {}
 
   read() {
     const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
 
     this.resourceService
-      .list(queryOperation, fields)
+      .list(queryOperation, fields, this.context())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
-          this.resources = result;
+          this.resources.set(result);
         },
       });
   }
@@ -116,35 +120,39 @@ export class ListViewComponent implements OnInit {
   delete(event: any, resource: Resource) {
     event.stopPropagation();
 
-    this.resourceService.delete(resource, this.resourceDefinition).subscribe({
-      next: (result) => {
-        console.debug('Resource deleted.');
-      },
-      error: (error) => {
-        this.luigiCoreService.showAlert({
-          text: `Failure! Could not delete resource: ${resource.metadata.name}.`,
-          type: 'error',
-        });
-      },
-    });
+    this.resourceService
+      .delete(resource, this.resourceDefinition, this.context())
+      .subscribe({
+        next: (result) => {
+          console.debug('Resource deleted.');
+        },
+        error: (error) => {
+          this.luigiCoreService.showAlert({
+            text: `Failure! Could not delete resource: ${resource.metadata.name}.`,
+            type: 'error',
+          });
+        },
+      });
   }
 
   create(resource: Resource) {
-    this.resourceService.create(resource, this.resourceDefinition).subscribe({
-      next: (result) => {
-        console.debug('Resource created', result.data);
-      },
-      error: (error) => {
-        this.luigiCoreService.showAlert({
-          text: `Failure! Could not create resource: ${resource.metadata.name}.`,
-          type: 'error',
-        });
-      },
-    });
+    this.resourceService
+      .create(resource, this.resourceDefinition, this.context())
+      .subscribe({
+        next: (result) => {
+          console.debug('Resource created', result.data);
+        },
+        error: (error) => {
+          this.luigiCoreService.showAlert({
+            text: `Failure! Could not create resource: ${resource.metadata.name}.`,
+            type: 'error',
+          });
+        },
+      });
   }
 
   navigateToResource(resource: Resource) {
-    this.LuigiClient.linkManager().navigate(resource.metadata.name);
+    this.LuigiClient().linkManager().navigate(resource.metadata.name);
   }
 
   openCreateResourceModal() {

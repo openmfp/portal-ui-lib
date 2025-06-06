@@ -1,9 +1,10 @@
+import { NodeContext } from '../../models';
+import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { GatewayService } from './gateway.service';
 import { NgZone } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { InMemoryCache } from '@apollo/client/core';
-import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { mock } from 'jest-mock-extended';
@@ -48,7 +49,7 @@ describe('ApolloFactory', () => {
   });
 
   it('should create an Apollo instance', () => {
-    expect(factory.apollo).toBeInstanceOf(Apollo);
+    expect(factory.apollo({} as NodeContext)).toBeInstanceOf(Apollo);
   });
 
   it('should create Apollo options with InMemoryCache', () => {

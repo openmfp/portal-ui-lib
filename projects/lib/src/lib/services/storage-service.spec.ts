@@ -1,9 +1,9 @@
-import { UserSettingsValues } from '@openmfp/portal-ui-lib';
-import { UserTokenData, LocalDevelopmentSettings, UserData } from '../models';
+import { LocalDevelopmentSettings, UserData } from '../models';
+import { UserSettingsValues } from './luigi-config/user-settings-config.service';
 import {
   LocalStorageKeys,
-  userSettingsLocalStorage,
   localDevelopmentSettingsLocalStorage,
+  userSettingsLocalStorage,
 } from './storage-service';
 
 describe('LocalDevelopmentSettingsLocalStorage', () => {
@@ -45,7 +45,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
 
       expect(result).toEqual(mockSettings);
       expect(localStorageMock.getItem).toHaveBeenCalledWith(
-        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
       );
     });
 
@@ -97,7 +97,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
-        JSON.stringify(testSettings)
+        JSON.stringify(testSettings),
       );
       expect(consoleSpy).not.toHaveBeenCalled();
     });
@@ -114,7 +114,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
-        JSON.stringify(emptySettings)
+        JSON.stringify(emptySettings),
       );
       expect(consoleSpy).not.toHaveBeenCalled();
     });
@@ -136,7 +136,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to stringify the local development settings setting into your localstorage.',
-        expect.any(Error)
+        expect.any(Error),
       );
     });
 
@@ -153,7 +153,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to stringify the local development settings setting into your localstorage.',
-        expect.any(Error)
+        expect.any(Error),
       );
     });
   });
@@ -204,7 +204,7 @@ describe('UserSettingsLocalStorage', () => {
         },
       };
       (localStorageMock.getItem as jest.Mock).mockReturnValue(
-        JSON.stringify(existingSettings)
+        JSON.stringify(existingSettings),
       );
 
       const result = await userSettingsLocalStorage.read(mockUserInfo);
@@ -227,7 +227,7 @@ describe('UserSettingsLocalStorage', () => {
         {
           closeDialog: true,
           message: 'Could not read userSettings from storage...',
-        }
+        },
       );
     });
 
@@ -279,7 +279,7 @@ describe('UserSettingsLocalStorage', () => {
           frame_userAccount: {
             language: 'en',
           },
-        })
+        }),
       );
       expect(result).toEqual({
         frame_userAccount: {
@@ -300,7 +300,7 @@ describe('UserSettingsLocalStorage', () => {
 
       expect(localStorage.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
-        JSON.stringify({})
+        JSON.stringify({}),
       );
       expect(result).toEqual({});
     });
@@ -324,7 +324,7 @@ describe('UserSettingsLocalStorage', () => {
           frame_userAccount: {
             language: 'en',
           },
-        })
+        }),
       );
       expect(result).toEqual({
         otherSetting: 'value',

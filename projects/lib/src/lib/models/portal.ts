@@ -1,4 +1,5 @@
 import { LuigiNode } from './luigi';
+import { PortalContext } from './luigi-context';
 
 export interface ServiceProvider {
   name: string;
@@ -14,6 +15,6 @@ export interface EntityConfig {
 
 export interface PortalConfig {
   providers: ServiceProvider[];
-  portalContext: Record<string, any>;
+  portalContext: PortalContext;
   featureToggles: Record<string, boolean>;
 }

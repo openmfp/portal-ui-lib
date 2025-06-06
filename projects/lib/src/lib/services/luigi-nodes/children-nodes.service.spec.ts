@@ -125,7 +125,7 @@ describe('ChildrenNodesService', () => {
         new Error('Config error'),
       );
       customNodeProcessingService.processNode.mockImplementation(
-        async (node) => node,
+        async (ctx, node: LuigiNode) => node,
       );
       nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
 
