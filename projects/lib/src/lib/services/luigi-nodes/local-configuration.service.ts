@@ -37,7 +37,9 @@ export class LocalConfigurationServiceImpl {
       localDevelopmentSettingsLocalStorage.read();
 
     if (!localDevelopmentSettings?.isActive) {
-      return (await this.customLocalConfigurationService.getLocalNodes()) || [];
+      return (
+        (await this.customLocalConfigurationService?.getLocalNodes()) || []
+      );
     }
 
     this.addLocalDevelopmentModeOnIndicator();
