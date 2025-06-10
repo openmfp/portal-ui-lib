@@ -1,26 +1,9 @@
-import { providePortal, PortalOptions } from './portal-providers';
-import * as core from '@angular/core';
-import * as http from '@angular/common/http';
 import * as tokens from './injection-tokens';
-import {
-  AppSwitcherConfigService,
-  CustomGlobalNodesService,
-  CustomMessageListener,
-  GlobalSearchConfigService,
-  LocalConfigurationServiceImpl,
-  LuigiAuthEventsCallbacksService,
-  LuigiBreadcrumb,
-  LuigiBreadcrumbConfigService,
-  LuigiExtendedGlobalContextConfigService,
-  CustomNodeProcessingService,
-  NodeChangeHookConfigService,
-  StaticSettingsConfigService,
-  ThemingService,
-  UserProfileConfigService,
-} from './services';
+import { PortalOptions, providePortal } from './portal-providers';
+import { CustomMessageListener } from './services';
 import * as services from './services';
-import { Context } from '@luigi-project/client';
-import { LuigiNode } from './models';
+import * as http from '@angular/common/http';
+import * as core from '@angular/core';
 
 class MockCustomListener1 implements CustomMessageListener {
   messageId(): string {
@@ -71,7 +54,7 @@ describe('Provide Portal', () => {
     const customListenerProviders = providersArg.filter(
       (provider: any) =>
         provider?.provide ===
-        tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN
+        tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
     );
 
     expect(customListenerProviders).toHaveLength(2);
@@ -95,7 +78,7 @@ describe('Provide Portal', () => {
     const customListenerProviders = providersArg.filter(
       (provider: any) =>
         provider?.provide ===
-        tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN
+        tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
     );
 
     expect(customListenerProviders).toHaveLength(0);
@@ -105,11 +88,6 @@ describe('Provide Portal', () => {
     providePortal({});
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    expect(providersArg).toContainEqual({
-      provide: tokens.LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-      useClass: LocalConfigurationServiceImpl,
-    });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
@@ -131,11 +109,17 @@ describe('Provide Portal', () => {
       luigiBreadcrumbConfigService: {} as any,
       themingService: {} as any,
       errorComponentConfig: { '404': {} } as any,
+      localConfigurationService: {} as any,
     };
 
     providePortal(options);
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
+
+    expect(providersArg).toContainEqual({
+      provide: tokens.LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+      useClass: {},
+    });
 
     expect(providersArg).toContainEqual({
       provide: tokens.ERROR_COMPONENT_CONFIG,
@@ -206,7 +190,7 @@ describe('Provide Portal', () => {
 
     expect(providersArg).toContainEqual(http.provideHttpClient());
     expect(providersArg).toContainEqual(
-      core.provideZoneChangeDetection({ eventCoalescing: true })
+      core.provideZoneChangeDetection({ eventCoalescing: true }),
     );
   });
 });

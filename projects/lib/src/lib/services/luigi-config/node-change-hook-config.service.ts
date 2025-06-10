@@ -39,7 +39,7 @@ export class NodeChangeHookConfigServiceImpl
 
     const org = this.luigiCoreService.getGlobalContext().organization;
     const kcpPath =
-      nextNode.context.kcpPath || `${kcpRootOrgsPath}:${org}${entityKcpPath}`;
+      nextNode.context?.kcpPath || `${kcpRootOrgsPath}:${org}${entityKcpPath}`;
     this.gatewayService.updateCrdGatewayUrlWithEntityPath(kcpPath);
   }
 }

@@ -1,9 +1,13 @@
+import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { ContentConfiguration, LuigiNode } from '../../models';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesService } from '../portal';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
-import { LocalConfigurationServiceImpl } from './local-configuration.service';
+import {
+  LocalConfigurationService,
+  LocalConfigurationServiceImpl,
+} from './local-configuration.service';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MockProxy, mock } from 'jest-mock-extended';
@@ -15,9 +19,11 @@ describe('LocalConfigurationServiceImpl', () => {
   let httpClient: HttpClient;
   let luigiDataConfigServiceMock: MockProxy<LocalNodesService>;
   let i18nServiceMock: jest.Mocked<I18nService>;
+  let customLocalConfigurationServiceMock: jest.Mocked<LocalConfigurationService>;
 
   beforeEach(() => {
     i18nServiceMock = mock();
+    customLocalConfigurationServiceMock = mock();
     localDevelopmentSettingsLocalStorage.read = jest.fn();
     luigiDataConfigServiceMock = mock<LocalNodesService>();
     TestBed.configureTestingModule({
@@ -25,6 +31,10 @@ describe('LocalConfigurationServiceImpl', () => {
         {
           provide: LocalNodesService,
           useValue: luigiDataConfigServiceMock,
+        },
+        {
+          provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+          useValue: customLocalConfigurationServiceMock,
         },
         { provide: I18nService, useValue: i18nServiceMock },
         provideHttpClient(),
@@ -362,6 +372,9 @@ describe('LocalConfigurationServiceImpl', () => {
       const localNodes = await service.getLocalNodes();
 
       expect(localNodes).toEqual([]);
+      expect(
+        customLocalConfigurationServiceMock.getLocalNodes,
+      ).toHaveBeenCalled();
     });
 
     it('should return an empty array for a dev environment if the request fails', async () => {

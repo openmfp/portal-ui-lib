@@ -1,3 +1,4 @@
+import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import {
   ContentConfiguration,
   LocalDevelopmentSettings,
@@ -14,23 +15,21 @@ import { merge } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
 export interface LocalConfigurationService {
-  replaceServerNodesWithLocalOnes(
-    serverLuigiNodes: LuigiNode[],
-    currentEntities: string[],
-  ): Promise<LuigiNode[]>;
   getLocalNodes(): Promise<LuigiNode[]>;
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class LocalConfigurationServiceImpl
-  implements LocalConfigurationService
-{
+export class LocalConfigurationServiceImpl {
   private http = inject(HttpClient);
   private luigiConfigService = inject(LocalNodesService);
   private i18nService = inject(I18nService);
   private luigiCoreService = inject(LuigiCoreService);
+  private customLocalConfigurationService = inject<LocalConfigurationService>(
+    LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN as any,
+    { optional: true },
+  );
   private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
@@ -38,7 +37,9 @@ export class LocalConfigurationServiceImpl
       localDevelopmentSettingsLocalStorage.read();
 
     if (!localDevelopmentSettings?.isActive) {
-      return [];
+      return (
+        (await this.customLocalConfigurationService?.getLocalNodes()) || []
+      );
     }
 
     this.addLocalDevelopmentModeOnIndicator();

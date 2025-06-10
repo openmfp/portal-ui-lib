@@ -34,4 +34,5 @@ export interface NodeContext extends LuigiGlobalContext {
     additionalContext?: Record<string, any>;
   };
   translationTable?: Record<string, any>;
+  serviceProviderConfig?: Record<string, any>;
 }

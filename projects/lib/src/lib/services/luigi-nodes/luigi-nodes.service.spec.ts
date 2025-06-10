@@ -37,7 +37,7 @@ describe('LuigiNodesService', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+          provide: LocalConfigurationServiceImpl,
           useValue: localConfigurationServiceMock,
         },
         {

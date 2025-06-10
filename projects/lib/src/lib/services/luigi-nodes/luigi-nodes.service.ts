@@ -1,7 +1,4 @@
-import {
-  ERROR_COMPONENT_CONFIG,
-  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-} from '../../injection-tokens';
+import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import {
   EntityConfig,
   EntityDefinition,
@@ -13,7 +10,7 @@ import {
 } from '../../models';
 import { I18nService } from '../i18n.service';
 import { ConfigService } from '../portal';
-import { LocalConfigurationService } from './local-configuration.service';
+import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({
@@ -22,14 +19,12 @@ import { Injectable, inject } from '@angular/core';
 export class LuigiNodesService {
   private i18nService = inject(I18nService);
   private configService = inject(ConfigService);
+  private localConfigurationService = inject(LocalConfigurationServiceImpl);
   private errorComponentConfig = inject<Record<string, ErrorComponentConfig>>(
     ERROR_COMPONENT_CONFIG as any,
     {
       optional: true,
     },
-  );
-  private localConfigurationService = inject<LocalConfigurationService>(
-    LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN as any,
   );
 
   private getChildrenByEntity(
