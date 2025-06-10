@@ -11,9 +11,9 @@ import {
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+  LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -27,13 +27,13 @@ import {
   AppSwitcherConfigServiceImpl,
   CustomGlobalNodesService,
   CustomMessageListener,
+  CustomNodeProcessingService,
   GlobalSearchConfigService,
   LocalConfigurationService,
   LocalConfigurationServiceImpl,
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
-  CustomNodeProcessingService,
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
   StaticSettingsConfigService,
@@ -142,16 +142,18 @@ const addOptionalProviders = (
         options.nodeChangeHookConfigService || NodeChangeHookConfigServiceImpl,
     },
     {
-      provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.localConfigurationService || LocalConfigurationServiceImpl,
-    },
-    {
       provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass:
         options.userProfileConfigService || UserProfileConfigServiceImpl,
     },
   );
+
+  if (options.localConfigurationService) {
+    providers.push({
+      provide: LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
+      useClass: options.localConfigurationService,
+    });
+  }
 
   if (options.staticSettingsConfigService) {
     providers.push({
