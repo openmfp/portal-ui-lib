@@ -1,5 +1,4 @@
 import { LuigiNode, NodeContext } from '../../models';
-import { LuigiCoreService } from '../luigi-core.service';
 import { ResourceService } from '../resource';
 import { Injectable, inject } from '@angular/core';
 
@@ -8,7 +7,6 @@ import { Injectable, inject } from '@angular/core';
 })
 export class NodeContextProcessingService {
   private resourceService = inject(ResourceService);
-  private luigiCoreService = inject(LuigiCoreService);
 
   readAndStoreEntityInNodeContext(
     entityId: string,
@@ -30,7 +28,13 @@ export class NodeContextProcessingService {
         operation,
         kind,
         `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,
-        this.luigiCoreService.getGlobalContext(),
+        {
+          portalContext: {
+            crdGatewayApiUrl: ctx.portalContext.crdGatewayApiUrl,
+          },
+          token: ctx.token,
+          accountId: entityId,
+        },
       )
       .subscribe({
         next: (entity) => {

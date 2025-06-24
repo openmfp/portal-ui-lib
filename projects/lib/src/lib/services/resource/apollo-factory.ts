@@ -1,6 +1,6 @@
 import { NodeContext } from '../../models';
-import { LuigiCoreService } from '../luigi-core.service';
 import { GatewayService } from './gateway.service';
+import { ResourceNodeContext } from './resource-node-context';
 import { Injectable, NgZone, inject } from '@angular/core';
 import {
   type ApolloClientOptions,
@@ -46,11 +46,10 @@ class SSELink extends ApolloLink {
 export class ApolloFactory {
   private httpLink = inject(HttpLink);
   private ngZone = inject(NgZone);
-  private luigiCoreService = inject(LuigiCoreService);
   private gatewayService = inject(GatewayService);
 
   public readonly apollo = (
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
     readFromParentKcpPath = false,
   ): Apollo =>
     new Apollo(
@@ -59,7 +58,7 @@ export class ApolloFactory {
     );
 
   private createApolloOptions(
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
     readFromParentKcpPath = false,
   ): ApolloClientOptions<any> {
     const contextLink = setContext(() => {
@@ -67,7 +66,7 @@ export class ApolloFactory {
         uri: () =>
           this.gatewayService.getGatewayUrl(nodeContext, readFromParentKcpPath),
         headers: {
-          Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
+          Authorization: `Bearer ${nodeContext.token}`,
           Accept: 'charset=utf-8',
         },
       };
@@ -85,7 +84,7 @@ export class ApolloFactory {
         url: () =>
           this.gatewayService.getGatewayUrl(nodeContext, readFromParentKcpPath),
         headers: () => ({
-          Authorization: `Bearer ${this.luigiCoreService.getGlobalContext().token}`,
+          Authorization: `Bearer ${nodeContext.token}`,
         }),
       }),
       this.httpLink.create({}),

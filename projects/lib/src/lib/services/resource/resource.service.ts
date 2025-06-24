@@ -1,6 +1,7 @@
-import { NodeContext, Resource, ResourceDefinition } from '../../models';
+import { Resource, ResourceDefinition } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
+import { ResourceNodeContext } from './resource-node-context';
 import { Injectable, inject } from '@angular/core';
 import { TypedDocumentNode } from '@apollo/client/core';
 import { gql } from 'apollo-angular';
@@ -20,7 +21,7 @@ export class ResourceService {
     operation: string,
     kind: string,
     fieldsOrRawQuery: any[] | string,
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
   ): Observable<Resource> {
     let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
       fieldsOrRawQuery,
@@ -83,7 +84,7 @@ export class ResourceService {
   list(
     operation: string,
     fields: any[],
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
   ): Observable<Resource[]> {
     const query = gqlBuilder.subscription({
       operation: operation,
@@ -110,7 +111,7 @@ export class ResourceService {
   readOrganizations(
     operation: string,
     fields: any[],
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
   ): Observable<any[]> {
     const query = gqlBuilder.query({
       operation: operation,
@@ -137,7 +138,7 @@ export class ResourceService {
   delete(
     resource: Resource,
     resourceDefinition: ResourceDefinition,
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
   ) {
     const group = resourceDefinition.group.replaceAll('.', '_');
     const kind = resourceDefinition.kind;
@@ -172,7 +173,7 @@ export class ResourceService {
   create(
     resource: Resource,
     resourceDefinition: ResourceDefinition,
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
   ) {
     const group = resourceDefinition.group.replaceAll('.', '_');
     const kind = resourceDefinition.kind;
@@ -196,7 +197,7 @@ export class ResourceService {
     });
   }
 
-  readKcpCA(nodeContext: NodeContext): Observable<string> {
+  readKcpCA(nodeContext: ResourceNodeContext): Observable<string> {
     return this.apolloFactory
       .apollo(nodeContext, true)
       .query<string>({
@@ -217,6 +218,11 @@ export class ResourceService {
           }
         `,
       })
-      .pipe(map((res: any) => res.data.core_openmfp_org.AccountInfo.spec.clusterInfo.ca || ''));
+      .pipe(
+        map(
+          (res: any) =>
+            res.data.core_openmfp_org.AccountInfo.spec.clusterInfo.ca || '',
+        ),
+      );
   }
 }

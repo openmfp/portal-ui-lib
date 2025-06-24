@@ -12,9 +12,9 @@ import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   FieldDefinition,
   GatewayService,
-  NodeContext,
   Resource,
   ResourceDefinition,
+  ResourceNodeContext,
   ResourceService,
   generateGraphQLFields,
   getResourceValueByJsonPath,
@@ -66,7 +66,7 @@ export class DetailViewComponent {
   protected readonly getResourceValueByJsonPath = getResourceValueByJsonPath;
 
   LuigiClient = input<LuigiClient>();
-  context = input<NodeContext>();
+  context = input<ResourceNodeContext>();
   resource = signal<Resource | null>(null);
 
   resourceDefinition: ResourceDefinition;

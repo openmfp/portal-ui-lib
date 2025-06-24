@@ -14,9 +14,9 @@ import {
   EnvConfigService,
   I18nService,
   LuigiCoreService,
-  NodeContext,
   Resource,
   ResourceDefinition,
+  ResourceNodeContext,
   ResourceService,
   generateGraphQLFields,
 } from '@openmfp/portal-ui-lib';
@@ -49,7 +49,7 @@ export class OrganizationManagementComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private luigiCoreService = inject(LuigiCoreService);
   private envConfigService = inject(EnvConfigService);
-  context = input<NodeContext>();
+  context = input<ResourceNodeContext>();
   LuigiClient = input<LuigiClient>();
 
   texts: any = {};
