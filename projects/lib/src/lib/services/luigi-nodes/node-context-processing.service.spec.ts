@@ -1,4 +1,4 @@
-import { LuigiGlobalContext } from '../../models';
+import { NodeContext } from '../../models';
 import { Resource } from '../../models/resource';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ResourceService } from '../resource';
@@ -56,7 +56,6 @@ describe('NodeContextProcessingService', () => {
   });
 
   it('should call read and update entity in context', () => {
-    const ctx: any = {};
     const node: any = {
       defineEntity: {
         graphqlEntity: {
@@ -82,18 +81,18 @@ describe('NodeContextProcessingService', () => {
       },
     };
 
-    const globalContext: LuigiGlobalContext = {
+    const ctx: NodeContext = {
       portalContext: {
-        someValue: 'abc',
+        crdGatewayApiUrl: 'abc',
       },
       userId: 'user-123',
       userEmail: 'user@example.com',
       token: 'token123',
       organization: 'org-name',
+      accountId: '1',
     };
 
     mockResourceService.read.mockReturnValue(of(entity));
-    mockLuigiCoreService.getGlobalContext.mockReturnValue(globalContext);
 
     service.readAndStoreEntityInNodeContext('1', node, ctx);
 
@@ -102,14 +101,26 @@ describe('NodeContextProcessingService', () => {
       'test_group',
       'EntityKind',
       'query ($name: String!) { test_group { EntityKind(name: $name) { id name } }}',
-      globalContext,
+      {
+        portalContext: {
+          crdGatewayApiUrl: ctx.portalContext.crdGatewayApiUrl,
+        },
+        token: ctx.token,
+        accountId: ctx.accountId,
+      },
     );
     expect(ctx.entity).toEqual(entity);
     expect(node.context.entity).toEqual(entity);
   });
 
   it('should handle read error and not update context', () => {
-    const ctx: any = {};
+    const ctx: any = {
+      portalContext: {},
+      userId: 'u',
+      userEmail: 'e',
+      token: 't',
+      organization: 'o',
+    };
     const node: any = {
       defineEntity: {
         graphqlEntity: {
@@ -124,13 +135,6 @@ describe('NodeContextProcessingService', () => {
     mockResourceService.read.mockReturnValue(
       throwError(() => new Error('fail')),
     );
-    mockLuigiCoreService.getGlobalContext.mockReturnValue({
-      portalContext: {},
-      userId: 'u',
-      userEmail: 'e',
-      token: 't',
-      organization: 'o',
-    });
 
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 

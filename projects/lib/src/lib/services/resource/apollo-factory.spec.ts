@@ -1,7 +1,7 @@
-import { NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { GatewayService } from './gateway.service';
+import { ResourceNodeContext } from './resource-node-context';
 import { NgZone } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { InMemoryCache } from '@apollo/client/core';
@@ -49,7 +49,7 @@ describe('ApolloFactory', () => {
   });
 
   it('should create an Apollo instance', () => {
-    expect(factory.apollo({} as NodeContext)).toBeInstanceOf(Apollo);
+    expect(factory.apollo({} as ResourceNodeContext)).toBeInstanceOf(Apollo);
   });
 
   it('should create Apollo options with InMemoryCache', () => {
