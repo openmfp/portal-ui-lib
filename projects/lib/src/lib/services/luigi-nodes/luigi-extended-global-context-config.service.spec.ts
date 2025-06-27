@@ -99,6 +99,44 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
     );
   });
 
+  it('should return empty object when cluster annotations not present', async () => {
+    const mockPortalConfig = {
+      portalContext: {
+        crdGatewayApiUrl: 'https://api.example.com/graphql',
+      },
+    } as any;
+    const mockEnvConfig = {
+      organization: 'test-org',
+    } as any;
+    const mockResource = {
+      metadata: {},
+    } as any;
+    const mockToken = 'mock-token';
+
+    mockConfigService.getPortalConfig.mockResolvedValue(mockPortalConfig);
+    mockEnvConfigService.getEnvConfig.mockResolvedValue(mockEnvConfig);
+    mockAuthService.getToken.mockReturnValue(mockToken);
+    mockResourceService.read.mockReturnValue(of(mockResource));
+
+    const result = await service.createLuigiExtendedGlobalContext();
+
+    expect(result).toEqual({});
+
+    expect(mockResourceService.read).toHaveBeenCalledWith(
+      'test-org',
+      'core_openmfp_org',
+      'Account',
+      'query ($name: String!) { core_openmfp_org { Account(name: $name) { metadata { name annotations } } }}',
+      {
+        portalContext: {
+          crdGatewayApiUrl: 'https://api.example.com/graphql',
+        },
+        token: 'mock-token',
+        accountId: 'test-org',
+      },
+    );
+  });
+
   it('should return empty object when resource read fails', async () => {
     const mockPortalConfig = {
       portalContext: {

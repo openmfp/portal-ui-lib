@@ -40,12 +40,21 @@ export class OpenmfpLuigiExtendedGlobalContextConfigService
         ),
       );
 
+      const resourceKcpIoClusterAnnotation =
+        resource?.metadata?.annotations?.['kcp.io/cluster'];
+      if (!resourceKcpIoClusterAnnotation) {
+        console.warn(
+          `Cluster annotation (kcp.io/cluster) missing for resource: ${entityId}`,
+        );
+        return {};
+      }
+
       return {
-        organizationId: `${resource.metadata.annotations['kcp.io/cluster']}/${entityId}`,
-        entityId: `${resource.metadata.annotations['kcp.io/cluster']}/${entityId}`, // if no entity selected the entityId is the same as the organizationId
+        organizationId: `${resourceKcpIoClusterAnnotation}/${entityId}`,
+        entityId: `${resourceKcpIoClusterAnnotation}/${entityId}`, // if no entity selected the entityId is the same as the organizationId
       };
     } catch (e) {
-      console.error(`Not able to read entity ${entityId} from ${operation}`);
+      console.error(`Failed to read entity ${entityId} from ${operation}`, e);
     }
     return {};
   }
