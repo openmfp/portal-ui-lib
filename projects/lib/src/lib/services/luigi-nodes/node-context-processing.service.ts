@@ -40,8 +40,10 @@ export class NodeContextProcessingService {
         next: (entity) => {
           // update the current already calculated by Luigi context for a node
           ctx.entity = entity;
+          ctx.entityId = `${entity.metadata?.annotations?.['kcp.io/cluster']}/${entityId}`;
           // update the node context of sa node to contain the entity for future context calculations
           entityNode.context.entity = entity;
+          entityNode.context.entityId = ctx.entityId;
         },
         error: (err) =>
           console.error(

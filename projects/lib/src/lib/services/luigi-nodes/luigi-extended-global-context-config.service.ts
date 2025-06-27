@@ -42,6 +42,7 @@ export class OpenmfpLuigiExtendedGlobalContextConfigService
 
       return {
         organizationId: `${resource.metadata.annotations['kcp.io/cluster']}/${entityId}`,
+        entityId: `${resource.metadata.annotations['kcp.io/cluster']}/${entityId}`, // if no entity selected the entityId is the same as the organizationId
       };
     } catch (e) {
       console.error(`Not able to read entity ${entityId} from ${operation}`);

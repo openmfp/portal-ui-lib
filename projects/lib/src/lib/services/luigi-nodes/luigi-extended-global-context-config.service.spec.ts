@@ -54,7 +54,7 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
     mockAuthService = TestBed.inject(AuthService) as jest.Mocked<AuthService>;
   });
 
-  it('should return organizationId when resource is successfully read', async () => {
+  it('should return organizationId with the same entityId when resource is successfully read', async () => {
     const mockPortalConfig = {
       portalContext: {
         crdGatewayApiUrl: 'https://api.example.com/graphql',
@@ -81,6 +81,7 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
 
     expect(result).toEqual({
       organizationId: 'cluster-123/test-org',
+      entityId: 'cluster-123/test-org',
     });
 
     expect(mockResourceService.read).toHaveBeenCalledWith(
