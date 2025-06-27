@@ -19,6 +19,7 @@ import {
   NodeContext,
   Resource,
   ResourceDefinition,
+  ResourceNodeContext,
   ResourceService,
   generateGraphQLFields,
   getResourceValueByJsonPath,
@@ -80,7 +81,7 @@ export class ListViewComponent implements OnInit {
   private luigiCoreService = inject(LuigiCoreService);
   private destroyRef = inject(DestroyRef);
   LuigiClient = input<LuigiClient>();
-  context = input<NodeContext>();
+  context = input<ResourceNodeContext>();
   private createModal = viewChild<CreateResourceModalComponent>('createModal');
 
   resources = signal<Resource[]>([]);

@@ -30,12 +30,12 @@ import {
   CustomNodeProcessingService,
   GlobalSearchConfigService,
   LocalConfigurationService,
-  LocalConfigurationServiceImpl,
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
   NodeChangeHookConfigServiceImpl,
+  OpenmfpLuigiExtendedGlobalContextConfigService,
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
@@ -146,6 +146,12 @@ const addOptionalProviders = (
       useClass:
         options.userProfileConfigService || UserProfileConfigServiceImpl,
     },
+    {
+      provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass:
+        options.luigiExtendedGlobalContextConfigService ||
+        OpenmfpLuigiExtendedGlobalContextConfigService,
+    },
   );
 
   if (options.localConfigurationService) {
@@ -187,13 +193,6 @@ const addOptionalProviders = (
     providers.push({
       provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
       useClass: options.customGlobalNodesService,
-    });
-  }
-
-  if (options.luigiExtendedGlobalContextConfigService) {
-    providers.push({
-      provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.luigiExtendedGlobalContextConfigService,
     });
   }
 

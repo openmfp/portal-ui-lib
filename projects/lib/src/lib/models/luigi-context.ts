@@ -23,6 +23,7 @@ export interface NodeContext extends LuigiGlobalContext {
   kcpPath?: string;
   resourceDefinition?: ResourceDefinition;
   entity?: Resource;
+  entityId?: string;
   entityContext?: EntityContext;
   resourceId?: string; // to do remove
   accountId?: string;

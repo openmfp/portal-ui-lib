@@ -1,5 +1,5 @@
-import { NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
+import { ResourceNodeContext } from './resource-node-context';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -7,11 +7,10 @@ export class GatewayService {
   private luigiCoreService = inject(LuigiCoreService);
 
   public getGatewayUrl(
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
     readFromParentKcpPath = false,
   ) {
-    const gatewayUrl =
-      this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl;
+    const gatewayUrl = nodeContext.portalContext.crdGatewayApiUrl;
     const kcpPathRegexp = /\/([^\/]+)\/graphql$/;
     const currentKcpPath = gatewayUrl?.match(kcpPathRegexp)[1];
     return gatewayUrl?.replace(
@@ -29,11 +28,10 @@ export class GatewayService {
   }
 
   public resolveKcpPath(
-    nodeContext: NodeContext,
+    nodeContext: ResourceNodeContext,
     readFromParentKcpPath = false,
   ) {
-    const gatewayUrl =
-      this.luigiCoreService.getGlobalContext().portalContext.crdGatewayApiUrl;
+    const gatewayUrl = nodeContext.portalContext.crdGatewayApiUrl;
     const currentKcpPath = gatewayUrl?.match(/\/([^\/]+)\/graphql$/)[1];
 
     let kcpPath = currentKcpPath;
