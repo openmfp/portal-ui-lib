@@ -148,12 +148,11 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
     } as any;
     const mockToken = 'mock-token';
 
+    const error = new Error('API Error');
     mockConfigService.getPortalConfig.mockResolvedValue(mockPortalConfig);
     mockEnvConfigService.getEnvConfig.mockResolvedValue(mockEnvConfig);
     mockAuthService.getToken.mockReturnValue(mockToken);
-    mockResourceService.read.mockReturnValue(
-      throwError(() => new Error('API Error')),
-    );
+    mockResourceService.read.mockReturnValue(throwError(() => error));
 
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
@@ -161,7 +160,8 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
 
     expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Not able to read entity test-org from core_openmfp_org',
+      'Failed to read entity test-org from core_openmfp_org',
+      error,
     );
 
     consoleSpy.mockRestore();
