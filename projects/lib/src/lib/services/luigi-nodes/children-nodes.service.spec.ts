@@ -202,7 +202,7 @@ describe('ChildrenNodesService', () => {
     });
   });
 
-
+  describe('addNavigationHeader', () => {
     it('should render correct HTML structure', () => {
       const entityNode = {
         defineEntity: {},
