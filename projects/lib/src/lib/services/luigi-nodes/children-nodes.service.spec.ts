@@ -202,26 +202,6 @@ describe('ChildrenNodesService', () => {
     });
   });
 
-  describe('addBtpLayoutNavigationHeader', () => {
-    it('should not add navHeader when btpToolLayout is false', () => {
-      luigiCoreService.config.settings.btpToolLayout = false;
-      const entityNode = { defineEntity: {} } as LuigiNode;
-
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      expect(entityNode.navHeader).toBeUndefined();
-    });
-
-    it('should add navHeader renderer when btpToolLayout is true', () => {
-      const entityNode = {
-        defineEntity: {},
-        navHeader: { label: 'Test Label', context: {} },
-      } as LuigiNode;
-
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      expect(entityNode.navHeader.renderer).toBeDefined();
-    });
 
     it('should render correct HTML structure', () => {
       const entityNode = {
@@ -232,7 +212,7 @@ describe('ChildrenNodesService', () => {
         },
       } as LuigiNode;
 
-      service.addBtpLayoutNavigationHeader(entityNode);
+      service.addNavigationHeader(entityNode);
 
       const container = document.createElement('div');
       entityNode.navHeader.renderer(
@@ -253,33 +233,12 @@ describe('ChildrenNodesService', () => {
       };
 
       // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
+      service.addNavigationHeader(entityNode);
 
       // Assert
       expect(entityNode.navHeader).toBeUndefined();
     });
 
-    it('should not add navHeader when btpToolLayout is disabled', () => {
-      // Arrange
-      const entityNode: LuigiNode = {
-        pathSegment: 'test',
-        defineEntity: {
-          id: 'testEntity',
-        },
-      };
-
-      Object.defineProperty(luigiCoreService, 'config', {
-        get: jest.fn(() => ({
-          settings: { btpToolLayout: false },
-        })),
-      });
-
-      // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
-
-      // Assert
-      expect(entityNode.navHeader).toBeUndefined();
-    });
 
     it('should initialize navHeader if not present', () => {
       // Arrange
@@ -291,7 +250,7 @@ describe('ChildrenNodesService', () => {
       };
 
       // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
+      service.addNavigationHeader(entityNode);
 
       // Assert
       expect(entityNode.navHeader).toBeDefined();
@@ -311,7 +270,7 @@ describe('ChildrenNodesService', () => {
       };
 
       // Act
-      service.addBtpLayoutNavigationHeader(entityNode);
+      service.addNavigationHeader(entityNode);
 
       // Assert
       expect(entityNode.navHeader.existingProp).toBe('test');
@@ -335,7 +294,7 @@ describe('ChildrenNodesService', () => {
 
       it('should not modify container if navHeader label is missing', () => {
         // Arrange
-        service.addBtpLayoutNavigationHeader(entityNode);
+        service.addNavigationHeader(entityNode);
         const originalHTML = containerElement.innerHTML;
 
         // Act
@@ -352,7 +311,7 @@ describe('ChildrenNodesService', () => {
 
       it('should render header with correct structure and content', () => {
         // Arrange
-        service.addBtpLayoutNavigationHeader(entityNode);
+        service.addNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 
         // Act
@@ -380,7 +339,7 @@ describe('ChildrenNodesService', () => {
       it('should use "Component" if entity label is set to "component', () => {
         // Arrange
         entityNode.defineEntity.label = 'component';
-        service.addBtpLayoutNavigationHeader(entityNode);
+        service.addNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 
         // Act
@@ -402,7 +361,7 @@ describe('ChildrenNodesService', () => {
           label: 'Project',
           dynamicFetchId: 'project',
         };
-        service.addBtpLayoutNavigationHeader(entityNode);
+        service.addNavigationHeader(entityNode);
         const navHeader = {
           label: 'Test Label',
           context: { entityContext: { project: { type: 'product' } } },
@@ -428,7 +387,7 @@ describe('ChildrenNodesService', () => {
           dynamicFetchId: 'project',
         };
 
-        service.addBtpLayoutNavigationHeader(entityNode);
+        service.addNavigationHeader(entityNode);
         const navHeader = {
           label: 'Test Label',
           context: { entityContext: { project: { type: 'experiment' } } },

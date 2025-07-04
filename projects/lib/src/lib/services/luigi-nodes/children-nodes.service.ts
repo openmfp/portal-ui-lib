@@ -35,7 +35,7 @@ export class ChildrenNodesService {
       entityNode.navHeader.showUpLink = true;
     }
 
-    this.addBtpLayoutNavigationHeader(entityNode);
+    this.addNavigationHeader(entityNode);
 
     if (!children) {
       return [];
@@ -82,11 +82,8 @@ export class ChildrenNodesService {
     return this.nodeSortingService.sortNodes(nodes);
   }
 
-  addBtpLayoutNavigationHeader(entityNode: LuigiNode) {
-    if (
-      entityNode.defineEntity &&
-      this.luigiCoreService.config.settings.btpToolLayout
-    ) {
+  addNavigationHeader(entityNode: LuigiNode) {
+    if (entityNode.defineEntity) {
       if (!entityNode.navHeader) {
         entityNode.navHeader = {};
       }
