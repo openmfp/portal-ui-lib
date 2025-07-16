@@ -86,9 +86,9 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
 
     expect(mockResourceService.read).toHaveBeenCalledWith(
       'test-org',
-      'core_openmfp_org',
+      'core_platform_mesh_io',
       'Account',
-      'query ($name: String!) { core_openmfp_org { Account(name: $name) { metadata { name annotations } } }}',
+      'query ($name: String!) { core_platform_mesh_io { Account(name: $name) { metadata { name annotations } } }}',
       {
         portalContext: {
           crdGatewayApiUrl: 'https://api.example.com/graphql',
@@ -124,9 +124,9 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
 
     expect(mockResourceService.read).toHaveBeenCalledWith(
       'test-org',
-      'core_openmfp_org',
+      'core_platform_mesh_io',
       'Account',
-      'query ($name: String!) { core_openmfp_org { Account(name: $name) { metadata { name annotations } } }}',
+      'query ($name: String!) { core_platform_mesh_io { Account(name: $name) { metadata { name annotations } } }}',
       {
         portalContext: {
           crdGatewayApiUrl: 'https://api.example.com/graphql',
@@ -160,7 +160,7 @@ describe('OpenmfpLuigiExtendedGlobalContextConfigService', () => {
 
     expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to read entity test-org from core_openmfp_org',
+      'Failed to read entity test-org from core_platform_mesh_io',
       error,
     );
 

@@ -1,4 +1,5 @@
 import { Resource, ResourceDefinition } from '../../models';
+import { replaceDotsAndHyphensWithUnderscores } from '../../utilities/group-name-sanitizer';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { ResourceNodeContext } from './resource-node-context';
@@ -140,7 +141,9 @@ export class ResourceService {
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
   ) {
-    const group = resourceDefinition.group.replaceAll('.', '_');
+    const group = replaceDotsAndHyphensWithUnderscores(
+      resourceDefinition.group,
+    );
     const kind = resourceDefinition.kind;
 
     const mutation = gqlBuilder.mutation({
@@ -175,7 +178,9 @@ export class ResourceService {
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
   ) {
-    const group = resourceDefinition.group.replaceAll('.', '_');
+    const group = replaceDotsAndHyphensWithUnderscores(
+      resourceDefinition.group,
+    );
     const kind = resourceDefinition.kind;
     const mutation = gqlBuilder.mutation({
       operation: group,
@@ -203,7 +208,7 @@ export class ResourceService {
       .query<string>({
         query: gql`
           {
-            core_openmfp_org {
+            core_platform_mesh_io {
               AccountInfo(name: "account") {
                 metadata {
                   name
@@ -221,7 +226,8 @@ export class ResourceService {
       .pipe(
         map(
           (res: any) =>
-            res.data.core_openmfp_org.AccountInfo.spec.clusterInfo.ca || '',
+            res.data.core_platform_mesh_io.AccountInfo.spec.clusterInfo.ca ||
+            '',
         ),
       );
   }

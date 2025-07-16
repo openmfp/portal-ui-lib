@@ -194,7 +194,13 @@ describe('ResourceService', () => {
   describe('readKcpCA', () => {
     it('should read KCP CA', (done) => {
       mockApollo.query.mockReturnValue(
-        of({ data: { core_openmfp_org: { AccountInfo: { spec: { clusterInfo: { ca: 'cert-data' } } } } } }),
+        of({
+          data: {
+            core_platform_mesh_io: {
+              AccountInfo: { spec: { clusterInfo: { ca: 'cert-data' } } },
+            },
+          },
+        }),
       );
       service.readKcpCA(nodeContext).subscribe((res) => {
         expect(res).toBe('cert-data');

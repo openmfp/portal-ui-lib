@@ -1,4 +1,5 @@
 import { LuigiNode, NodeContext } from '../../models';
+import { replaceDotsAndHyphensWithUnderscores } from '../../utilities/group-name-sanitizer';
 import { ResourceService } from '../resource';
 import { Injectable, inject } from '@angular/core';
 
@@ -21,7 +22,7 @@ export class NodeContextProcessingService {
       return;
     }
 
-    const operation = group.replaceAll('.', '_');
+    const operation = replaceDotsAndHyphensWithUnderscores(group);
     this.resourceService
       .read(
         entityId,
