@@ -60,7 +60,7 @@ Below is an example content-configuration for an accounts node using the generic
           },
           "context": {
             "resourceDefinition": {
-              "group": "core.openmfp.org",
+              "group": "core.platform-mesh.io",
               "plural": "accounts",
               "singular": "account",
               "kind": "Account",
@@ -196,7 +196,7 @@ In case the detail view is an independent node provide context data:
  {
   "context": {
     "resourceDefinition": {
-      "group": "core.openmfp.org",
+      "group": "core.platform-mesh.io",
       "plural": "accounts",
       "singular": "account",
       "kind": "Account",

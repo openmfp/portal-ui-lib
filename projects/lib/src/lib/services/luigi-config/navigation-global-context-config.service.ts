@@ -21,6 +21,7 @@ export class NavigationGlobalContextConfigService {
     const envConfig = await this.envConfigService.getEnvConfig();
     return {
       ...(await this.luigiExtendedGlobalContextConfigService?.createLuigiExtendedGlobalContext()),
+      portalBaseUrl: window.location.origin,
       portalContext: portalConfig.portalContext,
       userId: userInfo.userId,
       userEmail: userInfo.email,
