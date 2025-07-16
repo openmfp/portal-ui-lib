@@ -204,6 +204,7 @@ describe('ResourceService', () => {
       );
       service.readKcpCA(nodeContext).subscribe((res) => {
         expect(res).toBe('cert-data');
+        expect(mockApolloFactory.apollo).toHaveBeenCalledWith(nodeContext);
         done();
       });
     });
