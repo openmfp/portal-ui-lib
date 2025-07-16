@@ -81,7 +81,7 @@ export class OrganizationManagementComponent implements OnInit {
         property: 'Accounts.metadata.name',
       },
     ]);
-    const queryOperation = 'core_openmfp_org';
+    const queryOperation = 'core_platform_mesh_io';
 
     this.resourceService
       .readOrganizations(queryOperation, fields, this.context())

@@ -19,7 +19,7 @@ export class OpenmfpLuigiExtendedGlobalContextConfigService
   async createLuigiExtendedGlobalContext(): Promise<Record<string, any>> {
     const portalConfig = await this.configService.getPortalConfig();
     const entityId = (await this.envConfigService.getEnvConfig()).organization;
-    const operation = 'core_openmfp_org';
+    const operation = 'core_platform_mesh_io';
     const kind = 'Account';
     const queryPart = '{ metadata { name annotations } }';
 

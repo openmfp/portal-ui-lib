@@ -1,3 +1,4 @@
+import { replaceDotsAndHyphensWithUnderscores } from '../../../../../../lib/src/lib/utilities/group-name-sanitizer';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   ChangeDetectionStrategy,
@@ -106,7 +107,7 @@ export class ListViewComponent implements OnInit {
 
   read() {
     const fields = generateGraphQLFields(this.columns);
-    const queryOperation = `${this.resourceDefinition.group.replaceAll('.', '_')}_${this.resourceDefinition.plural}`;
+    const queryOperation = `${replaceDotsAndHyphensWithUnderscores(this.resourceDefinition.group)}_${this.resourceDefinition.plural}`;
 
     this.resourceService
       .list(queryOperation, fields, this.context())

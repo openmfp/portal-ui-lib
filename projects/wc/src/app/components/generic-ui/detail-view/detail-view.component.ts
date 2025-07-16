@@ -1,3 +1,4 @@
+import { replaceDotsAndHyphensWithUnderscores } from '../../../../../../lib/src/lib/utilities/group-name-sanitizer';
 import { kubeConfigTemplate } from './kubeconfig-template';
 import {
   ChangeDetectionStrategy,
@@ -87,7 +88,9 @@ export class DetailViewComponent {
 
   private readResource(): void {
     const fields = generateGraphQLFields(this.resourceFields);
-    const queryOperation = this.resourceDefinition.group.replaceAll('.', '_');
+    const queryOperation = replaceDotsAndHyphensWithUnderscores(
+      this.resourceDefinition.group,
+    );
     const kind = this.resourceDefinition.kind;
 
     this.resourceService
