@@ -105,7 +105,7 @@ export class OrganizationManagementComponent implements OnInit {
       metadata: { name: this.newOrganization },
     };
     const resourceDefinition: ResourceDefinition = {
-      group: 'core.openmfp.org',
+      group: 'core.platform-mesh.io',
       kind: 'Account',
       plural: 'accounts',
       singular: 'account',

@@ -17,6 +17,7 @@ export interface LuigiGlobalContext extends Record<string, any> {
   userEmail: string;
   token: string;
   organization: string;
+  portalBaseUrl: string;
 }
 
 export interface NodeContext extends LuigiGlobalContext {

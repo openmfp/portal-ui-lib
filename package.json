@@ -39,7 +39,7 @@
     "@luigi-project/client": "^2.21.3",
     "@luigi-project/client-support-angular": "^2.21.3",
     "@luigi-project/plugin-auth-oauth2": "^2.21.3",
-    "@ui5/webcomponents-ngx": "0.4.8",
+    "@ui5/webcomponents-ngx": "^0.4.8",
     "apollo-angular": "^7.0.0 || ^8.0.0 || ^10.0.0",
     "gql-query-builder": "^3.8.0",
     "graphql": "16.10.0 || ^17.0.0 || ^16.10.0",

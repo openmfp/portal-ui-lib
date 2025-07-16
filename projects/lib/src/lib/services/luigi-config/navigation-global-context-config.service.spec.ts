@@ -6,7 +6,6 @@ import { NavigationGlobalContextConfigService } from './navigation-global-contex
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
-import { UserInfo } from 'node:os';
 
 describe('NavigationGlobalContextConfigService', () => {
   let navigationGlobalContextConfigService: NavigationGlobalContextConfigService;
@@ -38,6 +37,9 @@ describe('NavigationGlobalContextConfigService', () => {
     navigationGlobalContextConfigService = TestBed.inject(
       NavigationGlobalContextConfigService,
     );
+
+    delete window.location;
+    window.location = { origin: 'https://example.com' } as any;
   });
 
   it('should be created', () => {
@@ -87,6 +89,7 @@ describe('NavigationGlobalContextConfigService', () => {
       expect(result).toEqual({
         ...mockExtendedContext,
         portalContext: mockPortalConfig.portalContext,
+        portalBaseUrl: 'https://example.com',
         userId: 'test-user',
         userEmail: 'user@test.com',
         token: 'test-token',
@@ -135,6 +138,7 @@ describe('NavigationGlobalContextConfigService', () => {
 
       expect(result).toEqual({
         portalContext: mockPortalConfig.portalContext,
+        portalBaseUrl: 'https://example.com',
         userId: 'test-user',
         userEmail: 'user@test.com',
         token: 'test-token',

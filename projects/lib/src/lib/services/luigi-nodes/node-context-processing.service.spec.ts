@@ -90,6 +90,7 @@ describe('NodeContextProcessingService', () => {
       token: 'token123',
       organization: 'org-name',
       accountId: '1',
+      portalBaseUrl: 'https://example.com',
     };
 
     mockResourceService.read.mockReturnValue(of(entity));

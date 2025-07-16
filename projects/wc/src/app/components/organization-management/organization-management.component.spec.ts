@@ -112,6 +112,7 @@ describe('OrganizationManagementComponent', () => {
       userEmail: 'user@test.com',
       token: 'token',
       organization: 'org1',
+      portalBaseUrl: 'https://test.com',
     };
     luigiCoreServiceMock.getGlobalContext.mockReturnValue(mockGlobalContext);
     resourceServiceMock.readOrganizations.mockReturnValue(
