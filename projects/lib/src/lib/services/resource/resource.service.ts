@@ -204,7 +204,7 @@ export class ResourceService {
 
   readKcpCA(nodeContext: ResourceNodeContext): Observable<string> {
     return this.apolloFactory
-      .apollo(nodeContext, true)
+      .apollo(nodeContext)
       .query<string>({
         query: gql`
           {
