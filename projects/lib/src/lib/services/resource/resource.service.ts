@@ -224,11 +224,12 @@ export class ResourceService {
         `,
       })
       .pipe(
-        map(
-          (res: any) =>
+        map((res: any) => {
+          const ca =
             res.data.core_platform_mesh_io.AccountInfo.spec.clusterInfo.ca ||
-            '',
-        ),
+            '';
+          return btoa(ca);
+        }),
       );
   }
 }
