@@ -96,6 +96,7 @@ export class DetailViewComponent {
     this.resourceService
       .read(
         this.context().resourceId,
+        this.context().namespace,
         queryOperation,
         kind,
         fields,

@@ -27,6 +27,7 @@ export interface NodeContext extends LuigiGlobalContext {
   entityId?: string;
   entityContext?: EntityContext;
   resourceId?: string; // to do remove
+  namespace?: string;
   accountId?: string;
   parentNavigationContexts?: string[];
   error?: {

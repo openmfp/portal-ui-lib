@@ -52,7 +52,14 @@ describe('ResourceService', () => {
       service['luigiCoreService'].showAlert = mockShowAlert;
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', invalidQuery, nodeContext)
+        .read(
+          'test-name',
+          'test-namespace',
+          'core_k8s_io',
+          'TestKind',
+          invalidQuery,
+          nodeContext,
+        )
         .subscribe((res) => {
           expect(res).toBeNull();
           expect(mockLuigiCoreService.showAlert).toHaveBeenCalledWith({
@@ -69,7 +76,14 @@ describe('ResourceService', () => {
       );
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
+        .read(
+          'test-name',
+          'test-namespace',
+          'core_k8s_io',
+          'TestKind',
+          ['name'],
+          nodeContext,
+        )
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           done();
@@ -83,7 +97,14 @@ describe('ResourceService', () => {
       );
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext)
+        .read(
+          'test-name',
+          'test-namespace',
+          'core_k8s_io',
+          'TestKind',
+          rawQuery,
+          nodeContext,
+        )
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           done();
@@ -96,7 +117,14 @@ describe('ResourceService', () => {
       console.error = jest.fn();
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
+        .read(
+          'test-name',
+          'test-namespace',
+          'core_k8s_io',
+          'TestKind',
+          ['name'],
+          nodeContext,
+        )
         .subscribe({
           error: (err) => {
             expect(console.error).toHaveBeenCalledWith(

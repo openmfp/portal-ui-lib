@@ -19,6 +19,7 @@ export class ResourceService {
 
   read(
     resourceId: string,
+    namespace: string,
     operation: string,
     kind: string,
     fieldsOrRawQuery: any[] | string,
@@ -28,6 +29,7 @@ export class ResourceService {
       fieldsOrRawQuery,
       kind,
       resourceId,
+      namespace,
       operation,
     );
 
@@ -64,6 +66,7 @@ export class ResourceService {
     fieldsOrRawQuery: any[] | string,
     kind: string,
     resourceId: string,
+    namespace: string,
     operation: string,
   ) {
     if (fieldsOrRawQuery instanceof Array) {
@@ -71,7 +74,7 @@ export class ResourceService {
         gqlBuilder
           .query({
             operation: kind,
-            variables: { name: { value: resourceId, type: 'String!' } },
+            variables: { name: { value: resourceId, type: 'String!' }, namespace: { value: namespace, type: 'String!' } },
             fields: fieldsOrRawQuery,
           })
           .query.replace(kind, `${operation} { ${kind}`)
