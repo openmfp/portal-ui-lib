@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
 import { LuigiNode } from '../../models/luigi';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeSortingService } from './node-sorting.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('NodeSortingService', () => {
   let service: NodeSortingService;
@@ -325,11 +325,13 @@ describe('NodeSortingService', () => {
     const nodeA = { label: 'alpha', order: '1' } as LuigiNode;
     const nodeB = { label: 'beta', order: '1' } as LuigiNode;
     const nodeC = { label: 'gamma', order: '1' } as LuigiNode;
+    const nodeD = { order: '1', category: 'd' } as LuigiNode;
+    const nodeE = { order: '1', category: 'd' } as LuigiNode;
 
-    const nodes = [nodeC, nodeA, nodeB];
+    const nodes = [nodeD, nodeE, nodeC, nodeA, nodeB];
     nodes.sort(service.nodeComparison);
 
-    expect(nodes).toEqual([nodeA, nodeB, nodeC]);
+    expect(nodes).toEqual([nodeA, nodeB, nodeC, nodeD, nodeE]);
   });
 
   it('should sort nodes correctly using sortNodes method', () => {
