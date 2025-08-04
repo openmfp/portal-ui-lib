@@ -323,12 +323,12 @@ describe('NodeSortingService', () => {
 
   it('should sort nodes alphabetically by label if orders are equal', () => {
     const nodeA = { label: 'alpha', order: '1' } as LuigiNode;
+    const nodeD = { order: '1', category: 'd' } as LuigiNode;
     const nodeB = { label: 'beta', order: '1' } as LuigiNode;
     const nodeC = { label: 'gamma', order: '1' } as LuigiNode;
-    const nodeD = { order: '1', category: 'd' } as LuigiNode;
     const nodeE = { order: '1', category: 'd' } as LuigiNode;
 
-    const nodes = [nodeD, nodeE, nodeC, nodeA, nodeB];
+    const nodes = [nodeD, nodeC, nodeE, nodeA, nodeB];
     nodes.sort(service.nodeComparison);
 
     expect(nodes).toEqual([nodeA, nodeB, nodeC, nodeD, nodeE]);
