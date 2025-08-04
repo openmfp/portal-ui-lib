@@ -27,6 +27,7 @@ export class NodeSortingService {
       return 1;
     }
 
+    // if orders are equal -> sort alphabetically by label
     if (!a.label && !b.label) {
       return 0; // both undefined, keep original order
     } else if (!a.label) {
@@ -35,8 +36,7 @@ export class NodeSortingService {
       return -1; // b has no label, a goes before b
     }
 
-    // if orders are equal -> sort alphabetically by label
-    return a.label?.localeCompare(b.label);
+    return a.label.localeCompare(b.label);
   }
 
   appendChildrenToSlot(
