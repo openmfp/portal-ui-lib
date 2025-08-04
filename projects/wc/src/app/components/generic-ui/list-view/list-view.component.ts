@@ -1,4 +1,3 @@
-import { replaceDotsAndHyphensWithUnderscores } from '../../../../../../lib/src/lib/utilities/group-name-sanitizer';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
 import {
   ChangeDetectionStrategy,
@@ -14,10 +13,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
+import { replaceDotsAndHyphensWithUnderscores } from '@openmfp/portal-ui-lib';
 import {
   FieldDefinition,
   LuigiCoreService,
-  NodeContext,
   Resource,
   ResourceDefinition,
   ResourceNodeContext,

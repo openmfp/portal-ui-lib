@@ -146,7 +146,7 @@ export class NodesProcessingService {
           children.forEach((child) => {
             child.context.entityContext = {
               ...child.context.entityContext,
-              ...node.context.entityContext,
+              ...node.context?.entityContext,
             };
           });
           return children.filter((child) =>
