@@ -1,18 +1,12 @@
 import { EntityDefinition } from './luigi';
-import { Resource, ResourceDefinition } from './resource';
+import { ResourceDefinition } from './resource';
 
-export interface PortalContext extends Record<string, any> {
-  crdGatewayApiUrl?: string;
-}
+export interface PortalContext extends Record<string, any> {}
 
-export interface EntityContext extends Record<string, any> {
-  account?: {
-    id: string;
-  };
-}
+export interface EntityContext extends Record<string, any> {}
 
 export interface LuigiGlobalContext extends Record<string, any> {
-  portalContext: PortalContext;
+  portalContext: Record<string, any>;
   userId: string;
   userEmail: string;
   token: string;
@@ -21,13 +15,8 @@ export interface LuigiGlobalContext extends Record<string, any> {
 }
 
 export interface NodeContext extends LuigiGlobalContext {
-  kcpPath?: string;
   resourceDefinition?: ResourceDefinition;
-  entity?: Resource;
-  entityId?: string;
   entityContext?: EntityContext;
-  resourceId?: string; // to do remove
-  accountId?: string;
   parentNavigationContexts?: string[];
   error?: {
     code: number;

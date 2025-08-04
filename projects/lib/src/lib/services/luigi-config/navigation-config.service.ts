@@ -34,6 +34,7 @@ export class NavigationConfigService {
     @Optional()
     @Inject(LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN)
     private appSwitcherConfigService: AppSwitcherConfigService,
+    @Optional()
     @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService
@@ -66,7 +67,7 @@ export class NavigationConfigService {
       validWebcomponentUrls: envConfig.validWebcomponentUrls,
       intentMapping: this.intentNavigationService.buildIntentMappings(allNodes),
       nodeChangeHook: function (prevNode, nextNode) {
-        this.nodeChangeHookConfigService.nodeChangeHook(prevNode, nextNode);
+        this.nodeChangeHookConfigService?.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
       breadcrumbs:
         await this.luigiBreadcrumbConfigService?.getBreadcrumbsConfig(),
