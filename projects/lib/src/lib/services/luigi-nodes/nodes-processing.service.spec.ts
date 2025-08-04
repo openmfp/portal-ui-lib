@@ -1,3 +1,4 @@
+import { LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -6,7 +7,6 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodesProcessingService } from './nodes-processing.service';
 import { TestBed } from '@angular/core/testing';
-import { LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN } from '@openmfp/portal-ui-lib';
 
 describe('NodesProcessingService', () => {
   let service: NodesProcessingService;
@@ -37,7 +37,7 @@ describe('NodesProcessingService', () => {
         providePortal(),
         {
           provide: LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
-          useValue: { readAndStoreEntityInNodeContext: jest.fn() },
+          useValue: { processNodeContext: jest.fn() },
         },
       ],
     }).compileComponents();
