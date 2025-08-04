@@ -19,6 +19,7 @@ describe('ListViewComponent', () => {
 
     mockLuigiCoreService = {
       showAlert: jest.fn(),
+      getNodeParams: jest.fn(),
     };
 
     TestBed.configureTestingModule({

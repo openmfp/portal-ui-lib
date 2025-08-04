@@ -19,11 +19,11 @@ export class ResourceService {
 
   read(
     resourceId: string,
-    namespace: string,
     operation: string,
     kind: string,
     fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
+    namespace?: string,
   ): Observable<Resource> {
     let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
       fieldsOrRawQuery,
@@ -90,11 +90,12 @@ export class ResourceService {
     operation: string,
     fields: any[],
     nodeContext: ResourceNodeContext,
+    namespace?: string,
   ): Observable<Resource[]> {
     const query = gqlBuilder.subscription({
-      operation: operation,
+      operation,
       fields,
-      variables: {},
+      variables: namespace ? { namespace: { type: 'String', value: namespace } } : {},
     });
 
     return this.apolloFactory
@@ -103,6 +104,7 @@ export class ResourceService {
         query: gql`
           ${query.query}
         `,
+        variables: query.variables,
       })
       .pipe(
         map((res: any) => res.data?.[operation]),

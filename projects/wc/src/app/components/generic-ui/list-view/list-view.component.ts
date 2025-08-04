@@ -17,7 +17,6 @@ import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   FieldDefinition,
   LuigiCoreService,
-  NodeContext,
   Resource,
   ResourceDefinition,
   ResourceNodeContext,
@@ -86,6 +85,7 @@ export class ListViewComponent implements OnInit {
   private createModal = viewChild<CreateResourceModalComponent>('createModal');
 
   resources = signal<Resource[]>([]);
+  namespace: string;
   columns: FieldDefinition[];
   heading: string;
   resourceDefinition: ResourceDefinition;
@@ -98,19 +98,19 @@ export class ListViewComponent implements OnInit {
         this.context().resourceDefinition.ui?.listView?.fields ||
         defaultColumns;
       this.heading = `${this.context().resourceDefinition.plural.charAt(0).toUpperCase()}${this.context().resourceDefinition.plural.slice(1)}`;
-
-      this.read();
+      this.namespace = this.LuigiClient().getNodeParams(true)?.['namespace'];
+      this.read(this.namespace);
     });
   }
 
   ngOnInit(): void {}
 
-  read() {
+  read(namespace?: string) {
     const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${replaceDotsAndHyphensWithUnderscores(this.resourceDefinition.group)}_${this.resourceDefinition.plural}`;
 
     this.resourceService
-      .list(queryOperation, fields, this.context())
+      .list(queryOperation, fields, this.context(), namespace)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -154,7 +154,9 @@ export class ListViewComponent implements OnInit {
   }
 
   navigateToResource(resource: Resource) {
-    this.LuigiClient().linkManager().navigate(resource.metadata.name);
+    const link = this.LuigiClient().linkManager();
+    const manager = this.namespace ? link.withParams({ 'namespace': this.namespace }) : link;
+    manager.navigate(resource.metadata.name);
   }
 
   openCreateResourceModal() {

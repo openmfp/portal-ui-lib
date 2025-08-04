@@ -54,7 +54,6 @@ describe('ResourceService', () => {
       service
         .read(
           'test-name',
-          'test-namespace',
           'core_k8s_io',
           'TestKind',
           invalidQuery,
@@ -78,7 +77,6 @@ describe('ResourceService', () => {
       service
         .read(
           'test-name',
-          'test-namespace',
           'core_k8s_io',
           'TestKind',
           ['name'],
@@ -99,7 +97,6 @@ describe('ResourceService', () => {
       service
         .read(
           'test-name',
-          'test-namespace',
           'core_k8s_io',
           'TestKind',
           rawQuery,
@@ -119,7 +116,6 @@ describe('ResourceService', () => {
       service
         .read(
           'test-name',
-          'test-namespace',
           'core_k8s_io',
           'TestKind',
           ['name'],

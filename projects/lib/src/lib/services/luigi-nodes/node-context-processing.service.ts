@@ -26,7 +26,6 @@ export class NodeContextProcessingService {
     this.resourceService
       .read(
         entityId,
-        null,
         operation,
         kind,
         `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,

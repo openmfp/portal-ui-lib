@@ -27,7 +27,6 @@ export class OpenmfpLuigiExtendedGlobalContextConfigService
       const resource = await firstValueFrom(
         this.resourceService.read(
           entityId,
-          null,
           operation,
           kind,
           `query ($name: String!) { ${operation} { ${kind}(name: $name) ${queryPart} }}`,

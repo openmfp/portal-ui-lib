@@ -74,6 +74,7 @@ export class DetailViewComponent {
   workspacePath: string;
   resourceFields: FieldDefinition[];
   kcpCA: string = '';
+  namespace: string;
 
   constructor() {
     effect(() => {
@@ -82,11 +83,12 @@ export class DetailViewComponent {
         this.context().resourceDefinition.ui?.detailView?.fields ||
         defaultFields;
       this.resourceDefinition = this.context().resourceDefinition;
-      this.readResource();
+      this.namespace = this.LuigiClient().getNodeParams(true)?.['namespace'];
+      this.readResource(this.namespace);
     });
   }
 
-  private readResource(): void {
+  private readResource(namespace?: string): void {
     const fields = generateGraphQLFields(this.resourceFields);
     const queryOperation = replaceDotsAndHyphensWithUnderscores(
       this.resourceDefinition.group,
@@ -96,11 +98,11 @@ export class DetailViewComponent {
     this.resourceService
       .read(
         this.context().resourceId,
-        this.context().namespace,
         queryOperation,
         kind,
         fields,
         this.context(),
+        namespace,
       )
       .subscribe({
         next: (result) => this.resource.set(result),
