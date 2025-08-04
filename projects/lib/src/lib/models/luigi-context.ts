@@ -6,7 +6,7 @@ export interface PortalContext extends Record<string, any> {}
 export interface EntityContext extends Record<string, any> {}
 
 export interface LuigiGlobalContext extends Record<string, any> {
-  portalContext: Record<string, any>;
+  portalContext: PortalContext;
   userId: string;
   userEmail: string;
   token: string;
