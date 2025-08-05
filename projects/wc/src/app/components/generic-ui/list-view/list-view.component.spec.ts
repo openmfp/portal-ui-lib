@@ -1,5 +1,4 @@
 import { ListViewComponent } from './list-view.component';
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LuigiCoreService, ResourceService } from '@openmfp/portal-ui-lib';
 import { of, throwError } from 'rxjs';
@@ -119,16 +118,18 @@ describe('ListViewComponent', () => {
   it('should navigate to resource with query param if present', () => {
     const resource = { metadata: { name: 'res1' } };
     const navSpy = jest.fn();
+    const withParamsSpy = jest.fn().mockReturnValue({ navigate: navSpy });
+    component.namespace = 'test';
     component.LuigiClient = (() => ({
-      withParams: (shouldDesanitise: boolean) => ({namespace: 'test'}),
       linkManager: () => ({
+        withParams: withParamsSpy,
         navigate: navSpy,
       }),
     })) as any;
 
     component.navigateToResource(resource as any);
     expect(navSpy).toHaveBeenCalledWith('res1');
-    expect(navSpy).toHaveBeenCalledWith('test');
+    expect(withParamsSpy).toHaveBeenCalledWith({ 'namespace': 'test' });
   });
 
   it('should check create view fields existence', () => {
