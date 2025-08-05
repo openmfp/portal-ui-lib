@@ -1,4 +1,3 @@
-import { replaceDotsAndHyphensWithUnderscores } from '../../../../../../lib/src/lib/utilities/group-name-sanitizer';
 import { kubeConfigTemplate } from './kubeconfig-template';
 import {
   ChangeDetectionStrategy,
@@ -10,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
+import { replaceDotsAndHyphensWithUnderscores } from '@openmfp/portal-ui-lib';
 import {
   FieldDefinition,
   GatewayService,
@@ -94,10 +94,11 @@ export class DetailViewComponent {
       this.resourceDefinition.group,
     );
     const kind = this.resourceDefinition.kind;
+    const namespace = this.resourceDefinition.namespace;
 
     this.resourceService
       .read(
-        this.context().resourceId,
+        this.context().accountId,
         queryOperation,
         kind,
         fields,
@@ -124,7 +125,7 @@ export class DetailViewComponent {
 
   async downloadKubeConfig() {
     const kubeConfig = kubeConfigTemplate
-      .replaceAll('<cluster-name>', this.context().resourceId)
+      .replaceAll('<cluster-name>', this.context().accountId)
       .replaceAll('<server-url>', this.workspacePath)
       .replaceAll('<ca-data>', this.kcpCA)
       .replaceAll('<token>', this.context().token);

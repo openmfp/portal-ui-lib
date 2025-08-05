@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
 import { LuigiNode, LuigiNodeCategory } from '../../models';
+import { Injectable } from '@angular/core';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -27,13 +28,21 @@ export class NodeSortingService {
     }
 
     // if orders are equal -> sort alphabetically by label
-    return a.label?.localeCompare(b.label);
+    if (!a.label && !b.label) {
+      return 0; // both undefined, keep original order
+    } else if (!a.label) {
+      return 1; // a has no label, goes after b
+    } else if (!b.label) {
+      return -1; // b has no label, a goes before b
+    }
+
+    return a.label.localeCompare(b.label);
   }
 
   appendChildrenToSlot(
     nodes: LuigiNode[],
     slotNode: LuigiNode,
-    children: LuigiNode[]
+    children: LuigiNode[],
   ) {
     const slotIndex = nodes.indexOf(slotNode);
 
@@ -89,7 +98,7 @@ export class NodeSortingService {
           this.appendChildrenToSlot(
             sortedNodes,
             slotNode,
-            slottedChildrenMap[slotNode.defineSlot].sort(this.nodeComparison)
+            slottedChildrenMap[slotNode.defineSlot].sort(this.nodeComparison),
           );
           delete slottedChildrenMap[slotNode.defineSlot];
         }
