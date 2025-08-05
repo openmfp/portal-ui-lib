@@ -116,10 +116,15 @@ export class DetailViewComponent {
   }
 
   navigateToParent() {
-    this.LuigiClient()
+    const linkManager = this.LuigiClient()
       .linkManager()
-      .fromContext(this.context().parentNavigationContexts.at(-1))
-      .navigate('/');
+      .fromContext(this.context().parentNavigationContexts.at(-1));
+
+    if (this.namespace) {
+      linkManager.withParams({ namespace: this.namespace });
+    }
+
+    linkManager.navigate('/');
   }
 
   async downloadKubeConfig() {

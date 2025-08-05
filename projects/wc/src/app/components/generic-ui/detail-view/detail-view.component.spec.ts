@@ -73,6 +73,23 @@ describe('DetailViewComponent', () => {
     expect(luigiClientLinkManagerNavigate).toHaveBeenCalledWith('/');
   });
 
+  it('should navigate to parent with query param if present', () => {
+    const navSpy = jest.fn();
+    const withParamsSpy = jest.fn().mockReturnValue({ navigate: navSpy });
+    component.namespace = 'test';
+    component.LuigiClient = (() => ({
+      linkManager: () => ({
+        fromContext: jest.fn().mockReturnThis(),
+        withParams: withParamsSpy,
+        navigate: navSpy,
+      }),
+    })) as any;
+
+    component.navigateToParent();
+    expect(navSpy).toHaveBeenCalledWith('/');
+    expect(withParamsSpy).toHaveBeenCalledWith({ 'namespace': 'test' });
+  });
+
   it('should download kubeconfig', async () => {
     const mockAnchorElement = document.createElement('a');
     jest.spyOn(mockAnchorElement, 'click');
