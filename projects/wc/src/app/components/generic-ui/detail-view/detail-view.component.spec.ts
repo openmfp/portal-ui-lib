@@ -51,6 +51,7 @@ describe('DetailViewComponent', () => {
       linkManager: () => ({
         fromContext: jest.fn().mockReturnThis(),
         navigate: luigiClientLinkManagerNavigate,
+        withParams: jest.fn().mockReturnThis(),
       }),
     })) as any;
 

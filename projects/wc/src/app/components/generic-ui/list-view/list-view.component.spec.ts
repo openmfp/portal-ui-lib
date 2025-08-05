@@ -50,6 +50,7 @@ describe('ListViewComponent', () => {
       linkManager: () => ({
         fromContext: jest.fn().mockReturnThis(),
         navigate: jest.fn(),
+        withParams: jest.fn().mockReturnThis(),
       }),
     })) as any;
 

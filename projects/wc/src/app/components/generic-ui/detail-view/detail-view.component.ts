@@ -94,7 +94,6 @@ export class DetailViewComponent {
       this.resourceDefinition.group,
     );
     const kind = this.resourceDefinition.kind;
-    const namespace = this.resourceDefinition.namespace;
 
     this.resourceService
       .read(
