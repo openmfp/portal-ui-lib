@@ -51,6 +51,7 @@ export class NavigationConfigService {
 
     const portalConfig = await this.configService.getPortalConfig();
     this.luigiCoreService.setFeatureToggles(portalConfig.featureToggles);
+    const context = await this.navigationGlobalContextConfigService.getGlobalContext();
     const luigiNodes =
       await this.nodesProcessingService.processNodes(childrenByEntity);
 
@@ -58,8 +59,7 @@ export class NavigationConfigService {
       nodes: luigiNodes,
       viewGroupSettings: this.buildViewGroups(allNodes),
       appSwitcher: this.appSwitcherConfigService?.getAppSwitcher(luigiNodes),
-      globalContext:
-        await this.navigationGlobalContextConfigService.getGlobalContext(),
+      globalContext: context,
       profile: await this.userProfileConfigService?.getProfile(),
       addNavHrefs: true,
       contextSwitcher: undefined,
