@@ -53,6 +53,7 @@ describe('DetailViewComponent', () => {
         navigate: luigiClientLinkManagerNavigate,
         withParams: jest.fn().mockReturnThis(),
       }),
+      getNodeParams: jest.fn(),
     })) as any;
 
     fixture.detectChanges();

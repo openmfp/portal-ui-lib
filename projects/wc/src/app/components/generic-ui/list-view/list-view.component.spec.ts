@@ -52,6 +52,7 @@ describe('ListViewComponent', () => {
         navigate: jest.fn(),
         withParams: jest.fn().mockReturnThis(),
       }),
+      getNodeParams: jest.fn(),
     })) as any;
 
     fixture.detectChanges();
