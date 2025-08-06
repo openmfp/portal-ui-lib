@@ -115,7 +115,21 @@ describe('ListViewComponent', () => {
     expect(navSpy).toHaveBeenCalledWith('res1');
   });
 
-  it('should navigate to resource with namespace in path if present', () => {
+  it('should navigate to resource with namespace in path if present in query param and resource definition', () => {
+    const resource = { metadata: { name: 'res1', namespace: 'test1' } };
+    const navSpy = jest.fn();
+    component.namespace = 'test';
+    component.LuigiClient = (() => ({
+      linkManager: () => ({
+        navigate: navSpy,
+      }),
+    })) as any;
+
+    component.navigateToResource(resource as any);
+    expect(navSpy).toHaveBeenCalledWith('namespaces/test/res1');
+  });
+
+  it('should navigate to resource without namespace in path if present in query param only', () => {
     const resource = { metadata: { name: 'res1' } };
     const navSpy = jest.fn();
     component.namespace = 'test';
@@ -126,7 +140,7 @@ describe('ListViewComponent', () => {
     })) as any;
 
     component.navigateToResource(resource as any);
-    expect(navSpy).toHaveBeenCalledWith('test/res1');
+    expect(navSpy).toHaveBeenCalledWith('res1');
   });
 
   it('should check create view fields existence', () => {
