@@ -34,6 +34,7 @@ export class NavigationConfigService {
     @Optional()
     @Inject(LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN)
     private appSwitcherConfigService: AppSwitcherConfigService,
+    @Optional()
     @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService
@@ -50,6 +51,7 @@ export class NavigationConfigService {
 
     const portalConfig = await this.configService.getPortalConfig();
     this.luigiCoreService.setFeatureToggles(portalConfig.featureToggles);
+    const context = await this.navigationGlobalContextConfigService.getGlobalContext();
     const luigiNodes =
       await this.nodesProcessingService.processNodes(childrenByEntity);
 
@@ -57,8 +59,7 @@ export class NavigationConfigService {
       nodes: luigiNodes,
       viewGroupSettings: this.buildViewGroups(allNodes),
       appSwitcher: this.appSwitcherConfigService?.getAppSwitcher(luigiNodes),
-      globalContext:
-        await this.navigationGlobalContextConfigService.getGlobalContext(),
+      globalContext: context,
       profile: await this.userProfileConfigService?.getProfile(),
       addNavHrefs: true,
       contextSwitcher: undefined,
@@ -66,7 +67,7 @@ export class NavigationConfigService {
       validWebcomponentUrls: envConfig.validWebcomponentUrls,
       intentMapping: this.intentNavigationService.buildIntentMappings(allNodes),
       nodeChangeHook: function (prevNode, nextNode) {
-        this.nodeChangeHookConfigService.nodeChangeHook(prevNode, nextNode);
+        this.nodeChangeHookConfigService?.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
       breadcrumbs:
         await this.luigiBreadcrumbConfigService?.getBreadcrumbsConfig(),

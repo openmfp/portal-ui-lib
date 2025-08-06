@@ -27,6 +27,7 @@ export * from './luigi-nodes/luigi-extended-global-context-config.service';
 export * from './luigi-nodes/custom-global-nodes.service';
 export * from './luigi-nodes/custom-node-processing.service';
 export * from './luigi-nodes/node-utils.service';
+export * from './luigi-nodes/node-context-processing.service';
 export * from './portal';
 
 export * from './resource';

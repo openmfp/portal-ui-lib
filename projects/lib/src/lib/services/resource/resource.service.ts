@@ -1,5 +1,5 @@
 import { Resource, ResourceDefinition } from '../../models';
-import { replaceDotsAndHyphensWithUnderscores } from '../../utilities/group-name-sanitizer';
+import { replaceDotsAndHyphensWithUnderscores } from '../../utilities';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { ResourceNodeContext } from './resource-node-context';
