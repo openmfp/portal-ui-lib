@@ -76,7 +76,6 @@ describe('ResourceService', () => {
             query: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: undefined,
             },
           });
           done();
@@ -118,7 +117,6 @@ describe('ResourceService', () => {
             query: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: undefined,
             },
           });
           done();

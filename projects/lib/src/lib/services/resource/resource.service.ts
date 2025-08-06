@@ -51,7 +51,7 @@ export class ResourceService {
         query,
         variables: {
           name: resourceId,
-          namespace: namespace,
+          ...(namespace && { namespace }),
         },
       })
       .pipe(
@@ -75,7 +75,10 @@ export class ResourceService {
         gqlBuilder
           .query({
             operation: kind,
-            variables: { name: { value: resourceId, type: 'String!' }, namespace: { value: namespace, type: 'String' } },
+            variables: {
+              name: { value: resourceId, type: 'String!' },
+              ...(namespace && { namespace: { value: namespace, type: 'String' } })
+            },
             fields: fieldsOrRawQuery,
           })
           .query.replace(kind, `${operation} { ${kind}`)
