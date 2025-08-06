@@ -115,21 +115,18 @@ describe('ListViewComponent', () => {
     expect(navSpy).toHaveBeenCalledWith('res1');
   });
 
-  it('should navigate to resource with query param if present', () => {
+  it('should navigate to resource with namespace in path if present', () => {
     const resource = { metadata: { name: 'res1' } };
     const navSpy = jest.fn();
-    const withParamsSpy = jest.fn().mockReturnValue({ navigate: navSpy });
     component.namespace = 'test';
     component.LuigiClient = (() => ({
       linkManager: () => ({
-        withParams: withParamsSpy,
         navigate: navSpy,
       }),
     })) as any;
 
     component.navigateToResource(resource as any);
-    expect(navSpy).toHaveBeenCalledWith('res1');
-    expect(withParamsSpy).toHaveBeenCalledWith({ 'namespace': 'test' });
+    expect(navSpy).toHaveBeenCalledWith('test/res1');
   });
 
   it('should check create view fields existence', () => {
