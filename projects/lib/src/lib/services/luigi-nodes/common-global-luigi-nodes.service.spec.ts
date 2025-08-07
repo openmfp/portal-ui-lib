@@ -63,21 +63,6 @@ describe('CommonGlobalLuigiNodesService', () => {
             },
           ],
         },
-        {
-          context: {
-            translationTable,
-            kcpPath: 'root:orgs',
-          },
-          hideFromNav: true,
-          hideSideNav: true,
-          label: 'PROFILE_ORGANIZATION_MANAGEMENT',
-          order: '1001',
-          pathSegment: 'organization-management',
-          viewUrl: '/assets/openmfp-portal-ui-wc.js#organization-management',
-          webcomponent: {
-            selfRegistered: true,
-          },
-        },
       ]);
     });
   });

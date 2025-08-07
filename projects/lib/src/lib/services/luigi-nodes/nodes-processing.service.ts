@@ -1,4 +1,5 @@
 import {
+  LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
@@ -19,7 +20,10 @@ import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
-  private nodeContextProcessingService = inject(NodeContextProcessingService);
+  private nodeContextProcessingService = inject<NodeContextProcessingService>(
+    LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
+    { optional: true },
+  );
   private luigiNodesService = inject(LuigiNodesService);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
@@ -220,7 +224,7 @@ export class NodesProcessingService {
               );
             });
 
-          this.nodeContextProcessingService.readAndStoreEntityInNodeContext(
+          this.nodeContextProcessingService?.processNodeContext(
             entityId,
             entityNode,
             ctx,

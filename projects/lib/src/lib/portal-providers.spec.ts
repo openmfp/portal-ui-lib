@@ -84,17 +84,6 @@ describe('Provide Portal', () => {
     expect(customListenerProviders).toHaveLength(0);
   });
 
-  it('should set default services when custom services are not provided', () => {
-    providePortal({});
-
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-      useClass: services.NodeChangeHookConfigServiceImpl,
-    });
-  });
-
   it('should set custom services when provided', () => {
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: {} as any,
@@ -110,11 +99,24 @@ describe('Provide Portal', () => {
       themingService: {} as any,
       errorComponentConfig: { '404': {} } as any,
       localConfigurationService: {} as any,
+      nodeContextProcessingService: {} as any,
     };
 
     providePortal(options);
 
     const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
+
+    expect(providersArg).toContainEqual({
+      provide:
+        tokens.LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
+      useClass: {},
+    });
+
+    expect(providersArg).toContainEqual({
+      provide:
+        tokens.LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
+      useClass: {},
+    });
 
     expect(providersArg).toContainEqual({
       provide: tokens.LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,

@@ -1,3 +1,4 @@
+import { LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -35,8 +36,8 @@ describe('NodesProcessingService', () => {
       providers: [
         providePortal(),
         {
-          provide: NodeContextProcessingService,
-          useValue: { readAndStoreEntityInNodeContext: jest.fn() },
+          provide: LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
+          useValue: { processNodeContext: jest.fn() },
         },
       ],
     }).compileComponents();
@@ -45,7 +46,9 @@ describe('NodesProcessingService', () => {
     luigiCoreService = TestBed.inject(LuigiCoreService);
     luigiNodesService = TestBed.inject(LuigiNodesService);
     configService = TestBed.inject(ConfigService);
-    nodeContextProcessingService = TestBed.inject(NodeContextProcessingService);
+    nodeContextProcessingService = TestBed.inject(
+      LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
+    );
 
     const portalConfig: PortalConfig = {
       providers: [{ nodes: [], creationTimestamp: '' }],
@@ -184,7 +187,7 @@ describe('NodesProcessingService', () => {
       },
     );
     expect(
-      nodeContextProcessingService.readAndStoreEntityInNodeContext,
+      nodeContextProcessingService.processNodeContext,
     ).toHaveBeenCalledWith('someid', entityNode, ctx);
   });
 

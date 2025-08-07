@@ -1,5 +1,4 @@
-import { LuigiNode } from '../../models';
-import { EntityType } from '../../models/entity';
+import { EntityType, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
 import { Injectable, inject } from '@angular/core';

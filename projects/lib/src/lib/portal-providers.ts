@@ -11,6 +11,7 @@ import {
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
   LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+  LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
@@ -34,14 +35,13 @@ import {
   LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
-  NodeChangeHookConfigServiceImpl,
-  OpenmfpLuigiExtendedGlobalContextConfigService,
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
   UserProfileConfigServiceImpl,
   UserSettingsConfigService,
 } from './services';
+import { NodeContextProcessingService } from './services/luigi-nodes/node-context-processing.service';
 import { CustomReuseStrategy } from './utilities';
 import { provideHttpClient } from '@angular/common/http';
 import {
@@ -77,6 +77,9 @@ export interface PortalOptions {
 
   /** Service providing custom global level nodes **/
   customGlobalNodesService?: Type<CustomGlobalNodesService>;
+
+  /** Service providing custom global level nodes **/
+  nodeContextProcessingService?: Type<NodeContextProcessingService>;
 
   /** Service providing luigi user profile configuration **/
   userProfileConfigService?: Type<UserProfileConfigService>;
@@ -137,22 +140,32 @@ const addOptionalProviders = (
         options.appSwitcherConfigService || AppSwitcherConfigServiceImpl,
     },
     {
-      provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.nodeChangeHookConfigService || NodeChangeHookConfigServiceImpl,
-    },
-    {
       provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass:
         options.userProfileConfigService || UserProfileConfigServiceImpl,
     },
-    {
-      provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.luigiExtendedGlobalContextConfigService ||
-        OpenmfpLuigiExtendedGlobalContextConfigService,
-    },
   );
+
+  if (options.luigiExtendedGlobalContextConfigService) {
+    providers.push({
+      provide: LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.luigiExtendedGlobalContextConfigService,
+    });
+  }
+
+  if (options.nodeChangeHookConfigService) {
+    providers.push({
+      provide: LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+      useClass: options.nodeChangeHookConfigService,
+    });
+  }
+
+  if (options.nodeContextProcessingService) {
+    providers.push({
+      provide: LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
+      useClass: options.nodeContextProcessingService,
+    });
+  }
 
   if (options.localConfigurationService) {
     providers.push({

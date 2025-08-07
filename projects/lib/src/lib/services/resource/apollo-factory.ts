@@ -1,4 +1,3 @@
-import { NodeContext } from '../../models';
 import { GatewayService } from './gateway.service';
 import { ResourceNodeContext } from './resource-node-context';
 import { Injectable, NgZone, inject } from '@angular/core';
