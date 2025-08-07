@@ -105,7 +105,7 @@ export class ListViewComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  read(namespace?: string) {
+  read(namespace: string) {
     const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${replaceDotsAndHyphensWithUnderscores(this.resourceDefinition.group)}_${this.resourceDefinition.plural}`;
 

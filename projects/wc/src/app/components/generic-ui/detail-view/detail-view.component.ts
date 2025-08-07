@@ -90,7 +90,7 @@ export class DetailViewComponent {
     });
   }
 
-  private readResource(namespace?: string): void {
+  private readResource(namespace: string): void {
     const fields = generateGraphQLFields(this.resourceFields);
     const queryOperation = replaceDotsAndHyphensWithUnderscores(
       this.resourceDefinition.group,
