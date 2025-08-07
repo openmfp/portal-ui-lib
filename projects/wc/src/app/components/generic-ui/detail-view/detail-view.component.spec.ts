@@ -20,13 +20,6 @@ describe('DetailViewComponent', () => {
       resolveKcpPath: jest.fn().mockReturnValue('https://example.com'),
     };
 
-    Object.defineProperty(window, 'location', {
-      value: {
-        pathname: '/test/path',
-      },
-      writable: true,
-    });
-
     TestBed.configureTestingModule({
       providers: [
         { provide: ResourceService, useValue: mockResourceService },
@@ -80,38 +73,6 @@ describe('DetailViewComponent', () => {
     expect(luigiClientLinkManagerNavigate).toHaveBeenCalledWith('/');
   });
 
-  it('should navigate to parent with query param if present', () => {
-    const navSpy = jest.fn();
-    const withParamsSpy = jest.fn().mockReturnValue({ navigate: navSpy });
-    component.namespace = 'test';
-    component.LuigiClient = (() => ({
-      linkManager: () => ({
-        fromContext: jest.fn().mockReturnThis(),
-        withParams: withParamsSpy,
-        navigate: navSpy,
-      }),
-    })) as any;
-
-    component.navigateToParent();
-    expect(navSpy).toHaveBeenCalledWith('/');
-    expect(withParamsSpy).toHaveBeenCalledWith({ 'namespace': 'test' });
-  });
-
-  it('should download kubeconfig', async () => {
-    const mockAnchorElement = document.createElement('a');
-    jest.spyOn(mockAnchorElement, 'click');
-    jest.spyOn(document, 'createElement').mockReturnValue(mockAnchorElement);
-
-    global.URL.createObjectURL = jest.fn().mockReturnValue('blob-url');
-
-    await component.downloadKubeConfig();
-
-    expect(document.createElement).toHaveBeenCalledWith('a');
-    expect(mockAnchorElement.href).toEqual('http://localhost/blob-url');
-    expect(mockAnchorElement.download).toBe('kubeconfig.yaml');
-    expect(mockAnchorElement.click).toHaveBeenCalled();
-  });
-
   it('should extract namespace from URL path parameter', () => {
     Object.defineProperty(window, 'location', {
       value: {
@@ -138,17 +99,23 @@ describe('DetailViewComponent', () => {
       parentNavigationContexts: ['project'],
     })) as any;
 
-    component.LuigiClient = (() => ({
-      linkManager: () => ({
-        fromContext: jest.fn().mockReturnThis(),
-        navigate: jest.fn(),
-        withParams: jest.fn().mockReturnThis(),
-      }),
-      getNodeParams: jest.fn().mockReturnValue({}),
-    })) as any;
-
     fixture.detectChanges();
 
     expect(component.namespace).toBe('test-namespace');
+  });
+
+  it('should download kubeconfig', async () => {
+    const mockAnchorElement = document.createElement('a');
+    jest.spyOn(mockAnchorElement, 'click');
+    jest.spyOn(document, 'createElement').mockReturnValue(mockAnchorElement);
+
+    global.URL.createObjectURL = jest.fn().mockReturnValue('blob-url');
+
+    await component.downloadKubeConfig();
+
+    expect(document.createElement).toHaveBeenCalledWith('a');
+    expect(mockAnchorElement.href).toEqual('http://localhost/blob-url');
+    expect(mockAnchorElement.download).toBe('kubeconfig.yaml');
+    expect(mockAnchorElement.click).toHaveBeenCalled();
   });
 });

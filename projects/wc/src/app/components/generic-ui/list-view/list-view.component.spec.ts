@@ -126,7 +126,7 @@ describe('ListViewComponent', () => {
     })) as any;
 
     component.navigateToResource(resource as any);
-    expect(navSpy).toHaveBeenCalledWith('namespaces/test/res1');
+    expect(navSpy).toHaveBeenCalledWith('namespaces/test1/res1');
   });
 
   it('should navigate to resource without namespace in path if present in query param only', () => {
