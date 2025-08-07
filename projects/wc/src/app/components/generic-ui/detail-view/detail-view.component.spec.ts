@@ -20,6 +20,13 @@ describe('DetailViewComponent', () => {
       resolveKcpPath: jest.fn().mockReturnValue('https://example.com'),
     };
 
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/test/path',
+      },
+      writable: true,
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: ResourceService, useValue: mockResourceService },
@@ -103,5 +110,45 @@ describe('DetailViewComponent', () => {
     expect(mockAnchorElement.href).toEqual('http://localhost/blob-url');
     expect(mockAnchorElement.download).toBe('kubeconfig.yaml');
     expect(mockAnchorElement.click).toHaveBeenCalled();
+  });
+
+  it('should extract namespace from URL path parameter', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/some/path/namespaces/test-namespace/other/path',
+      },
+      writable: true,
+    });
+
+    fixture = TestBed.createComponent(DetailViewComponent);
+    component = fixture.componentInstance;
+
+    component.context = (() => ({
+      resourceId: 'cluster-1',
+      token: 'abc123',
+      resourceDefinition: {
+        kind: 'Cluster',
+        group: 'core.k8s.io',
+        ui: {
+          detailView: {
+            fields: [],
+          },
+        },
+      },
+      parentNavigationContexts: ['project'],
+    })) as any;
+
+    component.LuigiClient = (() => ({
+      linkManager: () => ({
+        fromContext: jest.fn().mockReturnThis(),
+        navigate: jest.fn(),
+        withParams: jest.fn().mockReturnThis(),
+      }),
+      getNodeParams: jest.fn().mockReturnValue({}),
+    })) as any;
+
+    fixture.detectChanges();
+
+    expect(component.namespace).toBe('test-namespace');
   });
 });
