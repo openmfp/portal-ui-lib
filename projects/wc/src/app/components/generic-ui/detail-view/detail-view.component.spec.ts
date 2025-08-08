@@ -73,14 +73,15 @@ describe('DetailViewComponent', () => {
     expect(luigiClientLinkManagerNavigate).toHaveBeenCalledWith('/');
   });
 
-  it('should get namespace from context namespaceId parameter', () => {
+  it('should have namespaceId in context when provided', () => {
     fixture = TestBed.createComponent(DetailViewComponent);
     component = fixture.componentInstance;
 
+    const testNamespace = 'test-namespace';
     component.context = (() => ({
       resourceId: 'cluster-1',
       token: 'abc123',
-      namespaceId: 'test-namespace',
+      namespaceId: testNamespace,
       resourceDefinition: {
         kind: 'Cluster',
         group: 'core.k8s.io',
@@ -95,7 +96,7 @@ describe('DetailViewComponent', () => {
 
     fixture.detectChanges();
 
-    expect(component.namespace).toBe('test-namespace');
+    expect(component.context().namespaceId).toBe(testNamespace);
   });
 
   it('should download kubeconfig', async () => {

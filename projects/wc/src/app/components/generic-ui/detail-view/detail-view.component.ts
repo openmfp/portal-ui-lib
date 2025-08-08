@@ -82,11 +82,12 @@ export class DetailViewComponent {
         this.context().resourceDefinition.ui?.detailView?.fields ||
         defaultFields;
       this.resourceDefinition = this.context().resourceDefinition;
-      this.readResource(this.context().namespaceId);
+      this.readResource();
     });
   }
 
-  private readResource(namespace: string): void {
+  private readResource(): void {
+    const namespaceId = this.context().namespaceId;
     const fields = generateGraphQLFields(this.resourceFields);
     const queryOperation = replaceDotsAndHyphensWithUnderscores(
       this.resourceDefinition.group,
@@ -100,7 +101,7 @@ export class DetailViewComponent {
         kind,
         fields,
         this.context(),
-        namespace,
+        namespaceId,
       )
       .subscribe({
         next: (result) => this.resource.set(result),
