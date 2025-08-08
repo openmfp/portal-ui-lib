@@ -72,6 +72,33 @@ describe('ResourceService', () => {
         .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
+          expect(mockApollo.query).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              name: 'test-name',
+            },
+          });
+          done();
+        });
+    });
+
+    it('should read resource using fields with namespace', (done) => {
+      mockApollo.query.mockReturnValue(
+        of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
+      );
+      const namespace = 'test-namespace';
+
+      service
+        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext, namespace)
+        .subscribe((res) => {
+          expect(res).toEqual({ name: 'test' });
+          expect(mockApollo.query).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              name: 'test-name',
+              namespace: namespace,
+            },
+          });
           done();
         });
     });
@@ -86,6 +113,34 @@ describe('ResourceService', () => {
         .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext)
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
+          expect(mockApollo.query).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              name: 'test-name',
+            },
+          });
+          done();
+        });
+    });
+
+    it('should read resource using raw query with namespace', (done) => {
+      const rawQuery = `query { core_k8s_io { TestKind(name: "test-name", namespace: "test-namespace") { name } } }`;
+      mockApollo.query.mockReturnValue(
+        of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
+      );
+      const namespace = 'test-namespace';
+
+      service
+        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext, namespace)
+        .subscribe((res) => {
+          expect(res).toEqual({ name: 'test' });
+          expect(mockApollo.query).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              name: 'test-name',
+              namespace: namespace,
+            },
+          });
           done();
         });
     });
@@ -116,6 +171,26 @@ describe('ResourceService', () => {
       );
       service.list('myList', ['name'], nodeContext).subscribe((res) => {
         expect(res).toEqual([{ name: 'res1' }]);
+        expect(mockApollo.subscribe).toHaveBeenCalledWith({
+          query: expect.anything(),
+          variables: {},
+        });
+        done();
+      });
+    });
+
+    it('should list resources with namespace', (done) => {
+      mockApollo.subscribe.mockReturnValue(
+        of({ data: { myList: [{ name: 'res1' }] } }),
+      );
+      const namespace = 'test-namespace';
+
+      service.list('myList', ['name'], nodeContext, namespace).subscribe((res) => {
+        expect(res).toEqual([{ name: 'res1' }]);
+        expect(mockApollo.subscribe).toHaveBeenCalledWith({
+          query: expect.anything(),
+          variables: { namespace: namespace },
+        });
         done();
       });
     });
@@ -175,6 +250,25 @@ describe('ResourceService', () => {
           done();
         });
     });
+
+    it('should delete resource with namespace', (done) => {
+      mockApollo.mutate.mockReturnValue(of({}));
+      const namespace = 'test-namespace';
+      const contextWithNamespace = { ...nodeContext, namespaceId: namespace };
+
+      service
+        .delete(resource, resourceDefinition, contextWithNamespace)
+        .subscribe(() => {
+          expect(mockApollo.mutate).toHaveBeenCalledWith({
+            mutation: expect.anything(),
+            variables: {
+              name: 'test-name',
+              namespace: namespace
+            }
+          });
+          done();
+        });
+    });
   });
 
   describe('create', () => {
@@ -186,6 +280,28 @@ describe('ResourceService', () => {
         .create(resource, resourceDefinition, nodeContext)
         .subscribe((res) => {
           expect(mockApollo.mutate).toHaveBeenCalled();
+          done();
+        });
+    });
+
+    it('should create resource with namespace', (done) => {
+      mockApollo.mutate.mockReturnValue(
+        of({ data: { __typename: 'TestKind' } }),
+      );
+      const namespace = 'test-namespace';
+      const contextWithNamespace = { ...nodeContext, namespaceId: namespace };
+
+      service
+        .create(resource, resourceDefinition, contextWithNamespace)
+        .subscribe(() => {
+          expect(mockApollo.mutate).toHaveBeenCalledWith({
+            mutation: expect.anything(),
+            fetchPolicy: 'no-cache',
+            variables: {
+              object: resource,
+              namespace: namespace
+            }
+          });
           done();
         });
     });

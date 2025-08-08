@@ -87,12 +87,12 @@ export class DetailViewComponent {
   }
 
   private readResource(): void {
+    const namespaceId = this.context().namespaceId;
     const fields = generateGraphQLFields(this.resourceFields);
     const queryOperation = replaceDotsAndHyphensWithUnderscores(
       this.resourceDefinition.group,
     );
     const kind = this.resourceDefinition.kind;
-    const namespace = this.resourceDefinition.namespace;
 
     this.resourceService
       .read(
@@ -101,6 +101,7 @@ export class DetailViewComponent {
         kind,
         fields,
         this.context(),
+        namespaceId,
       )
       .subscribe({
         next: (result) => this.resource.set(result),

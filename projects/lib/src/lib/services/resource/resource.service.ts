@@ -23,11 +23,13 @@ export class ResourceService {
     kind: string,
     fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
+    namespace?: string,
   ): Observable<Resource> {
     let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
       fieldsOrRawQuery,
       kind,
       resourceId,
+      namespace,
       operation,
     );
 
@@ -49,6 +51,7 @@ export class ResourceService {
         query,
         variables: {
           name: resourceId,
+          ...(namespace && { namespace }),
         },
       })
       .pipe(
@@ -64,6 +67,7 @@ export class ResourceService {
     fieldsOrRawQuery: any[] | string,
     kind: string,
     resourceId: string,
+    namespace: string,
     operation: string,
   ) {
     if (fieldsOrRawQuery instanceof Array) {
@@ -71,7 +75,10 @@ export class ResourceService {
         gqlBuilder
           .query({
             operation: kind,
-            variables: { name: { value: resourceId, type: 'String!' } },
+            variables: {
+              name: { value: resourceId, type: 'String!' },
+              ...(namespace && { namespace: { value: namespace, type: 'String' } })
+            },
             fields: fieldsOrRawQuery,
           })
           .query.replace(kind, `${operation} { ${kind}`)
@@ -86,11 +93,12 @@ export class ResourceService {
     operation: string,
     fields: any[],
     nodeContext: ResourceNodeContext,
+    namespace?: string,
   ): Observable<Resource[]> {
     const query = gqlBuilder.subscription({
-      operation: operation,
+      operation,
       fields,
-      variables: {},
+      variables: namespace ? { namespace: { type: 'String', value: namespace } } : {},
     });
 
     return this.apolloFactory
@@ -99,6 +107,7 @@ export class ResourceService {
         query: gql`
           ${query.query}
         `,
+        variables: query.variables,
       })
       .pipe(
         map((res: any) => res.data?.[operation]),
@@ -145,6 +154,7 @@ export class ResourceService {
       resourceDefinition.group,
     );
     const kind = resourceDefinition.kind;
+    const namespace = nodeContext.namespaceId;
 
     const mutation = gqlBuilder.mutation({
       operation: group,
@@ -153,23 +163,23 @@ export class ResourceService {
           operation: `delete${kind}`,
           variables: {
             name: { type: 'String!' },
-            ...(resourceDefinition.scope !== 'Cluster' && {
-              namespace: { type: 'String!' },
-            }),
+            ...(namespace && { namespace: { type: 'String' } }),
           },
           fields: [],
         },
       ],
     });
 
+    const variables: Record<string, any> = {
+      name: resource.metadata.name,
+    };
+    if (namespace) {
+      variables.namespace = namespace;
+    }
+
     return this.apolloFactory.apollo(nodeContext).mutate<void>({
-      mutation: gql`
-        ${mutation.query}
-      `,
-      variables: {
-        name: resource.metadata.name,
-        namespace: resourceDefinition.namespace,
-      },
+      mutation: gql`${mutation.query}`,
+      variables,
     });
   }
 
@@ -178,27 +188,35 @@ export class ResourceService {
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
   ) {
-    const group = replaceDotsAndHyphensWithUnderscores(
-      resourceDefinition.group,
-    );
+    const group = replaceDotsAndHyphensWithUnderscores(resourceDefinition.group);
     const kind = resourceDefinition.kind;
+    const namespace = nodeContext.namespaceId;
+
     const mutation = gqlBuilder.mutation({
       operation: group,
       fields: [
         {
           operation: `create${kind}`,
-          variables: { object: { type: `${kind}Input!` } },
+          variables: {
+            ...(namespace && { namespace: { type: 'String' } }),
+            object: { type: `${kind}Input!` },
+          },
           fields: ['__typename'],
         },
       ],
     });
 
+    const variables: Record<string, any> = { object: resource };
+    if (namespace) {
+      variables.namespace = namespace;
+    }
+
     return this.apolloFactory.apollo(nodeContext).mutate<void>({
       mutation: gql`
-        ${mutation.query}
-      `,
+      ${mutation.query}
+    `,
       fetchPolicy: 'no-cache',
-      variables: { object: resource },
+      variables,
     });
   }
 

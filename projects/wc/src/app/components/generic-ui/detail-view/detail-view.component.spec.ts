@@ -51,7 +51,9 @@ describe('DetailViewComponent', () => {
       linkManager: () => ({
         fromContext: jest.fn().mockReturnThis(),
         navigate: luigiClientLinkManagerNavigate,
+        withParams: jest.fn().mockReturnThis(),
       }),
+      getNodeParams: jest.fn(),
     })) as any;
 
     fixture.detectChanges();
@@ -69,6 +71,32 @@ describe('DetailViewComponent', () => {
   it('should navigate to parent', () => {
     component.navigateToParent();
     expect(luigiClientLinkManagerNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('should have namespaceId in context when provided', () => {
+    fixture = TestBed.createComponent(DetailViewComponent);
+    component = fixture.componentInstance;
+
+    const testNamespace = 'test-namespace';
+    component.context = (() => ({
+      resourceId: 'cluster-1',
+      token: 'abc123',
+      namespaceId: testNamespace,
+      resourceDefinition: {
+        kind: 'Cluster',
+        group: 'core.k8s.io',
+        ui: {
+          detailView: {
+            fields: [],
+          },
+        },
+      },
+      parentNavigationContexts: ['project'],
+    })) as any;
+
+    fixture.detectChanges();
+
+    expect(component.context().namespaceId).toBe(testNamespace);
   });
 
   it('should download kubeconfig', async () => {
