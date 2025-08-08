@@ -254,9 +254,10 @@ describe('ResourceService', () => {
     it('should delete resource with namespace', (done) => {
       mockApollo.mutate.mockReturnValue(of({}));
       const namespace = 'test-namespace';
+      const contextWithNamespace = { ...nodeContext, namespaceId: namespace };
 
       service
-        .delete(resource, resourceDefinition, nodeContext, namespace)
+        .delete(resource, resourceDefinition, contextWithNamespace)
         .subscribe(() => {
           expect(mockApollo.mutate).toHaveBeenCalledWith({
             mutation: expect.anything(),
@@ -288,9 +289,10 @@ describe('ResourceService', () => {
         of({ data: { __typename: 'TestKind' } }),
       );
       const namespace = 'test-namespace';
+      const contextWithNamespace = { ...nodeContext, namespaceId: namespace };
 
       service
-        .create(resource, resourceDefinition, nodeContext, namespace)
+        .create(resource, resourceDefinition, contextWithNamespace)
         .subscribe(() => {
           expect(mockApollo.mutate).toHaveBeenCalledWith({
             mutation: expect.anything(),

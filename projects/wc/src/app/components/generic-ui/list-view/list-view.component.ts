@@ -123,7 +123,7 @@ export class ListViewComponent implements OnInit {
     event.stopPropagation();
 
     this.resourceService
-      .delete(resource, this.resourceDefinition, this.context(), this.context().namespaceId)
+      .delete(resource, this.resourceDefinition, this.context())
       .subscribe({
         next: (result) => {
           console.debug('Resource deleted.');
@@ -139,7 +139,7 @@ export class ListViewComponent implements OnInit {
 
   create(resource: Resource) {
     this.resourceService
-      .create(resource, this.resourceDefinition, this.context(), this.context().namespaceId)
+      .create(resource, this.resourceDefinition, this.context())
       .subscribe({
         next: (result) => {
           console.debug('Resource created', result.data);

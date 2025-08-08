@@ -149,12 +149,12 @@ export class ResourceService {
     resource: Resource,
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
-    namespace?: string,
   ) {
     const group = replaceDotsAndHyphensWithUnderscores(
       resourceDefinition.group,
     );
     const kind = resourceDefinition.kind;
+    const namespace = nodeContext.namespaceId;
 
     const mutation = gqlBuilder.mutation({
       operation: group,
@@ -187,10 +187,10 @@ export class ResourceService {
     resource: Resource,
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
-    namespace?: string,
   ) {
     const group = replaceDotsAndHyphensWithUnderscores(resourceDefinition.group);
     const kind = resourceDefinition.kind;
+    const namespace = nodeContext.namespaceId;
 
     const mutation = gqlBuilder.mutation({
       operation: group,
