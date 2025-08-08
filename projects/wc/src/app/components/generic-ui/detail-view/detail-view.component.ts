@@ -83,9 +83,7 @@ export class DetailViewComponent {
         this.context().resourceDefinition.ui?.detailView?.fields ||
         defaultFields;
       this.resourceDefinition = this.context().resourceDefinition;
-      const url = window.location.pathname;
-      const namespaceMatch = url.match(/\/namespaces\/([^\/]+)/);
-      this.namespace = namespaceMatch ? namespaceMatch[1] : this.LuigiClient().getNodeParams(true)?.['namespace'];
+      this.namespace = this.context().namespaceId;
       this.readResource(this.namespace);
     });
   }

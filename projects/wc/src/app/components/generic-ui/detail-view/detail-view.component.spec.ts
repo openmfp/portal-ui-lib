@@ -73,20 +73,14 @@ describe('DetailViewComponent', () => {
     expect(luigiClientLinkManagerNavigate).toHaveBeenCalledWith('/');
   });
 
-  it('should extract namespace from URL path parameter', () => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        pathname: '/some/path/namespaces/test-namespace/other/path',
-      },
-      writable: true,
-    });
-
+  it('should get namespace from context namespaceId parameter', () => {
     fixture = TestBed.createComponent(DetailViewComponent);
     component = fixture.componentInstance;
 
     component.context = (() => ({
       resourceId: 'cluster-1',
       token: 'abc123',
+      namespaceId: 'test-namespace',
       resourceDefinition: {
         kind: 'Cluster',
         group: 'core.k8s.io',
