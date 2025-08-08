@@ -250,6 +250,24 @@ describe('ResourceService', () => {
           done();
         });
     });
+
+    it('should delete resource with namespace', (done) => {
+      mockApollo.mutate.mockReturnValue(of({}));
+      const namespace = 'test-namespace';
+
+      service
+        .delete(resource, resourceDefinition, nodeContext, namespace)
+        .subscribe(() => {
+          expect(mockApollo.mutate).toHaveBeenCalledWith({
+            mutation: expect.anything(),
+            variables: {
+              name: 'test-name',
+              namespace: namespace
+            }
+          });
+          done();
+        });
+    });
   });
 
   describe('create', () => {
@@ -261,6 +279,27 @@ describe('ResourceService', () => {
         .create(resource, resourceDefinition, nodeContext)
         .subscribe((res) => {
           expect(mockApollo.mutate).toHaveBeenCalled();
+          done();
+        });
+    });
+
+    it('should create resource with namespace', (done) => {
+      mockApollo.mutate.mockReturnValue(
+        of({ data: { __typename: 'TestKind' } }),
+      );
+      const namespace = 'test-namespace';
+
+      service
+        .create(resource, resourceDefinition, nodeContext, namespace)
+        .subscribe(() => {
+          expect(mockApollo.mutate).toHaveBeenCalledWith({
+            mutation: expect.anything(),
+            fetchPolicy: 'no-cache',
+            variables: {
+              object: resource,
+              namespace: namespace
+            }
+          });
           done();
         });
     });
