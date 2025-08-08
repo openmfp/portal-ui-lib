@@ -74,7 +74,6 @@ export class DetailViewComponent {
   workspacePath: string;
   resourceFields: FieldDefinition[];
   kcpCA: string = '';
-  namespace: string;
 
   constructor() {
     effect(() => {
@@ -83,8 +82,7 @@ export class DetailViewComponent {
         this.context().resourceDefinition.ui?.detailView?.fields ||
         defaultFields;
       this.resourceDefinition = this.context().resourceDefinition;
-      this.namespace = this.context().namespaceId;
-      this.readResource(this.namespace);
+      this.readResource(this.context().namespaceId);
     });
   }
 
