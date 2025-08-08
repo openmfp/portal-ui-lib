@@ -16,7 +16,6 @@ export interface LuigiGlobalContext extends Record<string, any> {
 
 export interface NodeContext extends LuigiGlobalContext {
   resourceDefinition?: ResourceDefinition;
-  namespaceId?: string;
   entityContext?: EntityContext;
   parentNavigationContexts?: string[];
   error?: {
