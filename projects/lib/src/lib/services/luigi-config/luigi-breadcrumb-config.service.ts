@@ -79,8 +79,6 @@ export class HeaderBarService {
     leftContainer.style.justifyContent = 'flex-start';
     leftContainer.style.gap = '1em';
 
-    console.log(1)
-
     return {rightContainer, leftContainer}
   }
 }
