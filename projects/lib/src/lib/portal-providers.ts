@@ -6,7 +6,7 @@ import {
 } from './initializers';
 import {
   ERROR_COMPONENT_CONFIG,
-  HEADER_BAR_CONFIG_INJECTION_TOKEN,
+  HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
@@ -31,7 +31,7 @@ import {
   CustomMessageListener,
   CustomNodeProcessingService,
   GlobalSearchConfigService,
-  HeaderBarConfig,
+  HeaderBarConfigService,
   LocalConfigurationService,
   LuigiAuthEventsCallbacksService,
   LuigiBreadcrumbConfigService,
@@ -90,7 +90,7 @@ export interface PortalOptions {
   luigiBreadcrumbConfigService?: Type<LuigiBreadcrumbConfigService>;
 
   /** Provide a config that contains renderers for Nav Bar */
-  headerBarConfig?: HeaderBarConfig;
+  headerBarConfigService?: Type<HeaderBarConfigService>;
 
   /** Service providing custom global level nodes **/
   nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
@@ -235,10 +235,10 @@ const addOptionalProviders = (
     });
   }
 
-  if (options.headerBarConfig) {
+  if (options.headerBarConfigService) {
     providers.push({
-      provide: HEADER_BAR_CONFIG_INJECTION_TOKEN,
-      useValue: options.headerBarConfig,
+      provide: HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.headerBarConfigService,
     });
   }
 

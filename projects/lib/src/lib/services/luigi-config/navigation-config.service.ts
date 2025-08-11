@@ -1,9 +1,8 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
 } from '../../injection-tokens';
 import { ClientEnvironment, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -12,7 +11,7 @@ import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { NodesProcessingService } from '../luigi-nodes/nodes-processing.service';
 import { ConfigService } from '../portal';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
-import { LuigiBreadcrumbConfigService } from './luigi-breadcrumb-config.service';
+import { HeaderBarService } from './luigi-breadcrumb-config.service';
 import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
 import { NodeChangeHookConfigService } from './node-change-hook-config.service';
 import { UserProfileConfigService } from './user-profile-config.service';
@@ -26,9 +25,6 @@ export class NavigationConfigService {
     private intentNavigationService: IntentNavigationService,
     private navigationGlobalContextConfigService: NavigationGlobalContextConfigService,
     @Optional()
-    @Inject(LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN)
-    private luigiBreadcrumbConfigService: LuigiBreadcrumbConfigService,
-    @Optional()
     @Inject(LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN)
     private userProfileConfigService: UserProfileConfigService,
     @Optional()
@@ -37,8 +33,10 @@ export class NavigationConfigService {
     @Optional()
     @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
-    private nodesProcessingService: NodesProcessingService
-  ) {}
+    private nodesProcessingService: NodesProcessingService,
+    private headerBarService: HeaderBarService
+  ) {
+  }
 
   async getNavigationConfig(
     childrenByEntity: Record<string, LuigiNode[]>,
@@ -70,7 +68,7 @@ export class NavigationConfigService {
         this.nodeChangeHookConfigService?.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
       breadcrumbs:
-        await this.luigiBreadcrumbConfigService?.getBreadcrumbsConfig(),
+        await this.headerBarService.getBreadcrumbsConfig(),
     };
   }
 

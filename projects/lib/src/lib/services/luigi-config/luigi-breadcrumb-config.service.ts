@@ -1,5 +1,5 @@
-import { Inject } from '@angular/core';
-import { HEADER_BAR_CONFIG_INJECTION_TOKEN } from '../../injection-tokens';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 
 export interface NodeItem extends LuigiNode {
@@ -30,8 +30,13 @@ export interface HeaderBarConfig extends Omit<LuigiBreadcrumb, 'renderer'> {
   leftRenderers: RendererFn[];
 }
 
+export interface HeaderBarConfigService {
+  getConfig(): Promise<HeaderBarConfig>;
+}
+
+@Injectable({providedIn: 'root'})
 export class HeaderBarService {
-  constructor(@Inject(HEADER_BAR_CONFIG_INJECTION_TOKEN) private headerBarConfig: HeaderBarConfig) {
+  constructor(@Optional() @Inject(HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN) private headerBarConfig: HeaderBarConfigService) {
   }
 
   public async getBreadcrumbsConfig(): Promise<LuigiBreadcrumb | undefined> {
@@ -39,11 +44,12 @@ export class HeaderBarService {
       return undefined
     }
 
-    const { leftRenderers, rightRenderers, ...rest } = this.headerBarConfig;
+    const { leftRenderers, rightRenderers, ...rest } = await this.headerBarConfig.getConfig();
     return {
       ...rest,
       renderer: (containerElement, nodeItems, clickHandler) => {
         containerElement.style.display = 'flex';
+        containerElement.style.width = 'calc(100% - 72px)';
 
         const {rightContainer, leftContainer} = this.createRendererContainers()
 
@@ -78,6 +84,7 @@ export class HeaderBarService {
     leftContainer.style.display = 'flex';
     leftContainer.style.justifyContent = 'flex-start';
     leftContainer.style.gap = '1em';
+    leftContainer.style.flexGrow = '1';
 
     return {rightContainer, leftContainer}
   }
