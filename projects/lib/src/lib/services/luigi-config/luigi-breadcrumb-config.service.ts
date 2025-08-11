@@ -1,5 +1,5 @@
 import { Inject } from '@angular/core';
-import { HEADER_BAR_CONFIG_INJECTION_TOKEN } from '@openmfp/portal-ui-lib';
+import { HEADER_BAR_CONFIG_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 
 export interface NodeItem extends LuigiNode {
@@ -43,14 +43,16 @@ export class HeaderBarService {
     return {
       ...rest,
       renderer: (containerElement, nodeItems, clickHandler) => {
-        const leftContainer = document.createElement('div');
-        const rightContainer = document.createElement('div');
+        containerElement.style.display = 'flex';
+
+        const {rightContainer, leftContainer} = this.createRendererContainers()
 
         containerElement.appendChild(leftContainer);
         containerElement.appendChild(rightContainer);
 
         this.executeRenderes(leftContainer, leftRenderers, [nodeItems, clickHandler])
         this.executeRenderes(rightContainer, rightRenderers, [nodeItems, clickHandler])
+
         return containerElement
       },
     };
@@ -63,5 +65,22 @@ export class HeaderBarService {
 
       renderer(rendererContainer, ...params)
     })
+  }
+
+  private createRendererContainers(): {rightContainer: HTMLDivElement, leftContainer: HTMLDivElement} {
+    const rightContainer = document.createElement('div');
+    const leftContainer = document.createElement('div');
+
+    rightContainer.style.display = 'flex';
+    rightContainer.style.justifyContent = 'flex-end';
+    rightContainer.style.gap = '1em';
+
+    leftContainer.style.display = 'flex';
+    leftContainer.style.justifyContent = 'flex-start';
+    leftContainer.style.gap = '1em';
+
+    console.log(1)
+
+    return {rightContainer, leftContainer}
   }
 }
