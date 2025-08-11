@@ -1,3 +1,5 @@
+import { Inject } from '@angular/core';
+import { HEADER_BAR_CONFIG_INJECTION_TOKEN } from '@openmfp/portal-ui-lib';
 import { LuigiNode } from '../../models';
 
 export interface NodeItem extends LuigiNode {
@@ -13,10 +15,53 @@ export interface LuigiBreadcrumb {
   renderer: (
     containerElement: HTMLElement,
     nodeItems: NodeItem[],
-    clickHandler: (item: NodeItem) => void
+    clickHandler: (item: NodeItem) => void,
   ) => HTMLElement;
 }
 
 export interface LuigiBreadcrumbConfigService {
   getBreadcrumbsConfig(): Promise<LuigiBreadcrumb>;
+}
+
+export type RendererFn = LuigiBreadcrumb['renderer']
+
+export interface HeaderBarConfig extends Omit<LuigiBreadcrumb, 'renderer'> {
+  rightRenderers: RendererFn[];
+  leftRenderers: RendererFn[];
+}
+
+export class HeaderBarService {
+  constructor(@Inject(HEADER_BAR_CONFIG_INJECTION_TOKEN) private headerBarConfig: HeaderBarConfig) {
+  }
+
+  public async getBreadcrumbsConfig(): Promise<LuigiBreadcrumb | undefined> {
+    if (!this.headerBarConfig) {
+      return undefined
+    }
+
+    const { leftRenderers, rightRenderers, ...rest } = this.headerBarConfig;
+    return {
+      ...rest,
+      renderer: (containerElement, nodeItems, clickHandler) => {
+        const leftContainer = document.createElement('div');
+        const rightContainer = document.createElement('div');
+
+        containerElement.appendChild(leftContainer);
+        containerElement.appendChild(rightContainer);
+
+        this.executeRenderes(leftContainer, leftRenderers, [nodeItems, clickHandler])
+        this.executeRenderes(rightContainer, rightRenderers, [nodeItems, clickHandler])
+        return containerElement
+      },
+    };
+  };
+
+  private executeRenderes(rootContainer: HTMLElement, renderers: RendererFn[], params: [NodeItem[], (item: NodeItem) => void]): void {
+    renderers.forEach((renderer) => {
+      const rendererContainer = document.createElement('div');
+      rootContainer.appendChild(rendererContainer);
+
+      renderer(rendererContainer, ...params)
+    })
+  }
 }

@@ -7,11 +7,11 @@ import {
 } from '../../injection-tokens';
 import { ClientEnvironment, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
+import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { NodesProcessingService } from '../luigi-nodes/nodes-processing.service';
 import { ConfigService } from '../portal';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
-import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiBreadcrumbConfigService } from './luigi-breadcrumb-config.service';
 import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
 import { NodeChangeHookConfigService } from './node-change-hook-config.service';
