@@ -4,17 +4,17 @@
       <ui5-breadcrumbs-item>{{
         resourceDefinition?.plural
       }}</ui5-breadcrumbs-item>
-      <ui5-breadcrumbs-item>{{ context().resourceId }}</ui5-breadcrumbs-item>
+      <ui5-breadcrumbs-item>{{ resourceId }}</ui5-breadcrumbs-item>
     </ui5-breadcrumbs>
 
     <ui5-title slot="heading">
       <div class="resource-title">
-        {{ resource()?.spec?.displayName || context().resourceId }}
+        {{ resource()?.spec?.displayName || resourceId }}
       </div>
     </ui5-title>
     <ui5-text class="resource-title-subheading" slot="subheading">
       The {{ resourceDefinition?.singular }} for
-      {{ resource()?.spec?.displayName || context().resourceId }}
+      {{ resource()?.spec?.displayName || resourceId }}
     </ui5-text>
 
     <ui5-toolbar

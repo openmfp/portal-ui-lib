@@ -24,7 +24,7 @@ export class ChildrenNodesService {
 
   async processChildrenForEntity(
     entityNode: LuigiNode,
-    children: LuigiNode[],
+    childrenNodes: LuigiNode[],
     ctx: any,
   ): Promise<LuigiNode[]> {
     if (
@@ -37,7 +37,7 @@ export class ChildrenNodesService {
 
     this.addNavigationHeader(entityNode);
 
-    if (!children) {
+    if (!childrenNodes) {
       return [];
     }
 
@@ -62,14 +62,14 @@ export class ChildrenNodesService {
       ),
     );
 
-    children.forEach((child) => {
+    childrenNodes.forEach((child) => {
       child.context = { ...child.context, entityContext };
       child.onNodeActivation =
         this.nodeUtilsService.retrieveGlobalHelpContext();
     });
 
     const nodes = await Promise.all(
-      children
+      childrenNodes
         .filter((child) => visibleForContext(child.context, child))
         .map(
           (child) =>

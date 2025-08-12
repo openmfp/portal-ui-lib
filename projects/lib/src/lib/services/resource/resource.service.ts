@@ -23,13 +23,13 @@ export class ResourceService {
     kind: string,
     fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
-    namespace?: string,
+    readFromParentKcpPath: boolean = true,
   ): Observable<Resource> {
     let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
       fieldsOrRawQuery,
       kind,
       resourceId,
-      namespace,
+      nodeContext.namespaceId,
       operation,
     );
 
@@ -39,19 +39,21 @@ export class ResourceService {
       `;
     } catch (error) {
       this.luigiCoreService.showAlert({
-        text: `Could not read an account: ${resourceId}. Wrong read query: <br/><br/> ${query}`,
+        text: `Could not read a resource: ${resourceId}. Wrong read query: <br/><br/> ${query}`,
         type: 'error',
       });
       return of(null);
     }
 
     return this.apolloFactory
-      .apollo(nodeContext, true)
+      .apollo(nodeContext, readFromParentKcpPath)
       .query({
         query,
         variables: {
           name: resourceId,
-          ...(namespace && { namespace }),
+          ...(nodeContext.namespaceId && {
+            namespace: nodeContext.namespaceId,
+          }),
         },
       })
       .pipe(
@@ -77,7 +79,9 @@ export class ResourceService {
             operation: kind,
             variables: {
               name: { value: resourceId, type: 'String!' },
-              ...(namespace && { namespace: { value: namespace, type: 'String' } })
+              ...(namespace && {
+                namespace: { value: namespace, type: 'String' },
+              }),
             },
             fields: fieldsOrRawQuery,
           })
@@ -98,7 +102,9 @@ export class ResourceService {
     const query = gqlBuilder.subscription({
       operation,
       fields,
-      variables: namespace ? { namespace: { type: 'String', value: namespace } } : {},
+      variables: namespace
+        ? { namespace: { type: 'String', value: namespace } }
+        : {},
     });
 
     return this.apolloFactory
@@ -178,7 +184,9 @@ export class ResourceService {
     }
 
     return this.apolloFactory.apollo(nodeContext).mutate<void>({
-      mutation: gql`${mutation.query}`,
+      mutation: gql`
+        ${mutation.query}
+      `,
       variables,
     });
   }
@@ -188,7 +196,9 @@ export class ResourceService {
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
   ) {
-    const group = replaceDotsAndHyphensWithUnderscores(resourceDefinition.group);
+    const group = replaceDotsAndHyphensWithUnderscores(
+      resourceDefinition.group,
+    );
     const kind = resourceDefinition.kind;
     const namespace = nodeContext.namespaceId;
 
@@ -213,8 +223,8 @@ export class ResourceService {
 
     return this.apolloFactory.apollo(nodeContext).mutate<void>({
       mutation: gql`
-      ${mutation.query}
-    `,
+        ${mutation.query}
+      `,
       fetchPolicy: 'no-cache',
       variables,
     });

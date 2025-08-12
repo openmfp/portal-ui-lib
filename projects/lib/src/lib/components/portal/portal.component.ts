@@ -1,6 +1,8 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+document.body.classList.add('ui5-content-density-compact');
+
 @Component({
   selector: 'app-portal',
   standalone: true,

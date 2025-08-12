@@ -155,9 +155,10 @@ export class ListViewComponent implements OnInit {
 
   navigateToResource(resource: Resource) {
     const link = this.LuigiClient().linkManager();
-    const path = (this.namespace && resource.metadata?.namespace)
-      ? `namespaces/${this.namespace && resource.metadata.namespace}/${resource.metadata.name}`
-      : `${resource.metadata.name}`;
+    const path =
+      this.namespace && resource.metadata?.namespace
+        ? `namespaces/${this.namespace && resource.metadata.namespace}/${resource.metadata.name}`
+        : `${resource.metadata.name}`;
     link.navigate(path);
   }
 
