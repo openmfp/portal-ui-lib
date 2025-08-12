@@ -1,8 +1,8 @@
 import { HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { LuigiNode } from '../../models';
 import {
   HeaderBarConfigService,
   HeaderBarService,
+  NodeItem,
 } from './luigi-breadcrumb-config.service';
 import { TestBed } from '@angular/core/testing';
 import { MockProxy, mock } from 'jest-mock-extended';
@@ -31,89 +31,110 @@ describe('HeaderBarService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('getBreadcrumbsConfig', () => {
-    it('should return undefined if headerBarConfig is not provided', async () => {
-      const headerBarServiceWithoutConfig = TestBed.inject(HeaderBarService);
-      (headerBarServiceWithoutConfig as any).headerBarConfig = undefined;
-
-      const result = await headerBarServiceWithoutConfig.getBreadcrumbsConfig();
-      expect(result).toBeUndefined();
+  it('should return undefined if headerBarConfig is not provided', async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [HeaderBarService],
     });
 
-    it('should return a LuigiBreadcrumb object with a custom renderer', async () => {
-      const leftRendererMock = jest.fn();
-      const rightRendererMock = jest.fn();
-      const mockConfig = {
-        pendingItemLabel: 'Test Label',
-        omitRoot: false,
-        autoHide: true,
-        leftRenderers: [leftRendererMock],
-        rightRenderers: [rightRendererMock],
-      };
+    const noConfigService: HeaderBarService = TestBed.inject(HeaderBarService);
+    const result = await noConfigService.getConfig();
+    expect(result).toBeUndefined();
+  });
 
-      headerBarConfigMock.getConfig.mockResolvedValue(mockConfig);
+  it('should propagate error from config service', async () => {
+    const error = new Error('fail');
+    headerBarConfigMock.getConfig.mockRejectedValue(error);
 
-      const result = await service.getBreadcrumbsConfig();
+    await expect(service.getConfig()).rejects.toThrow('fail');
+  });
 
-      expect(result).toBeDefined();
-      expect(result.pendingItemLabel).toBe('Test Label');
-      expect(result.omitRoot).toBe(false);
-      expect(result.autoHide).toBe(true);
-      expect(result.renderer).toBeInstanceOf(Function);
+  it('should return LuigiBreadcrumb with proper renderer', async () => {
+    const leftRendererMock = jest.fn();
+    const rightRendererMock = jest.fn();
+    const mockConfig = {
+      pendingItemLabel: 'Test',
+      omitRoot: false,
+      autoHide: true,
+      leftRenderers: [leftRendererMock],
+      rightRenderers: [rightRendererMock],
+    };
+    headerBarConfigMock.getConfig.mockResolvedValue(mockConfig);
 
-      if (result) {
-        const container = document.createElement('div');
-        const nodeItems: LuigiNode[] = [{ pathSegment: 'test', label: 'Test' }];
-        const clickHandler = () => {};
+    const breadcrumb = await service.getConfig();
+    expect(breadcrumb).toBeDefined();
+    expect(breadcrumb?.pendingItemLabel).toBe('Test');
+    expect(breadcrumb?.omitRoot).toBe(false);
 
-        const renderedContainer = result.renderer(
-          container,
-          nodeItems,
-          clickHandler,
-        );
+    const container = document.createElement('div');
+    const parent = document.createElement('div');
+    parent.appendChild(container);
 
-        expect(renderedContainer.style.display).toBe('flex');
-        expect(renderedContainer.style.width).toBe('calc(100% - 72px)');
+    const nodeItems: NodeItem[] = [{ pathSegment: 'p', label: 'L' }];
+    const clickHandler = jest.fn();
 
-        expect(leftRendererMock).toHaveBeenCalledWith(
-          expect.any(HTMLElement),
-          nodeItems,
-          clickHandler,
-        );
-        expect(rightRendererMock).toHaveBeenCalledWith(
-          expect.any(HTMLElement),
-          nodeItems,
-          clickHandler,
-        );
-      }
-    });
+    breadcrumb?.renderer(container, nodeItems, clickHandler);
 
-    it('should handle multiple renderers', async () => {
-      const leftRendererMock1 = jest.fn();
-      const leftRendererMock2 = jest.fn();
-      const mockConfig = {
-        pendingItemLabel: 'Test',
-        omitRoot: false,
-        autoHide: true,
-        leftRenderers: [leftRendererMock1, leftRendererMock2],
-        rightRenderers: [],
-      };
+    expect(container.style.display).toBe('flex');
+    expect(container.style.position).toBe('static');
 
-      headerBarConfigMock.getConfig.mockResolvedValue(mockConfig);
+    expect(parent.style.display).toBe('flex');
+    expect(parent.style.flexDirection).toBe('column');
+    expect(parent.style.height).toBe('100%');
 
-      const result = await service.getBreadcrumbsConfig();
+    expect(leftRendererMock).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      nodeItems,
+      clickHandler,
+    );
+    expect(rightRendererMock).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      nodeItems,
+      clickHandler,
+    );
 
-      if (result) {
-        const container = document.createElement('div');
-        const nodeItems: LuigiNode[] = [];
-        const clickHandler = () => {};
+    expect(container.children.length).toBe(2);
+  });
 
-        result.renderer(container, nodeItems, clickHandler);
+  it('should work with no renderers provided', async () => {
+    const mockConfig = {
+      pendingItemLabel: 'Empty',
+      omitRoot: true,
+      autoHide: false,
+      leftRenderers: [],
+      rightRenderers: [],
+    };
+    headerBarConfigMock.getConfig.mockResolvedValue(mockConfig);
 
-        expect(leftRendererMock1).toHaveBeenCalled();
-        expect(leftRendererMock2).toHaveBeenCalled();
-        expect(container.children[0].children.length).toBe(2);
-      }
-    });
+    const breadcrumb = await service.getConfig();
+    const container = document.createElement('div');
+    breadcrumb?.renderer(container, [], jest.fn());
+
+    expect(container.children.length).toBe(2);
+    expect(container.querySelectorAll('div').length).toBe(2);
+  });
+
+  it('should create containers with correct styles', async () => {
+    const mockConfig = {
+      pendingItemLabel: 'Styles',
+      omitRoot: false,
+      autoHide: false,
+      leftRenderers: [],
+      rightRenderers: [],
+    };
+    headerBarConfigMock.getConfig.mockResolvedValue(mockConfig);
+
+    const breadcrumb = await service.getConfig();
+    const container = document.createElement('div');
+    breadcrumb?.renderer(container, [], jest.fn());
+
+    const [left, right] = container.children as any as HTMLDivElement[];
+
+    expect(left.style.display).toBe('flex');
+    expect(left.style.justifyContent).toBe('flex-start');
+    expect(left.style.flexGrow).toBe('1');
+
+    expect(right.style.display).toBe('flex');
+    expect(right.style.justifyContent).toBe('flex-end');
   });
 });

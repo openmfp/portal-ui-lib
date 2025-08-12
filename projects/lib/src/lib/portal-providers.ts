@@ -10,7 +10,6 @@ import {
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
-  LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
@@ -34,7 +33,6 @@ import {
   HeaderBarConfigService,
   LocalConfigurationService,
   LuigiAuthEventsCallbacksService,
-  LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
   StaticSettingsConfigService,
@@ -85,9 +83,6 @@ export interface PortalOptions {
 
   /** Service providing luigi user profile configuration **/
   userProfileConfigService?: Type<UserProfileConfigService>;
-
-  /** Service providing luigi breadcrumb configuration **/
-  luigiBreadcrumbConfigService?: Type<LuigiBreadcrumbConfigService>;
 
   /** Provide a config that contains renderers for Nav Bar */
   headerBarConfigService?: Type<HeaderBarConfigService>;
@@ -197,13 +192,6 @@ const addOptionalProviders = (
     providers.push({
       provide: LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
       useClass: options.customNodeProcessingService,
-    });
-  }
-
-  if (options.luigiBreadcrumbConfigService) {
-    providers.push({
-      provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.luigiBreadcrumbConfigService,
     });
   }
 

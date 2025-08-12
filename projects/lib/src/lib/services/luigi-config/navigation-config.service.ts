@@ -1,8 +1,8 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
-  LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-  LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
+    LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+    LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+    LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
 } from '../../injection-tokens';
 import { ClientEnvironment, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -68,7 +68,7 @@ export class NavigationConfigService {
         this.nodeChangeHookConfigService?.nodeChangeHook(prevNode, nextNode);
       }.bind(this),
       breadcrumbs:
-        await this.headerBarService.getBreadcrumbsConfig(),
+        await this.headerBarService.getConfig(),
     };
   }
 

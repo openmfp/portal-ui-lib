@@ -19,10 +19,6 @@ export interface LuigiBreadcrumb {
   ) => HTMLElement;
 }
 
-export interface LuigiBreadcrumbConfigService {
-  getBreadcrumbsConfig(): Promise<LuigiBreadcrumb>;
-}
-
 export type RendererFn = LuigiBreadcrumb['renderer']
 
 export interface HeaderBarConfig extends Omit<LuigiBreadcrumb, 'renderer'> {
@@ -39,7 +35,7 @@ export class HeaderBarService {
   constructor(@Optional() @Inject(HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN) private headerBarConfig: HeaderBarConfigService) {
   }
 
-  public async getBreadcrumbsConfig(): Promise<LuigiBreadcrumb | undefined> {
+  public async getConfig(): Promise<LuigiBreadcrumb | undefined> {
     if (!this.headerBarConfig) {
       return undefined
     }
@@ -49,7 +45,12 @@ export class HeaderBarService {
       ...rest,
       renderer: (containerElement, nodeItems, clickHandler) => {
         containerElement.style.display = 'flex';
-        containerElement.style.width = 'calc(100% - 72px)';
+        containerElement.style.position = 'static';
+
+        const parrent = containerElement.parentElement;
+        if(parrent) {
+          this.setParrentStyles(parrent);
+        }
 
         const {rightContainer, leftContainer} = this.createRendererContainers()
 
@@ -63,6 +64,13 @@ export class HeaderBarService {
       },
     };
   };
+
+  private setParrentStyles(parrent: HTMLElement): void {
+    parrent.style.display = 'flex';
+    parrent.style.flexDirection = 'column';
+    parrent.style.height = '100%';
+    parrent.style.marginTop = '0';
+  }
 
   private executeRenderes(rootContainer: HTMLElement, renderers: RendererFn[], params: [NodeItem[], (item: NodeItem) => void]): void {
     renderers.forEach((renderer) => {
