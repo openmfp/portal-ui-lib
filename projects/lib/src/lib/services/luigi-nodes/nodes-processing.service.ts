@@ -171,6 +171,18 @@ export class NodesProcessingService {
   ) {
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
       const entityTypeId = entityPath || entityNode?.defineEntity?.id;
+      const entityId = ctx[entityNode?.defineEntity?.contextKey];
+      const staticChildren = [
+        ...(directChildren || []),
+        ...(childrenByEntity[entityTypeId] || []),
+      ];
+
+      await this.nodeContextProcessingService?.processNodeContext(
+        entityId,
+        entityNode,
+        ctx,
+      );
+
       if (!entityTypeId) {
         console.warn('No entity node!'); //TODO: check if needed or assured before
         resolve(
@@ -179,67 +191,56 @@ export class NodesProcessingService {
             ctx,
             childrenByEntity,
             entityPath,
-            directChildren,
+            staticChildren,
           ),
         );
-      } else {
-        const entityId = ctx[entityNode?.defineEntity?.contextKey];
-        const staticChildren = [
-          ...(directChildren || []),
-          ...(childrenByEntity[entityTypeId] || []),
-        ];
+        return;
+      }
 
-        await this.nodeContextProcessingService?.processNodeContext(
-          entityId,
-          entityNode,
-          ctx,
-        );
-        let children: LuigiNode[], staticChildrenParam: LuigiNode[];
+      let children: LuigiNode[], staticChildrenParam: LuigiNode[];
 
-        if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
-          const fetchContext = computeFetchContext(entityNode, ctx);
-          const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
+      if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
+        const fetchContext = computeFetchContext(entityNode, ctx);
+        const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
 
-          try {
-            children =
-              await this.luigiNodesService.retrieveAndMergeEntityChildren(
-                entityNode.defineEntity,
-                staticChildren,
-                entityPath,
-                fetchContext.get(dynamicFetchId),
-              );
-            staticChildrenParam = staticChildren;
-          } catch (error) {
-            children = staticChildren;
-            staticChildrenParam = null;
-          }
-
-          resolve(
-            this.createChildrenList(
-              entityNode,
-              ctx,
-              childrenByEntity,
+        try {
+          children =
+            await this.luigiNodesService.retrieveAndMergeEntityChildren(
+              entityNode.defineEntity,
+              staticChildren,
               entityPath,
-              children,
-              staticChildrenParam,
-            ),
-          );
-        } else {
-          const childrenList = await this.createChildrenList(
+              fetchContext.get(dynamicFetchId),
+            );
+          staticChildrenParam = staticChildren;
+        } catch (error) {
+          children = staticChildren;
+          staticChildrenParam = null;
+        }
+
+        resolve(
+          this.createChildrenList(
             entityNode,
             ctx,
             childrenByEntity,
             entityPath,
-            staticChildren,
-          );
-          console.debug(`children list ${childrenList.length}`);
-          resolve(
-            this.luigiNodesService.replaceServerNodesWithLocalOnes(
-              childrenList,
-              [entityPath],
-            ),
-          );
-        }
+            children,
+            staticChildrenParam,
+          ),
+        );
+      } else {
+        const childrenList = await this.createChildrenList(
+          entityNode,
+          ctx,
+          childrenByEntity,
+          entityPath,
+          staticChildren,
+        );
+        console.debug(`children list ${childrenList.length}`);
+        resolve(
+          this.luigiNodesService.replaceServerNodesWithLocalOnes(childrenList, [
+            entityPath,
+          ]),
+        );
       }
     });
   }
