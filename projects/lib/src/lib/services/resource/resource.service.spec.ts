@@ -11,14 +11,35 @@ describe('ResourceService', () => {
   let mockApolloFactory: any;
   let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
 
-  const nodeContext: any = { cluster: 'test' };
-  const resource: any = { metadata: { name: 'test-name' } };
   const resourceDefinition: any = {
     group: 'core.k8s.io',
     kind: 'TestKind',
     scope: 'Namespaced',
     namespace: 'default',
   };
+
+  const namespacedNodeContext: any = {
+    cluster: 'test',
+    namespaceId: 'test-namespace',
+    resourceDefinition: {
+      group: 'core.k8s.io',
+      kind: 'TestKind',
+      scope: 'Namespaced',
+      namespace: 'default',
+    },
+  };
+
+  const clusterScopeNodeContext: any = {
+    namespaceId: 'test-namespace',
+    resourceDefinition: {
+      group: 'core.k8s.io',
+      kind: 'TestKind',
+      scope: 'Cluster',
+      namespace: 'default',
+    },
+  };
+
+  const resource: any = { metadata: { name: 'test-name' } };
 
   beforeEach(() => {
     mockLuigiCoreService = mock();
@@ -52,7 +73,13 @@ describe('ResourceService', () => {
       service['luigiCoreService'].showAlert = mockShowAlert;
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', invalidQuery, nodeContext)
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          invalidQuery,
+          namespacedNodeContext,
+        )
         .subscribe((res) => {
           expect(res).toBeNull();
           expect(mockLuigiCoreService.showAlert).toHaveBeenCalledWith({
@@ -69,54 +96,124 @@ describe('ResourceService', () => {
       );
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          ['name'],
+          namespacedNodeContext,
+        )
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           expect(mockApollo.query).toHaveBeenCalledWith({
             query: expect.anything(),
             variables: {
               name: 'test-name',
+              namespace: 'test-namespace',
             },
           });
           done();
         });
     });
 
-    it('should read resource using fields with namespace', (done) => {
+    it('should read resource using fields with namespaced scope', (done) => {
       mockApollo.query.mockReturnValue(
         of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
       );
-      const namespace = 'test-namespace';
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext, namespace)
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          ['name'],
+          namespacedNodeContext,
+        )
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           expect(mockApollo.query).toHaveBeenCalledWith({
             query: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: namespace,
+              namespace: namespacedNodeContext.namespaceId,
             },
           });
           done();
         });
     });
 
-    it('should read resource using raw query', (done) => {
+    it('should read resource using fields with cluster scope', (done) => {
+      mockApollo.query.mockReturnValue(
+        of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
+      );
+
+      service
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          ['name'],
+          clusterScopeNodeContext,
+        )
+        .subscribe((res) => {
+          expect(res).toEqual({ name: 'test' });
+          expect(mockApollo.query).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              name: 'test-name',
+            },
+          });
+          done();
+        });
+    });
+
+    it('should read resource using raw query, namespaced scope', (done) => {
       const rawQuery = `query { core_k8s_io { TestKind(name: "test-name") { name } } }`;
       mockApollo.query.mockReturnValue(
         of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
       );
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext)
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          rawQuery,
+          namespacedNodeContext,
+        )
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           expect(mockApollo.query).toHaveBeenCalledWith({
             query: expect.anything(),
             variables: {
               name: 'test-name',
+              namespace: 'test-namespace',
+            },
+          });
+          done();
+        });
+    });
+
+    it('should read resource using raw query, cluster scope', (done) => {
+      const rawQuery = `query { core_k8s_io { TestKind(name: "test") { name } } }`;
+      mockApollo.query.mockReturnValue(
+        of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
+      );
+
+      service
+        .read(
+          'test',
+          'core_k8s_io',
+          'TestKind',
+          rawQuery,
+          clusterScopeNodeContext,
+        )
+        .subscribe((res) => {
+          expect(res).toEqual({ name: 'test' });
+          expect(mockApollo.query).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              name: 'test',
             },
           });
           done();
@@ -128,17 +225,22 @@ describe('ResourceService', () => {
       mockApollo.query.mockReturnValue(
         of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
       );
-      const namespace = 'test-namespace';
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext, namespace)
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          rawQuery,
+          namespacedNodeContext,
+        )
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           expect(mockApollo.query).toHaveBeenCalledWith({
             query: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: namespace,
+              namespace: namespacedNodeContext.namespaceId,
             },
           });
           done();
@@ -151,7 +253,13 @@ describe('ResourceService', () => {
       console.error = jest.fn();
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
+        .read(
+          'test-name',
+          'core_k8s_io',
+          'TestKind',
+          ['name'],
+          namespacedNodeContext,
+        )
         .subscribe({
           error: (err) => {
             expect(console.error).toHaveBeenCalledWith(
@@ -165,34 +273,53 @@ describe('ResourceService', () => {
   });
 
   describe('list', () => {
-    it('should list resources', (done) => {
+    it('should list namespaced resources', (done) => {
       mockApollo.subscribe.mockReturnValue(
         of({ data: { myList: [{ name: 'res1' }] } }),
       );
-      service.list('myList', ['name'], nodeContext).subscribe((res) => {
-        expect(res).toEqual([{ name: 'res1' }]);
-        expect(mockApollo.subscribe).toHaveBeenCalledWith({
-          query: expect.anything(),
-          variables: {},
+      service
+        .list('myList', ['name'], namespacedNodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual([{ name: 'res1' }]);
+          expect(mockApollo.subscribe).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: { namespace: namespacedNodeContext.namespaceId },
+          });
+          done();
         });
-        done();
-      });
+    });
+
+    it('should list cluster resources', (done) => {
+      mockApollo.subscribe.mockReturnValue(
+        of({ data: { myList: [{ name: 'res1' }] } }),
+      );
+      service
+        .list('myList', ['name'], clusterScopeNodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual([{ name: 'res1' }]);
+          expect(mockApollo.subscribe).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {},
+          });
+          done();
+        });
     });
 
     it('should list resources with namespace', (done) => {
       mockApollo.subscribe.mockReturnValue(
         of({ data: { myList: [{ name: 'res1' }] } }),
       );
-      const namespace = 'test-namespace';
 
-      service.list('myList', ['name'], nodeContext, namespace).subscribe((res) => {
-        expect(res).toEqual([{ name: 'res1' }]);
-        expect(mockApollo.subscribe).toHaveBeenCalledWith({
-          query: expect.anything(),
-          variables: { namespace: namespace },
+      service
+        .list('myList', ['name'], namespacedNodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual([{ name: 'res1' }]);
+          expect(mockApollo.subscribe).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: { namespace: namespacedNodeContext.namespaceId },
+          });
+          done();
         });
-        done();
-      });
     });
 
     it('should handle list error', (done) => {
@@ -200,7 +327,7 @@ describe('ResourceService', () => {
       mockApollo.subscribe.mockReturnValue(throwError(() => error));
       console.error = jest.fn();
 
-      service.list('myList', ['name'], nodeContext).subscribe({
+      service.list('myList', ['name'], namespacedNodeContext).subscribe({
         error: (err) => {
           expect(console.error).toHaveBeenCalledWith(
             'Error executing GraphQL query.',
@@ -216,7 +343,7 @@ describe('ResourceService', () => {
     it('should read organizations', (done) => {
       mockApollo.query.mockReturnValue(of({ data: { orgList: [{ id: 1 }] } }));
       service
-        .readOrganizations('orgList', ['id'], nodeContext)
+        .readOrganizations('orgList', ['id'], namespacedNodeContext)
         .subscribe((res) => {
           expect(res).toEqual([{ id: 1 }]);
           done();
@@ -228,15 +355,17 @@ describe('ResourceService', () => {
       mockApollo.query.mockReturnValue(throwError(() => error));
       console.error = jest.fn();
 
-      service.readOrganizations('orgList', ['id'], nodeContext).subscribe({
-        error: (err) => {
-          expect(console.error).toHaveBeenCalledWith(
-            'Error executing GraphQL query.',
-            error,
-          );
-          done();
-        },
-      });
+      service
+        .readOrganizations('orgList', ['id'], namespacedNodeContext)
+        .subscribe({
+          error: (err) => {
+            expect(console.error).toHaveBeenCalledWith(
+              'Error executing GraphQL query.',
+              error,
+            );
+            done();
+          },
+        });
     });
   });
 
@@ -244,27 +373,41 @@ describe('ResourceService', () => {
     it('should delete resource', (done) => {
       mockApollo.mutate.mockReturnValue(of({}));
       service
-        .delete(resource, resourceDefinition, nodeContext)
+        .delete(resource, resourceDefinition, namespacedNodeContext)
         .subscribe((res) => {
           expect(mockApollo.mutate).toHaveBeenCalled();
           done();
         });
     });
 
-    it('should delete resource with namespace', (done) => {
+    it('should delete namespaced resource', (done) => {
       mockApollo.mutate.mockReturnValue(of({}));
-      const namespace = 'test-namespace';
-      const contextWithNamespace = { ...nodeContext, namespaceId: namespace };
 
       service
-        .delete(resource, resourceDefinition, contextWithNamespace)
+        .delete(resource, resourceDefinition, namespacedNodeContext)
         .subscribe(() => {
           expect(mockApollo.mutate).toHaveBeenCalledWith({
             mutation: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: namespace
-            }
+              namespace: namespacedNodeContext.namespaceId,
+            },
+          });
+          done();
+        });
+    });
+
+    it('should delete cluster resource', (done) => {
+      mockApollo.mutate.mockReturnValue(of({}));
+
+      service
+        .delete(resource, resourceDefinition, clusterScopeNodeContext)
+        .subscribe(() => {
+          expect(mockApollo.mutate).toHaveBeenCalledWith({
+            mutation: expect.anything(),
+            variables: {
+              name: 'test-name',
+            },
           });
           done();
         });
@@ -277,30 +420,47 @@ describe('ResourceService', () => {
         of({ data: { __typename: 'TestKind' } }),
       );
       service
-        .create(resource, resourceDefinition, nodeContext)
+        .create(resource, resourceDefinition, namespacedNodeContext)
         .subscribe((res) => {
           expect(mockApollo.mutate).toHaveBeenCalled();
           done();
         });
     });
 
-    it('should create resource with namespace', (done) => {
+    it('should create namespaced resource ', (done) => {
       mockApollo.mutate.mockReturnValue(
         of({ data: { __typename: 'TestKind' } }),
       );
-      const namespace = 'test-namespace';
-      const contextWithNamespace = { ...nodeContext, namespaceId: namespace };
 
       service
-        .create(resource, resourceDefinition, contextWithNamespace)
+        .create(resource, resourceDefinition, namespacedNodeContext)
         .subscribe(() => {
           expect(mockApollo.mutate).toHaveBeenCalledWith({
             mutation: expect.anything(),
             fetchPolicy: 'no-cache',
             variables: {
               object: resource,
-              namespace: namespace
-            }
+              namespace: namespacedNodeContext.namespaceId,
+            },
+          });
+          done();
+        });
+    });
+
+    it('should create cluster resource ', (done) => {
+      mockApollo.mutate.mockReturnValue(
+        of({ data: { __typename: 'TestKind' } }),
+      );
+
+      service
+        .create(resource, resourceDefinition, clusterScopeNodeContext)
+        .subscribe(() => {
+          expect(mockApollo.mutate).toHaveBeenCalledWith({
+            mutation: expect.anything(),
+            fetchPolicy: 'no-cache',
+            variables: {
+              object: resource,
+            },
           });
           done();
         });
@@ -319,9 +479,11 @@ describe('ResourceService', () => {
           },
         }),
       );
-      service.readKcpCA(nodeContext).subscribe((res) => {
+      service.readKcpCA(namespacedNodeContext).subscribe((res) => {
         expect(res).toBe(btoa(ca));
-        expect(mockApolloFactory.apollo).toHaveBeenCalledWith(nodeContext);
+        expect(mockApolloFactory.apollo).toHaveBeenCalledWith(
+          namespacedNodeContext,
+        );
         done();
       });
     });

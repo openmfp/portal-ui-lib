@@ -5,5 +5,5 @@ export interface NodeContextProcessingService {
     entityId: string,
     entityNode: LuigiNode,
     ctx: NodeContext,
-  ): void;
+  ): Promise<void>;
 }

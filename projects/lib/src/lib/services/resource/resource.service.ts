@@ -23,13 +23,14 @@ export class ResourceService {
     kind: string,
     fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
-    namespace?: string,
+    readFromParentKcpPath: boolean = true,
   ): Observable<Resource> {
+    const isNamespacedResource = this.isNamespacedResource(nodeContext);
     let query: string | TypedDocumentNode<any, any> = this.resolveReadQuery(
       fieldsOrRawQuery,
       kind,
       resourceId,
-      namespace,
+      isNamespacedResource ? nodeContext.namespaceId : null,
       operation,
     );
 
@@ -39,19 +40,21 @@ export class ResourceService {
       `;
     } catch (error) {
       this.luigiCoreService.showAlert({
-        text: `Could not read an account: ${resourceId}. Wrong read query: <br/><br/> ${query}`,
+        text: `Could not read a resource: ${resourceId}. Wrong read query: <br/><br/> ${query}`,
         type: 'error',
       });
       return of(null);
     }
 
     return this.apolloFactory
-      .apollo(nodeContext, true)
+      .apollo(nodeContext, readFromParentKcpPath)
       .query({
         query,
         variables: {
           name: resourceId,
-          ...(namespace && { namespace }),
+          ...(isNamespacedResource && {
+            namespace: nodeContext.namespaceId,
+          }),
         },
       })
       .pipe(
@@ -77,7 +80,9 @@ export class ResourceService {
             operation: kind,
             variables: {
               name: { value: resourceId, type: 'String!' },
-              ...(namespace && { namespace: { value: namespace, type: 'String' } })
+              ...(namespace && {
+                namespace: { value: namespace, type: 'String' },
+              }),
             },
             fields: fieldsOrRawQuery,
           })
@@ -93,12 +98,16 @@ export class ResourceService {
     operation: string,
     fields: any[],
     nodeContext: ResourceNodeContext,
-    namespace?: string,
   ): Observable<Resource[]> {
+    const isNamespacedResource = this.isNamespacedResource(nodeContext);
     const query = gqlBuilder.subscription({
       operation,
       fields,
-      variables: namespace ? { namespace: { type: 'String', value: namespace } } : {},
+      variables: {
+        ...(isNamespacedResource && {
+          namespace: { type: 'String', value: nodeContext.namespaceId },
+        }),
+      },
     });
 
     return this.apolloFactory
@@ -153,8 +162,8 @@ export class ResourceService {
     const group = replaceDotsAndHyphensWithUnderscores(
       resourceDefinition.group,
     );
+    const isNamespacedResource = this.isNamespacedResource(nodeContext);
     const kind = resourceDefinition.kind;
-    const namespace = nodeContext.namespaceId;
 
     const mutation = gqlBuilder.mutation({
       operation: group,
@@ -162,24 +171,21 @@ export class ResourceService {
         {
           operation: `delete${kind}`,
           variables: {
-            name: { type: 'String!' },
-            ...(namespace && { namespace: { type: 'String' } }),
+            name: { type: 'String!', value: resource.metadata.name },
+            ...(isNamespacedResource && {
+              namespace: { type: 'String', value: nodeContext.namespaceId },
+            }),
           },
           fields: [],
         },
       ],
     });
 
-    const variables: Record<string, any> = {
-      name: resource.metadata.name,
-    };
-    if (namespace) {
-      variables.namespace = namespace;
-    }
-
     return this.apolloFactory.apollo(nodeContext).mutate<void>({
-      mutation: gql`${mutation.query}`,
-      variables,
+      mutation: gql`
+        ${mutation.query}
+      `,
+      variables: mutation.variables,
     });
   }
 
@@ -188,7 +194,10 @@ export class ResourceService {
     resourceDefinition: ResourceDefinition,
     nodeContext: ResourceNodeContext,
   ) {
-    const group = replaceDotsAndHyphensWithUnderscores(resourceDefinition.group);
+    const isNamespacedResource = this.isNamespacedResource(nodeContext);
+    const group = replaceDotsAndHyphensWithUnderscores(
+      resourceDefinition.group,
+    );
     const kind = resourceDefinition.kind;
     const namespace = nodeContext.namespaceId;
 
@@ -198,25 +207,22 @@ export class ResourceService {
         {
           operation: `create${kind}`,
           variables: {
-            ...(namespace && { namespace: { type: 'String' } }),
-            object: { type: `${kind}Input!` },
+            ...(isNamespacedResource && {
+              namespace: { type: 'String', value: namespace },
+            }),
+            object: { type: `${kind}Input!`, value: resource },
           },
           fields: ['__typename'],
         },
       ],
     });
 
-    const variables: Record<string, any> = { object: resource };
-    if (namespace) {
-      variables.namespace = namespace;
-    }
-
     return this.apolloFactory.apollo(nodeContext).mutate<void>({
       mutation: gql`
-      ${mutation.query}
-    `,
+        ${mutation.query}
+      `,
       fetchPolicy: 'no-cache',
-      variables,
+      variables: mutation.variables,
     });
   }
 
@@ -249,5 +255,9 @@ export class ResourceService {
           return btoa(ca);
         }),
       );
+  }
+
+  private isNamespacedResource(nodeContext: ResourceNodeContext) {
+    return nodeContext?.resourceDefinition?.scope === 'Namespaced';
   }
 }

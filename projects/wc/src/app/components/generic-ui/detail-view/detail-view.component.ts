@@ -70,6 +70,7 @@ export class DetailViewComponent {
   workspacePath: string;
   resourceFields: FieldDefinition[];
   kcpCA: string = '';
+  resourceId: string;
 
   constructor() {
     effect(() => {
@@ -78,12 +79,12 @@ export class DetailViewComponent {
         this.context().resourceDefinition.ui?.detailView?.fields ||
         defaultFields;
       this.resourceDefinition = this.context().resourceDefinition;
+      this.resourceId = this.context().entity.metadata.name;
       this.readResource();
     });
   }
 
   private readResource(): void {
-    const namespaceId = this.context().namespaceId;
     const fields = generateGraphQLFields(this.resourceFields);
     const queryOperation = replaceDotsAndHyphensWithUnderscores(
       this.resourceDefinition.group,
@@ -92,12 +93,12 @@ export class DetailViewComponent {
 
     this.resourceService
       .read(
-        this.context().accountId,
+        this.resourceId,
         queryOperation,
         kind,
         fields,
         this.context(),
-        namespaceId,
+        kind.toLowerCase() === 'account',
       )
       .subscribe({
         next: (result) => this.resource.set(result),

@@ -171,7 +171,18 @@ export class NodesProcessingService {
   ) {
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
       const entityTypeId = entityPath || entityNode?.defineEntity?.id;
-      const entityIdContextKey = entityNode?.defineEntity?.contextKey;
+      const entityId = ctx[entityNode?.defineEntity?.contextKey];
+      const staticChildren = [
+        ...(directChildren || []),
+        ...(childrenByEntity[entityTypeId] || []),
+      ];
+
+      await this.nodeContextProcessingService?.processNodeContext(
+        entityId,
+        entityNode,
+        ctx,
+      );
+
       if (!entityTypeId) {
         console.warn('No entity node!'); //TODO: check if needed or assured before
         resolve(
@@ -179,72 +190,58 @@ export class NodesProcessingService {
             entityNode,
             ctx,
             childrenByEntity,
-            directChildren,
             entityPath,
+            staticChildren,
           ),
         );
-      } else {
-        const entityId = ctx[entityIdContextKey];
-        const staticChildren = [
-          ...(directChildren || []),
-          ...(childrenByEntity[entityTypeId] || []),
-        ];
+        return;
+      }
 
-        if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
-          const fetchContext = computeFetchContext(entityNode, ctx);
-          const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
-          this.luigiNodesService
-            .retrieveAndMergeEntityChildren(
+      let dynamicRetrievedChildren: LuigiNode[],
+        staticRetrievedChildren: LuigiNode[];
+
+      if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
+        const fetchContext = computeFetchContext(entityNode, ctx);
+        const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
+
+        try {
+          dynamicRetrievedChildren =
+            await this.luigiNodesService.retrieveAndMergeEntityChildren(
               entityNode.defineEntity,
               staticChildren,
               entityPath,
               fetchContext.get(dynamicFetchId),
-            )
-            .then((children) => {
-              resolve(
-                this.createChildrenList(
-                  entityNode,
-                  ctx,
-                  childrenByEntity,
-                  children,
-                  entityPath,
-                  staticChildren,
-                ),
-              );
-            })
-            .catch((error) => {
-              resolve(
-                this.createChildrenList(
-                  entityNode,
-                  ctx,
-                  childrenByEntity,
-                  staticChildren,
-                  entityPath,
-                ),
-              );
-            });
+            );
+          staticRetrievedChildren = staticChildren;
+        } catch (error) {
+          dynamicRetrievedChildren = staticChildren;
+          staticRetrievedChildren = null;
+        }
 
-          this.nodeContextProcessingService?.processNodeContext(
-            entityId,
-            entityNode,
-            ctx,
-          );
-        } else {
-          const childrenList = await this.createChildrenList(
+        resolve(
+          this.createChildrenList(
             entityNode,
             ctx,
             childrenByEntity,
-            staticChildren,
             entityPath,
-          );
-          console.debug(`children list ${childrenList.length}`);
-          resolve(
-            this.luigiNodesService.replaceServerNodesWithLocalOnes(
-              childrenList,
-              [entityPath],
-            ),
-          );
-        }
+            dynamicRetrievedChildren,
+            staticRetrievedChildren,
+          ),
+        );
+      } else {
+        const childrenList = await this.createChildrenList(
+          entityNode,
+          ctx,
+          childrenByEntity,
+          entityPath,
+          staticChildren,
+        );
+        console.debug(`children list ${childrenList.length}`);
+        resolve(
+          this.luigiNodesService.replaceServerNodesWithLocalOnes(childrenList, [
+            entityPath,
+          ]),
+        );
       }
     });
   }
@@ -253,8 +250,8 @@ export class NodesProcessingService {
     entityNode: LuigiNode,
     ctx: any,
     childrenByEntity: Record<string, LuigiNode[]>,
+    entityPath: string,
     children: LuigiNode[],
-    entityPath?: string,
     staticChildren?: LuigiNode[],
   ) {
     const entityRootChildren = staticChildren ? [] : children;
