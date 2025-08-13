@@ -6,10 +6,10 @@ import {
 } from './initializers';
 import {
   ERROR_COMPONENT_CONFIG,
+  HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
-  LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
@@ -30,9 +30,9 @@ import {
   CustomMessageListener,
   CustomNodeProcessingService,
   GlobalSearchConfigService,
+  HeaderBarConfigService,
   LocalConfigurationService,
   LuigiAuthEventsCallbacksService,
-  LuigiBreadcrumbConfigService,
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
   StaticSettingsConfigService,
@@ -84,8 +84,8 @@ export interface PortalOptions {
   /** Service providing luigi user profile configuration **/
   userProfileConfigService?: Type<UserProfileConfigService>;
 
-  /** Service providing luigi breadcrumb configuration **/
-  luigiBreadcrumbConfigService?: Type<LuigiBreadcrumbConfigService>;
+  /** Provide a config that contains renderers for Nav Bar */
+  headerBarConfigService?: Type<HeaderBarConfigService>;
 
   /** Service providing custom global level nodes **/
   nodeChangeHookConfigService?: Type<NodeChangeHookConfigService>;
@@ -195,13 +195,6 @@ const addOptionalProviders = (
     });
   }
 
-  if (options.luigiBreadcrumbConfigService) {
-    providers.push({
-      provide: LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.luigiBreadcrumbConfigService,
-    });
-  }
-
   if (options.customGlobalNodesService) {
     providers.push({
       provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
@@ -227,6 +220,13 @@ const addOptionalProviders = (
     providers.push({
       provide: ERROR_COMPONENT_CONFIG,
       useValue: options.errorComponentConfig,
+    });
+  }
+
+  if (options.headerBarConfigService) {
+    providers.push({
+      provide: HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.headerBarConfigService,
     });
   }
 
