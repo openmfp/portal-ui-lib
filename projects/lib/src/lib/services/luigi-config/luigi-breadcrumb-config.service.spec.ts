@@ -77,6 +77,7 @@ describe('HeaderBarService', () => {
 
     expect(container.style.display).toBe('flex');
     expect(container.style.position).toBe('static');
+    expect(container.style.height).toBe('min-content');
 
     expect(parent.style.display).toBe('flex');
     expect(parent.style.flexDirection).toBe('column');

@@ -46,6 +46,7 @@ export class HeaderBarService {
       renderer: (containerElement, nodeItems, clickHandler) => {
         containerElement.style.display = 'flex';
         containerElement.style.position = 'static';
+        containerElement.style.height = 'min-content';
 
         const parrent = containerElement.parentElement;
         if(parrent) {
