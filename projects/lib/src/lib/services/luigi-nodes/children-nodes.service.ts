@@ -98,18 +98,13 @@ export class ChildrenNodesService {
           return;
         }
 
-        const label = navHeader.label;
+        const label = this.sanitizeString(navHeader.label);
         const type = this.getSideNavigationHeaderType(
           navHeader.context,
           nodeItem,
         );
         containerElement.classList.add('entity-nav-header');
 
-        const titleElement = document.createElement('ui5-title');
-        titleElement.className = 'entity-nav-header-label';
-        titleElement.setAttribute('level', 'H6');
-        titleElement.setAttribute('size', 'H6');
-        titleElement.textContent = label;
         containerElement.innerHTML = `
             <ui5-text class="entity-nav-header-type">${type}</ui5-text>
             <ui5-title class="entity-nav-header-label" level="H6" size="H6">${label}</ui5-title>
@@ -129,5 +124,12 @@ export class ChildrenNodesService {
     }
     type = type.replace(/Id/i, '');
     return type.at(0).toUpperCase() + type.slice(1);
+  }
+
+  private sanitizeString(inputString: string): string {
+    // Prevent XSS attacks by removing any tags
+    const tempSpan = document.createElement('span');
+    tempSpan.textContent = inputString;
+    return tempSpan.innerHTML;
   }
 }
