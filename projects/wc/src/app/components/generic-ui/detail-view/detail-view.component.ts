@@ -90,10 +90,6 @@ export class DetailViewComponent {
       this.resourceDefinition.group,
     );
     const kind = this.resourceDefinition.kind;
-    const namespaceId =
-      this.context().resourceDefinition.scope === 'Namespaced'
-        ? this.context().namespaceId
-        : undefined;
 
     this.resourceService
       .read(
@@ -101,10 +97,7 @@ export class DetailViewComponent {
         queryOperation,
         kind,
         fields,
-        {
-          ...this.context(),
-          namespaceId,
-        },
+        this.context(),
         kind.toLowerCase() === 'account',
       )
       .subscribe({

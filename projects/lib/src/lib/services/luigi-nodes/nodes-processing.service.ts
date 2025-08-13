@@ -197,24 +197,25 @@ export class NodesProcessingService {
         return;
       }
 
-      let children: LuigiNode[], staticChildrenParam: LuigiNode[];
+      let dynamicRetrievedChildren: LuigiNode[],
+        staticRetrievedChildren: LuigiNode[];
 
       if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
         const fetchContext = computeFetchContext(entityNode, ctx);
         const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
 
         try {
-          children =
+          dynamicRetrievedChildren =
             await this.luigiNodesService.retrieveAndMergeEntityChildren(
               entityNode.defineEntity,
               staticChildren,
               entityPath,
               fetchContext.get(dynamicFetchId),
             );
-          staticChildrenParam = staticChildren;
+          staticRetrievedChildren = staticChildren;
         } catch (error) {
-          children = staticChildren;
-          staticChildrenParam = null;
+          dynamicRetrievedChildren = staticChildren;
+          staticRetrievedChildren = null;
         }
 
         resolve(
@@ -223,8 +224,8 @@ export class NodesProcessingService {
             ctx,
             childrenByEntity,
             entityPath,
-            children,
-            staticChildrenParam,
+            dynamicRetrievedChildren,
+            staticRetrievedChildren,
           ),
         );
       } else {

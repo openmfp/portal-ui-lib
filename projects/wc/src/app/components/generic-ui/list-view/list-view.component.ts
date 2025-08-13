@@ -85,7 +85,6 @@ export class ListViewComponent implements OnInit {
   private createModal = viewChild<CreateResourceModalComponent>('createModal');
 
   resources = signal<Resource[]>([]);
-  namespace: string;
   columns: FieldDefinition[];
   heading: string;
   resourceDefinition: ResourceDefinition;
@@ -98,19 +97,18 @@ export class ListViewComponent implements OnInit {
         this.context().resourceDefinition.ui?.listView?.fields ||
         defaultColumns;
       this.heading = `${this.context().resourceDefinition.plural.charAt(0).toUpperCase()}${this.context().resourceDefinition.plural.slice(1)}`;
-      this.namespace = this.LuigiClient().getNodeParams(true)?.['namespace'];
-      this.read(this.namespace);
+      this.list();
     });
   }
 
   ngOnInit(): void {}
 
-  read(namespace: string) {
+  list() {
     const fields = generateGraphQLFields(this.columns);
     const queryOperation = `${replaceDotsAndHyphensWithUnderscores(this.resourceDefinition.group)}_${this.resourceDefinition.plural}`;
 
     this.resourceService
-      .list(queryOperation, fields, this.context(), namespace)
+      .list(queryOperation, fields, this.context())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -154,12 +152,7 @@ export class ListViewComponent implements OnInit {
   }
 
   navigateToResource(resource: Resource) {
-    const link = this.LuigiClient().linkManager();
-    const path =
-      this.namespace && resource.metadata?.namespace
-        ? `namespaces/${this.namespace && resource.metadata.namespace}/${resource.metadata.name}`
-        : `${resource.metadata.name}`;
-    link.navigate(path);
+    this.LuigiClient().linkManager().navigate(resource.metadata.name);
   }
 
   openCreateResourceModal() {
