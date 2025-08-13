@@ -1,7 +1,6 @@
 import * as tokens from './injection-tokens';
 import { PortalOptions, providePortal } from './portal-providers';
 import { CustomMessageListener } from './services';
-import * as services from './services';
 import * as http from '@angular/common/http';
 import * as core from '@angular/core';
 
@@ -95,11 +94,11 @@ describe('Provide Portal', () => {
       luigiExtendedGlobalContextConfigService: {} as any,
       customGlobalNodesService: {} as any,
       userProfileConfigService: {} as any,
-      luigiBreadcrumbConfigService: {} as any,
       themingService: {} as any,
       errorComponentConfig: { '404': {} } as any,
       localConfigurationService: {} as any,
       nodeContextProcessingService: {} as any,
+      headerBarConfigService: {} as any,
     };
 
     providePortal(options);
@@ -130,11 +129,6 @@ describe('Provide Portal', () => {
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: {},
-    });
-
-    expect(providersArg).toContainEqual({
-      provide: tokens.LUIGI_BREADCRUMB_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: {},
     });
 
@@ -181,6 +175,11 @@ describe('Provide Portal', () => {
 
     expect(providersArg).toContainEqual({
       provide: tokens.LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+      useClass: {},
+    });
+
+    expect(providersArg).toContainEqual({
+      provide: tokens.HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: {},
     });
   });

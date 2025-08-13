@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import { replaceDotsAndHyphensWithUnderscores } from '@openmfp/portal-ui-lib';
 import {
   FieldDefinition,
   GatewayService,
@@ -19,10 +18,9 @@ import {
   ResourceService,
   generateGraphQLFields,
   getResourceValueByJsonPath,
+  replaceDotsAndHyphensWithUnderscores,
 } from '@openmfp/portal-ui-lib';
 import {
-  BreadcrumbsComponent,
-  BreadcrumbsItemComponent,
   DynamicPageComponent,
   DynamicPageHeaderComponent,
   DynamicPageTitleComponent,
@@ -48,8 +46,6 @@ const defaultFields: FieldDefinition[] = [
   imports: [
     DynamicPageComponent,
     DynamicPageTitleComponent,
-    BreadcrumbsComponent,
-    BreadcrumbsItemComponent,
     TitleComponent,
     TextComponent,
     ToolbarComponent,
