@@ -11,7 +11,7 @@ describe('ResourceService', () => {
   let mockApolloFactory: any;
   let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
 
-  const nodeContext: any = { cluster: 'test' };
+  const nodeContext: any = { cluster: 'test', namespaceId: 'test-namespace' };
   const resource: any = { metadata: { name: 'test-name' } };
   const resourceDefinition: any = {
     group: 'core.k8s.io',
@@ -76,6 +76,7 @@ describe('ResourceService', () => {
             query: expect.anything(),
             variables: {
               name: 'test-name',
+              namespace: 'test-namespace',
             },
           });
           done();
@@ -86,17 +87,16 @@ describe('ResourceService', () => {
       mockApollo.query.mockReturnValue(
         of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
       );
-      const namespace = 'test-namespace';
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext, namespace)
+        .read('test-name', 'core_k8s_io', 'TestKind', ['name'], nodeContext)
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           expect(mockApollo.query).toHaveBeenCalledWith({
             query: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: namespace,
+              namespace: nodeContext.namespaceId,
             },
           });
           done();
@@ -117,6 +117,7 @@ describe('ResourceService', () => {
             query: expect.anything(),
             variables: {
               name: 'test-name',
+              namespace: 'test-namespace',
             },
           });
           done();
@@ -128,17 +129,16 @@ describe('ResourceService', () => {
       mockApollo.query.mockReturnValue(
         of({ data: { core_k8s_io: { TestKind: { name: 'test' } } } }),
       );
-      const namespace = 'test-namespace';
 
       service
-        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext, namespace)
+        .read('test-name', 'core_k8s_io', 'TestKind', rawQuery, nodeContext)
         .subscribe((res) => {
           expect(res).toEqual({ name: 'test' });
           expect(mockApollo.query).toHaveBeenCalledWith({
             query: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: namespace,
+              namespace: nodeContext.namespaceId,
             },
           });
           done();
@@ -185,14 +185,16 @@ describe('ResourceService', () => {
       );
       const namespace = 'test-namespace';
 
-      service.list('myList', ['name'], nodeContext, namespace).subscribe((res) => {
-        expect(res).toEqual([{ name: 'res1' }]);
-        expect(mockApollo.subscribe).toHaveBeenCalledWith({
-          query: expect.anything(),
-          variables: { namespace: namespace },
+      service
+        .list('myList', ['name'], nodeContext, namespace)
+        .subscribe((res) => {
+          expect(res).toEqual([{ name: 'res1' }]);
+          expect(mockApollo.subscribe).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: { namespace: namespace },
+          });
+          done();
         });
-        done();
-      });
     });
 
     it('should handle list error', (done) => {
@@ -263,8 +265,8 @@ describe('ResourceService', () => {
             mutation: expect.anything(),
             variables: {
               name: 'test-name',
-              namespace: namespace
-            }
+              namespace: namespace,
+            },
           });
           done();
         });
@@ -299,8 +301,8 @@ describe('ResourceService', () => {
             fetchPolicy: 'no-cache',
             variables: {
               object: resource,
-              namespace: namespace
-            }
+              namespace: namespace,
+            },
           });
           done();
         });
