@@ -322,36 +322,41 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The luigiBreadcrumbConfigService Option
+#### The headerbarConfigService Option
 
-This enables you to define [Luigi breadcrumbs for your application](https://docs.luigi-project.io/docs/navigation-advanced?section=breadcrumbs)
-Make sure to return a valid Luigi configuration object.
+This enables you to define configiration for your header bar section. Under the hood It extends [Luigi breadcrumbs](https://docs.luigi-project.io/docs/navigation-advanced?section=breadcrumbs) by adding ability to provide multiple renderer functions
+
+Make sure to return a valid HeaderBar configuration object.
 
 
 ```ts
 import {
-  LuigiBreadcrumbConfigService,
-  LuigiBreadcrumb,
-  NodeItem,
-  LuigiNode,
-  BreadcrumbBadge,
+  HeaderBarConfigService,
+  HeaderBarConfig,
 } from '@openmfp/portal-ui-lib';
 
 
-export class LuigiBreadcrumbConfigServiceImpl implements LuigiBreadcrumbConfigService
+export class HeaderBarConfigServiceImpl implements HeaderBarConfigService
 {
-  getBreadcrumbsConfig(): LuigiBreadcrumb {
+  getBreadcrumbsConfig(): Promise<HeaderBarConfig> {
     return  {
       autoHide: true,
       omitRoot: false,
       pendingItemLabel: '...',
-      renderer: (
+      rightRenderers: [(
               containerElement: HTMLElement,
               nodeItems: NodeItem[],
               clickHandler,
       ) => {
         // ... renderer implementation
-      },
+      }];
+      leftRenderers: [(
+              containerElement: HTMLElement,
+              nodeItems: NodeItem[],
+              clickHandler,
+      ) => {
+        // ... renderer implementation
+      }];
     };
   }
 }
@@ -657,4 +662,3 @@ Please refer to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) file in this reposi
 ## Licensing
 
 Copyright 2025 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-ui-lib).
-
