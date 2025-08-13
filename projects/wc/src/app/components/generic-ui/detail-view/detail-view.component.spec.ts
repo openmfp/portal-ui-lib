@@ -44,6 +44,9 @@ describe('DetailViewComponent', () => {
           },
         },
       },
+      entity: {
+        metadata: { name: 'test-resource' },
+      },
       parentNavigationContexts: ['project'],
     })) as any;
 
@@ -91,6 +94,7 @@ describe('DetailViewComponent', () => {
           },
         },
       },
+      entity: { metadata: { name: 'test-resource' } },
       parentNavigationContexts: ['project'],
     })) as any;
 

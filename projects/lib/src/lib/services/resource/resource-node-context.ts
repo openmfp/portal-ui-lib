@@ -4,7 +4,7 @@ export interface ResourceNodeContext extends Partial<NodeContext> {
   entity?: {
     metadata: {
       name: string;
-      namespace: string;
+      namespace?: string;
     };
   };
   namespaceId?: string;
