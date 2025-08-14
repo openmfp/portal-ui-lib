@@ -322,7 +322,7 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The headerbarConfigService Option
+#### The headerBarConfigService Option
 
 This enables you to define configiration for your header bar section. Under the hood It extends [Luigi breadcrumbs](https://docs.luigi-project.io/docs/navigation-advanced?section=breadcrumbs) by adding ability to provide multiple renderer functions
 
