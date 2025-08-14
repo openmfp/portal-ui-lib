@@ -22,6 +22,7 @@ export interface Resource extends Record<string, any> {
   metadata: ObjectMeta;
   spec?: ResourceSpec;
   status?: ResourceStatus;
+  __typename: string;
 }
 
 export interface ResourceDefinition {

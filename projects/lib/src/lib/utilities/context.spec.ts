@@ -1,5 +1,5 @@
 import { LuigiGlobalContext, LuigiNode } from '../models';
-import { computeFetchContext, visibleForContext } from './context';
+import { computeDynamicFetchContext, visibleForContext } from './context';
 import { matchesJMESPath } from './jmespath';
 import { isMatch } from 'lodash';
 
@@ -76,7 +76,7 @@ describe('computeFetchContext', () => {
     const entityNode = {} as LuigiNode;
     const ctx = { userId: 'user1' } as LuigiGlobalContext;
 
-    const result = computeFetchContext(entityNode, ctx);
+    const result = computeDynamicFetchContext(entityNode, ctx);
 
     expect(result.size).toBe(0);
   });
@@ -93,7 +93,7 @@ describe('computeFetchContext', () => {
       userId: 'user1',
     } as any as LuigiGlobalContext;
 
-    const result = computeFetchContext(entityNode, ctx);
+    const result = computeDynamicFetchContext(entityNode, ctx);
 
     expect(result.size).toBe(1);
     expect(result.get('project')).toEqual({ project: 'proj1', user: 'user1' });
@@ -111,7 +111,7 @@ describe('computeFetchContext', () => {
       userid: 'user1',
     } as unknown as LuigiGlobalContext;
 
-    const result = computeFetchContext(entityNode, ctx);
+    const result = computeDynamicFetchContext(entityNode, ctx);
 
     expect(result.get('project')).toEqual({ project: 'proj1', user: 'user1' });
   });
@@ -138,7 +138,7 @@ describe('computeFetchContext', () => {
       userId: 'user1',
     };
 
-    const result = computeFetchContext(entityNode, ctx);
+    const result = computeDynamicFetchContext(entityNode, ctx);
 
     expect(result.size).toBe(2);
     expect(result.get('project')).toEqual({
@@ -183,7 +183,7 @@ describe('computeFetchContext', () => {
       userId: 'user1',
     } as any as LuigiGlobalContext;
 
-    const result = computeFetchContext(entityNode, ctx);
+    const result = computeDynamicFetchContext(entityNode, ctx);
 
     expect(result.size).toBe(3);
     expect(result.get('project')).toEqual({
