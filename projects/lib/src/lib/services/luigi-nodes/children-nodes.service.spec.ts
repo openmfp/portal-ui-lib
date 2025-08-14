@@ -239,7 +239,6 @@ describe('ChildrenNodesService', () => {
       expect(entityNode.navHeader).toBeUndefined();
     });
 
-
     it('should initialize navHeader if not present', () => {
       // Arrange
       const entityNode: LuigiNode = {
@@ -334,6 +333,23 @@ describe('ChildrenNodesService', () => {
         ).toBeDefined();
         expect(containerElement.innerHTML).toContain('Test Entity');
         expect(containerElement.innerHTML).toContain('Test Label');
+      });
+
+      it('should not render unsafe HTML', () => {
+        // Arrange
+        service.addNavigationHeader(entityNode);
+        const navHeader = { label: 'Unsafe <script>alert("Test")</script>' };
+
+        // Act
+        entityNode.navHeader.renderer(
+          containerElement,
+          entityNode,
+          () => {},
+          navHeader,
+        );
+
+        // Assert
+        expect(containerElement.innerHTML).not.toContain('<script>');
       });
 
       it('should use "Component" if entity label is set to "component', () => {
