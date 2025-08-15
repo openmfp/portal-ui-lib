@@ -116,7 +116,7 @@ export class OrganizationManagementComponent implements OnInit {
       .create(resource, resourceDefinition, this.context())
       .subscribe({
         next: (result) => {
-          console.debug('Resource created', result.data);
+          console.debug('Resource created', result);
           this.organizations.set([
             this.newOrganization,
             ...this.organizations(),

@@ -93,7 +93,6 @@ describe('NavigationGlobalContextConfigService', () => {
         userId: 'test-user',
         userEmail: 'user@test.com',
         token: 'test-token',
-        organization: 'openmfp',
       });
     });
 
@@ -142,7 +141,6 @@ describe('NavigationGlobalContextConfigService', () => {
         userId: 'test-user',
         userEmail: 'user@test.com',
         token: 'test-token',
-        organization: 'openmfp',
       });
     });
   });

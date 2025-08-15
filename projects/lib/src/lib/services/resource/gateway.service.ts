@@ -38,7 +38,7 @@ export class GatewayService {
     if (nodeContext.kcpPath) {
       kcpPath = nodeContext.kcpPath;
     } else if (readFromParentKcpPath) {
-      const lastIndex = currentKcpPath.lastIndexOf(`:${nodeContext.accountId}`);
+      const lastIndex = currentKcpPath.lastIndexOf(':');
       if (lastIndex !== -1) {
         kcpPath = currentKcpPath.slice(0, lastIndex);
       }

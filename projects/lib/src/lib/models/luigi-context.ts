@@ -10,7 +10,6 @@ export interface LuigiGlobalContext extends Record<string, any> {
   userId: string;
   userEmail: string;
   token: string;
-  organization: string;
   portalBaseUrl: string;
 }
 

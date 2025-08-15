@@ -16,8 +16,8 @@ export interface CustomMessageListener {
    * @param mfNodesObject The nodes object of the micro frontend, see also {@link https://docs.luigi-project.io/docs/navigation-parameters-reference?section=node-parameters}
    */
   onCustomMessageReceived(
-    customMessage: string,
+    customMessage: any,
     mfObject: any,
-    mfNodesObject: any
+    mfNodesObject: any,
   ): void;
 }

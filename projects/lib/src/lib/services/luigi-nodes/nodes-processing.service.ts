@@ -6,7 +6,7 @@ import {
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
 import {
-  computeFetchContext,
+  computeDynamicFetchContext,
   visibleForContext,
 } from '../../utilities/context';
 import { ChildrenNodesService } from './children-nodes.service';
@@ -201,7 +201,7 @@ export class NodesProcessingService {
         staticRetrievedChildren: LuigiNode[];
 
       if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
-        const fetchContext = computeFetchContext(entityNode, ctx);
+        const fetchContext = computeDynamicFetchContext(entityNode, ctx);
         const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
 
         try {

@@ -103,12 +103,6 @@ export class DetailViewComponent {
       .subscribe({
         next: (result) => this.resource.set(result),
       });
-
-    this.resourceService.readKcpCA(this.context()).subscribe({
-      next: (kcpCA) => {
-        this.kcpCA = kcpCA;
-      },
-    });
   }
 
   navigateToParent() {
@@ -122,7 +116,7 @@ export class DetailViewComponent {
     const kubeConfig = kubeConfigTemplate
       .replaceAll('<cluster-name>', this.context().accountId)
       .replaceAll('<server-url>', this.workspacePath)
-      .replaceAll('<ca-data>', this.kcpCA)
+      .replaceAll('<ca-data>', this.context().kcpCA)
       .replaceAll('<token>', this.context().token);
 
     const blob = new Blob([kubeConfig], { type: 'application/plain' });
