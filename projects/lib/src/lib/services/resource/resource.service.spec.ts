@@ -479,7 +479,7 @@ describe('ResourceService', () => {
           },
         }),
       );
-      service.readKcpCA(namespacedNodeContext).subscribe((res) => {
+      service.readAccountInfo(namespacedNodeContext).subscribe((res) => {
         expect(res).toBe(btoa(ca));
         expect(mockApolloFactory.apollo).toHaveBeenCalledWith(
           namespacedNodeContext,
