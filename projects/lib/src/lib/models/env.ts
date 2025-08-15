@@ -9,7 +9,7 @@ export interface AuthData {
   idToken: string;
 }
 
-export interface ClientEnvironment {
+export interface ClientEnvironment extends Record<string, any> {
   idpName: string;
   baseDomain: string;
   oauthServerUrl: string;
