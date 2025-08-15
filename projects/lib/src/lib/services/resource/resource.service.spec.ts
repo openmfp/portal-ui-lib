@@ -467,20 +467,21 @@ describe('ResourceService', () => {
     });
   });
 
-  describe('readKcpCA', () => {
-    it('should read KCP CA', (done) => {
+  describe('readAccountInfo', () => {
+    it('should read account info', (done) => {
       const ca = 'cert-data';
+      const accountInfo = { spec: { clusterInfo: { ca } } };
       mockApollo.query.mockReturnValue(
         of({
           data: {
             core_platform_mesh_io: {
-              AccountInfo: { spec: { clusterInfo: { ca } } },
+              AccountInfo: accountInfo,
             },
           },
         }),
       );
       service.readAccountInfo(namespacedNodeContext).subscribe((res) => {
-        expect(res).toBe(btoa(ca));
+        expect(res).toBe(accountInfo);
         expect(mockApolloFactory.apollo).toHaveBeenCalledWith(
           namespacedNodeContext,
         );
