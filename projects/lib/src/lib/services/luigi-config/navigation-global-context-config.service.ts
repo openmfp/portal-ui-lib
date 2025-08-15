@@ -18,7 +18,6 @@ export class NavigationGlobalContextConfigService {
   async getGlobalContext(): Promise<LuigiGlobalContext> {
     const portalConfig = await this.configService.getPortalConfig();
     const userInfo = this.authService.getUserInfo();
-    const envConfig = await this.envConfigService.getEnvConfig();
     return {
       ...(await this.luigiExtendedGlobalContextConfigService?.createLuigiExtendedGlobalContext()),
       portalBaseUrl: window.location.origin,
@@ -26,7 +25,6 @@ export class NavigationGlobalContextConfigService {
       userId: userInfo.userId,
       userEmail: userInfo.email,
       token: this.authService.getToken(),
-      organization: envConfig.organization,
     };
   }
 }
