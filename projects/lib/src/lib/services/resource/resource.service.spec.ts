@@ -412,6 +412,28 @@ describe('ResourceService', () => {
           done();
         });
     });
+
+    it('should handle delete error', (done) => {
+      const error = new Error('fail');
+      mockApollo.mutate.mockReturnValue(throwError(() => error));
+      console.error = jest.fn();
+
+      service
+        .delete(resource, resourceDefinition, clusterScopeNodeContext)
+        .subscribe({
+          error: () => {
+            expect(console.error).toHaveBeenCalledWith(
+              'Error executing GraphQL query.',
+              error,
+            );
+            expect(mockLuigiCoreService.showAlert).toHaveBeenCalledWith({
+              text: 'fail',
+              type: 'error',
+            });
+            done();
+          },
+        });
+    });
   });
 
   describe('create', () => {
@@ -465,6 +487,28 @@ describe('ResourceService', () => {
           done();
         });
     });
+
+    it('should handle create error', (done) => {
+      const error = new Error('fail');
+      mockApollo.mutate.mockReturnValue(throwError(() => error));
+      console.error = jest.fn();
+
+      service
+        .create(resource, resourceDefinition, clusterScopeNodeContext)
+        .subscribe({
+          error: () => {
+            expect(console.error).toHaveBeenCalledWith(
+              'Error executing GraphQL query.',
+              error,
+            );
+            expect(mockLuigiCoreService.showAlert).toHaveBeenCalledWith({
+              text: 'fail',
+              type: 'error',
+            });
+            done();
+          },
+        });
+    });
   });
 
   describe('readAccountInfo', () => {
@@ -480,12 +524,33 @@ describe('ResourceService', () => {
           },
         }),
       );
+
       service.readAccountInfo(namespacedNodeContext).subscribe((res) => {
         expect(res).toBe(accountInfo);
         expect(mockApolloFactory.apollo).toHaveBeenCalledWith(
           namespacedNodeContext,
         );
         done();
+      });
+    });
+
+    it('should handle read account info error', (done) => {
+      const error = new Error('fail');
+      mockApollo.query.mockReturnValue(throwError(() => error));
+      console.error = jest.fn();
+
+      service.readAccountInfo(namespacedNodeContext).subscribe({
+        error: () => {
+          expect(console.error).toHaveBeenCalledWith(
+            'Error executing GraphQL query.',
+            error,
+          );
+          expect(mockLuigiCoreService.showAlert).toHaveBeenCalledWith({
+            text: 'fail',
+            type: 'error',
+          });
+          done();
+        },
       });
     });
   });
