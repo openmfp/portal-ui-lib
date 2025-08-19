@@ -140,13 +140,7 @@ export class ListViewComponent implements OnInit {
       .create(resource, this.resourceDefinition, this.context())
       .subscribe({
         next: (result) => {
-          console.debug('Resource created', result.data);
-        },
-        error: (error) => {
-          this.luigiCoreService.showAlert({
-            text: `Failure! Could not create resource: ${resource.metadata.name}.`,
-            type: 'error',
-          });
+          console.debug('Resource created', result);
         },
       });
   }

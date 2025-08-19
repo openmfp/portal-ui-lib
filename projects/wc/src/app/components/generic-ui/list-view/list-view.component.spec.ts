@@ -92,16 +92,6 @@ describe('ListViewComponent', () => {
     expect(mockResourceService.create).toHaveBeenCalled();
   });
 
-  it('should show alert on create error', () => {
-    mockResourceService.create.mockReturnValueOnce(
-      throwError(() => new Error()),
-    );
-    const resource = { metadata: { name: 'test' } };
-
-    component.create(resource as any);
-    expect(mockLuigiCoreService.showAlert).toHaveBeenCalled();
-  });
-
   it('should navigate to resource', () => {
     const resource = { metadata: { name: 'res1' } };
     const navSpy = jest.fn();

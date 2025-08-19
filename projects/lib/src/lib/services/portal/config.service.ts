@@ -38,6 +38,20 @@ export class ConfigService {
     return this.portalConfigCachePromise;
   }
 
+  async reloadConfig(
+    entity: string,
+    context?: Record<string, string>,
+  ): Promise<void> {
+    if (!entity) {
+      this.portalConfigCachePromise = undefined;
+      await this.getPortalConfig();
+    } else {
+      const entityCacheKey = JSON.stringify(context);
+      delete this.entityConfigCache[entity][entityCacheKey];
+      await this.getEntityConfig(entity, context);
+    }
+  }
+
   async getEntityConfig(
     entity: string,
     context?: Record<string, string>,

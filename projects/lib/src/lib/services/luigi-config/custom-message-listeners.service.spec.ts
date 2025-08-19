@@ -1,7 +1,8 @@
-import { TestBed } from '@angular/core/testing';
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
 import { CustomMessageListener } from './custom-message-listener';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
+import { ReloadLuigiConfigListener } from './custom-message-listeners/reload-luigi-config.listener';
+import { TestBed } from '@angular/core/testing';
 
 describe('CustomMessageListenersService', () => {
   let customMessageListenersService: CustomMessageListenersService;
@@ -24,6 +25,15 @@ describe('CustomMessageListenersService', () => {
     TestBed.configureTestingModule({
       providers: [
         {
+          provide: ReloadLuigiConfigListener,
+          useValue: {
+            messageId(): string {
+              return 'ReloadLuigiConfigListener';
+            },
+            onCustomMessageReceived: jest.fn(),
+          },
+        },
+        {
           provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
           multi: true,
           useValue: projectCreatedListener,
@@ -37,7 +47,7 @@ describe('CustomMessageListenersService', () => {
     }).compileComponents();
 
     customMessageListenersService = TestBed.inject(
-      CustomMessageListenersService
+      CustomMessageListenersService,
     );
   });
 
@@ -47,7 +57,7 @@ describe('CustomMessageListenersService', () => {
 
   it('should provide a customMessageListenersService object', () => {
     expect(
-      Object.keys(customMessageListenersService.getMessageListeners())
+      Object.keys(customMessageListenersService.getMessageListeners()),
     ).toContain('customMessagesListeners');
   });
 
@@ -55,7 +65,7 @@ describe('CustomMessageListenersService', () => {
     expect(listeners()).toBeDefined();
     expect(listeners()).toContain('ProjectCreatedListener');
     expect(listeners()).toContain('EntityChangedListener');
-    expect(listeners().length).toBe(2);
+    expect(listeners().length).toBe(3);
   });
 
   it('should call onCustomMessageReceived when a custom message is received', () => {
@@ -68,20 +78,20 @@ describe('CustomMessageListenersService', () => {
     messageListeners.customMessagesListeners['ProjectCreatedListener'](
       testMessage,
       testMf,
-      testMfNodes
+      testMfNodes,
     );
 
     expect(projectCreatedListener.onCustomMessageReceived).toHaveBeenCalledWith(
       testMessage,
       testMf,
-      testMfNodes
+      testMfNodes,
     );
   });
 
   function listeners(): string[] {
     return Object.keys(
       customMessageListenersService.getMessageListeners()
-        .customMessagesListeners
+        .customMessagesListeners,
     );
   }
 });

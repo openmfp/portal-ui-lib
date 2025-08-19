@@ -1,4 +1,4 @@
-import { Resource, ResourceDefinition } from '../../models';
+import { AccountInfo, Resource, ResourceDefinition } from '../../models';
 import { replaceDotsAndHyphensWithUnderscores } from '../../utilities';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
@@ -9,6 +9,17 @@ import { gql } from 'apollo-angular';
 import * as gqlBuilder from 'gql-query-builder';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+
+interface ResourceResponseError extends Record<string, any> {
+  message: string;
+}
+
+interface ResourceResponse extends Record<string, any> {
+  data: {
+    [key: string]: any;
+  };
+  errors: { message: string }[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -58,8 +69,9 @@ export class ResourceService {
         },
       })
       .pipe(
-        map((res: any) => res.data?.[operation]?.[kind]),
+        map((res) => res.data?.[operation]?.[kind]),
         catchError((error) => {
+          this.alertErrors(error);
           console.error('Error executing GraphQL query.', error);
           return error;
         }),
@@ -132,10 +144,18 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]),
         catchError((error) => {
+          this.alertErrors(error);
           console.error('Error executing GraphQL query.', error);
           return error;
         }),
       );
+  }
+
+  private alertErrors(res: ResourceResponseError) {
+    this.luigiCoreService.showAlert({
+      text: res.message,
+      type: 'error',
+    });
   }
 
   readOrganizations(
@@ -159,6 +179,7 @@ export class ResourceService {
       .pipe(
         map((res: any) => res.data?.[operation]),
         catchError((error) => {
+          this.alertErrors(error);
           console.error('Error executing GraphQL query.', error);
           return error;
         }),
@@ -192,12 +213,21 @@ export class ResourceService {
       ],
     });
 
-    return this.apolloFactory.apollo(nodeContext).mutate<void>({
-      mutation: gql`
-        ${mutation.query}
-      `,
-      variables: mutation.variables,
-    });
+    return this.apolloFactory
+      .apollo(nodeContext)
+      .mutate<void>({
+        mutation: gql`
+          ${mutation.query}
+        `,
+        variables: mutation.variables,
+      })
+      .pipe(
+        catchError((error) => {
+          this.alertErrors(error);
+          console.error('Error executing GraphQL query.', error);
+          return error;
+        }),
+      );
   }
 
   create(
@@ -228,16 +258,25 @@ export class ResourceService {
       ],
     });
 
-    return this.apolloFactory.apollo(nodeContext).mutate<void>({
-      mutation: gql`
-        ${mutation.query}
-      `,
-      fetchPolicy: 'no-cache',
-      variables: mutation.variables,
-    });
+    return this.apolloFactory
+      .apollo(nodeContext)
+      .mutate({
+        mutation: gql`
+          ${mutation.query}
+        `,
+        fetchPolicy: 'no-cache',
+        variables: mutation.variables,
+      })
+      .pipe(
+        catchError((error) => {
+          this.alertErrors(error);
+          console.error('Error executing GraphQL query.', error);
+          return error;
+        }),
+      );
   }
 
-  readKcpCA(nodeContext: ResourceNodeContext): Observable<string> {
+  readAccountInfo(nodeContext: ResourceNodeContext): Observable<AccountInfo> {
     return this.apolloFactory
       .apollo(nodeContext)
       .query<string>({
@@ -247,6 +286,7 @@ export class ResourceService {
               AccountInfo(name: "account") {
                 metadata {
                   name
+                  annotations
                 }
                 spec {
                   clusterInfo {
@@ -260,10 +300,12 @@ export class ResourceService {
       })
       .pipe(
         map((res: any) => {
-          const ca =
-            res.data.core_platform_mesh_io.AccountInfo.spec.clusterInfo.ca ||
-            '';
-          return btoa(ca);
+          return res.data.core_platform_mesh_io.AccountInfo;
+        }),
+        catchError((error) => {
+          this.alertErrors(error);
+          console.error('Error executing GraphQL query.', error);
+          return error;
         }),
       );
   }

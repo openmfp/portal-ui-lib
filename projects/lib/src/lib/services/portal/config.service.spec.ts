@@ -103,6 +103,53 @@ describe('ConfigService', () => {
     });
   });
 
+  describe('reloadConfig', () => {
+    const projectId = 'projectId';
+
+    it('should reload portal config when entity is not provided', async () => {
+      // Arrange
+      const response = { providers: [] };
+
+      // Act
+      const reloadPromise = service.reloadConfig(undefined);
+      const testRequest = httpTestingController.expectOne('/rest/config');
+      testRequest.flush(response);
+      await reloadPromise;
+
+      // Assert
+      expect(testRequest.request.method).toBe('GET');
+      const cached = await service.getPortalConfig();
+      expect(cached).toEqual(response);
+    });
+
+    it('should reload entity config when entity is provided', async () => {
+      // Arrange
+      const response = { entityContext: {}, providers: [] };
+      const context = { project: projectId };
+
+      // First call to populate cache
+      const initialPromise = service.getEntityConfig('project', context);
+      const testRequest1 = httpTestingController.expectOne(
+        `/rest/config/project?project=${projectId}`,
+      );
+      testRequest1.flush(response);
+      await initialPromise;
+
+      // Act: reload entity config
+      const reloadPromise = service.reloadConfig('project', context);
+      const testRequest2 = httpTestingController.expectOne(
+        `/rest/config/project?project=${projectId}`,
+      );
+      testRequest2.flush(response);
+      await reloadPromise;
+
+      // Assert
+      expect(testRequest2.request.method).toBe('GET');
+      const config = await service.getEntityConfig('project', context);
+      expect(config).toEqual(response);
+    });
+  });
+
   describe('clearEntityConfigCache', () => {
     it('should clear entity cache', () => {
       // Arrange

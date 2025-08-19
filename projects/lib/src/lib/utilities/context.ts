@@ -11,7 +11,7 @@ export const visibleForContext = (ctx: any, node: LuigiNode): boolean => {
   return matchesJMESPath(ctx, node.visibleForContext);
 };
 
-export const computeFetchContext = (
+export const computeDynamicFetchContext = (
   entityNode: LuigiNode,
   ctx: any,
 ): Map<string, Record<string, string>> => {

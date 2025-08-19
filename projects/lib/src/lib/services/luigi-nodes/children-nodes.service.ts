@@ -1,7 +1,7 @@
 import { LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 import {
-  computeFetchContext,
+  computeDynamicFetchContext,
   visibleForContext,
 } from '../../utilities/context';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -43,7 +43,7 @@ export class ChildrenNodesService {
 
     const entityContext = {};
 
-    const fetchContext = computeFetchContext(entityNode, ctx);
+    const fetchContext = computeDynamicFetchContext(entityNode, ctx);
     await Promise.all(
       Array.from(fetchContext.entries()).map(
         async ([dynamicFetchId, context]) => {

@@ -13,7 +13,7 @@ describe('DetailViewComponent', () => {
   beforeEach(() => {
     mockResourceService = {
       read: jest.fn().mockReturnValue(of({ name: 'test-resource' })),
-      readKcpCA: jest.fn().mockReturnValue(of('mock-ca-data')),
+      readAccountInfo: jest.fn().mockReturnValue(of('mock-ca-data')),
     };
 
     mockGatewayService = {
@@ -66,9 +66,8 @@ describe('DetailViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call read and readKcpCA on init', () => {
+  it('should call read on init', () => {
     expect(mockResourceService.read).toHaveBeenCalled();
-    expect(mockResourceService.readKcpCA).toHaveBeenCalled();
   });
 
   it('should navigate to parent', () => {
