@@ -8,7 +8,7 @@ export interface FieldDefinition {
   required?: boolean;
   values?: string[];
   dynamicValuesDefinition?: {
-    opeartion: string
+    operation: string
     gqlQuery: string;
     value: string;
     key: string;
