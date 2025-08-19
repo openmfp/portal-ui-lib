@@ -32,8 +32,8 @@ describe('DynamicSelectComponent', () => {
       dynamicValuesDefinition: {
         opeartion: 'getData',
         gqlQuery: '{ someQuery }',
-        key: 'id',
-        value: 'name',
+        key: 'name',
+        value: 'id',
       },
     };
 
@@ -59,8 +59,8 @@ describe('DynamicSelectComponent', () => {
 
     const values = component.dynamicValues$();
     expect(values).toEqual([
-      { property: '1', label: 'First' },
-      { property: '2', label: 'Second' },
+      { value: '1', key: 'First' },
+      { value: '2', key: 'Second' },
     ]);
   });
 });

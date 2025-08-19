@@ -1,3 +1,4 @@
+import { getValueByPath } from '../../utils/get-value-by-path';
 import {
   Component,
   DestroyRef,
@@ -36,7 +37,7 @@ export class DynamicSelectComponent {
   input = output<Event>();
   blur = output<void>();
 
-  dynamicValues$ = signal<{ label: string; property: string }[]>([]);
+  dynamicValues$ = signal<{ value: string; key: string }[]>([]);
 
   private resourceService = inject(ResourceService);
   private destroyRef = inject(DestroyRef);
@@ -54,38 +55,26 @@ export class DynamicSelectComponent {
   private getDynamicValues(
     fieldDefinition: FieldDefinition,
     context: ResourceNodeContext,
-  ): Observable<{ label: string; property: string }[]> {
+  ): Observable<{ value: string; key: string }[]> {
     return this.resourceService
       .list(
-        fieldDefinition.dynamicValuesDefinition.opeartion,
+        fieldDefinition.dynamicValuesDefinition.operation,
         fieldDefinition.dynamicValuesDefinition.gqlQuery,
         context,
       )
       .pipe(
         map((result) =>
           result.map((resource) => ({
-            label: this.getValueByPath(
+            value: getValueByPath(
               resource,
               fieldDefinition.dynamicValuesDefinition.value,
             ),
-            property: this.getValueByPath(
+            key: getValueByPath(
               resource,
               fieldDefinition.dynamicValuesDefinition.key,
             ),
           })),
         ),
       );
-  }
-
-  private getValueByPath<T extends object, R = unknown>(
-    obj: T,
-    path: string,
-  ): R | undefined {
-    return path.split('.').reduce((acc, key) => {
-      if (acc && typeof acc === 'object' && key in acc) {
-        return acc[key];
-      }
-      return undefined;
-    }, obj);
   }
 }

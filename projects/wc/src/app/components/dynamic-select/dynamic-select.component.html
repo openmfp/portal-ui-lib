@@ -9,11 +9,11 @@
   [required]="required()"
   [valueState]="valueState()"
 >
-  @for (item of dynamicValues; track item.property) {
+  @for (item of dynamicValues; track item.value) {
     <ui5-option
-      [value]="item.property"
-      [selected]="item.property === value()"
-      >{{ item.label }}</ui5-option
+      [value]="item.value"
+      [selected]="item.value === value()"
+      >{{ item.key }}</ui5-option
     >
   }
 </ui5-select>
