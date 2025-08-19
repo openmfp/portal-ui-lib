@@ -1,0 +1,20 @@
+@let dynamicValues = dynamicValues$();
+@if(dynamicValues.length > 0) {
+  <ui5-select
+  class="input"
+  [value]="value()"
+  (input)="input.emit($event)"
+  (change)="change.emit($event)"
+  (blur)="blur.emit()"
+  [required]="required()"
+  [valueState]="valueState()"
+>
+  @for (item of dynamicValues; track item.property) {
+    <ui5-option
+      [value]="item.property"
+      [selected]="item.property === value()"
+      >{{ item.label }}</ui5-option
+    >
+  }
+</ui5-select>
+}
