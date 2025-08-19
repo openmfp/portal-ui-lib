@@ -9,10 +9,9 @@ export interface AuthData {
   idToken: string;
 }
 
-export interface ClientEnvironment {
+export interface ClientEnvironment extends Record<string, any> {
   idpName: string;
   baseDomain: string;
-  organization: string;
   oauthServerUrl: string;
   clientId: string;
   isLocal: boolean;
