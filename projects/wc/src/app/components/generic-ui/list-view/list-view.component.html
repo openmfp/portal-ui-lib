@@ -51,9 +51,9 @@
     @for (item of resources(); track item.metadata.name) {
       <ui5-table-row interactive (click)="navigateToResource(item)">
         @for (column of columns; track column.label) {
-          <ui5-table-cell>{{
-            getResourceValueByJsonPath(item, column)
-          }}</ui5-table-cell>
+          <ui5-table-cell>
+            <value-cell [resource]="item" [field]="column"></value-cell>
+          </ui5-table-cell>
         }
         <ui5-table-cell
           class="actions-column delete-item"
