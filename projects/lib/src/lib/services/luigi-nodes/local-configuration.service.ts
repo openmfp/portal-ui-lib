@@ -118,35 +118,48 @@ export class LocalConfigurationServiceImpl {
     serverLuigiNodes: LuigiNode[],
     currentEntities: string[],
   ): Promise<LuigiNode[]> {
-    console.debug('Processing local nodes');
     const localNodes = await this.getLocalNodes();
+    console.debug(
+      '`Processing local nodes for currentEntities: ${currentEntities}`',
+    );
     if (!localNodes || localNodes.length == 0) {
       console.debug('No local nodes found');
       return serverLuigiNodes;
     }
     this.logNodesState(serverLuigiNodes, localNodes);
 
-    const nodesToAdd = [];
+    const localReplacingNodes = [];
     const filteredServerNodes = serverLuigiNodes.filter((serverNode) => {
-      const localFoundNode = localNodes.find((localNode) => {
+      const index = localNodes.findIndex((localNode) => {
         return this.localNodeMatchesServerNode(localNode, serverNode);
       });
-      if (localFoundNode) {
-        nodesToAdd.push(localFoundNode);
+      if (index !== -1) {
+        const [localFoundNode] = localNodes.splice(index, 1);
+        localReplacingNodes.push(localFoundNode);
         localFoundNode.context = {
           ...serverNode.context,
           ...localFoundNode.context,
         };
       }
-      return !localFoundNode;
+      return index === -1;
+    });
+
+    const localNewNodes = localNodes.filter((n) => {
+      const entity = n.entityType?.includes('::compound')
+        ? 'global'
+        : n.entityType || 'home';
+      return currentEntities.includes(entity);
     });
 
     console.debug(
       `${filteredServerNodes.length} server nodes have no matching local nodes.
-      Found ${nodesToAdd.length} matching local nodes.`,
+      Found ${localReplacingNodes.length} matching local nodes.
+      Adding ${localNewNodes.length} new local nodes.`,
     );
 
-    return filteredServerNodes.concat(nodesToAdd);
+    return filteredServerNodes
+      .concat(localReplacingNodes)
+      .concat(localNewNodes);
   }
 
   private logNodesState(
