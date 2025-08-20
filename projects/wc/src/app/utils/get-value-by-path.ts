@@ -1,11 +1,11 @@
+import { Resource, getResourceValueByJsonPath } from '@openmfp/portal-ui-lib';
+
 export const getValueByPath = <T extends object, R = unknown>(
   obj: T,
   path: string,
 ): R | undefined => {
-  return path.split('.').reduce((acc, key) => {
-    if (acc && typeof acc === 'object' && key in acc) {
-      return acc[key];
-    }
-    return undefined;
-  }, obj);
+  return getResourceValueByJsonPath(obj as Resource, {
+    jsonPathExpression: path,
+    property: '',
+  });
 };
