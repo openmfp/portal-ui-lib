@@ -132,34 +132,35 @@ export class LocalConfigurationServiceImpl {
       serverLuigiNodes,
     );
 
+    const serverEntityTypes = new Set(
+      serverLuigiNodes.map((n) => n.entityType),
+    );
     console.debug(
       `Found '${serverLuigiNodes.length}' server nodes. 
        Found '${localLuigiNodes.length}' local luigi nodes. 
-       The entities of the server node are: [${[
-         ...new Set(serverLuigiNodes.map((n) => n.entityType)),
-       ].join(',')}]
-      The entities of local nodes are: [${[
-        ...new Set(localLuigiNodes.map((n) => n.entityType)),
-      ].join(',')}]`,
-    );
-
-    const filteredServerNodes = serverLuigiNodes.filter(
-      (node) =>
-        !localLuigiNodes.some((localNode) =>
-          this.localNodeMatchesServerNode(localNode, node),
-        ),
-    );
-
-    console.debug(
-      `${filteredServerNodes.length} server nodes have no matching local nodes`,
+       The entities of the server node are: [${[...serverEntityTypes].join(',')}]
+       The entities of local nodes are: [${[
+         ...new Set(localLuigiNodes.map((n) => n.entityType)),
+       ].join(',')}]`,
     );
 
     const nodesToAdd = localLuigiNodes.filter((n) => {
       const entity = n.entityType?.includes('::compound')
         ? 'global'
         : n.entityType || 'home';
-      return currentEntities.includes(entity);
+      return currentEntities.includes(entity) || serverEntityTypes.has(entity);
     });
+
+    const filteredServerNodes = serverLuigiNodes.filter(
+      (node) =>
+        !nodesToAdd.some((localNode) => {
+          return this.localNodeMatchesServerNode(localNode, node);
+        }),
+    );
+
+    console.debug(
+      `${filteredServerNodes.length} server nodes have no matching local nodes`,
+    );
 
     if (!nodesToAdd.length) {
       console.debug(
@@ -180,19 +181,18 @@ export class LocalConfigurationServiceImpl {
     localLuigiNodes: LuigiNode[],
     serverLuigiNodes: LuigiNode[],
   ): LuigiNode[] {
-    localLuigiNodes.forEach((localNode) => {
+    return localLuigiNodes.map((localNode) => {
       const matchingServerNode = serverLuigiNodes.find((serverNode) =>
         this.localNodeMatchesServerNode(localNode, serverNode),
       );
-      if (matchingServerNode && matchingServerNode.context) {
-        localNode.context = merge(
-          {},
-          matchingServerNode.context,
-          localNode.context,
-        );
+      if (matchingServerNode) {
+        localNode.context = {
+          ...matchingServerNode.context,
+          ...localNode.context,
+        };
       }
+      return localNode;
     });
-    return localLuigiNodes;
   }
 
   private localNodeMatchesServerNode(

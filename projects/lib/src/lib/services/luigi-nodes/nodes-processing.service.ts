@@ -197,38 +197,7 @@ export class NodesProcessingService {
         return;
       }
 
-      let dynamicRetrievedChildren: LuigiNode[],
-        staticRetrievedChildren: LuigiNode[];
-
-      if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
-        const fetchContext = computeDynamicFetchContext(entityNode, ctx);
-        const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
-
-        try {
-          dynamicRetrievedChildren =
-            await this.luigiNodesService.retrieveAndMergeEntityChildren(
-              entityNode.defineEntity,
-              staticChildren,
-              entityPath,
-              fetchContext.get(dynamicFetchId),
-            );
-          staticRetrievedChildren = staticChildren;
-        } catch (error) {
-          dynamicRetrievedChildren = staticChildren;
-          staticRetrievedChildren = null;
-        }
-
-        resolve(
-          this.createChildrenList(
-            entityNode,
-            ctx,
-            childrenByEntity,
-            entityPath,
-            dynamicRetrievedChildren,
-            staticRetrievedChildren,
-          ),
-        );
-      } else {
+      if (!entityNode.defineEntity?.dynamicFetchId) {
         const childrenList = await this.createChildrenList(
           entityNode,
           ctx,
@@ -236,13 +205,44 @@ export class NodesProcessingService {
           entityPath,
           staticChildren,
         );
-        console.debug(`children list ${childrenList.length}`);
         resolve(
           this.luigiNodesService.replaceServerNodesWithLocalOnes(childrenList, [
             entityPath,
           ]),
         );
+        return;
       }
+
+      let dynamicRetrievedChildren: LuigiNode[],
+        staticRetrievedChildren: LuigiNode[];
+
+      const fetchContext = computeDynamicFetchContext(entityNode, ctx);
+      const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
+
+      try {
+        dynamicRetrievedChildren =
+          await this.luigiNodesService.retrieveAndMergeEntityChildren(
+            entityNode.defineEntity,
+            staticChildren,
+            entityPath,
+            fetchContext.get(dynamicFetchId),
+          );
+        staticRetrievedChildren = staticChildren;
+      } catch (error) {
+        dynamicRetrievedChildren = staticChildren;
+        staticRetrievedChildren = null;
+      }
+
+      resolve(
+        this.createChildrenList(
+          entityNode,
+          ctx,
+          childrenByEntity,
+          entityPath,
+          dynamicRetrievedChildren,
+          staticRetrievedChildren,
+        ),
+      );
     });
   }
 
