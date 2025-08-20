@@ -1,11 +1,18 @@
 import { Condition, ObjectMeta } from 'kubernetes-types/meta/v1';
 
+
 export interface FieldDefinition {
   label?: string;
   property: string | string[];
   jsonPathExpression?: string;
   required?: boolean;
   values?: string[];
+  dynamicValuesDefinition?: {
+    operation: string
+    gqlQuery: string;
+    value: string;
+    key: string;
+  };
 }
 
 export interface ResourceStatus {
