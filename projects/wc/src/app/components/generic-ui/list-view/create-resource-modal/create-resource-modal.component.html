@@ -6,7 +6,6 @@
         <ui5-label for="username" show-colon [required]="field.required">{{
           field.label
         }}</ui5-label>
-
         @if (field.values?.length) {
           <ui5-select
             class="input"
@@ -25,6 +24,16 @@
               >
             }
           </ui5-select>
+        } @else if (field.dynamicValuesDefinition) {
+          <dynamic-select
+            [context]="context()"
+            [field]="field"
+            [value]="form.controls[fieldProperty].value"
+            (input)="setFormControlValue($event, fieldProperty)"
+            (change)="setFormControlValue($event, fieldProperty)"
+            (blur)="onFieldBlur(fieldProperty)"
+            [required]="field.required"
+            [valueState]="getValueState(fieldProperty)" />
         } @else {
           <ui5-input
             class="input"

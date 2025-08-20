@@ -108,19 +108,30 @@ export class ResourceService {
 
   list(
     operation: string,
-    fields: any[],
+    fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
   ): Observable<Resource[]> {
     const isNamespacedResource = this.isNamespacedResource(nodeContext);
-    const query = gqlBuilder.subscription({
-      operation,
-      fields,
-      variables: {
-        ...(isNamespacedResource && {
-          namespace: { type: 'String', value: nodeContext.namespaceId },
-        }),
-      },
-    });
+    const variables = {
+      ...(isNamespacedResource && {
+        namespace: { type: 'String', value: nodeContext.namespaceId },
+      }),
+    };
+
+    let query: { variables: any; query: string };
+
+    if (fieldsOrRawQuery instanceof Array) {
+      query = gqlBuilder.subscription({
+        operation,
+        fields: fieldsOrRawQuery,
+        variables: variables,
+      });
+    } else {
+      query = {
+        variables: variables,
+        query: fieldsOrRawQuery,
+      };
+    }
 
     return this.apolloFactory
       .apollo(nodeContext)
