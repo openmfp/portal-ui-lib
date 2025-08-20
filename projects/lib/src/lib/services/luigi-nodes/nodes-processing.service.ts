@@ -183,21 +183,7 @@ export class NodesProcessingService {
         ctx,
       );
 
-      if (!entityTypeId) {
-        console.warn('No entity node!'); //TODO: check if needed or assured before
-        resolve(
-          this.createChildrenList(
-            entityNode,
-            ctx,
-            childrenByEntity,
-            entityPath,
-            staticChildren,
-          ),
-        );
-        return;
-      }
-
-      if (!entityNode.defineEntity?.dynamicFetchId) {
+      if (!entityTypeId || !entityNode.defineEntity?.dynamicFetchId) {
         const childrenList = await this.createChildrenList(
           entityNode,
           ctx,
@@ -205,21 +191,16 @@ export class NodesProcessingService {
           entityPath,
           staticChildren,
         );
-        resolve(
-          this.luigiNodesService.replaceServerNodesWithLocalOnes(childrenList, [
-            entityPath,
-          ]),
-        );
+        resolve(childrenList);
         return;
       }
 
       let dynamicRetrievedChildren: LuigiNode[],
         staticRetrievedChildren: LuigiNode[];
 
-      const fetchContext = computeDynamicFetchContext(entityNode, ctx);
-      const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
-
       try {
+        const fetchContext = computeDynamicFetchContext(entityNode, ctx);
+        const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
         dynamicRetrievedChildren =
           await this.luigiNodesService.retrieveAndMergeEntityChildren(
             entityNode.defineEntity,
@@ -233,16 +214,15 @@ export class NodesProcessingService {
         staticRetrievedChildren = null;
       }
 
-      resolve(
-        this.createChildrenList(
-          entityNode,
-          ctx,
-          childrenByEntity,
-          entityPath,
-          dynamicRetrievedChildren,
-          staticRetrievedChildren,
-        ),
+      const childrenList = await this.createChildrenList(
+        entityNode,
+        ctx,
+        childrenByEntity,
+        entityPath,
+        dynamicRetrievedChildren,
+        staticRetrievedChildren,
       );
+      resolve(childrenList);
     });
   }
 
