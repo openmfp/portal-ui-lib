@@ -34,7 +34,7 @@ In order to use the generic list view, you need to adjust the node’s   `conten
         - `"detailView"`: similarly describes the fields which are to show up on the detailed view.
         - `"createView`: section additionally provides possibility to add the `"required"` flag to the filed definition,
           indicating that the field needs to be provided while creating an instance of that resource, with the `"values": ["account"]`
-          there is a possibility to provide a list of values to select from.
+          there is a possibility to provide a list of values to select from. Also, it's possible to specify a GraphQL query to retrieve a dynamic list of values to select from using the `"dynamicValuesDefinition"`. You need to provide `"gqlQuery"` and `"operation"`, as well as `"key"` - a JSON path to the property that will be used as the displayed value, and `"value"` — a JSON path to the actual value.
 
 #### Example Content Configuration for an Accounts Node
 Below is an example content-configuration for an accounts node using the generic list view.
@@ -116,6 +116,17 @@ Below is an example content-configuration for an accounts node using the generic
                     {
                       "label": "Description",
                       "property": "spec.description"
+                    },
+                    {
+                      "label": "City",
+                      "property": "spec.city",
+                      "required": true,
+                      "dynamicValuesDefinition": {
+                        "operation": "cities",
+                        "gqlQuery": "subscription { cities { data { id name } } }",
+                        "value": "data.id",
+                        "key": "data.name",
+                      }
                     }
                   ]
                 }

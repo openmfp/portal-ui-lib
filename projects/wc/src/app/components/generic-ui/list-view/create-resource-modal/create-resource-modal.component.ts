@@ -1,3 +1,4 @@
+import { DynamicSelectComponent } from '../../../dynamic-select/dynamic-select.component';
 import {
   Component,
   OnInit,
@@ -14,7 +15,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { FieldDefinition, Resource } from '@openmfp/portal-ui-lib';
+import {
+  FieldDefinition,
+  Resource,
+  ResourceNodeContext,
+} from '@openmfp/portal-ui-lib';
 import {
   DialogComponent,
   InputComponent,
@@ -38,6 +43,7 @@ import { set } from 'lodash';
     LabelComponent,
     ToolbarButtonComponent,
     ToolbarComponent,
+    DynamicSelectComponent,
   ],
   templateUrl: './create-resource-modal.component.html',
   styleUrl: './create-resource-modal.component.scss',
@@ -45,6 +51,7 @@ import { set } from 'lodash';
 })
 export class CreateResourceModalComponent implements OnInit {
   fields = input<FieldDefinition[]>([]);
+  context = input<ResourceNodeContext>();
   resource = output<Resource>();
   dialog = viewChild<DialogComponent>('dialog');
 

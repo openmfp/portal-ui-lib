@@ -71,5 +71,6 @@
     #createModal
     [fields]="resourceDefinition.ui?.createView?.fields"
     (resource)="create($event)"
+    [context]="context()"
   />
 }
