@@ -120,7 +120,7 @@ export class LocalConfigurationServiceImpl {
   ): Promise<LuigiNode[]> {
     const localNodes = await this.getLocalNodes();
     console.debug(
-      '`Processing local nodes for currentEntities: ${currentEntities}`',
+      `Processing local nodes for currentEntities: ${currentEntities}`,
     );
     if (!localNodes || localNodes.length == 0) {
       console.debug('No local nodes found');
