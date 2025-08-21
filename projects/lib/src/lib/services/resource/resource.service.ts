@@ -1,5 +1,8 @@
 import { AccountInfo, Resource, ResourceDefinition } from '../../models';
-import { replaceDotsAndHyphensWithUnderscores } from '../../utilities';
+import {
+  getValueByPath,
+  replaceDotsAndHyphensWithUnderscores,
+} from '../../utilities';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { ResourceNodeContext } from './resource-node-context';
@@ -110,7 +113,7 @@ export class ResourceService {
     operation: string,
     fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
-  ): Observable<Resource[]> {
+  ): Observable<Resource[] | any> {
     const isNamespacedResource = this.isNamespacedResource(nodeContext);
     const variables = {
       ...(isNamespacedResource && {
@@ -142,7 +145,9 @@ export class ResourceService {
         variables: query.variables,
       })
       .pipe(
-        map((res: any) => res.data?.[operation]),
+        map((res: any): Resource[] =>
+          getValueByPath<any, Resource[]>(res.data, operation),
+        ),
         catchError((error) => {
           this.alertErrors(error);
           console.error('Error executing GraphQL query.', error);
