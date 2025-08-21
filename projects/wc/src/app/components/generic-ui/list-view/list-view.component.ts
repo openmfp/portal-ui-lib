@@ -96,6 +96,7 @@ export class ListViewComponent implements OnInit {
     effect(() => {
       this.resourceDefinition = this.context().resourceDefinition;
       this.columns =
+        this.context().resourceDefinition.ui?.listView?.fields ||
         defaultColumns;
       this.heading = `${this.context().resourceDefinition.plural.charAt(0).toUpperCase()}${this.context().resourceDefinition.plural.slice(1)}`;
       this.list();
