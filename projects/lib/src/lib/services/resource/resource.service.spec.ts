@@ -331,11 +331,11 @@ describe('ResourceService', () => {
       }
     `;
       mockApollo.subscribe.mockReturnValue(
-        of({ data: { myList: [{ name: 'res2' }] } }),
+        of({ data: { myList: { myData: [{ name: 'res2' }] } } }),
       );
 
       service
-        .list('myList', rawQuery, namespacedNodeContext)
+        .list('myList.myData', rawQuery, namespacedNodeContext)
         .subscribe((res) => {
           expect(res).toEqual([{ name: 'res2' }]);
           expect(mockApollo.subscribe).toHaveBeenCalledWith({

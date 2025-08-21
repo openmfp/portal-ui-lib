@@ -1,4 +1,3 @@
-import { getValueByPath } from '../../utils/get-value-by-path';
 import {
   Component,
   DestroyRef,
@@ -13,6 +12,7 @@ import {
   FieldDefinition,
   ResourceNodeContext,
   ResourceService,
+  getValueByPath,
 } from '@openmfp/portal-ui-lib';
 import { OptionComponent, SelectComponent } from '@ui5/webcomponents-ngx';
 import { Observable, map } from 'rxjs';
