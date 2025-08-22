@@ -58,8 +58,20 @@ export class LuigiNodesService {
   }
 
   async retrieveChildrenByEntity(): Promise<Record<string, LuigiNode[]>> {
-    const rawNodes = await this.retrieveAndMergeNodes();
-    return this.getChildrenByEntity(rawNodes);
+    try {
+      const portalConfig = await this.configService.getPortalConfig();
+      const serverLuigiNodes: LuigiNode[] = portalConfig.providers.flatMap(
+        (p) => p.nodes,
+      );
+      const luigiNodes = await this.replaceServerNodesWithLocalOnes(
+        serverLuigiNodes,
+        ['global', 'main', 'home'],
+      );
+      return this.getChildrenByEntity(luigiNodes);
+    } catch (e) {
+      console.warn('Could not retrieve nodes, error: ', e);
+      throw e;
+    }
   }
 
   async retrieveAndMergeEntityChildren(
@@ -143,23 +155,5 @@ export class LuigiNodesService {
 
   clearNodeCache(): void {
     this.configService.clearEntityConfigCache();
-  }
-
-  private async retrieveAndMergeNodes(): Promise<LuigiNode[]> {
-    let portalConfig: PortalConfig;
-    try {
-      portalConfig = await this.configService.getPortalConfig();
-    } catch (e) {
-      console.warn('Could not retrieve nodes, error: ', e);
-      throw e;
-    }
-
-    const serverLuigiNodes: LuigiNode[] = portalConfig.providers.flatMap(
-      (p) => p.nodes,
-    );
-    return this.replaceServerNodesWithLocalOnes(serverLuigiNodes, [
-      'global',
-      'home',
-    ]);
   }
 }

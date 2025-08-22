@@ -322,6 +322,59 @@ describe('ResourceService', () => {
         });
     });
 
+    it('should list namespaced resources (raw query string)', (done) => {
+      const rawQuery = `
+      subscription {
+        myList {
+          name
+        }
+      }
+    `;
+      mockApollo.subscribe.mockReturnValue(
+        of({ data: { myList: { myData: [{ name: 'res2' }] } } }),
+      );
+
+      service
+        .list('myList.myData', rawQuery, namespacedNodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual([{ name: 'res2' }]);
+          expect(mockApollo.subscribe).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {
+              namespace: {
+                type: 'String',
+                value: namespacedNodeContext.namespaceId,
+              },
+            },
+          });
+          done();
+        });
+    });
+
+    it('should list cluster resources (raw query string)', (done) => {
+      const rawQuery = `
+      subscription {
+        myList {
+          name
+        }
+      }
+    `;
+      mockApollo.subscribe.mockReturnValue(
+        of({ data: { myList: [{ name: 'res2' }] } }),
+      );
+
+      service
+        .list('myList', rawQuery, clusterScopeNodeContext)
+        .subscribe((res) => {
+          expect(res).toEqual([{ name: 'res2' }]);
+          expect(mockApollo.subscribe).toHaveBeenCalledWith({
+            query: expect.anything(),
+            variables: {},
+          });
+          done();
+        });
+    });
+
     it('should handle list error', (done) => {
       const error = new Error('fail');
       mockApollo.subscribe.mockReturnValue(throwError(() => error));

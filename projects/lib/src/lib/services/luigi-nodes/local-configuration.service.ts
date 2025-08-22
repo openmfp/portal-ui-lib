@@ -118,81 +118,67 @@ export class LocalConfigurationServiceImpl {
     serverLuigiNodes: LuigiNode[],
     currentEntities: string[],
   ): Promise<LuigiNode[]> {
-    console.debug(
-      `Processing local nodes for the entities ${currentEntities.join(',')}`,
-    );
     const localNodes = await this.getLocalNodes();
-
+    console.debug(
+      `Processing local nodes for currentEntities: ${currentEntities}`,
+    );
     if (!localNodes || localNodes.length == 0) {
+      console.debug('No local nodes found');
       return serverLuigiNodes;
     }
+    this.logNodesState(serverLuigiNodes, localNodes);
 
-    const localLuigiNodes = this.extendContextOfLocalNodes(
-      localNodes,
-      serverLuigiNodes,
-    );
+    const localReplacingNodes = [];
+    const filteredServerNodes = serverLuigiNodes.filter((serverNode) => {
+      const index = localNodes.findIndex((localNode) => {
+        return this.localNodeMatchesServerNode(localNode, serverNode);
+      });
+      if (index !== -1) {
+        const [localFoundNode] = localNodes.splice(index, 1);
+        localReplacingNodes.push(localFoundNode);
+        localFoundNode.context = {
+          ...serverNode.context,
+          ...localFoundNode.context,
+        };
+      }
+      return index === -1;
+    });
 
-    console.debug(
-      `Found '${serverLuigiNodes.length}' server nodes. 
-       Found '${localLuigiNodes.length}' local luigi nodes. 
-       The entities of the server node are: [${[
-         ...new Set(serverLuigiNodes.map((n) => n.entityType)),
-       ].join(',')}]
-      The entities of local nodes are: [${[
-        ...new Set(localLuigiNodes.map((n) => n.entityType)),
-      ].join(',')}]`,
-    );
-
-    const filteredServerNodes = serverLuigiNodes.filter(
-      (node) =>
-        !localLuigiNodes.some((localNode) =>
-          this.localNodeMatchesServerNode(localNode, node),
-        ),
-    );
-
-    console.debug(
-      `${filteredServerNodes.length} server nodes have no matching local nodes`,
-    );
-
-    const nodesToAdd = localLuigiNodes.filter((n) => {
+    const localNewNodes = localNodes.filter((n) => {
       const entity = n.entityType?.includes('::compound')
         ? 'global'
         : n.entityType || 'home';
       return currentEntities.includes(entity);
     });
 
-    if (!nodesToAdd.length) {
-      console.debug(
-        `Found no local nodes for the entities: ${currentEntities.join(',')}`,
-      );
-      return filteredServerNodes;
-    }
-
     console.debug(
-      `Added ${
-        nodesToAdd.length
-      } local nodes to the luigi config for ${currentEntities.join(',')}`,
+      `${filteredServerNodes.length} server nodes have no matching local nodes.
+      Found ${localReplacingNodes.length} matching local nodes.
+      Adding ${localNewNodes.length} new local nodes.`,
     );
-    return filteredServerNodes.concat(nodesToAdd);
+
+    return filteredServerNodes
+      .concat(localReplacingNodes)
+      .concat(localNewNodes);
   }
 
-  private extendContextOfLocalNodes(
-    localLuigiNodes: LuigiNode[],
+  private logNodesState(
     serverLuigiNodes: LuigiNode[],
-  ): LuigiNode[] {
-    localLuigiNodes.forEach((localNode) => {
-      const matchingServerNode = serverLuigiNodes.find((serverNode) =>
-        this.localNodeMatchesServerNode(localNode, serverNode),
-      );
-      if (matchingServerNode && matchingServerNode.context) {
-        localNode.context = merge(
-          {},
-          matchingServerNode.context,
-          localNode.context,
-        );
-      }
-    });
-    return localLuigiNodes;
+    localNodes: LuigiNode[],
+  ) {
+    const serverEntityTypes = [
+      ...new Set(serverLuigiNodes.map((n) => n.entityType)),
+    ].join(',');
+
+    const localEntityTypes = [
+      ...new Set(localNodes.map((n) => n.entityType)),
+    ].join(',');
+    console.debug(
+      `Found '${serverLuigiNodes.length}' server nodes. 
+       Found '${localNodes.length}' local luigi nodes. 
+       The entities of the server node are: [${serverEntityTypes}]
+       The entities of local nodes are: [${localEntityTypes}]`,
+    );
   }
 
   private localNodeMatchesServerNode(

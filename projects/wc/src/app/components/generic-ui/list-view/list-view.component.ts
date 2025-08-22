@@ -13,7 +13,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import { replaceDotsAndHyphensWithUnderscores } from '@openmfp/portal-ui-lib';
 import {
   FieldDefinition,
   LuigiCoreService,
@@ -23,6 +22,7 @@ import {
   ResourceService,
   generateGraphQLFields,
   getResourceValueByJsonPath,
+  replaceDotsAndHyphensWithUnderscores,
 } from '@openmfp/portal-ui-lib';
 import {
   DynamicPageComponent,

@@ -1,5 +1,8 @@
 import { AccountInfo, Resource, ResourceDefinition } from '../../models';
-import { replaceDotsAndHyphensWithUnderscores } from '../../utilities';
+import {
+  getValueByPath,
+  replaceDotsAndHyphensWithUnderscores,
+} from '../../utilities';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ApolloFactory } from './apollo-factory';
 import { ResourceNodeContext } from './resource-node-context';
@@ -108,19 +111,30 @@ export class ResourceService {
 
   list(
     operation: string,
-    fields: any[],
+    fieldsOrRawQuery: any[] | string,
     nodeContext: ResourceNodeContext,
-  ): Observable<Resource[]> {
+  ): Observable<Resource[] | any> {
     const isNamespacedResource = this.isNamespacedResource(nodeContext);
-    const query = gqlBuilder.subscription({
-      operation,
-      fields,
-      variables: {
-        ...(isNamespacedResource && {
-          namespace: { type: 'String', value: nodeContext.namespaceId },
-        }),
-      },
-    });
+    const variables = {
+      ...(isNamespacedResource && {
+        namespace: { type: 'String', value: nodeContext.namespaceId },
+      }),
+    };
+
+    let query: { variables: any; query: string };
+
+    if (fieldsOrRawQuery instanceof Array) {
+      query = gqlBuilder.subscription({
+        operation,
+        fields: fieldsOrRawQuery,
+        variables: variables,
+      });
+    } else {
+      query = {
+        variables: variables,
+        query: fieldsOrRawQuery,
+      };
+    }
 
     return this.apolloFactory
       .apollo(nodeContext)
@@ -131,7 +145,9 @@ export class ResourceService {
         variables: query.variables,
       })
       .pipe(
-        map((res: any) => res.data?.[operation]),
+        map((res: any): Resource[] =>
+          getValueByPath<any, Resource[]>(res.data, operation),
+        ),
         catchError((error) => {
           this.alertErrors(error);
           console.error('Error executing GraphQL query.', error);

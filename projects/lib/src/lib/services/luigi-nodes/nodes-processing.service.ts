@@ -183,52 +183,7 @@ export class NodesProcessingService {
         ctx,
       );
 
-      if (!entityTypeId) {
-        console.warn('No entity node!'); //TODO: check if needed or assured before
-        resolve(
-          this.createChildrenList(
-            entityNode,
-            ctx,
-            childrenByEntity,
-            entityPath,
-            staticChildren,
-          ),
-        );
-        return;
-      }
-
-      let dynamicRetrievedChildren: LuigiNode[],
-        staticRetrievedChildren: LuigiNode[];
-
-      if (entityId && entityNode?.defineEntity?.dynamicFetchId) {
-        const fetchContext = computeDynamicFetchContext(entityNode, ctx);
-        const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
-
-        try {
-          dynamicRetrievedChildren =
-            await this.luigiNodesService.retrieveAndMergeEntityChildren(
-              entityNode.defineEntity,
-              staticChildren,
-              entityPath,
-              fetchContext.get(dynamicFetchId),
-            );
-          staticRetrievedChildren = staticChildren;
-        } catch (error) {
-          dynamicRetrievedChildren = staticChildren;
-          staticRetrievedChildren = null;
-        }
-
-        resolve(
-          this.createChildrenList(
-            entityNode,
-            ctx,
-            childrenByEntity,
-            entityPath,
-            dynamicRetrievedChildren,
-            staticRetrievedChildren,
-          ),
-        );
-      } else {
+      if (!entityTypeId || !entityNode.defineEntity?.dynamicFetchId) {
         const childrenList = await this.createChildrenList(
           entityNode,
           ctx,
@@ -236,13 +191,38 @@ export class NodesProcessingService {
           entityPath,
           staticChildren,
         );
-        console.debug(`children list ${childrenList.length}`);
-        resolve(
-          this.luigiNodesService.replaceServerNodesWithLocalOnes(childrenList, [
-            entityPath,
-          ]),
-        );
+        resolve(childrenList);
+        return;
       }
+
+      let dynamicRetrievedChildren: LuigiNode[],
+        staticRetrievedChildren: LuigiNode[];
+
+      try {
+        const fetchContext = computeDynamicFetchContext(entityNode, ctx);
+        const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
+        dynamicRetrievedChildren =
+          await this.luigiNodesService.retrieveAndMergeEntityChildren(
+            entityNode.defineEntity,
+            staticChildren,
+            entityPath,
+            fetchContext.get(dynamicFetchId),
+          );
+        staticRetrievedChildren = staticChildren;
+      } catch (error) {
+        dynamicRetrievedChildren = staticChildren;
+        staticRetrievedChildren = null;
+      }
+
+      const childrenList = await this.createChildrenList(
+        entityNode,
+        ctx,
+        childrenByEntity,
+        entityPath,
+        dynamicRetrievedChildren,
+        staticRetrievedChildren,
+      );
+      resolve(childrenList);
     });
   }
 
