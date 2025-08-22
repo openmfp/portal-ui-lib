@@ -47,6 +47,7 @@ export class HeaderBarService {
         containerElement.style.display = 'flex';
         containerElement.style.position = 'static';
         containerElement.style.height = 'min-content';
+        containerElement.style.paddingBottom = '1em';
 
         const parrent = containerElement.parentElement;
         if(parrent) {
