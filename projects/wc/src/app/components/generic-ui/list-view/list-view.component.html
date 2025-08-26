@@ -52,7 +52,7 @@
       <ui5-table-row interactive (click)="navigateToResource(item)">
         @for (column of columns; track column.label) {
           <ui5-table-cell>
-            <value-cell [resource]="item" [field]="column"></value-cell>
+            <value-cell [value]="getResourceValueByJsonPath(item, column)"></value-cell>
           </ui5-table-cell>
         }
         <ui5-table-cell

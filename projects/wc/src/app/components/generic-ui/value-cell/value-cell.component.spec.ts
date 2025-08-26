@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ValueCellComponent } from './value-cell.component';
-import { FieldDefinition, Resource } from '@openmfp/portal-ui-lib';
 import {
   ICON_DESIGN_NEGATIVE,
   ICON_DESIGN_POSITIVE,
@@ -12,12 +11,11 @@ describe('ValueCellComponent', () => {
   let component: ValueCellComponent;
   let fixture: ComponentFixture<ValueCellComponent>;
 
-  const makeComponent = (resource: Resource | null | undefined, field: FieldDefinition) => {
+  const makeComponent = (value: unknown) => {
     fixture = TestBed.createComponent(ValueCellComponent);
     component = fixture.componentInstance;
 
-    component.resource = (() => resource) as any;
-    component.field = (() => field) as any;
+    component.value = (() => value) as any;
 
     fixture.detectChanges();
 
@@ -34,18 +32,12 @@ describe('ValueCellComponent', () => {
   });
 
   it('should create', () => {
-    const resource = { metadata: { name: 'r1' } } as any;
-    const field: FieldDefinition = { label: 'Name', property: 'metadata.name' } as any;
-
-    const { component } = makeComponent(resource, field);
+    const { component } = makeComponent('r1');
     expect(component).toBeTruthy();
   });
 
-  it('should compute non-boolean value and mark as not boolean-like', () => {
-    const resource = { metadata: { name: 'cluster-a' } } as any;
-    const field: FieldDefinition = { label: 'Name', property: 'metadata.name' } as any;
-
-    const { component } = makeComponent(resource, field);
+  it('should accept non-boolean value and mark as not boolean-like', () => {
+    const { component } = makeComponent('cluster-a');
 
     expect(component.cellValue).toBe('cluster-a');
     expect(component.isBoolLike).toBe(false);
@@ -53,22 +45,16 @@ describe('ValueCellComponent', () => {
     expect(component.iconName).toBeUndefined();
   });
 
-  it("should compute boolean-like 'true' value and set positive icon and design", () => {
-    const resource = { spec: { ready: 'true' } } as any;
-    const field: FieldDefinition = { label: 'Ready', property: 'spec.ready' } as any;
-
-    const { component } = makeComponent(resource, field);
+  it("should accept boolean-like 'true' string and set positive icon and design", () => {
+    const { component } = makeComponent('true');
 
     expect(component.isBoolLike).toBe(true);
     expect(component.iconDesign).toBe(ICON_DESIGN_POSITIVE);
     expect(component.iconName).toBe(ICON_NAME_POSITIVE);
   });
 
-  it("should compute boolean-like 'false' value and set negative icon and design", () => {
-    const resource = { spec: { ready: 'false' } } as any;
-    const field: FieldDefinition = { label: 'Ready', property: 'spec.ready' } as any;
-
-    const { component } = makeComponent(resource, field);
+  it("should accept boolean-like 'false' string and set negative icon and design", () => {
+    const { component } = makeComponent('false');
 
     expect(component.isBoolLike).toBe(true);
     expect(component.iconDesign).toBe(ICON_DESIGN_NEGATIVE);
@@ -76,10 +62,7 @@ describe('ValueCellComponent', () => {
   });
 
   it('should accept boolean value true and set positive icon', () => {
-    const resource = { spec: { ready: true } } as any;
-    const field: FieldDefinition = { label: 'Ready', property: 'spec.ready' } as any;
-
-    const { component } = makeComponent(resource, field);
+    const { component } = makeComponent(true);
 
     expect(component.isBoolLike).toBe(true);
     expect(component.iconDesign).toBe(ICON_DESIGN_POSITIVE);
