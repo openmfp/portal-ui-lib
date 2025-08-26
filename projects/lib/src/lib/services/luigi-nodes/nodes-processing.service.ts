@@ -13,6 +13,7 @@ import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
 import { CustomNodeProcessingService } from './custom-node-processing.service';
+import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodeSortingService } from './node-sorting.service';
@@ -25,6 +26,7 @@ export class NodesProcessingService {
     { optional: true },
   );
   private luigiNodesService = inject(LuigiNodesService);
+  private localConfigurationService = inject(LocalConfigurationServiceImpl);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
   private commonGlobalLuigiNodesService = inject(CommonGlobalLuigiNodesService);
@@ -184,12 +186,17 @@ export class NodesProcessingService {
       );
 
       if (!entityTypeId || !entityNode.defineEntity?.dynamicFetchId) {
+        const serverAndLocalNodes =
+          await this.localConfigurationService.replaceServerNodesWithLocalOnes(
+            staticChildren,
+            [entityPath],
+          );
         const childrenList = await this.createChildrenList(
           entityNode,
           ctx,
           childrenByEntity,
           entityPath,
-          staticChildren,
+          serverAndLocalNodes,
         );
         resolve(childrenList);
         return;
@@ -202,12 +209,16 @@ export class NodesProcessingService {
         const fetchContext = computeDynamicFetchContext(entityNode, ctx);
         const dynamicFetchId = entityNode.defineEntity.dynamicFetchId;
         dynamicRetrievedChildren =
-          await this.luigiNodesService.retrieveAndMergeEntityChildren(
+          await this.luigiNodesService.retrieveEntityChildren(
             entityNode.defineEntity,
-            staticChildren,
-            entityPath,
             fetchContext.get(dynamicFetchId),
           );
+        const serverAndLocalNodes =
+          await this.localConfigurationService.replaceServerNodesWithLocalOnes(
+            dynamicRetrievedChildren,
+            [entityPath],
+          );
+        dynamicRetrievedChildren = [...staticChildren, ...serverAndLocalNodes];
         staticRetrievedChildren = staticChildren;
       } catch (error) {
         dynamicRetrievedChildren = staticChildren;

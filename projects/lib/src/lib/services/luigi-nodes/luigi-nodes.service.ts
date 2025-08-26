@@ -47,26 +47,17 @@ export class LuigiNodesService {
     return childrenByEntity;
   }
 
-  public async replaceServerNodesWithLocalOnes(
-    serverLuigiNodes: LuigiNode[],
-    currentEntities: string[],
-  ): Promise<LuigiNode[]> {
-    return await this.localConfigurationService.replaceServerNodesWithLocalOnes(
-      serverLuigiNodes,
-      currentEntities,
-    );
-  }
-
   async retrieveChildrenByEntity(): Promise<Record<string, LuigiNode[]>> {
     try {
       const portalConfig = await this.configService.getPortalConfig();
       const serverLuigiNodes: LuigiNode[] = portalConfig.providers.flatMap(
         (p) => p.nodes,
       );
-      const luigiNodes = await this.replaceServerNodesWithLocalOnes(
-        serverLuigiNodes,
-        ['global', 'main', 'home'],
-      );
+      const luigiNodes =
+        await this.localConfigurationService.replaceServerNodesWithLocalOnes(
+          serverLuigiNodes,
+          ['global', 'main', 'home'],
+        );
       return this.getChildrenByEntity(luigiNodes);
     } catch (e) {
       console.warn('Could not retrieve nodes, error: ', e);
@@ -74,10 +65,8 @@ export class LuigiNodesService {
     }
   }
 
-  async retrieveAndMergeEntityChildren(
+  async retrieveEntityChildren(
     entityDefinition: EntityDefinition,
-    existingChildren: LuigiNode[],
-    parentEntityPath: string,
     additionalContext?: Record<string, string>,
   ): Promise<LuigiNode[]> {
     let errorCode = 0;
@@ -104,14 +93,7 @@ export class LuigiNodesService {
       );
     }
 
-    const serverLuigiNodes: LuigiNode[] = configsForEntity.providers.flatMap(
-      (p) => p.nodes,
-    );
-    const rawEntityNodes = await this.replaceServerNodesWithLocalOnes(
-      serverLuigiNodes,
-      [parentEntityPath],
-    );
-    return [...(existingChildren || []), ...(rawEntityNodes || [])];
+    return configsForEntity.providers.flatMap((p) => p.nodes);
   }
 
   private createErrorNodes(
