@@ -26,6 +26,7 @@ describe('ValueCellComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [ValueCellComponent],
     }).overrideComponent(ValueCellComponent, {
       set: { template: '<div></div>', imports: [] },
     });
@@ -39,41 +40,33 @@ describe('ValueCellComponent', () => {
   it('should accept non-boolean value and mark as not boolean-like', () => {
     const { component } = makeComponent('cluster-a');
 
-    const vm: any = component.vm();
-    expect(vm.isBool).toBe(false);
-    expect(vm.value).toBe('cluster-a');
+    expect(component.isBoolLike()).toBe(false);
+    expect(component.value()).toBe('cluster-a');
+    expect(component.iconDesign()).toBeUndefined();
+    expect(component.iconName()).toBeUndefined();
   });
 
   it("should accept boolean-like 'true' string and set positive icon and design", () => {
     const { component } = makeComponent('true');
 
-    const vm: any = component.vm();
-    expect(vm.isBool).toBe(true);
-    if (vm.isBool) {
-      expect(vm.iconDesign).toBe(ICON_DESIGN_POSITIVE);
-      expect(vm.iconName).toBe(ICON_NAME_POSITIVE);
-    }
+    expect(component.isBoolLike()).toBe(true);
+    expect(component.iconDesign()).toBe(ICON_DESIGN_POSITIVE);
+    expect(component.iconName()).toBe(ICON_NAME_POSITIVE);
   });
 
   it("should accept boolean-like 'false' string and set negative icon and design", () => {
     const { component } = makeComponent('false');
 
-    const vm: any = component.vm();
-    expect(vm.isBool).toBe(true);
-    if (vm.isBool) {
-      expect(vm.iconDesign).toBe(ICON_DESIGN_NEGATIVE);
-      expect(vm.iconName).toBe(ICON_NAME_NEGATIVE);
-    }
+    expect(component.isBoolLike()).toBe(true);
+    expect(component.iconDesign()).toBe(ICON_DESIGN_NEGATIVE);
+    expect(component.iconName()).toBe(ICON_NAME_NEGATIVE);
   });
 
   it('should accept boolean value true and set positive icon', () => {
     const { component } = makeComponent(true);
 
-    const vm: any = component.vm();
-    expect(vm.isBool).toBe(true);
-    if (vm.isBool) {
-      expect(vm.iconDesign).toBe(ICON_DESIGN_POSITIVE);
-      expect(vm.iconName).toBe(ICON_NAME_POSITIVE);
-    }
+    expect(component.isBoolLike()).toBe(true);
+    expect(component.iconDesign()).toBe(ICON_DESIGN_POSITIVE);
+    expect(component.iconName()).toBe(ICON_NAME_POSITIVE);
   });
 });
