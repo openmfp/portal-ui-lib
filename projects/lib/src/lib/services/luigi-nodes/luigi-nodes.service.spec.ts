@@ -67,7 +67,7 @@ describe('LuigiNodesService', () => {
     });
   });
 
-  describe('retrieveAndMergeEntityChildren', () => {
+  describe('retrieveEntityChildren', () => {
     const mockEntityDefinition: EntityDefinition = {
       id: 'testEntity',
       dynamicFetchId: 'testEntityType',
@@ -102,29 +102,16 @@ describe('LuigiNodesService', () => {
       jest
         .spyOn(configService, 'getEntityConfig')
         .mockResolvedValue(mockEntityConfig);
-      localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockResolvedValue(
-        [...mockServiceProvider.nodes],
-      );
 
-      const result = await service.retrieveAndMergeEntityChildren(
-        mockEntityDefinition,
-        mockExistingChildren,
-        'parentPath',
-      );
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
-      expect(result.length).toBe(3);
-      expect(result).toEqual([
-        ...mockExistingChildren,
-        ...mockServiceProvider.nodes,
-      ]);
+      expect(result.length).toBe(2);
+      expect(result).toEqual(mockServiceProvider.nodes);
 
       expect(configService.getEntityConfig).toHaveBeenCalledWith(
         'testEntityType',
         undefined,
       );
-      expect(
-        localConfigurationServiceMock.replaceServerNodesWithLocalOnes,
-      ).toHaveBeenCalled();
     });
 
     it('should handle 404 error and return error node', async () => {
@@ -133,11 +120,7 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(notFoundError);
 
-      const result = await service.retrieveAndMergeEntityChildren(
-        mockEntityDefinition,
-        mockExistingChildren,
-        'parentPath',
-      );
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
       expect(result.length).toBe(1);
       expect(result[0]).toEqual(
@@ -164,11 +147,7 @@ describe('LuigiNodesService', () => {
         .mockRejectedValue(genericError);
       jest.spyOn(console, 'warn').mockImplementation();
 
-      const result = await service.retrieveAndMergeEntityChildren(
-        mockEntityDefinition,
-        mockExistingChildren,
-        'parentPath',
-      );
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
       expect(result.length).toBe(1);
       expect(result[0]).toEqual(
@@ -197,10 +176,8 @@ describe('LuigiNodesService', () => {
         [...mockServiceProvider.nodes],
       );
 
-      await service.retrieveAndMergeEntityChildren(
+      await service.retrieveEntityChildren(
         mockEntityDefinition,
-        mockExistingChildren,
-        'parentPath',
         additionalContext,
       );
 
@@ -218,11 +195,7 @@ describe('LuigiNodesService', () => {
         [...mockServiceProvider.nodes],
       );
 
-      const result = await service.retrieveAndMergeEntityChildren(
-        mockEntityDefinition,
-        null,
-        'parentPath',
-      );
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
       expect(result.length).toBe(2);
       expect(result).toEqual(mockServiceProvider.nodes);
@@ -241,10 +214,8 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new HttpErrorResponse({ status: 404 }));
 
-      const result = await service.retrieveAndMergeEntityChildren(
+      const result = await service.retrieveEntityChildren(
         entityDefinition,
-        existingChildren,
-        parentEntityPath,
         additionalContext,
       );
 
@@ -280,12 +251,7 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new Error('Some other error'));
 
-      await service.retrieveAndMergeEntityChildren(
-        entityDefinition,
-        existingChildren,
-        parentEntityPath,
-        additionalContext,
-      );
+      await service.retrieveEntityChildren(entityDefinition, additionalContext);
 
       expect(serviceProviderServiceSpy).toHaveBeenCalledWith(
         'someEntity',
@@ -311,12 +277,7 @@ describe('LuigiNodesService', () => {
         .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new Error('Some other error'));
 
-      await service.retrieveAndMergeEntityChildren(
-        entityDefinition,
-        existingChildren,
-        parentEntityPath,
-        additionalContext,
-      );
+      await service.retrieveEntityChildren(entityDefinition, additionalContext);
 
       expect(serviceProviderServiceSpy).toHaveBeenCalledWith(
         'someEntity',

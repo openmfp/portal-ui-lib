@@ -168,11 +168,11 @@ export class LocalConfigurationServiceImpl {
   ) {
     const serverEntityTypes = [
       ...new Set(serverLuigiNodes.map((n) => n.entityType)),
-    ].join(',');
+    ].filter(Boolean).join(',');
 
     const localEntityTypes = [
       ...new Set(localNodes.map((n) => n.entityType)),
-    ].join(',');
+    ].filter(Boolean).join(',');
     console.debug(
       `Found '${serverLuigiNodes.length}' server nodes. 
        Found '${localNodes.length}' local luigi nodes. 

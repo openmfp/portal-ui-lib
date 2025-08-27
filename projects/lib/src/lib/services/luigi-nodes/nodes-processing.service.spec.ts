@@ -3,6 +3,7 @@ import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
+import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodesProcessingService } from './nodes-processing.service';
@@ -11,6 +12,7 @@ import { TestBed } from '@angular/core/testing';
 describe('NodesProcessingService', () => {
   let service: NodesProcessingService;
   let luigiNodesService: LuigiNodesService;
+  let localConfigurationService: LocalConfigurationServiceImpl;
   let luigiCoreService: LuigiCoreService;
   let configService: ConfigService;
   let nodeContextProcessingService: NodeContextProcessingService;
@@ -45,6 +47,7 @@ describe('NodesProcessingService', () => {
     service = TestBed.inject(NodesProcessingService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
     luigiNodesService = TestBed.inject(LuigiNodesService);
+    localConfigurationService = TestBed.inject(LocalConfigurationServiceImpl);
     configService = TestBed.inject(ConfigService);
     nodeContextProcessingService = TestBed.inject(
       LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
@@ -84,8 +87,8 @@ describe('NodesProcessingService', () => {
 
   it('should return a promise resolving entity nodes', async () => {
     // Arrange
-    const retrieveAndMergeEntityChildrenSpy = jest
-      .spyOn(luigiNodesService, 'retrieveAndMergeEntityChildren')
+    const retrieveEntityChildrenSpy = jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
       .mockResolvedValue([]);
 
     const myentityId = 'someid';
@@ -113,22 +116,20 @@ describe('NodesProcessingService', () => {
     );
 
     // Assert
-    expect(retrieveAndMergeEntityChildrenSpy).toHaveBeenCalledWith(
+    expect(retrieveEntityChildrenSpy).toHaveBeenCalledWith(
       {
         contextKey: 'myentityId',
         dynamicFetchId: entityName,
         id: entityName,
       },
-      childrenByEntity.myentity,
-      entityName,
       { myentity: myentityId, user: userid },
     );
   });
 
   it('should add parent entity ids to fetch context', async () => {
     // Arrange
-    const retrieveAndMergeEntityChildrenSpy = jest
-      .spyOn(luigiNodesService, 'retrieveAndMergeEntityChildren')
+    const retrieveEntityChildrenSpy = jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
       .mockResolvedValue([]);
 
     const userid = 'user';
@@ -171,14 +172,12 @@ describe('NodesProcessingService', () => {
     );
 
     // Assert
-    expect(retrieveAndMergeEntityChildrenSpy).toHaveBeenCalledWith(
+    expect(retrieveEntityChildrenSpy).toHaveBeenCalledWith(
       {
         contextKey: 'mysubentityId',
         dynamicFetchId: 'mysubentity',
         id: 'mysubentity',
       },
-      [],
-      entityName,
       {
         mysubentity: 'someid',
         myparententity: 'parentid',
@@ -194,7 +193,7 @@ describe('NodesProcessingService', () => {
   describe('entity children', () => {
     beforeEach(() => {
       jest
-        .spyOn(luigiNodesService, 'replaceServerNodesWithLocalOnes')
+        .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
         .mockImplementation((nodes: LuigiNode[], entities: string[]) => {
           return Promise.resolve(nodes);
         });
@@ -218,12 +217,10 @@ describe('NodesProcessingService', () => {
       };
 
       jest
-        .spyOn(luigiNodesService, 'retrieveAndMergeEntityChildren')
+        .spyOn(luigiNodesService, 'retrieveEntityChildren')
         .mockImplementation(
           (
             _entityDefinition: EntityDefinition,
-            _existingChildren: LuigiNode[],
-            parentEntityPath: string,
             additionalContext: Record<string, string>,
           ) => {
             return Promise.resolve(
