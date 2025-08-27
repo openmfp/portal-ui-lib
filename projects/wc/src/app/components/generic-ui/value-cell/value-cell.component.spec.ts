@@ -1,6 +1,3 @@
-jest.mock('@ui5/webcomponents-ngx', () => ({ IconComponent: class {} }), { virtual: true });
-
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ValueCellComponent } from './value-cell.component';
 import {
   ICON_DESIGN_NEGATIVE,
@@ -8,6 +5,11 @@ import {
   ICON_NAME_NEGATIVE,
   ICON_NAME_POSITIVE,
 } from './value-cell.constants';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+jest.mock('@ui5/webcomponents-ngx', () => ({ IconComponent: class {} }), {
+  virtual: true,
+});
 
 describe('ValueCellComponent', () => {
   let component: ValueCellComponent;

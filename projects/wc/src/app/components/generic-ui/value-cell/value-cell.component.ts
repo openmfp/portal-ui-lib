@@ -4,10 +4,17 @@ import {
   ICON_NAME_NEGATIVE,
   ICON_NAME_POSITIVE,
 } from './value-cell.constants';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
 import { IconComponent } from '@ui5/webcomponents-ngx';
 
-export type IconDesignType = typeof ICON_DESIGN_POSITIVE | typeof ICON_DESIGN_NEGATIVE;
+export type IconDesignType =
+  | typeof ICON_DESIGN_POSITIVE
+  | typeof ICON_DESIGN_NEGATIVE;
 
 @Component({
   selector: 'value-cell',
@@ -18,29 +25,32 @@ export type IconDesignType = typeof ICON_DESIGN_POSITIVE | typeof ICON_DESIGN_NE
 })
 export class ValueCellComponent {
   value = input<unknown>();
-
-  isBoolLike = computed(() => this.isBooleanLike(this.value()));
-  iconDesign = computed(() =>
-    this.isBoolLike()
-      ? this.booleanIconDesign(this.value())
-      : undefined
-  );
-  iconName = computed(() =>
-    this.isBoolLike()
-      ? this.iconDesign() === ICON_DESIGN_POSITIVE
+  isBoolLike = computed(() => this.boolValue() !== undefined);
+  iconDesign = computed<IconDesignType | undefined>(() => {
+    return this.boolValue() === undefined
+      ? undefined
+      : this.boolValue()
+        ? ICON_DESIGN_POSITIVE
+        : ICON_DESIGN_NEGATIVE;
+  });
+  iconName = computed<string | undefined>(() => {
+    return this.boolValue() === undefined
+      ? undefined
+      : this.boolValue()
         ? ICON_NAME_POSITIVE
-        : ICON_NAME_NEGATIVE
-      : undefined
-  );
+        : ICON_NAME_NEGATIVE;
+  });
 
-  private isBooleanLike(val: any): boolean {
-    return typeof val === 'boolean' || val === 'true' || val === 'false';
+  private boolValue = computed(() => this.normalizeBoolean(this.value()));
+
+  private normalizeBoolean(value: unknown): boolean | undefined {
+    const normalizedValue = value?.toString()?.toLowerCase();
+    if (normalizedValue === 'true') {
+      return true;
+    }
+    if (normalizedValue === 'false') {
+      return false;
+    }
+    return undefined;
   }
-
-  private booleanIconDesign(val: any): IconDesignType {
-    return val === true || val === 'true'
-      ? ICON_DESIGN_POSITIVE
-      : ICON_DESIGN_NEGATIVE;
-  }
-
 }
