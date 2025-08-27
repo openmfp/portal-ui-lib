@@ -6,9 +6,10 @@ import {
   ICON_NAME_POSITIVE,
   TRUE_STRING,
 } from './value-cell.constants';
-import { ChangeDetectionStrategy, Component, effect, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { IconComponent } from '@ui5/webcomponents-ngx';
 
+import { ValueCellVm } from './value-cell-vm';
 
 @Component({
   selector: 'value-cell',
@@ -20,21 +21,15 @@ import { IconComponent } from '@ui5/webcomponents-ngx';
 export class ValueCellComponent {
   value = input<unknown>();
 
-  cellValue: unknown;
-  isBoolLike: boolean = false;
-  iconDesign: 'Positive' | 'Negative';
-  iconName: string;
-
-  constructor() {
-    effect(() => {
-      this.cellValue = this.value();
-      this.isBoolLike = this.isBooleanLike(this.cellValue);
-      if (this.isBoolLike) {
-        this.iconDesign = this.booleanIconDesign(this.cellValue);
-        this.iconName = this.iconDesign === ICON_DESIGN_POSITIVE ? ICON_NAME_POSITIVE : ICON_NAME_NEGATIVE;
-      }
-    });
-  }
+  vm = computed<ValueCellVm>(() => {
+    const current = this.value();
+    if (this.isBooleanLikeFn(current)) {
+      const design = this.booleanIconDesign(current);
+      const name = design === ICON_DESIGN_POSITIVE ? ICON_NAME_POSITIVE : ICON_NAME_NEGATIVE;
+      return { isBool: true as const, iconDesign: design, iconName: name };
+    }
+    return { isBool: false as const, value: current };
+  });
 
   protected booleanIconDesign = (
     value: unknown,
@@ -43,7 +38,7 @@ export class ValueCellComponent {
     return asBool ? ICON_DESIGN_POSITIVE : ICON_DESIGN_NEGATIVE;
   };
 
-  protected isBooleanLike = (value: unknown): boolean => {
+  protected isBooleanLikeFn = (value: unknown): boolean => {
     if (typeof value === 'boolean') {
       return true;
     }
@@ -64,5 +59,4 @@ export class ValueCellComponent {
     }
     return false;
   };
-
 }

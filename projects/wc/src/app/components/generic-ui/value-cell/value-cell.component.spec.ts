@@ -1,3 +1,5 @@
+jest.mock('@ui5/webcomponents-ngx', () => ({ IconComponent: class {} }), { virtual: true });
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ValueCellComponent } from './value-cell.component';
 import {
@@ -15,7 +17,7 @@ describe('ValueCellComponent', () => {
     fixture = TestBed.createComponent(ValueCellComponent);
     component = fixture.componentInstance;
 
-    component.value = (() => value) as any;
+    fixture.componentRef.setInput('value', value as any);
 
     fixture.detectChanges();
 
@@ -24,10 +26,8 @@ describe('ValueCellComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      // No special providers required; component is standalone
     }).overrideComponent(ValueCellComponent, {
-      // Template isn't required for logic tests; keep it minimal to avoid ShadowDom querying complexities
-      set: { template: '<div></div>' },
+      set: { template: '<div></div>', imports: [] },
     });
   });
 
@@ -39,33 +39,41 @@ describe('ValueCellComponent', () => {
   it('should accept non-boolean value and mark as not boolean-like', () => {
     const { component } = makeComponent('cluster-a');
 
-    expect(component.cellValue).toBe('cluster-a');
-    expect(component.isBoolLike).toBe(false);
-    expect(component.iconDesign).toBeUndefined();
-    expect(component.iconName).toBeUndefined();
+    const vm: any = component.vm();
+    expect(vm.isBool).toBe(false);
+    expect(vm.value).toBe('cluster-a');
   });
 
   it("should accept boolean-like 'true' string and set positive icon and design", () => {
     const { component } = makeComponent('true');
 
-    expect(component.isBoolLike).toBe(true);
-    expect(component.iconDesign).toBe(ICON_DESIGN_POSITIVE);
-    expect(component.iconName).toBe(ICON_NAME_POSITIVE);
+    const vm: any = component.vm();
+    expect(vm.isBool).toBe(true);
+    if (vm.isBool) {
+      expect(vm.iconDesign).toBe(ICON_DESIGN_POSITIVE);
+      expect(vm.iconName).toBe(ICON_NAME_POSITIVE);
+    }
   });
 
   it("should accept boolean-like 'false' string and set negative icon and design", () => {
     const { component } = makeComponent('false');
 
-    expect(component.isBoolLike).toBe(true);
-    expect(component.iconDesign).toBe(ICON_DESIGN_NEGATIVE);
-    expect(component.iconName).toBe(ICON_NAME_NEGATIVE);
+    const vm: any = component.vm();
+    expect(vm.isBool).toBe(true);
+    if (vm.isBool) {
+      expect(vm.iconDesign).toBe(ICON_DESIGN_NEGATIVE);
+      expect(vm.iconName).toBe(ICON_NAME_NEGATIVE);
+    }
   });
 
   it('should accept boolean value true and set positive icon', () => {
     const { component } = makeComponent(true);
 
-    expect(component.isBoolLike).toBe(true);
-    expect(component.iconDesign).toBe(ICON_DESIGN_POSITIVE);
-    expect(component.iconName).toBe(ICON_NAME_POSITIVE);
+    const vm: any = component.vm();
+    expect(vm.isBool).toBe(true);
+    if (vm.isBool) {
+      expect(vm.iconDesign).toBe(ICON_DESIGN_POSITIVE);
+      expect(vm.iconName).toBe(ICON_NAME_POSITIVE);
+    }
   });
 });

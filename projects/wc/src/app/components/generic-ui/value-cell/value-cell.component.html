@@ -1,6 +1,5 @@
-  @if (isBoolLike) {
-    <ui5-icon [name]="iconName"
-              [design]="iconDesign"></ui5-icon>
-  } @else {
-    {{ cellValue }}
-  }
+@if (vm().isBool) {
+  <ui5-icon [name]="vm().iconName" [design]="vm().iconDesign"></ui5-icon>
+} @else {
+  {{ vm().value }}
+}
