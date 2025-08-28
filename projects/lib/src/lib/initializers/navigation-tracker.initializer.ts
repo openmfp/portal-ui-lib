@@ -1,7 +1,7 @@
 import { NavigationService } from '../services/navigation.service';
 import { inject, provideAppInitializer } from '@angular/core';
 
-async function track(navigationService: NavigationService) {
+export async function track(navigationService: NavigationService) {
   navigationService.track();
 }
 

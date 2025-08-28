@@ -7,7 +7,7 @@ import {
 import { inject, provideAppInitializer } from '@angular/core';
 import { filter } from 'rxjs';
 
-async function initializeAutomaticSessionRefresh(
+export async function initializeAutomaticSessionRefresh(
   sessionRefreshService: SessionRefreshService,
   authService: AuthService,
   luigiCoreService: LuigiCoreService,

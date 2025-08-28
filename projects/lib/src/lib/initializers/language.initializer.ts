@@ -6,7 +6,7 @@ import {
 } from '../services';
 import { inject, provideAppInitializer } from '@angular/core';
 
-async function initLanguage(
+export async function initLanguage(
   i18nService: I18nService,
   authService: AuthService,
   luigiCoreService: LuigiCoreService,

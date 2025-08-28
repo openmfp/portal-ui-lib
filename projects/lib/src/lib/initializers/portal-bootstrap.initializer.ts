@@ -1,7 +1,7 @@
 import { AuthService } from '../services';
 import { inject, provideAppInitializer } from '@angular/core';
 
-async function bootstrap(authService: AuthService) {
+export async function bootstrap(authService: AuthService) {
   try {
     await authService.refresh();
   } catch (error) {
@@ -11,5 +11,5 @@ async function bootstrap(authService: AuthService) {
 
 export const provideBootstrap = () =>
   provideAppInitializer(() => {
-    bootstrap(inject(AuthService));
+    void bootstrap(inject(AuthService));
   });
