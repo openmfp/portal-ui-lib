@@ -205,15 +205,22 @@ export class I18nService {
   }
 
   async getValidLanguages(): Promise<{ value: string; label: string }[]> {
-    const { developmentInstance } = await this.envConfigService.getEnvConfig();
-
     const languages = [
       { value: 'en', label: 'USERSETTINGSDIALOG_LANGUAGE_EN' },
     ];
-    if (developmentInstance) {
-      languages.push({ value: 'de', label: 'USERSETTINGSDIALOG_LANGUAGE_DE' });
-    }
 
-    return languages;
+    try {
+      const { developmentInstance } =
+        await this.envConfigService.getEnvConfig();
+
+      if (developmentInstance) {
+        languages.push({
+          value: 'de',
+          label: 'USERSETTINGSDIALOG_LANGUAGE_DE',
+        });
+      }
+    } finally {
+      return languages;
+    }
   }
 }
