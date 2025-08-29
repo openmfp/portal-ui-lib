@@ -219,9 +219,7 @@ export class I18nService {
           label: 'USERSETTINGSDIALOG_LANGUAGE_DE',
         });
       }
-
-      return languages;
-    } catch {
+    } finally {
       return languages;
     }
   }
