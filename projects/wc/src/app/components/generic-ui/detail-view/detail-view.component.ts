@@ -30,6 +30,7 @@ import {
   ToolbarButtonComponent,
   ToolbarComponent,
 } from '@ui5/webcomponents-ngx';
+import { ValueCellComponent } from '../value-cell/value-cell.component';
 
 const defaultFields: FieldDefinition[] = [
   {
@@ -52,6 +53,7 @@ const defaultFields: FieldDefinition[] = [
     ToolbarButtonComponent,
     DynamicPageHeaderComponent,
     LabelComponent,
+    ValueCellComponent,
   ],
   templateUrl: './detail-view.component.html',
   styleUrl: './detail-view.component.scss',

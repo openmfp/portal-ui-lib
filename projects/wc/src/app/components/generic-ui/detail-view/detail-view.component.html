@@ -43,7 +43,9 @@
       @for (field of resourceFields; track field.property) {
         <div class="resource-info-cell">
           <ui5-label>{{ field.label }}</ui5-label>
-          <p>{{ getResourceValueByJsonPath(resource(), field) }}</p>
+          <p>
+            <value-cell [value]="getResourceValueByJsonPath(resource(), field)"></value-cell>
+          </p>
         </div>
       }
     </div>
