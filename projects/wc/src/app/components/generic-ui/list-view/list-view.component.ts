@@ -39,6 +39,7 @@ import {
   ToolbarButtonComponent,
   ToolbarComponent,
 } from '@ui5/webcomponents-ngx';
+import { ValueCellComponent } from '../value-cell/value-cell.component';
 
 const defaultColumns: FieldDefinition[] = [
   {
@@ -74,6 +75,7 @@ const defaultColumns: FieldDefinition[] = [
     TitleComponent,
     ToolbarButtonComponent,
     ToolbarComponent,
+    ValueCellComponent,
   ],
 })
 export class ListViewComponent implements OnInit {
