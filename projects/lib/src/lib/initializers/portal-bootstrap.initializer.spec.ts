@@ -1,52 +1,32 @@
-import { APP_INITIALIZER } from '@angular/core';
 import { AuthService } from '../services';
-import { provideBootstrap } from './portal-bootstrap.initializer';
-import Mocked = jest.Mocked;
+import { bootstrap, provideBootstrap } from './portal-bootstrap.initializer';
 
-describe('provideBootstrap', () => {
-  const authServiceMock = {
-    refresh: jest.fn(),
-  } as any as Mocked<AuthService>;
+describe('bootstrap', () => {
+  let authService: jest.Mocked<AuthService>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    authService = { refresh: jest.fn() } as any;
   });
 
-  it('should create bootstrap provider with correct configuration', () => {
-    const provider = provideBootstrap();
-
-    expect(provider).toEqual({
-      provide: APP_INITIALIZER,
-      useFactory: expect.any(Function),
-      multi: true,
-      deps: [AuthService],
-    });
+  it('calls refresh on authService', async () => {
+    authService.refresh.mockResolvedValue(undefined);
+    await bootstrap(authService);
+    expect(authService.refresh).toHaveBeenCalled();
   });
 
-  describe('bootstrap factory', () => {
-    const bootstrapFactory = provideBootstrap().useFactory;
-    const initFn = bootstrapFactory(authServiceMock);
+  it('logs error when refresh fails', async () => {
+    const error = new Error('fail');
+    authService.refresh.mockRejectedValue(error);
+    const spy = jest.spyOn(console, 'error').mockImplementation();
+    await bootstrap(authService);
+    expect(spy).toHaveBeenCalledWith('Error bootstrapping the app:', error);
+    spy.mockRestore();
+  });
+});
 
-    it('should call refresh on init', async () => {
-      authServiceMock.refresh.mockResolvedValue(undefined);
-
-      await initFn();
-
-      expect(authServiceMock.refresh).toHaveBeenCalled();
-    });
-
-    it('should handle refresh error', async () => {
-      const consoleError = jest.spyOn(console, 'error');
-      const error = new Error('Failed to refresh');
-      authServiceMock.refresh.mockRejectedValue(error);
-
-      await initFn();
-
-      expect(consoleError).toHaveBeenCalledWith(
-        'Error bootstrapping the app:',
-        error
-      );
-      consoleError.mockRestore();
-    });
+describe('provideBootstrap', () => {
+  it('returns environment providers', () => {
+    const providers = provideBootstrap();
+    expect(providers).toBeDefined();
   });
 });

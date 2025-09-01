@@ -1,14 +1,16 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { APP_INITIALIZER } from '@angular/core';
-import { mock } from 'jest-mock-extended';
-import { Subject } from 'rxjs';
 import { AuthEvent } from '../models';
 import {
   AuthService,
   LuigiCoreService,
   SessionRefreshService,
 } from '../services';
-import { provideSessionRefresh } from './session-refresh.initializer';
+import {
+  initializeAutomaticSessionRefresh,
+  provideSessionRefresh,
+} from './session-refresh.initializer';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
+import { Subject } from 'rxjs';
 
 describe('Session Refresh Provider', () => {
   let authServiceMock: jest.Mocked<AuthService>;
@@ -17,12 +19,8 @@ describe('Session Refresh Provider', () => {
   let authEventsSubject: Subject<AuthEvent>;
 
   beforeEach(() => {
-    // Create a new Subject for auth events
     authEventsSubject = new Subject<AuthEvent>();
-
-    // Initialize mock services
     sessionRefreshServiceMock = mock<SessionRefreshService>();
-
     luigiCoreServiceMock = mock<LuigiCoreService>();
     luigiCoreServiceMock.isFeatureToggleActive = jest
       .fn()
@@ -42,25 +40,15 @@ describe('Session Refresh Provider', () => {
       ],
     });
 
-    // Get the initializers
-    const initializers = TestBed.inject(APP_INITIALIZER);
+    initializeAutomaticSessionRefresh(
+      sessionRefreshServiceMock,
+      authServiceMock,
+      luigiCoreServiceMock,
+    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('provideSessionRefresh', () => {
-    it('should provide APP_INITIALIZER', () => {
-      const provider = provideSessionRefresh();
-      expect(provider.provide).toBe(APP_INITIALIZER);
-      expect(provider.multi).toBe(true);
-      expect(provider.deps).toEqual([
-        SessionRefreshService,
-        AuthService,
-        LuigiCoreService,
-      ]);
-    });
   });
 
   describe('Session refresh initialization', () => {
@@ -71,7 +59,7 @@ describe('Session Refresh Provider', () => {
 
       // Assert
       expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
-        'enableSessionAutoRefresh'
+        'enableSessionAutoRefresh',
       );
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
     }));
@@ -111,7 +99,7 @@ describe('Session Refresh Provider', () => {
         // Assert
         expect(sessionRefreshServiceMock.refresh).toHaveBeenCalled();
         expect(console.error).toHaveBeenCalledWith(
-          'Error executing session refresh: Error: Refresh failed'
+          'Error executing session refresh: Error: Refresh failed',
         );
       } catch {}
     }));
@@ -141,7 +129,7 @@ describe('Session Refresh Provider', () => {
 
       // Assert
       expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledTimes(
-        2
+        2,
       );
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
     }));

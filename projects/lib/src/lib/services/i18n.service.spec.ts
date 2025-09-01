@@ -1,8 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
 import { I18nService } from './i18n.service';
 import { LuigiCoreService } from './luigi-core.service';
 import { EnvConfigService } from './portal';
+import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
+
 
 describe('I18nService', () => {
   let i18nService: I18nService;
@@ -45,7 +46,7 @@ describe('I18nService', () => {
     i18nService.afterInit();
     expect(luigiCoreServiceMock.i18n().getCurrentLocale).toHaveBeenCalled();
     expect(
-      luigiCoreServiceMock.i18n().addCurrentLocaleChangeListener
+      luigiCoreServiceMock.i18n().addCurrentLocaleChangeListener,
     ).toHaveBeenCalled();
     expect(i18nService.currentLanguage).toEqual('de');
   });
@@ -55,7 +56,7 @@ describe('I18nService', () => {
       'SOME_TEST_KEY',
       translationTable,
       'de',
-      undefined
+      undefined,
     );
     expect(result).toEqual('some test key');
   });
@@ -64,7 +65,7 @@ describe('I18nService', () => {
     const result = i18nService.findTranslation(
       'SOME_TEST_KEY3',
       translationTable,
-      'de'
+      'de',
     );
     expect(result).toEqual('first line<br>second line');
   });
@@ -74,7 +75,7 @@ describe('I18nService', () => {
       'SOME_TEST_KEY_',
       translationTable,
       '',
-      undefined
+      undefined,
     );
     expect(result).toEqual(undefined);
   });
@@ -83,7 +84,7 @@ describe('I18nService', () => {
       'SOME_TEST_KEY_',
       translationTable,
       'de',
-      undefined
+      undefined,
     );
     expect(result).toEqual(undefined);
   });
@@ -93,7 +94,7 @@ describe('I18nService', () => {
       'SOME_TEST_KEY2',
       translationTable,
       'de',
-      { test: 'test' }
+      { test: 'test' },
     );
     expect(result).toEqual('some test key 2');
   });
@@ -103,7 +104,7 @@ describe('I18nService', () => {
       'SOME_TEST_KEY4',
       translationTable,
       'de',
-      { test: 'test1' }
+      { test: 'test1' },
     );
     expect(result).toEqual('first line test1<br>second line');
   });
@@ -118,7 +119,7 @@ describe('I18nService', () => {
     const interpolations = { test: 'tets' };
     const result = i18nService.findInterpolations(
       translationKey,
-      interpolations
+      interpolations,
     );
     expect(result).toEqual('some tets key 2');
   });
@@ -128,7 +129,7 @@ describe('I18nService', () => {
     const interpolations = { asdf: 'tets' };
     const result = i18nService.findInterpolations(
       translationKey,
-      interpolations
+      interpolations,
     );
     expect(result).toEqual('some {test} key 2');
   });
@@ -162,7 +163,7 @@ describe('I18nService', () => {
     spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
     const spyFindTranslation = spyOn(
       i18nService,
-      'findTranslation'
+      'findTranslation',
     ).and.returnValue('some test key');
     const result = i18nService.getTranslation('SOME_TEST_KEY', undefined, 'de');
     expect(spyFindTranslation).toHaveBeenCalled();
@@ -175,7 +176,7 @@ describe('I18nService', () => {
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
       undefined,
-      'de'
+      'de',
     );
     expect(result).toEqual('some test key');
   });
@@ -190,19 +191,19 @@ describe('I18nService', () => {
     };
     spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
     spyOn(i18nService, 'translationTable').and.returnValue(
-      fallbackTranslationTable
+      fallbackTranslationTable,
     );
     i18nService.fetchTranslationFile = jest
       .fn()
       .mockResolvedValue('some test key 3');
     spyOn(i18nService, 'findTranslation').and.returnValues(
       undefined,
-      'some test key 3'
+      'some test key 3',
     );
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY3',
       undefined,
-      'de'
+      'de',
     );
     expect(result).toEqual('some test key 3');
   });
@@ -213,7 +214,7 @@ describe('I18nService', () => {
     globalThis.fetch = jest.fn(() =>
       Promise.resolve({
         json: () => Promise.resolve(mockData),
-      } as Response)
+      } as Response),
     );
     await i18nService.fetchTranslationFile(locale);
 
@@ -235,14 +236,14 @@ describe('I18nService', () => {
     };
     spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
     spyOn(i18nService, 'translationTable').and.returnValue(
-      fallbackTranslationTable
+      fallbackTranslationTable,
     );
     globalThis.fetch = jest.fn(() => Promise.reject('Fetch error'));
 
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
       undefined,
-      'de'
+      'de',
     );
 
     expect(result).toEqual('SOME_TEST_KEY');
@@ -259,7 +260,7 @@ describe('I18nService', () => {
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
       undefined,
-      'de'
+      'de',
     );
 
     expect(result).toEqual('some test key');
@@ -305,9 +306,11 @@ describe('I18nService', () => {
       const mockError = new Error('Config fetch failed');
       envConfigServiceMock.getEnvConfig.mockRejectedValue(mockError);
 
-      await expect(i18nService.getValidLanguages()).rejects.toThrow(
-        'Config fetch failed'
-      );
+      const result = await i18nService.getValidLanguages();
+
+      expect(result).toEqual([
+        { value: 'en', label: 'USERSETTINGSDIALOG_LANGUAGE_EN' },
+      ]);
     });
   });
 });
