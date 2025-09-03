@@ -38,7 +38,6 @@ import {
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
-  UserProfileConfigServiceImpl,
   UserSettingsConfigService,
 } from './services';
 import { NodeContextProcessingService } from './services/luigi-nodes/node-context-processing.service';
@@ -141,8 +140,7 @@ const addOptionalProviders = (
     },
     {
       provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.userProfileConfigService || UserProfileConfigServiceImpl,
+      useClass: options.userProfileConfigService,
     },
   );
 
