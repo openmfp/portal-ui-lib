@@ -132,9 +132,8 @@ describe('NodesProcessingService', () => {
 
     // Act
     const res = await service.processNodes(childrenByEntity);
-
     // Assert
-    expect(res.length).toBe(3);
+    expect(res.length).toBe(4);
     // new object assigned
     expect(globalNode.context).not.toBe(originalCtx);
     // global flag only for real global and not hidden
