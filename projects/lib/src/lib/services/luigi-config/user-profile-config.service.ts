@@ -1,5 +1,3 @@
-import { Injectable } from '@angular/core';
-
 export interface ExternalLink {
   sameWindow: boolean;
   URL: string;
@@ -27,23 +25,4 @@ export interface UserProfile {
 
 export interface UserProfileConfigService {
   getProfile(): Promise<UserProfile>;
-}
-
-@Injectable({ providedIn: 'root' })
-export class UserProfileConfigServiceImpl implements UserProfileConfigService {
-  async getProfile(): Promise<UserProfile> {
-    return {
-      items: [
-        {
-          label: 'PROFILE_ORGANIZATION',
-          icon: 'building',
-          link: '/organization-management',
-          openNodeInModal: {
-            width: '360px',
-            height: '260px',
-          },
-        },
-      ],
-    };
-  }
 }

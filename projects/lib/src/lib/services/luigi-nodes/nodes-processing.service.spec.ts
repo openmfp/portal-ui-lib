@@ -1,4 +1,7 @@
-import { LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import {
+  LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -16,6 +19,7 @@ describe('NodesProcessingService', () => {
   let luigiCoreService: LuigiCoreService;
   let configService: ConfigService;
   let nodeContextProcessingService: NodeContextProcessingService;
+  let customGlobalNodesService = { getCustomGlobalNodes: jest.fn() } as any;
   const entityName = 'myentity';
 
   const homeChildren: LuigiNode[] = [
@@ -40,6 +44,10 @@ describe('NodesProcessingService', () => {
         {
           provide: LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
           useValue: { processNodeContext: jest.fn() },
+        },
+        {
+          provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+          useValue: customGlobalNodesService,
         },
       ],
     }).compileComponents();
@@ -83,6 +91,65 @@ describe('NodesProcessingService', () => {
 
   it('should create', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('processNodes should build and flag global nodes and sort', async () => {
+    // Arrange
+    const baseCtx = {
+      portalContext: {},
+      userId: 'u',
+      userEmail: 'e',
+      token: 't',
+      portalBaseUrl: 'x',
+    } as any;
+
+    const globalNode: LuigiNode = {
+      pathSegment: 'g1',
+      entityType: 'global' as any,
+      context: { ...baseCtx, entityContext: { a: 1 } } as any,
+    };
+    const topNavNode: LuigiNode = {
+      pathSegment: 't1',
+      entityType: 'global-topnav' as any,
+      context: { ...baseCtx } as any,
+    };
+    const customNode: LuigiNode = {
+      pathSegment: 'c1',
+      entityType: 'global' as any,
+      hideFromNav: true,
+      context: { ...baseCtx } as any,
+    };
+    customGlobalNodesService.getCustomGlobalNodes = jest
+      .fn()
+      .mockResolvedValue([customNode]);
+
+    const childrenByEntity: Record<string, LuigiNode[]> = {
+      global: [globalNode],
+      'global.topnav': [topNavNode],
+    } as any;
+
+    const originalCtx = globalNode.context;
+
+    // Act
+    const res = await service.processNodes(childrenByEntity);
+    // Assert
+    expect(res.length).toBe(4);
+    // new object assigned
+    expect(globalNode.context).not.toBe(originalCtx);
+    // global flag only for real global and not hidden
+    expect(globalNode['globalNav']).toBe(true);
+    expect(topNavNode['globalNav']).toBe(false);
+    expect(customNode['globalNav']).toBe(false);
+  });
+
+  it('applyEntityChildrenRecursively should unset children for virtualTree nodes', () => {
+    const node: LuigiNode = {
+      pathSegment: 'v',
+      virtualTree: true,
+      children: [{ pathSegment: 'child' }],
+    } as any;
+    service.applyEntityChildrenRecursively(node, {}, '');
+    expect(node.children).toBeUndefined();
   });
 
   it('should return a promise resolving entity nodes', async () => {
@@ -426,6 +493,76 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       expect(await rootChildren[0].children({})).toEqual([]);
+    });
+
+    it('should handle compound children: merge entity context and filter', async () => {
+      const rootNode: LuigiNode = {
+        pathSegment: 'root',
+        defineEntity: {
+          id: 'myentity',
+          contextKey: 'myentity',
+          dynamicFetchId: 'myentity',
+        },
+        compound: {
+          children: [
+            {
+              pathSegment: 'keep',
+              context: { entityContext: {} },
+              visibleForContext: 'entityContext.foo == `bar`',
+            } as any,
+            {
+              pathSegment: 'drop',
+              context: { entityContext: {} },
+              visibleForContext: 'entityContext.foo == `nope`',
+            } as any,
+          ],
+        },
+        context: { entityContext: { foo: 'bar' } },
+      } as any;
+
+      service.applyEntityChildrenRecursively(rootNode, {}, '');
+      const compoundChildren = (rootNode as any).compound
+        .children as LuigiNode[];
+      expect(compoundChildren.length).toBe(1);
+      expect(compoundChildren[0].pathSegment).toBe('keep');
+      expect(compoundChildren[0].context.entityContext.foo).toBe('bar');
+    });
+
+    it('createChildrenList partitions dynamic children and merges by entity', async () => {
+      const staticChild: LuigiNode = { pathSegment: 'static' } as any;
+      const entityNode: LuigiNode = {
+        defineEntity: {
+          id: 'typeA',
+          dynamicFetchId: 'typeA',
+          contextKey: 'id',
+        },
+      } as any;
+      const childrenByEntity: Record<string, LuigiNode[]> = {
+        typeA: [staticChild],
+        typeB: [{ pathSegment: 'existingB', entityType: 'typeB' } as any],
+      } as any;
+
+      jest
+        .spyOn(luigiNodesService, 'retrieveEntityChildren')
+        .mockResolvedValue([
+          { pathSegment: 'root1', entityType: 'typeA' } as any,
+          { pathSegment: 'err', entityType: 'entity.error' as any } as any,
+          staticChild,
+          { pathSegment: 'childOfOther', entityType: 'typeB' } as any,
+          { pathSegment: 'noType' } as any,
+        ]);
+
+      const list = await service.entityChildrenProvider(
+        entityNode,
+        { id: '1' },
+        childrenByEntity,
+        [],
+        'typeA',
+      );
+
+      // Expect that list contains only root children category
+      const segs = list.map((n) => n.pathSegment);
+      expect(segs).toEqual(expect.arrayContaining(['static', 'root1', 'err']));
     });
   });
 });

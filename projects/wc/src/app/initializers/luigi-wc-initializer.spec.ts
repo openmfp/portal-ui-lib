@@ -2,7 +2,6 @@ import { DevelopmentSettingsComponent } from '../components/development-settings
 import { ErrorComponent } from '../components/error/error.component';
 import { DetailViewComponent } from '../components/generic-ui/detail-view/detail-view.component';
 import { ListViewComponent } from '../components/generic-ui/list-view/list-view.component';
-import { OrganizationManagementComponent } from '../components/organization-management/organization-management.component';
 import * as wcUtils from '../utils/wc';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
 import { APP_INITIALIZER, Injector } from '@angular/core';
@@ -57,7 +56,6 @@ describe('provideLuigiWebComponents', () => {
         'generic-list-view': ListViewComponent,
         'generic-detail-view': DetailViewComponent,
         'development-settings': DevelopmentSettingsComponent,
-        'organization-management': OrganizationManagementComponent,
       },
       injector,
     );
@@ -80,7 +78,6 @@ describe('provideLuigiWebComponents', () => {
         'generic-list-view': ListViewComponent,
         'generic-detail-view': DetailViewComponent,
         'development-settings': DevelopmentSettingsComponent,
-        'organization-management': OrganizationManagementComponent,
       },
       injector,
     );

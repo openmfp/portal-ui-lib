@@ -38,7 +38,6 @@ import {
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
-  UserProfileConfigServiceImpl,
   UserSettingsConfigService,
 } from './services';
 import { NodeContextProcessingService } from './services/luigi-nodes/node-context-processing.service';
@@ -133,18 +132,17 @@ const addOptionalProviders = (
     }),
   );
 
-  providers.push(
-    {
-      provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.appSwitcherConfigService || AppSwitcherConfigServiceImpl,
-    },
-    {
+  providers.push({
+    provide: LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+    useClass: options.appSwitcherConfigService || AppSwitcherConfigServiceImpl,
+  });
+
+  if (options.userProfileConfigService) {
+    providers.push({
       provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass:
-        options.userProfileConfigService || UserProfileConfigServiceImpl,
-    },
-  );
+      useClass: options.userProfileConfigService,
+    });
+  }
 
   if (options.luigiExtendedGlobalContextConfigService) {
     providers.push({
