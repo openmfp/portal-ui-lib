@@ -18,8 +18,7 @@ export class LuigiComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      const auth = this.authService.getAuthData();
-      this.luigiCoreService.setAuthData(auth);
+      this.luigiCoreService.setAuthData(this.authService.getAuthData());
       this.luigiCoreService.setConfig({
         auth: await this.authConfigService.getAuthConfig(),
         routing: this.routingConfigService.getInitialRoutingConfig(),
