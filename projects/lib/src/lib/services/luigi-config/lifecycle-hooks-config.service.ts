@@ -1,8 +1,11 @@
 import { LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { ClientEnvironment, LuigiNode } from '../../models';
+import { LuigiNode } from '../../models';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
+import { EnvConfigService } from '../portal';
+import { AuthConfigService } from './auth-config.service';
+import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { NavigationConfigService } from './navigation-config.service';
 import { RoutingConfigService } from './routing-config.service';
@@ -13,6 +16,9 @@ import { $localize } from '@angular/localize/init';
 
 @Injectable({ providedIn: 'root' })
 export class LifecycleHooksConfigService {
+  private authConfigService = inject(AuthConfigService);
+  private customMessageListenersService = inject(CustomMessageListenersService);
+  private envConfigService = inject(EnvConfigService);
   private i18nService = inject(I18nService);
   private luigiNodesService = inject(LuigiNodesService);
   private luigiCoreService = inject(LuigiCoreService);
@@ -25,42 +31,46 @@ export class LifecycleHooksConfigService {
     { optional: true },
   );
 
-  getLifecycleHooksConfig(envConfig: ClientEnvironment) {
+  getLifecycleHooksConfig() {
     return {
       luigiAfterInit: async () => {
-        this.i18nService.afterInit();
-
-        let childrenByEntity: Record<string, LuigiNode[]>;
-        try {
-          childrenByEntity =
-            await this.luigiNodesService.retrieveChildrenByEntity();
-        } catch (e) {
-          console.error('Error retrieving Luigi navigation nodes', e);
-          this.openErrorDialog();
-          return;
-        }
-
-        const config = {
-          ...this.luigiCoreService.config,
-          lifecycleHooks: {},
-          navigation: await this.navigationConfigService.getNavigationConfig(
-            childrenByEntity,
-            envConfig,
-          ),
-          routing: this.routingConfigService.getRoutingConfig(),
-          settings:
-            await this.staticSettingsConfigService.getStaticSettingsConfig(),
-          userSettings:
-            await this.userSettingsConfigService.getUserSettings(
-              childrenByEntity,
-            ),
-          globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
-        };
-
-        this.luigiCoreService.ux().hideAppLoadingIndicator();
-        this.luigiCoreService.setConfig(config);
+        await this.constructLuigiConfiguration();
       },
     };
+  }
+
+  private async constructLuigiConfiguration() {
+    this.i18nService.afterInit();
+    const envConfig = await this.envConfigService.getEnvConfig();
+
+    let childrenByEntity: Record<string, LuigiNode[]>;
+    try {
+      childrenByEntity =
+        await this.luigiNodesService.retrieveChildrenByEntity();
+    } catch (e) {
+      console.error('Error retrieving Luigi navigation nodes', e);
+      this.openErrorDialog();
+      return;
+    }
+
+    const config = {
+      auth: await this.authConfigService.getAuthConfig(),
+      communication: this.customMessageListenersService.getMessageListeners(),
+      navigation: await this.navigationConfigService.getNavigationConfig(
+        childrenByEntity,
+        envConfig,
+      ),
+      routing: this.routingConfigService.getRoutingConfig(),
+      settings:
+        await this.staticSettingsConfigService.getStaticSettingsConfig(),
+      userSettings:
+        await this.userSettingsConfigService.getUserSettings(childrenByEntity),
+      globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
+    };
+
+    this.luigiCoreService.ux().hideAppLoadingIndicator();
+    this.luigiCoreService.setConfig(config);
+    this.luigiCoreService.resetLuigi();
   }
 
   private openErrorDialog() {

@@ -1,6 +1,6 @@
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent } from '../../models';
-import { AuthService } from '../portal';
+import { AuthService, EnvConfigService } from '../portal';
 import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 import { Injectable, inject } from '@angular/core';
 import oAuth2 from '@luigi-project/plugin-auth-oauth2';
@@ -10,13 +10,16 @@ import oAuth2 from '@luigi-project/plugin-auth-oauth2';
 })
 export class AuthConfigService {
   private authService = inject(AuthService);
+  private envConfigService = inject(EnvConfigService);
   private luigiAuthEventsCallbacksService =
     inject<LuigiAuthEventsCallbacksService>(
       LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN as any,
       { optional: true },
     );
 
-  public getAuthConfig({ oauthServerUrl, clientId, baseDomain }) {
+  public async getAuthConfig() {
+    const { oauthServerUrl, clientId, baseDomain } =
+      await this.envConfigService.getEnvConfig();
     const port = window.location.port ? `:${window.location.port}` : '';
     const redirectUrl = `${window.location.protocol}//${baseDomain}${port}/callback`;
     return {

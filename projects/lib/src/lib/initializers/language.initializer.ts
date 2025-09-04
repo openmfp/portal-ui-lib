@@ -30,10 +30,10 @@ export async function initLanguage(
 }
 
 export const provideLanguageServices = () =>
-  provideAppInitializer(() => {
+  provideAppInitializer(() =>
     initLanguage(
       inject(I18nService),
       inject(AuthService),
       inject(LuigiCoreService),
-    );
-  });
+    ),
+  );
