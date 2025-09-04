@@ -31,10 +31,10 @@ export async function initializeAutomaticSessionRefresh(
 }
 
 export const provideSessionRefresh = () =>
-  provideAppInitializer(() => {
+  provideAppInitializer(() =>
     initializeAutomaticSessionRefresh(
       inject(SessionRefreshService),
       inject(AuthService),
       inject(LuigiCoreService),
-    );
-  });
+    ),
+  );

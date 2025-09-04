@@ -7,7 +7,6 @@ export * from './request-headers.service';
 export * from './storage-service';
 export * from './theming.service';
 
-export * from './luigi-config/luigi-config.service';
 export * from './luigi-config/static-settings-config.service';
 export * from './luigi-config/custom-message-listener';
 export * from './luigi-config/custom-message-listeners.service';
@@ -20,6 +19,7 @@ export * from './luigi-config/luigi-breadcrumb-config.service';
 export * from './luigi-config/node-change-hook-config.service';
 export * from './luigi-config/navigation-global-context-config.service';
 export * from './luigi-config/luigi-auth-events-callbacks.service';
+export * from './luigi-config/auth-config.service';
 
 export * from './luigi-nodes/local-configuration.service';
 export * from './luigi-nodes/luigi-nodes.service';

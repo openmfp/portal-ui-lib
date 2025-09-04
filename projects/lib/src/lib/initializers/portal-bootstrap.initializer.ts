@@ -10,6 +10,4 @@ export async function bootstrap(authService: AuthService) {
 }
 
 export const provideBootstrap = () =>
-  provideAppInitializer(() => {
-    void bootstrap(inject(AuthService));
-  });
+  provideAppInitializer(() => bootstrap(inject(AuthService)));
