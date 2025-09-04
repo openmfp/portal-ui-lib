@@ -18,13 +18,13 @@ export class LuigiComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      this.luigiCoreService.setAuthData(this.authService.getAuthData());
       this.luigiCoreService.setConfig({
         auth: await this.authConfigService.getAuthConfig(),
         routing: this.routingConfigService.getInitialRoutingConfig(),
         lifecycleHooks:
           this.lifecycleHooksConfigService.getLifecycleHooksConfig(),
       });
+      this.luigiCoreService.setAuthData(this.authService.getAuthData());
     } catch (e) {
       console.error(`Luigi Component init failed: ${e.toString()}`);
     }
