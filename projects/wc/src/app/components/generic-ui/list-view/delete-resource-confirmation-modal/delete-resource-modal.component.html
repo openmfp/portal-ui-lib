@@ -1,0 +1,21 @@
+<ui5-dialog #dialog header-text="Delete">
+  <section class="content">
+    text goes here
+  </section>
+  <ui5-toolbar class="ui5-content-density-compact" slot="footer">
+    <ui5-toolbar-button
+      class="dialogCloser"
+      design="Emphasized"
+      text="Delete"
+      (click)="delete()"
+    >
+    </ui5-toolbar-button>
+    <ui5-toolbar-button
+      class="dialogCloser"
+      design="Transparent"
+      text="Cancel"
+      (click)="close()"
+    >
+    </ui5-toolbar-button>
+  </ui5-toolbar>
+</ui5-dialog>

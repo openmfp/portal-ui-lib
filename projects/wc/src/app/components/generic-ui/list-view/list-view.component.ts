@@ -1,4 +1,6 @@
+import { ValueCellComponent } from '../value-cell/value-cell.component';
 import { CreateResourceModalComponent } from './create-resource-modal/create-resource-modal.component';
+import { DeleteResourceModalComponent } from './delete-resource-confirmation-modal/delete-resource-modal.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -39,7 +41,6 @@ import {
   ToolbarButtonComponent,
   ToolbarComponent,
 } from '@ui5/webcomponents-ngx';
-import { ValueCellComponent } from '../value-cell/value-cell.component';
 
 const defaultColumns: FieldDefinition[] = [
   {
@@ -85,6 +86,7 @@ export class ListViewComponent implements OnInit {
   LuigiClient = input<LuigiClient>();
   context = input<ResourceNodeContext>();
   private createModal = viewChild<CreateResourceModalComponent>('createModal');
+  private deleteModal = viewChild<DeleteResourceModalComponent>('deleteModal');
 
   resources = signal<Resource[]>([]);
   columns: FieldDefinition[];
@@ -153,6 +155,10 @@ export class ListViewComponent implements OnInit {
 
   openCreateResourceModal() {
     this.createModal()?.open();
+  }
+
+  openDeleteResourceModal() {
+    this.deleteModal()?.open();
   }
 
   hasUiCreateViewFields() {
