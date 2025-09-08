@@ -67,10 +67,9 @@ describe('ListViewComponent', () => {
   });
 
   it('should delete a resource', () => {
-    const resource = { metadata: { name: 'test' } };
-    const event = { stopPropagation: jest.fn() };
+    const resource = { metadata: { name: 'test' } } as any;
 
-    component.delete(event, resource as any);
+    component.delete(resource);
     expect(mockResourceService.delete).toHaveBeenCalled();
   });
 
@@ -78,10 +77,9 @@ describe('ListViewComponent', () => {
     mockResourceService.delete.mockReturnValueOnce(
       throwError(() => new Error()),
     );
-    const resource = { metadata: { name: 'test' } };
-    const event = { stopPropagation: jest.fn() };
+    const resource = { metadata: { name: 'test' } } as any;
 
-    component.delete(event, resource as any);
+    component.delete(resource);
     expect(mockLuigiCoreService.showAlert).toHaveBeenCalled();
   });
 

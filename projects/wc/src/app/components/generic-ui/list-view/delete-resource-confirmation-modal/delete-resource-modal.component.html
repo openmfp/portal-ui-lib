@@ -1,6 +1,6 @@
 <ui5-dialog #dialog header-text="Delete">
   <section class="content">
-    text goes here
+    Are you sure you want to delete {{ context().name || context().id }} resource?
   </section>
   <ui5-toolbar class="ui5-content-density-compact" slot="footer">
     <ui5-toolbar-button

@@ -57,7 +57,7 @@
         }
         <ui5-table-cell
           class="actions-column delete-item"
-          (click)="delete($event, item)"
+          (click)="openDeleteResourceModal()"
         >
           <ui5-icon name="delete"></ui5-icon>
         </ui5-table-cell>
@@ -74,3 +74,9 @@
     [context]="context()"
   />
 }
+
+<delete-resource-modal
+  #deleteModal
+  (resource)="delete($event)"
+  [context]="context()"
+  />

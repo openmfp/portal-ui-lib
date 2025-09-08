@@ -63,6 +63,7 @@ const defaultColumns: FieldDefinition[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CreateResourceModalComponent,
+    DeleteResourceModalComponent,
     DynamicPageComponent,
     DynamicPageTitleComponent,
     IconComponent,
@@ -121,9 +122,7 @@ export class ListViewComponent implements OnInit {
       });
   }
 
-  delete(event: any, resource: Resource) {
-    event.stopPropagation();
-
+  delete(resource: Resource) {
     this.resourceService
       .delete(resource, this.resourceDefinition, this.context())
       .subscribe({

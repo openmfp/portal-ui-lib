@@ -45,6 +45,7 @@ export class DeleteResourceModalComponent {
   }
 
   delete(): void {
+    this.resource.emit(this.context().entity);
     this.close();
   }
 }
