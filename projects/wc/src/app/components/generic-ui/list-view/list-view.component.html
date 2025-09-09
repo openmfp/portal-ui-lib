@@ -39,7 +39,8 @@
         <ui5-table-header-cell>{{ column.label }}</ui5-table-header-cell>
       }
       <ui5-table-header-cell class="actions-column"
-        >Actions</ui5-table-header-cell
+      >Actions
+      </ui5-table-header-cell
       >
     </ui5-table-header-row>
 
@@ -57,7 +58,7 @@
         }
         <ui5-table-cell
           class="actions-column delete-item"
-          (click)="openDeleteResourceModal()"
+          (click)="openDeleteResourceModal($event, item)"
         >
           <ui5-icon name="delete"></ui5-icon>
         </ui5-table-cell>
@@ -79,4 +80,4 @@
   #deleteModal
   (resource)="delete($event)"
   [context]="context()"
-  />
+/>

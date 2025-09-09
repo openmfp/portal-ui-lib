@@ -1,10 +1,36 @@
-<ui5-dialog #dialog header-text="Delete">
-  <section class="content">
-    Are you sure you want to delete {{ context().name || context().id }} resource?
+<ui5-dialog #dialog>
+  <ui5-bar slot="header" design="Header">
+    <ui5-title slot="startContent">
+      <ui5-icon name="alert" design="Critical"></ui5-icon>
+      Delete {{ innerResource?.metadata?.name?.toLowerCase() }}
+    </ui5-title>
+  </ui5-bar>
+  <section class="content" [formGroup]="form">
+    <div class="inputs">
+      <p>Are you sure you want to delete {{ context()?.resourceDefinition?.singular }}
+        <b>{{ innerResource?.metadata?.name?.toLowerCase() }}</b>?</p>
+      <ui5-text style="color: var(--sapCriticalElementColor)">
+        This action <b>cannot</b> be undone.
+      </ui5-text>
+      <p>
+        Please type <b>{{ innerResource?.metadata?.name.toLowerCase() }}</b> to confirm:
+      </p>
+      <ui5-input
+        class="input"
+        placeholder="Type name"
+        [value]="form.controls.resource.value"
+        (blur)="onFieldBlur('resource')"
+        (change)="setFormControlValue($event, 'resource')"
+        (input)="setFormControlValue($event, 'resource')"
+        [valueState]="getValueState('resource')"
+        required
+      ></ui5-input>
+    </div>
   </section>
   <ui5-toolbar class="ui5-content-density-compact" slot="footer">
     <ui5-toolbar-button
       class="dialogCloser"
+      [disabled]="form.invalid || form.controls.resource.value !== innerResource?.metadata?.name?.toLowerCase()"
       design="Emphasized"
       text="Delete"
       (click)="delete()"

@@ -66,21 +66,19 @@ describe('ListViewComponent', () => {
     expect(component.resources().length).toBeGreaterThan(0);
   });
 
-  it('should delete a resource', () => {
+  it('should log when delete is called (no backend call)', () => {
     const resource = { metadata: { name: 'test' } } as any;
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     component.delete(resource);
-    expect(mockResourceService.delete).toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledWith('we will delete resource', resource);
+    logSpy.mockRestore();
   });
 
-  it('should show alert on delete error', () => {
-    mockResourceService.delete.mockReturnValueOnce(
-      throwError(() => new Error()),
-    );
+  it('should not show alert when delete is called (no backend call)', () => {
     const resource = { metadata: { name: 'test' } } as any;
-
     component.delete(resource);
-    expect(mockLuigiCoreService.showAlert).toHaveBeenCalled();
+    expect(mockLuigiCoreService.showAlert).not.toHaveBeenCalled();
   });
 
   it('should create a resource', () => {

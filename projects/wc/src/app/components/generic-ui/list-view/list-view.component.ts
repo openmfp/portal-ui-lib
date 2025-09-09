@@ -156,8 +156,9 @@ export class ListViewComponent implements OnInit {
     this.createModal()?.open();
   }
 
-  openDeleteResourceModal() {
-    this.deleteModal()?.open();
+  openDeleteResourceModal(event: MouseEvent, resource: Resource) {
+    event.stopPropagation?.();
+    this.deleteModal()?.open(resource);
   }
 
   hasUiCreateViewFields() {
