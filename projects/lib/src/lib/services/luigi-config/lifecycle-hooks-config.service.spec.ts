@@ -5,6 +5,9 @@ import {
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
+import { EnvConfigService } from '../portal';
+import { AuthConfigService } from './auth-config.service';
+import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 import { NavigationConfigService } from './navigation-config.service';
@@ -24,9 +27,15 @@ describe('LifecycleHooksConfigService', () => {
   let userSettingsConfigServiceMock: jest.Mocked<UserSettingsConfigService>;
   let globalSearchConfigServiceMock: jest.Mocked<GlobalSearchConfigService>;
   let navigationConfigServiceMock: jest.Mocked<NavigationConfigService>;
+  let envConfigServiceMock: jest.Mocked<EnvConfigService>;
+  let authConfigServiceMock: jest.Mocked<AuthConfigService>;
+  let customMessageListenersServiceMock: jest.Mocked<CustomMessageListenersService>;
 
   beforeEach(() => {
     i18nServiceMock = mock();
+    envConfigServiceMock = mock();
+    authConfigServiceMock = mock();
+    customMessageListenersServiceMock = mock();
     luigiNodesServiceMock = { retrieveChildrenByEntity: jest.fn() } as any;
     luigiCoreServiceMock = {
       setConfig: jest.fn(),
@@ -51,6 +60,12 @@ describe('LifecycleHooksConfigService', () => {
     TestBed.configureTestingModule({
       providers: [
         LifecycleHooksConfigService,
+        { provide: EnvConfigService, useValue: envConfigServiceMock },
+        {
+          provide: CustomMessageListenersService,
+          useValue: customMessageListenersServiceMock,
+        },
+        { provide: AuthConfigService, useValue: authConfigServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
         {
           provide: NavigationConfigService,
@@ -83,20 +98,20 @@ describe('LifecycleHooksConfigService', () => {
 
   describe('getLifecycleHooksConfig', () => {
     it('should return an object with luigiAfterInit function', () => {
-      const config = service.getLifecycleHooksConfig({} as any);
+      const config = service.getLifecycleHooksConfig();
       expect(config).toHaveProperty('luigiAfterInit');
       expect(typeof config.luigiAfterInit).toBe('function');
     });
 
     describe('luigiAfterInit', () => {
       it('should call i18nServiceMock.afterInit', async () => {
-        const config = service.getLifecycleHooksConfig({} as any);
+        const config = service.getLifecycleHooksConfig();
         await config.luigiAfterInit();
         expect(i18nServiceMock.afterInit).toHaveBeenCalled();
       });
 
       it('should call luigiNodesServiceMock.retrieveChildrenByEntity', async () => {
-        const config = service.getLifecycleHooksConfig({} as any);
+        const config = service.getLifecycleHooksConfig();
         await config.luigiAfterInit();
         expect(
           luigiNodesServiceMock.retrieveChildrenByEntity,
@@ -104,13 +119,10 @@ describe('LifecycleHooksConfigService', () => {
       });
 
       it('should call luigiCoreServiceMock methods', async () => {
-        const config = service.getLifecycleHooksConfig({} as any);
+        const config = service.getLifecycleHooksConfig();
 
         await config.luigiAfterInit();
 
-        expect(
-          Object.getOwnPropertyDescriptor(luigiCoreServiceMock, 'config')?.get,
-        ).toHaveBeenCalled();
         expect(
           luigiCoreServiceMock.ux().hideAppLoadingIndicator,
         ).toHaveBeenCalled();
@@ -130,7 +142,7 @@ describe('LifecycleHooksConfigService', () => {
         });
         console.error = jest.fn();
 
-        const config = service.getLifecycleHooksConfig({} as any);
+        const config = service.getLifecycleHooksConfig();
         await config.luigiAfterInit();
 
         expect(console.error).toHaveBeenCalledWith(

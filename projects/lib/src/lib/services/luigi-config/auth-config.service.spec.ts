@@ -1,16 +1,20 @@
 import { LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { AuthEvent, UserData } from '../../models';
-import { AuthService } from '../portal';
+import { AuthService, EnvConfigService } from '../portal';
 import { AuthConfigService } from './auth-config.service';
 import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 
 describe('AuthConfigService', () => {
   let service: AuthConfigService;
   let authServiceMock: jest.Mocked<AuthService>;
+  let envConfigServiceMock: jest.Mocked<EnvConfigService>;
   let luigiAuthEventsCallbacksServiceMock: jest.Mocked<LuigiAuthEventsCallbacksService>;
 
   beforeEach(() => {
+    envConfigServiceMock = mock();
+
     authServiceMock = {
       getUserInfo: jest.fn(),
       authEvent: jest.fn(),
@@ -29,6 +33,7 @@ describe('AuthConfigService', () => {
       providers: [
         AuthConfigService,
         { provide: AuthService, useValue: authServiceMock },
+        { provide: EnvConfigService, useValue: envConfigServiceMock },
         {
           provide: LUIGI_AUTH_EVENTS_CALLBACKS_SERVICE_INJECTION_TOKEN,
           useValue: luigiAuthEventsCallbacksServiceMock,
@@ -44,16 +49,17 @@ describe('AuthConfigService', () => {
   });
 
   describe('getAuthConfig', () => {
-    it('should return the correct auth config', () => {
+    it('should return the correct auth config', async () => {
       const oauthServerUrl = 'https://example.com/oauth';
       const clientId = 'test-client-id';
-
       const baseDomain = 'https://example.com';
-      const config = service.getAuthConfig({
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
         oauthServerUrl,
         clientId,
         baseDomain,
-      });
+      } as any);
+
+      const config = await service.getAuthConfig();
 
       expect(config.use).toBe('oAuth2AuthCode');
       expect(config.storage).toBe('none');
@@ -69,11 +75,13 @@ describe('AuthConfigService', () => {
       } as UserData;
       authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
-      const config = service.getAuthConfig({
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
         oauthServerUrl: 'https://example.com/oauth',
         clientId: 'client-id',
         baseDomain: 'https://example.com',
-      });
+      } as any);
+
+      const config = await service.getAuthConfig();
       const userInfoFn = config.oAuth2AuthCode.userInfoFn;
 
       global.fetch = jest.fn().mockResolvedValue({ ok: true });
@@ -95,11 +103,12 @@ describe('AuthConfigService', () => {
       } as UserData;
       authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
-      const config = service.getAuthConfig({
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
         oauthServerUrl: 'https://example.com/oauth',
         clientId: 'client-id',
         baseDomain: 'https://example.com',
-      });
+      } as any);
+      const config = await service.getAuthConfig();
       const userInfoFn = config.oAuth2AuthCode.userInfoFn;
 
       global.fetch = jest.fn().mockRejectedValue(new Error('Fetch failed'));
@@ -115,17 +124,18 @@ describe('AuthConfigService', () => {
   });
 
   describe('auth events', () => {
-    let config: ReturnType<typeof service.getAuthConfig>;
+    let config: any;
     const testSettings = {};
     const testAuthData = {};
     const testError = new Error('Test error');
 
-    beforeEach(() => {
-      config = service.getAuthConfig({
+    beforeEach(async () => {
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
         oauthServerUrl: 'https://example.com/oauth',
         clientId: 'client-id',
         baseDomain: 'https://example.com',
-      });
+      } as any);
+      config = await service.getAuthConfig();
     });
 
     it('should handle onAuthSuccessful', () => {
