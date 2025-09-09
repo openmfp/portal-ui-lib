@@ -30,4 +30,3 @@ export * from './luigi-nodes/node-utils.service';
 export * from './luigi-nodes/node-context-processing.service';
 export * from './portal';
 
-export * from './resource';
