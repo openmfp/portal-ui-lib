@@ -3,7 +3,7 @@ import { createCustomElement } from '@angular/elements';
 
 export const registerLuigiWebComponent = (
   component: Type<any>,
-  injector: Injector
+  injector: Injector,
 ) => {
   const el = createCustomElement(component, { injector });
   (window as any).Luigi._registerWebcomponent(getSrc(), el);
@@ -18,7 +18,7 @@ export const registerLuigiWebComponent = (
  */
 export const registerLuigiWebComponents = (
   components: Record<string, Type<any>>,
-  injector: Injector
+  injector: Injector,
 ) => {
   const hash = getSrc().split('#')[1];
   if (!hash || !components[hash]) {
@@ -29,6 +29,7 @@ export const registerLuigiWebComponents = (
 
 export const getSrc = () => {
   const src = document.currentScript?.getAttribute('src');
+  console.log('currentScript', document.currentScript, src);
   if (!src) {
     throw new Error('Not defined src of currentScript.');
   }
