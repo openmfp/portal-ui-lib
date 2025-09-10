@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnInit,
   inject,
   input,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import {
@@ -15,11 +15,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  FieldDefinition,
-  Resource,
-  ResourceNodeContext,
-} from '@openmfp/portal-ui-lib';
+import { Resource, ResourceNodeContext } from '@openmfp/portal-ui-lib';
 import {
   BarComponent,
   DialogComponent,
@@ -50,14 +46,11 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteResourceModalComponent implements OnInit {
-  fields = input<FieldDefinition[]>([]);
   context = input<ResourceNodeContext>();
-  resource = output<Resource>();
   dialog = viewChild<DialogComponent>('dialog');
+  innerResource = signal<Resource | null>(null);
 
-  cdr = inject(ChangeDetectorRef);
-
-  innerResource: Resource;
+  resource = output<Resource>();
 
   fb = inject(FormBuilder);
   form: FormGroup;
@@ -65,7 +58,7 @@ export class DeleteResourceModalComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group(this.createControls());
     this.form.controls.resource.valueChanges.subscribe((value) => {
-      if (!value || this.innerResource?.metadata?.name !== value) {
+      if (!value || this.innerResource()?.metadata?.name !== value) {
         this.form.controls.resource.setErrors({ invalidResource: true });
       } else {
         this.form.controls.resource.setErrors(null);
@@ -77,8 +70,7 @@ export class DeleteResourceModalComponent implements OnInit {
     const dialog = this.dialog();
     if (dialog) {
       dialog.open = true;
-      this.innerResource = resource;
-      this.cdr.detectChanges();
+      this.innerResource.set(resource);
     }
   }
 
@@ -91,7 +83,10 @@ export class DeleteResourceModalComponent implements OnInit {
   }
 
   delete(): void {
-    this.resource.emit(this.innerResource);
+    const res = this.innerResource();
+    if (res) {
+      this.resource.emit(res);
+    }
     this.close();
   }
 
@@ -112,7 +107,7 @@ export class DeleteResourceModalComponent implements OnInit {
 
   private createControls() {
     return {
-      resource: new FormControl(this.innerResource, Validators.required),
+      resource: new FormControl(null, Validators.required),
     };
   }
 }

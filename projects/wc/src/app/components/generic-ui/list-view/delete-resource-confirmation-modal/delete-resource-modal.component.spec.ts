@@ -48,7 +48,7 @@ describe('DeleteResourceModalComponent', () => {
   it('should set dialog open and store innerResource', () => {
     component.open(resource);
     expect(mockDialog.open).toBeTruthy();
-    expect(component.innerResource).toBe(resource);
+    expect(component.innerResource()).toBe(resource);
   });
 
   it('should set dialog closed when closing', () => {
