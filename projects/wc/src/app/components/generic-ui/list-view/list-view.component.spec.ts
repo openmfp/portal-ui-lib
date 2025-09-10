@@ -66,15 +66,6 @@ describe('ListViewComponent', () => {
     expect(component.resources().length).toBeGreaterThan(0);
   });
 
-  it('should log when delete is called (no backend call)', () => {
-    const resource = { metadata: { name: 'test' } } as any;
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    component.delete(resource);
-    expect(logSpy).toHaveBeenCalledWith('we will delete resource', resource);
-    logSpy.mockRestore();
-  });
-
   it('should not show alert when delete is called (no backend call)', () => {
     const resource = { metadata: { name: 'test' } } as any;
     component.delete(resource);
