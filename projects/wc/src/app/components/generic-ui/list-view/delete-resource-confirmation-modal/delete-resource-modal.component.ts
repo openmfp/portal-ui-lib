@@ -1,7 +1,8 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
-  ViewEncapsulation,
   inject,
   input,
   output,
@@ -46,13 +47,15 @@ import {
   ],
   templateUrl: './delete-resource-modal.component.html',
   styleUrl: './delete-resource-modal.component.scss',
-  encapsulation: ViewEncapsulation.ShadowDom,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteResourceModalComponent implements OnInit {
   fields = input<FieldDefinition[]>([]);
   context = input<ResourceNodeContext>();
   resource = output<Resource>();
   dialog = viewChild<DialogComponent>('dialog');
+
+  cdr = inject(ChangeDetectorRef);
 
   innerResource: Resource;
 
@@ -75,12 +78,14 @@ export class DeleteResourceModalComponent implements OnInit {
     if (dialog) {
       dialog.open = true;
       this.innerResource = resource;
+      this.cdr.detectChanges();
     }
   }
 
   close(): void {
     const dialog = this.dialog();
     if (dialog) {
+      this.form.controls.resource.setValue(null);
       dialog.open = false;
     }
   }

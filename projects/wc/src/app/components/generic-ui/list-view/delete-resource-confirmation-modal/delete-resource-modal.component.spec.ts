@@ -1,7 +1,10 @@
 import { DeleteResourceModalComponent } from './delete-resource-modal.component';
+import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+
+jest.mock('@ui5/webcomponents-ngx', () => ({}), { virtual: true });
 
 describe('DeleteResourceModalComponent', () => {
   let component: DeleteResourceModalComponent;
@@ -12,11 +15,14 @@ describe('DeleteResourceModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
+      imports: [CommonModule, ReactiveFormsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
       .overrideComponent(DeleteResourceModalComponent, {
-        set: { template: '', imports: [] },
+        set: {
+          imports: [CommonModule, ReactiveFormsModule],
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        },
       })
       .compileComponents();
 
@@ -120,5 +126,62 @@ describe('DeleteResourceModalComponent', () => {
     spyOn(control, 'markAsTouched');
     component.onFieldBlur('resource');
     expect(control.markAsTouched).toHaveBeenCalled();
+  });
+
+  it('should render title with resource name in lowercase in the header', () => {
+    component.open(resource);
+    fixture.detectChanges();
+    const title = fixture.nativeElement.querySelector('ui5-title');
+    expect(title?.textContent?.toLowerCase()).toContain('delete testname');
+  });
+
+  it('should render prompt text with resource name and cannot be undone note', () => {
+    component.open(resource);
+    (component as any).context = () => ({
+      resourceDefinition: { singular: 'resource' },
+    });
+    fixture.detectChanges();
+    const content = fixture.nativeElement.querySelector('section.content');
+    const text = content?.textContent?.toLowerCase() || '';
+    expect(text).toContain('are you sure you want to delete');
+    expect(text).toContain('testname');
+    expect(text).toContain('cannot');
+  });
+
+  it('should bind input value to form control and show Negative valueState when invalid and touched', () => {
+    component.open(resource);
+    fixture.detectChanges();
+
+    const inputEl: HTMLElement & {
+      value?: string;
+      valueState?: string;
+      dispatchEvent?: any;
+    } = fixture.nativeElement.querySelector('ui5-input');
+    expect(inputEl).toBeTruthy();
+
+    component.setFormControlValue(
+      { target: { value: 'wrong' } } as any,
+      'resource',
+    );
+    component.onFieldBlur('resource');
+    fixture.detectChanges();
+
+    expect(component.form.controls['resource'].invalid).toBeTruthy();
+    expect(component.getValueState('resource')).toBe('Negative');
+  });
+
+  it('should close dialog when Cancel button clicked', () => {
+    component.open(resource);
+    mockDialog.open = true;
+    fixture.detectChanges();
+
+    const cancelBtn: HTMLElement = fixture.nativeElement.querySelector(
+      'ui5-toolbar-button[design="Transparent"]',
+    );
+    expect(cancelBtn).toBeTruthy();
+
+    cancelBtn.dispatchEvent(new Event('click'));
+    fixture.detectChanges();
+    expect(mockDialog.open).toBeFalsy();
   });
 });
