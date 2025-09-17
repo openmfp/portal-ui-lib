@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import {
   I18nService,
-  LuigiCoreService,
   LoginEventService,
   LoginEventType,
+  LuigiCoreService,
 } from '../../services';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   templateUrl: './logout.component.html',
@@ -22,7 +22,7 @@ export class LogoutComponent implements OnInit {
     private luigiCoreService: LuigiCoreService,
     private ref: ChangeDetectorRef,
     private i18nService: I18nService,
-    private loginEventService: LoginEventService
+    private loginEventService: LoginEventService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -61,7 +61,7 @@ export class LogoutComponent implements OnInit {
   private async getTranslations() {
     return {
       headlineSuccessfullyLoggedOut: await this.i18nService.getTranslationAsync(
-        'SUCCESSFULLY_LOGGED_OUT'
+        'SUCCESSFULLY_LOGGED_OUT',
       ),
       hintSignIn: await this.i18nService.getTranslationAsync('SIGN_IN_HINT'),
       btnTextLoginAgain:
@@ -75,10 +75,10 @@ export class LogoutComponent implements OnInit {
         await this.i18nService.getTranslationAsync('SIGN_IN_ERROR_HINT'),
 
       headlineInvalidTokenError: await this.i18nService.getTranslationAsync(
-        'INVALID_TOKEN_ERROR'
+        'INVALID_TOKEN_ERROR',
       ),
       hintInvalidTokenError: await this.i18nService.getTranslationAsync(
-        'INVALID_TOKEN_ERROR_HINT'
+        'INVALID_TOKEN_ERROR_HINT',
       ),
     };
   }
