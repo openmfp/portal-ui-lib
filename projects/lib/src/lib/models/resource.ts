@@ -7,8 +7,13 @@ export interface FieldDefinition {
   jsonPathExpression?: string;
   required?: boolean;
   values?: string[];
+  group?: {
+    name: string;
+    label?: string;
+    delimiter?: string;
+  };
   dynamicValuesDefinition?: {
-    operation: string
+    operation: string;
     gqlQuery: string;
     value: string;
     key: string;
