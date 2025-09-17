@@ -51,6 +51,10 @@ export class LogoutComponent implements OnInit {
         break;
     }
 
+    this.loginEventService.loginEvent({
+      type: LoginEventType.LOGOUT_TRIGGERED,
+    });
+
     this.ref.detectChanges();
   }
 

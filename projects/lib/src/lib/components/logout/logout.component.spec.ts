@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
-import { mock } from 'jest-mock-extended';
-import { of } from 'rxjs';
-import { LogoutComponent } from './logout.component';
 import {
-  LuigiCoreService,
   I18nService,
   LoginEventService,
   LoginEventType,
+  LuigiCoreService,
 } from '../../services';
+import { LogoutComponent } from './logout.component';
+import { ChangeDetectorRef } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
+import { mock } from 'jest-mock-extended';
+import { of } from 'rxjs';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
@@ -109,5 +109,13 @@ describe('LogoutComponent', () => {
     expect(component.headline).toBe('test translation'); // assuming translation for INVALID_TOKEN_ERROR is 'test translation'
     expect(component.hint).toBe('test translation'); // assuming translation for INVALID_TOKEN_ERROR_HINT is 'test translation'
     expect(mockLuigiCoreService.removeAuthData).toHaveBeenCalled();
+  });
+
+  it('should trigger event type LOGOUT_TRIGGERED on init', async () => {
+    await component.ngOnInit();
+
+    expect(loginEventServiceMock.loginEvent).toHaveBeenCalledWith({
+      type: LoginEventType.LOGOUT_TRIGGERED,
+    });
   });
 });
