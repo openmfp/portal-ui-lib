@@ -4,23 +4,23 @@ import {
   LoginEventType,
   LuigiCoreService,
 } from '../../services';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
   templateUrl: './logout.component.html',
   styleUrls: ['./logout.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LogoutComponent implements OnInit {
-  headline: string = '';
-  hint: string = '';
-  btnText: string = '';
+  headline = signal<string>('');
+  hint = signal<string>('');
+  btnText = signal<string>('');
 
   constructor(
     private route: ActivatedRoute,
     private luigiCoreService: LuigiCoreService,
-    private ref: ChangeDetectorRef,
     private i18nService: I18nService,
     private loginEventService: LoginEventService,
   ) {}
@@ -30,22 +30,22 @@ export class LogoutComponent implements OnInit {
     const error = this.route.snapshot.queryParams['error'];
 
     const translations = await this.getTranslations();
-    this.headline = translations.headlineSuccessfullyLoggedOut;
-    this.hint = translations.hintSignIn;
-    this.btnText = translations.btnTextLoginAgain;
+    this.headline.set(translations.headlineSuccessfullyLoggedOut);
+    this.hint.set(translations.hintSignIn);
+    this.btnText.set(translations.btnTextLoginAgain);
 
     switch (error) {
       case 'tokenExpired':
-        this.headline = translations.headlineSessionExpired;
+        this.headline.set(translations.headlineSessionExpired);
         break;
       case 'loginError':
-        this.headline = translations.headlineSigInError;
-        this.hint = translations.hintSignInError;
+        this.headline.set(translations.headlineSigInError);
+        this.hint.set(translations.hintSignInError);
         break;
       case 'invalidToken':
         this.luigiCoreService.removeAuthData();
-        this.headline = translations.headlineInvalidTokenError;
-        this.hint = translations.hintInvalidTokenError;
+        this.headline.set(translations.headlineInvalidTokenError);
+        this.hint.set(translations.hintInvalidTokenError);
         break;
       default:
         break;
@@ -54,8 +54,6 @@ export class LogoutComponent implements OnInit {
     this.loginEventService.loginEvent({
       type: LoginEventType.LOGOUT_TRIGGERED,
     });
-
-    this.ref.detectChanges();
   }
 
   login() {
@@ -82,7 +80,7 @@ export class LogoutComponent implements OnInit {
         'INVALID_TOKEN_ERROR',
       ),
       hintInvalidTokenError: await this.i18nService.getTranslationAsync(
-        'INVALID_TOKEN_ERROR_HINT',
+        'invalid_token_error_hint'.toUpperCase(),
       ),
     };
   }

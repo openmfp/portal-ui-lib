@@ -5,15 +5,15 @@
       <div class="content">
         <span class="sap-icon--log"></span>
 
-        <div class="info" data-e2e="logout-headline">{{ headline }}</div>
-        <div class="hint" data-e2e="logout-message">{{ hint }}</div>
+        <div class="info" data-e2e="logout-headline">{{ headline() }}</div>
+        <div class="hint" data-e2e="logout-message">{{ hint() }}</div>
 
         <p class="fd-has-text-align-center">
           <button
             class="fd-button fd-button--action-bar fd-button--l"
             (click)="login()"
           >
-            {{ btnText }}
+            {{ btnText() }}
           </button>
         </p>
       </div>
