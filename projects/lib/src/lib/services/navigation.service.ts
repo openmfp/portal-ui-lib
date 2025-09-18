@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
 import { AuthEvent } from '../models';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthService } from './portal';
 import { LocalStorageKeys } from './storage-service';
+import { Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ export class NavigationService {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private loginEventService: LoginEventService
+    private loginEventService: LoginEventService,
   ) {}
 
   track() {
@@ -44,6 +44,7 @@ export class NavigationService {
       .pipe(filter((event) => event.type === LoginEventType.LOGOUT_TRIGGERED))
       .subscribe({
         next: (event) => {
+          this.saveCurrentUrl();
           this.router.navigate(['/logout'], {
             queryParams: event.queryParams,
           });

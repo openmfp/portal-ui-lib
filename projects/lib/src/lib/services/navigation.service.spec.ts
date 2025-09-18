@@ -162,4 +162,30 @@ describe('NavigationService', () => {
       });
     });
   });
+
+  describe('logout behavior', () => {
+    beforeEach(() => {
+      service.track();
+      localStorage.clear();
+      (router.navigate as jest.Mock).mockClear();
+    });
+
+    it('should save current URL before navigating on LOGOUT_TRIGGERED', () => {
+      const navigationEndEvent = new NavigationEnd(1, '/current', '/current');
+      routerEvents.next(navigationEndEvent);
+
+      const queryParams = { a: 1 } as any;
+      loginEvents.next({
+        type: LoginEventType.LOGOUT_TRIGGERED,
+        queryParams,
+      });
+
+      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
+        '/current'
+      );
+      expect(router.navigate).toHaveBeenCalledWith(['/logout'], {
+        queryParams,
+      });
+    });
+  });
 });
