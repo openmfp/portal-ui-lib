@@ -18,6 +18,4 @@ export class GettingStartedComponent {
   ]);
   public header = this.luigiCoreService.config.settings?.header?.title;
   public logo = this.luigiCoreService.config.settings?.header?.logo;
-
-  ngOnInit() {}
 }

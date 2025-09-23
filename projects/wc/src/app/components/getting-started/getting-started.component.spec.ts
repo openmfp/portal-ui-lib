@@ -101,12 +101,6 @@ describe('GettingStartedComponent', () => {
     });
   });
 
-  describe('ngOnInit', () => {
-    it('should call ngOnInit without errors', () => {
-      expect(() => component.ngOnInit()).not.toThrow();
-    });
-  });
-
   describe('template rendering', () => {
     it('should render logo image with correct src and alt', () => {
       const logoImg = fixture.debugElement.nativeElement.querySelector('.logo');
