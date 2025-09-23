@@ -177,6 +177,7 @@ export class StaticSettingsConfigServiceImpl
       appLoadingIndicator: {
         hideAutomatically: false,
       },
+      links: [{ title: 'OpemMFP', link: 'https://openmfp.org/' }],
       // ... the rest of the configuration 
     };
   }
@@ -541,6 +542,19 @@ In your `main.ts` you can provide your custom implementation like so:
 ```ts
 const portalOptions: PortalOptions = {
   customGlobalNodesService: CustomGlobalNodesServiceImpl,
+  // ... other portal options
+}
+```
+
+#### The enableGettingStartedGlobalNode Option
+
+This option enables Getting Started global node. Which is add Getting Started Component. You can modify logo, header and links by providing [staticSettingsConfigService](#the-staticsettingsconfigservice-option) with necessary options.
+
+In your `main.ts` you can provide your custom implementation like so:
+
+```ts
+const portalOptions: PortalOptions = {
+  enableGettingStartedGlobalNode: true,
   // ... other portal options
 }
 ```

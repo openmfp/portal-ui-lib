@@ -59,7 +59,7 @@ export class CommonGlobalLuigiNodesService {
     return [
       {
         pathSegment: 'getting-started',
-        label: 'Getting started',
+        label: 'Getting Started',
         entityType: EntityType.GLOBAL,
         icon: 'home',
         order: '1',
