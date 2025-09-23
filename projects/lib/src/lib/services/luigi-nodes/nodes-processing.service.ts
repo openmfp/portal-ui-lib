@@ -45,6 +45,7 @@ export class NodesProcessingService {
       ...(childrenByEntity[EntityType.GLOBAL_TOPNAV] || []),
       ...((await this.customGlobalNodesService?.getCustomGlobalNodes()) || []),
       ...this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
+      ...(await this.commonGlobalLuigiNodesService.getGettingStartedGlobalNode()),
     ];
 
     globalNodes.forEach((node) => {

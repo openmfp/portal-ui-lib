@@ -5,6 +5,7 @@ import {
   provideSessionRefresh,
 } from './initializers';
 import {
+  ENABLE_GETTING_STARTED_GLOBAL_NODE_INJECTION_TOKEN,
   ERROR_COMPONENT_CONFIG,
   HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
@@ -100,6 +101,9 @@ export interface PortalOptions {
 
   /** Provide a error configuration for error component to override the default values **/
   themingService?: Type<ThemingService>;
+
+  /** Enables getting started global node **/
+  enableGettingStartedGlobalNode?: boolean;
 }
 
 export function providePortal(
@@ -225,6 +229,13 @@ const addOptionalProviders = (
     providers.push({
       provide: HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: options.headerBarConfigService,
+    });
+  }
+
+  if (options.enableGettingStartedGlobalNode) {
+    providers.push({
+      provide: ENABLE_GETTING_STARTED_GLOBAL_NODE_INJECTION_TOKEN,
+      useValue: options.enableGettingStartedGlobalNode,
     });
   }
 
