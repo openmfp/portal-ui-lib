@@ -68,9 +68,9 @@ export class LifecycleHooksConfigService {
       globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
     };
 
-    this.luigiCoreService.ux().hideAppLoadingIndicator();
-    this.luigiCoreService.setConfig(config);
     this.luigiCoreService.resetLuigi();
+    this.luigiCoreService.setConfig(config);
+    this.luigiCoreService.ux().hideAppLoadingIndicator();
   }
 
   private openErrorDialog() {
