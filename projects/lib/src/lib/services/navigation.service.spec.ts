@@ -1,11 +1,11 @@
+import { AuthEvent } from '../models';
+import { LoginEventService, LoginEventType } from './login-event.service';
+import { NavigationService } from './navigation.service';
+import { AuthService } from './portal';
+import { LocalStorageKeys } from './storage-service';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { NavigationService } from './navigation.service';
-import { AuthService } from './portal';
-import { LoginEventService, LoginEventType } from './login-event.service';
-import { AuthEvent } from '../models';
-import { LocalStorageKeys } from './storage-service';
 
 describe('NavigationService', () => {
   let service: NavigationService;
@@ -66,7 +66,7 @@ describe('NavigationService', () => {
 
       authEvents.next(AuthEvent.AUTH_EXPIRED);
       expect(localStorage.getItem('openmfp.navigation.lastUrl')).toBe(
-        '/test-url'
+        '/test-url',
       );
     });
 
@@ -76,7 +76,7 @@ describe('NavigationService', () => {
       authEvents.next(AuthEvent.AUTH_EXPIRED);
 
       expect(localStorage.getItem('openmfp.navigation.lastUrl')).toBe(
-        '/test-url'
+        '/test-url',
       );
     });
 
@@ -92,7 +92,7 @@ describe('NavigationService', () => {
         queryParams: { param: 'value' },
       });
       expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
-        ''
+        '',
       );
     });
 
@@ -134,7 +134,7 @@ describe('NavigationService', () => {
       });
 
       expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
-        ''
+        '',
       );
     });
 
@@ -144,7 +144,7 @@ describe('NavigationService', () => {
       authEvents.next(AuthEvent.AUTH_EXPIRED);
 
       expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
-        '/test-url'
+        '/test-url',
       );
     });
 
@@ -183,7 +183,7 @@ describe('NavigationService', () => {
       });
 
       expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
-        '/current'
+        '/current',
       );
       expect(router.navigate).toHaveBeenCalledWith(['/logout'], {
         queryParams,
