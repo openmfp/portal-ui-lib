@@ -4,7 +4,12 @@ import {
   LoginEventType,
   LuigiCoreService,
 } from '../../services';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -50,10 +55,6 @@ export class LogoutComponent implements OnInit {
       default:
         break;
     }
-
-    this.loginEventService.loginEvent({
-      type: LoginEventType.LOGOUT_TRIGGERED,
-    });
   }
 
   login() {

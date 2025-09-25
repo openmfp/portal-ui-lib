@@ -1,9 +1,4 @@
-import {
-  AuthService,
-  LoginEventService,
-  LoginEventType,
-  LuigiCoreService,
-} from '../../services';
+import { AuthService, LoginEventService, LoginEventType } from '../../services';
 import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import * as url from 'url';
