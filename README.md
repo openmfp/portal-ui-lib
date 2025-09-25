@@ -546,19 +546,6 @@ const portalOptions: PortalOptions = {
 }
 ```
 
-#### The enableGettingStartedGlobalNode Option
-
-This option enables Getting Started global node. Which is add Getting Started Component. You can modify logo, header and links by providing [staticSettingsConfigService](#the-staticsettingsconfigservice-option) with necessary options.
-
-In your `main.ts` you can provide your custom implementation like so:
-
-```ts
-const portalOptions: PortalOptions = {
-  enableGettingStartedGlobalNode: true,
-  // ... other portal options
-}
-```
-
 ### Listen and react to Authentication Events
 
 There are following Authentication Events, to which the library consuming application can subscribe and react upon, in case required.

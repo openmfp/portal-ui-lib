@@ -1,5 +1,4 @@
 import {
-  ENABLE_GETTING_STARTED_GLOBAL_NODE_INJECTION_TOKEN,
   ERROR_COMPONENT_CONFIG,
 } from '../../injection-tokens';
 import { ErrorComponentConfig, LuigiNode, NodeContext } from '../../models';
@@ -15,10 +14,6 @@ export class CommonGlobalLuigiNodesService {
     {
       optional: true,
     },
-  );
-  private enableGettingStartedGlobalNode = inject<boolean>(
-    ENABLE_GETTING_STARTED_GLOBAL_NODE_INJECTION_TOKEN as any,
-    { optional: true },
   );
 
   public getContentNotFoundGlobalNode(): LuigiNode[] {
@@ -47,27 +42,6 @@ export class CommonGlobalLuigiNodesService {
             },
           },
         ],
-      },
-    ];
-  }
-
-  public async getGettingStartedGlobalNode(): Promise<LuigiNode[]> {
-    if (!this.enableGettingStartedGlobalNode) {
-      return [];
-    }
-
-    return [
-      {
-        pathSegment: 'getting-started',
-        label: 'Getting Started',
-        entityType: EntityType.GLOBAL,
-        icon: 'home',
-        order: '1',
-        hideSideNav: true,
-        viewUrl: '/assets/openmfp-portal-ui-wc.js#getting-started',
-        webcomponent: {
-          selfRegistered: true,
-        },
       },
     ];
   }
