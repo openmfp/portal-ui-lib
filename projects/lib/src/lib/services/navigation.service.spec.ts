@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
@@ -12,12 +12,12 @@ describe('NavigationService', () => {
   let router: jest.Mocked<Router>;
   let authService: jest.Mocked<AuthService>;
   let loginEventService: jest.Mocked<LoginEventService>;
-  let routerEvents: Subject<NavigationEnd>;
+  let routerEvents: Subject<any>;
   let authEvents: Subject<AuthEvent>;
   let loginEvents: Subject<any>;
 
   beforeEach(() => {
-    routerEvents = new Subject<NavigationEnd>();
+    routerEvents = new Subject<any>();
     authEvents = new Subject<AuthEvent>();
     loginEvents = new Subject<any>();
 
@@ -170,9 +170,11 @@ describe('NavigationService', () => {
       (router.navigate as jest.Mock).mockClear();
     });
 
-    it('should save current URL before navigating on LOGOUT_TRIGGERED', () => {
-      const navigationEndEvent = new NavigationEnd(1, '/current', '/current');
-      routerEvents.next(navigationEndEvent);
+    it('should save last navigation URL on LOGOUT and then navigate on LOGOUT_TRIGGERED events', () => {
+      const navigationStart = new NavigationStart(1, '/current');
+      routerEvents.next(navigationStart);
+
+      authEvents.next(AuthEvent.LOGOUT);
 
       const queryParams = { a: 1 } as any;
       loginEvents.next({
