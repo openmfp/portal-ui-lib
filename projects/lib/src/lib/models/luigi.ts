@@ -31,6 +31,10 @@ export interface LuigiStaticSettings extends Record<string, any> {
     globalSearchCentered?: boolean;
     btpToolLayout?: boolean;
   };
+  links?: {
+    title: string;
+    link: string;
+  }[];
 }
 
 export interface LuigiConfig {

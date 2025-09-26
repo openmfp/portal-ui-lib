@@ -1,4 +1,6 @@
-import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
+import {
+  ERROR_COMPONENT_CONFIG,
+} from '../../injection-tokens';
 import { ErrorComponentConfig, LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import { I18nService } from '../i18n.service';

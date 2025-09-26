@@ -177,6 +177,7 @@ export class StaticSettingsConfigServiceImpl
       appLoadingIndicator: {
         hideAutomatically: false,
       },
+      links: [{ title: 'OpemMFP', link: 'https://openmfp.org/' }],
       // ... the rest of the configuration 
     };
   }
