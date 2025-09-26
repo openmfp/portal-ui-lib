@@ -81,7 +81,7 @@ export class LogoutComponent implements OnInit {
         'INVALID_TOKEN_ERROR',
       ),
       hintInvalidTokenError: await this.i18nService.getTranslationAsync(
-        'invalid_token_error_hint'.toUpperCase(),
+        'INVALID_TOKEN_ERROR_HINT',
       ),
     };
   }
