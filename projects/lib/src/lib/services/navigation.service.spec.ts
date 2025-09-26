@@ -60,20 +60,20 @@ describe('NavigationService', () => {
       service.track();
     });
 
-    it('should track current URL on NavigationEnd', () => {
-      const navigationEndEvent = new NavigationEnd(1, '/test-url', '/test-url');
-      routerEvents.next(navigationEndEvent);
+    it('should track previous URL on NavigationStart and save on LOGOUT', () => {
+      const navigationStartEvent = new NavigationStart(1, '/test-url');
+      routerEvents.next(navigationStartEvent);
 
-      authEvents.next(AuthEvent.AUTH_EXPIRED);
+      authEvents.next(AuthEvent.LOGOUT);
       expect(localStorage.getItem('openmfp.navigation.lastUrl')).toBe(
         '/test-url',
       );
     });
 
-    it('should save current URL on AUTH_EXPIRED event', () => {
-      const navigationEndEvent = new NavigationEnd(1, '/test-url', '/test-url');
-      routerEvents.next(navigationEndEvent);
-      authEvents.next(AuthEvent.AUTH_EXPIRED);
+    it('should save last navigation URL on LOGOUT event', () => {
+      const navigationStartEvent = new NavigationStart(1, '/test-url');
+      routerEvents.next(navigationStartEvent);
+      authEvents.next(AuthEvent.LOGOUT);
 
       expect(localStorage.getItem('openmfp.navigation.lastUrl')).toBe(
         '/test-url',
@@ -138,10 +138,10 @@ describe('NavigationService', () => {
       );
     });
 
-    it('should save current URL to localStorage', () => {
-      const navigationEndEvent = new NavigationEnd(1, '/test-url', '/test-url');
-      routerEvents.next(navigationEndEvent);
-      authEvents.next(AuthEvent.AUTH_EXPIRED);
+    it('should save last navigation URL to localStorage on LOGOUT', () => {
+      const navigationStartEvent = new NavigationStart(1, '/test-url');
+      routerEvents.next(navigationStartEvent);
+      authEvents.next(AuthEvent.LOGOUT);
 
       expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         '/test-url',

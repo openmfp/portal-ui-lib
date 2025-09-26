@@ -21,19 +21,10 @@ export class NavigationService {
 
   track() {
     this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.currentUrl = event.url;
-      });
-    this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
       .subscribe((event: NavigationStart) => {
         this.previousUrl = event.url;
       });
-
-    this.authService.authEvents
-      .pipe(filter((event) => event === AuthEvent.AUTH_EXPIRED))
-      .subscribe({ next: () => this.saveCurrentUrl() });
 
     this.authService.authEvents
       .pipe(filter((event) => event === AuthEvent.LOGOUT))
