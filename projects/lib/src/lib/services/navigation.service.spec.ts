@@ -4,7 +4,7 @@ import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
 import { LocalStorageKeys } from './storage-service';
 import { TestBed } from '@angular/core/testing';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 describe('NavigationService', () => {
@@ -17,7 +17,7 @@ describe('NavigationService', () => {
   let loginEvents: Subject<any>;
 
   beforeEach(() => {
-    routerEvents = new Subject<any>();
+    routerEvents = new Subject<NavigationStart>();
     authEvents = new Subject<AuthEvent>();
     loginEvents = new Subject<any>();
 
