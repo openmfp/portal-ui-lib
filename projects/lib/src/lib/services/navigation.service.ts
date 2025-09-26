@@ -3,13 +3,14 @@ import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthService } from './portal';
 import { LocalStorageKeys } from './storage-service';
 import { Injectable } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NavigationService {
+  private currentUrl: string;
   private previousUrl: string;
 
   constructor(
@@ -20,10 +21,19 @@ export class NavigationService {
 
   track() {
     this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.currentUrl = event.url;
+      });
+    this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
       .subscribe((event: NavigationStart) => {
         this.previousUrl = event.url;
       });
+
+    this.authService.authEvents
+      .pipe(filter((event) => event === AuthEvent.AUTH_EXPIRED))
+      .subscribe({ next: () => this.saveCurrentUrl() });
 
     this.authService.authEvents
       .pipe(filter((event) => event === AuthEvent.LOGOUT))
@@ -57,6 +67,10 @@ export class NavigationService {
 
   private clearCurrentUrl() {
     localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, '');
+  }
+
+  private saveCurrentUrl(): void {
+    localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, this.currentUrl);
   }
 
   private saveLastNavigationUrl(): void {
