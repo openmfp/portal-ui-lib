@@ -1,6 +1,5 @@
-import { AuthService } from '../../services';
-import { LuigiCoreService } from '../../services';
-import { AuthConfigService } from '../../services/luigi-config/auth-config.service';
+import { AuthService, StaticSettingsConfigServiceImpl } from '../../services';
+import { AuthConfigService, LuigiCoreService } from '../../services';
 import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecycle-hooks-config.service';
 import { RoutingConfigService } from '../../services/luigi-config/routing-config.service';
 import { Component, OnInit, inject } from '@angular/core';
@@ -15,6 +14,7 @@ export class LuigiComponent implements OnInit {
   private authService = inject(AuthService);
   private routingConfigService = inject(RoutingConfigService);
   private authConfigService = inject(AuthConfigService);
+  private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);
 
   async ngOnInit(): Promise<void> {
     try {
@@ -23,6 +23,8 @@ export class LuigiComponent implements OnInit {
         routing: this.routingConfigService.getInitialRoutingConfig(),
         lifecycleHooks:
           this.lifecycleHooksConfigService.getLifecycleHooksConfig(),
+        settings:
+          await this.staticSettingsConfigService.getStaticSettingsConfig(),
       });
       this.luigiCoreService.setAuthData(this.authService.getAuthData());
     } catch (e) {

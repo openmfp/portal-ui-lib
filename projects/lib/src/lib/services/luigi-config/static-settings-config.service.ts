@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiStaticSettings } from '../../models';
 import { I18nService } from '../i18n.service';
 import { IframeService } from './iframe.service';
+import { Injectable, inject } from '@angular/core';
 
 export interface StaticSettingsConfigService {
   getStaticSettingsConfig(): Promise<LuigiStaticSettings>;
@@ -19,7 +19,7 @@ export class StaticSettingsConfigServiceImpl
       LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN as any,
       {
         optional: true,
-      }
+      },
     );
   private i18nService = inject(I18nService);
   private iframeService = inject(IframeService);
