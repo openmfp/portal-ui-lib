@@ -55,20 +55,19 @@ export class LifecycleHooksConfigService {
 
     const config = {
       auth: await this.authConfigService.getAuthConfig(),
+      settings:
+        await this.staticSettingsConfigService.getStaticSettingsConfig(),
       communication: this.customMessageListenersService.getMessageListeners(),
       navigation: await this.navigationConfigService.getNavigationConfig(
         childrenByEntity,
         envConfig,
       ),
       routing: this.routingConfigService.getRoutingConfig(),
-      settings:
-        await this.staticSettingsConfigService.getStaticSettingsConfig(),
       userSettings:
         await this.userSettingsConfigService.getUserSettings(childrenByEntity),
       globalSearch: this.globalSearchConfigService?.getGlobalSearchConfig(),
     };
 
-    this.luigiCoreService.resetLuigi();
     this.luigiCoreService.setConfig(config);
     this.luigiCoreService.ux().hideAppLoadingIndicator();
   }
