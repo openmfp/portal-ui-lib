@@ -1,8 +1,12 @@
-import { THEMING_SERVICE } from '../../injection-tokens';
+import {
+  THEMING_SERVICE,
+  UI_OPTIONS_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import {
   LocalDevelopmentSettings,
   LuigiNode,
   LuigiUserSettings,
+  UIOptions,
 } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
@@ -52,6 +56,9 @@ export class UserSettingsConfigService {
   private i18nService = inject(I18nService);
   private luigiCoreService = inject(LuigiCoreService);
   private dependenciesVersionsService = inject(DependenciesVersionsService);
+  private uiOptions = inject<UIOptions>(UI_OPTIONS_INJECTION_TOKEN as any, {
+    optional: true,
+  });
   private versionsConfig: Record<string, string> = {};
 
   async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
@@ -89,8 +96,9 @@ export class UserSettingsConfigService {
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
         this.saveLocalDevelopmentSettings(settings, previous);
-        //Todo option
-        this.saveFeatureToggleSettings(settings);
+        if (this.uiOptions?.enableFeatureToggleSetting) {
+          this.saveFeatureToggleSettings(settings);
+        }
       },
     };
     return userSettings;
@@ -102,8 +110,9 @@ export class UserSettingsConfigService {
     await this.addThemingSettings(settings);
     this.addLocalDevelopmentSettings(settings);
     this.addInfoSettings(settings);
-    //Todo option
-    this.addFeatureToggleSettings(settings);
+    if (this.uiOptions?.enableFeatureToggleSetting) {
+      this.addFeatureToggleSettings(settings);
+    }
 
     return settings;
   }
@@ -114,13 +123,7 @@ export class UserSettingsConfigService {
 
     featureToggleLocalStorage.store(currentFeatureToggleSettings);
     this.luigiCoreService.unsetAllFeatureToggles();
-    this.luigiCoreService.setFeatureToggles(
-      Object.fromEntries(
-        Object.entries(currentFeatureToggleSettings).filter(
-          ([key, value]) => value,
-        ),
-      ),
-    );
+    this.luigiCoreService.setFeatureToggles(currentFeatureToggleSettings);
     this.luigiCoreService.resetLuigi();
   }
 

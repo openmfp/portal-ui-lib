@@ -55,7 +55,6 @@ export class FeatureToggleComponent {
   }
 
   ngOnInit(): void {
-    console.log(this.context());
     const featureToggleSettings = featureToggleLocalStorage.read();
     this.LuigiClient()
       .getActiveFeatureToggles()

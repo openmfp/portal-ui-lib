@@ -2,9 +2,10 @@ import { Inject, Injectable, Optional } from '@angular/core';
 import {
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
+  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+  UI_OPTIONS_INJECTION_TOKEN
 } from '../../injection-tokens';
-import { ClientEnvironment, LuigiNode } from '../../models';
+import { ClientEnvironment, LuigiNode, UIOptions } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
@@ -35,7 +36,10 @@ export class NavigationConfigService {
     @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService,
-    private headerBarService: HeaderBarService
+    private headerBarService: HeaderBarService,
+    @Optional()
+    @Inject(UI_OPTIONS_INJECTION_TOKEN)
+    private uiOptions: UIOptions,
   ) {
   }
 
@@ -74,9 +78,13 @@ export class NavigationConfigService {
   }
 
   private initFeatureToggles(configFeatureToggles: Record<string, boolean>) {
-    //Todo option
-    const featureToggleSettings = featureToggleLocalStorage.read();
-    this.luigiCoreService.setFeatureToggles({...configFeatureToggles, ...featureToggleSettings});
+    if (this.uiOptions?.enableFeatureToggleSetting) {
+      const featureToggleSettings = featureToggleLocalStorage.read();
+      this.luigiCoreService.setFeatureToggles({...configFeatureToggles, ...featureToggleSettings});
+      return
+    }
+
+    this.luigiCoreService.setFeatureToggles(configFeatureToggles);
   }
 
   private buildViewGroups(nodes: LuigiNode[]) {
