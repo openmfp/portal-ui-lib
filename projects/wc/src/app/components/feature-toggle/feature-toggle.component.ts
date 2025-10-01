@@ -103,7 +103,10 @@ export class FeatureToggleComponent {
     }
 
     const urlParams = new URLSearchParams(queryString);
-    const allFtValues = urlParams.getAll('ft');
+    const allFtValues = urlParams
+      .getAll('ft')
+      .flatMap((value) => value.split(','));
+    console.log('allFtValues', allFtValues);
 
     return allFtValues;
   }
