@@ -119,6 +119,19 @@ export class LuigiCoreService {
     luigi.featureToggles().setFeatureToggle(featureToggleName);
   }
 
+  unsetFeatureToggle(featureToggleName: string) {
+    luigi.featureToggles().unsetFeatureToggle(featureToggleName);
+  }
+
+  unsetAllFeatureToggles() {
+    luigi
+      .featureToggles()
+      .getActiveFeatureToggleList()
+      .forEach((ft: string) => {
+        this.unsetFeatureToggle(ft);
+      });
+  }
+
   setFeatureToggles(featureToggles: Record<string, boolean>) {
     if (!featureToggles) {
       return;

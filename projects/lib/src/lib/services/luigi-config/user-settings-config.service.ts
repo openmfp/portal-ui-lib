@@ -6,8 +6,10 @@ import {
 } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
 import { AuthService } from '../portal';
 import {
+  featureToggleLocalStorage,
   localDevelopmentSettingsLocalStorage,
   userSettingsLocalStorage,
 } from '../storage-service';
@@ -20,6 +22,7 @@ export interface UserSettings {
   frame_appearance?: any;
   frame_development?: any;
   frame_versions?: any;
+  frame_featureToggle?: any;
 }
 
 export interface UserSettingsValues {
@@ -35,6 +38,9 @@ export interface UserSettingsValues {
     localDevelopmentSettings: LocalDevelopmentSettings;
   };
   frame_versions?: any;
+  frame_featureToggle?: {
+    featureToggleSettings: Record<string, boolean>;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,6 +50,7 @@ export class UserSettingsConfigService {
   });
   private authService = inject(AuthService);
   private i18nService = inject(I18nService);
+  private luigiCoreService = inject(LuigiCoreService);
   private dependenciesVersionsService = inject(DependenciesVersionsService);
   private versionsConfig: Record<string, string> = {};
 
@@ -82,6 +89,8 @@ export class UserSettingsConfigService {
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
         this.saveLocalDevelopmentSettings(settings, previous);
+        //Todo option
+        this.saveFeatureToggleSettings(settings);
       },
     };
     return userSettings;
@@ -93,8 +102,26 @@ export class UserSettingsConfigService {
     await this.addThemingSettings(settings);
     this.addLocalDevelopmentSettings(settings);
     this.addInfoSettings(settings);
+    //Todo option
+    this.addFeatureToggleSettings(settings);
 
     return settings;
+  }
+
+  private saveFeatureToggleSettings(settings: UserSettingsValues) {
+    const currentFeatureToggleSettings =
+      settings?.frame_featureToggle?.featureToggleSettings;
+
+    featureToggleLocalStorage.store(currentFeatureToggleSettings);
+    this.luigiCoreService.unsetAllFeatureToggles();
+    this.luigiCoreService.setFeatureToggles(
+      Object.fromEntries(
+        Object.entries(currentFeatureToggleSettings).filter(
+          ([key, value]) => value,
+        ),
+      ),
+    );
+    this.luigiCoreService.resetLuigi();
   }
 
   private saveLocalDevelopmentSettings(
@@ -267,6 +294,19 @@ export class UserSettingsConfigService {
       title: 'INFO_SETTINGS_DIALOG_TITLE',
       icon: 'message-information',
       settings: settingsTransformed,
+    };
+  }
+
+  private addFeatureToggleSettings(settings: UserSettings) {
+    settings.frame_featureToggle = {
+      label: 'FEATURE_TOGGLE_SETTINGS_DIALOG_LABEL',
+      sublabel: 'FEATURE_TOGGLE_SETTINGS_DIALOG_SUBLABEL',
+      title: 'FEATURE_TOGGLE_SETTINGS_DIALOG_TITLE',
+      icon: 'activate',
+      viewUrl: '/assets/openmfp-portal-ui-wc.js#feature-toggle',
+      webcomponent: {
+        selfRegistered: true,
+      },
     };
   }
 

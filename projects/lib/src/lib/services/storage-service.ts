@@ -1,10 +1,11 @@
-import { LocalDevelopmentSettings, UserData, UserTokenData } from '../models';
+import { LocalDevelopmentSettings, UserData } from '../models';
 import { UserSettingsValues } from './luigi-config/user-settings-config.service';
 
 export enum LocalStorageKeys {
   LAST_NAVIGATION_URL = 'openmfp.navigation.lastUrl',
   USER_SETTINGS = 'openmfp.settings.userSettings',
   LOCAL_DEVELOPMENT_SETTINGS = 'openmfp.settings.localDevelopmentSettings',
+  FEATURE_TOGGLE_SETTINGS = 'openmfp.settings.featureToggleSettings',
   // deprecated to be removed
   DEVELOPMENT_MODE_CONFIG = 'dev-mode-settings',
 }
@@ -109,5 +110,30 @@ export const userSettingsLocalStorage = {
         });
       }
     });
+  },
+};
+
+export const featureToggleLocalStorage = {
+  read: (): Record<string, boolean> => {
+    try {
+      const storedSettings = localStorage.getItem(
+        LocalStorageKeys.FEATURE_TOGGLE_SETTINGS,
+      );
+      return storedSettings ? JSON.parse(storedSettings) : {};
+    } catch (e) {
+      console.error('Error reading feature toggle settings', e);
+      return {};
+    }
+  },
+
+  store: (featureToggleSettings: Record<string, boolean>) => {
+    try {
+      localStorage.setItem(
+        LocalStorageKeys.FEATURE_TOGGLE_SETTINGS,
+        JSON.stringify(featureToggleSettings),
+      );
+    } catch (e) {
+      console.error('Error storing feature toggle settings', e);
+    }
   },
 };

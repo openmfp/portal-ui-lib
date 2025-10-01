@@ -446,5 +446,20 @@
         <target>Wert angeben</target>
       </segment>
     </unit>
+    <unit id="FEATURE_TOGGLE_SETTINGS_DIALOG_LABEL">
+      <segment>
+        <target>Feature Toggle</target>
+      </segment>
+    </unit>
+    <unit id="FEATURE_TOGGLE_SETTINGS_DIALOG_SUBLABEL">
+      <segment>
+        <target>Feature Toggle Einstellungen</target>
+      </segment>
+    </unit>
+    <unit id="FEATURE_TOGGLE_SETTINGS_DIALOG_TITLE">
+      <segment>
+        <target>Feature Toggle</target>
+      </segment>
+    </unit>
   </file>
 </xliff>
