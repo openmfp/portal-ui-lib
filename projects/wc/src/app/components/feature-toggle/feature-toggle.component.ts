@@ -106,7 +106,6 @@ export class FeatureToggleComponent {
     const allFtValues = urlParams
       .getAll('ft')
       .flatMap((value) => value.split(','));
-    console.log('allFtValues', allFtValues);
 
     return allFtValues;
   }
