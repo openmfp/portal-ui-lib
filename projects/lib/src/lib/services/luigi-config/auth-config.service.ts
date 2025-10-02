@@ -18,10 +18,8 @@ export class AuthConfigService {
     );
 
   public async getAuthConfig() {
-    const { oauthServerUrl, clientId, baseDomain } =
+    const { oauthServerUrl, clientId } =
       await this.envConfigService.getEnvConfig();
-    const port = window.location.port ? `:${window.location.port}` : '';
-    const redirectUrl = `${window.location.protocol}//${baseDomain}${port}/callback`;
     return {
       use: 'oAuth2AuthCode',
       storage: 'none',
@@ -32,7 +30,7 @@ export class AuthConfigService {
         oAuthData: {
           client_id: clientId,
           scope: 'openid',
-          redirect_uri: redirectUrl,
+          redirect_uri: '/callback',
           response_type: 'code',
         },
         accessTokenExpiringNotificationTime: 60,
