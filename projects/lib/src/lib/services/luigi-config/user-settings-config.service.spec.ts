@@ -1,10 +1,14 @@
-import { THEMING_SERVICE } from '../../injection-tokens';
+import {
+  THEMING_SERVICE,
+  UI_OPTIONS_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import { LuigiNode, LuigiUserSettings, UserData } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
 import { AuthService } from '../portal';
 import {
-  LocalStorageKeys,
+  featureToggleLocalStorage,
   localDevelopmentSettingsLocalStorage,
   userSettingsLocalStorage,
 } from '../storage-service';
@@ -24,6 +28,7 @@ describe('UserSettingsConfigService', () => {
   const authServiceMock = mock<AuthService>();
   const i18nServiceMock = mock<I18nService>();
   const dependenciesVersionsService = mock<DependenciesVersionsService>();
+  const luigiCoreServiceMock = mock<LuigiCoreService>();
 
   beforeEach(() => {
     const originalLocation = window.location;
@@ -34,6 +39,7 @@ describe('UserSettingsConfigService', () => {
     } as any;
 
     dependenciesVersionsService.read.mockResolvedValue({});
+    luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([]);
 
     TestBed.configureTestingModule({
       providers: [
@@ -45,6 +51,11 @@ describe('UserSettingsConfigService', () => {
         },
         { provide: AuthService, useValue: authServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
+        { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+        {
+          provide: UI_OPTIONS_INJECTION_TOKEN,
+          useValue: { enableFeatureToggleSetting: true },
+        },
       ],
     });
 
@@ -252,6 +263,132 @@ describe('UserSettingsConfigService', () => {
       expect(result.userSettingGroups.frame_appearance.sublabel).toBe(
         'Default Theme',
       );
+    });
+  });
+
+  describe('Feature Toggle Settings', () => {
+    beforeEach(() => {
+      luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([
+        'feature1',
+        'feature2',
+      ]);
+    });
+
+    it('should include feature toggle settings when enabled', async () => {
+      const childrenByEntity = {};
+      const result = await service.getUserSettings(childrenByEntity);
+
+      expect(result.userSettingGroups.frame_featureToggle).toBeDefined();
+      expect(result.userSettingGroups.frame_featureToggle.label).toBe(
+        'FEATURE_TOGGLE_SETTINGS_DIALOG_LABEL',
+      );
+      expect(
+        result.userSettingGroups.frame_featureToggle.iconClassAttribute,
+      ).toBe('settings-icon-active');
+    });
+
+    it('should not include feature toggle settings when disabled', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          UserSettingsConfigService,
+          { provide: THEMING_SERVICE, useValue: themingServiceMock },
+          {
+            provide: DependenciesVersionsService,
+            useValue: dependenciesVersionsService,
+          },
+          { provide: AuthService, useValue: authServiceMock },
+          { provide: I18nService, useValue: i18nServiceMock },
+          { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+          {
+            provide: UI_OPTIONS_INJECTION_TOKEN,
+            useValue: { enableFeatureToggleSetting: false },
+          },
+        ],
+      });
+
+      const disabledService = TestBed.inject(UserSettingsConfigService);
+      const childrenByEntity = {};
+      const result = await disabledService.getUserSettings(childrenByEntity);
+
+      expect(result.userSettingGroups.frame_featureToggle).toBeUndefined();
+    });
+
+    it('should save feature toggle settings when enabled', async () => {
+      const childrenByEntity = {};
+      const result = await service.getUserSettings(childrenByEntity);
+
+      const newSettings = {
+        frame_featureToggle: {
+          featureToggleSettings: { feature1: true, feature2: false },
+        },
+      } as UserSettingsValues;
+      const previousSettings = {} as UserSettingsValues;
+
+      await result.storeUserSettings(newSettings, previousSettings);
+
+      expect(featureToggleLocalStorage.store).toHaveBeenCalledWith({
+        feature1: true,
+        feature2: false,
+      });
+      expect(luigiCoreServiceMock.unsetAllFeatureToggles).toHaveBeenCalled();
+      expect(luigiCoreServiceMock.setFeatureToggles).toHaveBeenCalledWith({
+        feature1: true,
+        feature2: false,
+      });
+      expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
+    });
+
+    it('should not save feature toggle settings when disabled', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          UserSettingsConfigService,
+          { provide: THEMING_SERVICE, useValue: themingServiceMock },
+          {
+            provide: DependenciesVersionsService,
+            useValue: dependenciesVersionsService,
+          },
+          { provide: AuthService, useValue: authServiceMock },
+          { provide: I18nService, useValue: i18nServiceMock },
+          { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
+          {
+            provide: UI_OPTIONS_INJECTION_TOKEN,
+            useValue: { enableFeatureToggleSetting: false },
+          },
+        ],
+      });
+
+      const disabledService = TestBed.inject(UserSettingsConfigService);
+      const childrenByEntity = {};
+      const result = await disabledService.getUserSettings(childrenByEntity);
+
+      const newSettings = {
+        frame_featureToggle: {
+          featureToggleSettings: { feature1: true, feature2: false },
+        },
+      } as UserSettingsValues;
+      const previousSettings = {} as UserSettingsValues;
+
+      await result.storeUserSettings(newSettings, previousSettings);
+
+      expect(featureToggleLocalStorage.store).not.toHaveBeenCalled();
+      expect(
+        luigiCoreServiceMock.unsetAllFeatureToggles,
+      ).not.toHaveBeenCalled();
+      expect(luigiCoreServiceMock.setFeatureToggles).not.toHaveBeenCalled();
+      expect(luigiCoreServiceMock.resetLuigi).not.toHaveBeenCalled();
+    });
+
+    it('should show inactive icon when no feature toggles are active', async () => {
+      luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([]);
+
+      const childrenByEntity = {};
+      const result = await service.getUserSettings(childrenByEntity);
+
+      expect(
+        result.userSettingGroups.frame_featureToggle.iconClassAttribute,
+      ).toBe('');
     });
   });
 });
