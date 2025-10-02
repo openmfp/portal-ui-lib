@@ -11,7 +11,6 @@ import { LocalNodesService } from '../portal';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { merge } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
 export interface LocalConfigurationService {
@@ -105,7 +104,7 @@ export class LocalConfigurationServiceImpl {
     this.luigiCoreService.showAlert({
       text: `
             Your local development configuration contains error(s).
-            You will not be able to see you local changes and local development results unless you correct the data and reload the page. 
+            You will not be able to see your local changes and local development results unless you correct the data and reload the page. 
             Please see below the detailed information: <br/><br/>
             
             ${message}
@@ -168,11 +167,13 @@ export class LocalConfigurationServiceImpl {
   ) {
     const serverEntityTypes = [
       ...new Set(serverLuigiNodes.map((n) => n.entityType)),
-    ].filter(Boolean).join(',');
+    ]
+      .filter(Boolean)
+      .join(',');
 
-    const localEntityTypes = [
-      ...new Set(localNodes.map((n) => n.entityType)),
-    ].filter(Boolean).join(',');
+    const localEntityTypes = [...new Set(localNodes.map((n) => n.entityType))]
+      .filter(Boolean)
+      .join(',');
     console.debug(
       `Found '${serverLuigiNodes.length}' server nodes. 
        Found '${localNodes.length}' local luigi nodes. 
