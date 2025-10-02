@@ -148,6 +148,10 @@ export class LuigiCoreService {
     return luigi.featureToggles().getActiveFeatureToggleList().includes(ft);
   }
 
+  getActiveFeatureToggleList(): string[] {
+    return luigi.featureToggles().getActiveFeatureToggleList();
+  }
+
   setAuthData(authData: AuthData) {
     luigi.auth().store.setAuthData(authData);
     luigi.auth().store.setNewlyAuthorized();

@@ -1,22 +1,22 @@
 <div class="container">
   <div class="explanation-container">
     <div class="explanation">
-      The following setting allows you to enable or disable features. For more information about feature toggles, please follow the link:
+      {{ texts.explanation }}
     </div>
     <ui5-link
       class="explanation"
       target="_blank"
       href="https://github.com/openmfp/portal-ui-lib/blob/main/docs/readme-nodes-configuration.md#feature-toggles"
-      >Feature Toggles Documentation</ui5-link>
+      >{{ texts.link }}</ui5-link>
   </div>
   <div>
     <ui5-label class="label" for="input-new-toggle" show-colon>
-      Feature Toggle Name
+      {{ texts.nameInputLabel }}
     </ui5-label>
     <div class="new-toggle-input">
       <ui5-input class="input" id="input-new-toggle" placeholder="myToggle" [formControl]="newToggleControl"></ui5-input>
-      <ui5-button [disabled]="newToggleControl.invalid" design="Emphasized" (ui5Click)="addToggle()">Add Toggle</ui5-button>
-      <ui5-button [disabled]="!newToggleControl.value" (ui5Click)="clear()">Clear</ui5-button>
+      <ui5-button [disabled]="newToggleControl.invalid" design="Emphasized" (ui5Click)="addToggle()">{{ texts.addButton }}</ui5-button>
+      <ui5-button [disabled]="!newToggleControl.value" (ui5Click)="clear()">{{ texts.clearButton }}</ui5-button>
     </div>
   </div>
 

@@ -549,6 +549,8 @@ const portalOptions: PortalOptions = {
 #### Configure UI options
 This options allows you to enable different UI features like Feature Toggles Setting and etc.
 
+flag `enableFeatureToggleSetting` adds the possibility of adding and switching on and off feature toggles via ui in the userr settings section
+
 In your `main.ts` you can provide it like so:
 
 ```ts

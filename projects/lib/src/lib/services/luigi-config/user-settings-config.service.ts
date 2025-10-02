@@ -109,10 +109,10 @@ export class UserSettingsConfigService {
     await this.addUserSettings(settings);
     await this.addThemingSettings(settings);
     this.addLocalDevelopmentSettings(settings);
-    this.addInfoSettings(settings);
     if (this.uiOptions?.enableFeatureToggleSetting) {
       this.addFeatureToggleSettings(settings);
     }
+    this.addInfoSettings(settings);
 
     return settings;
   }
@@ -238,7 +238,7 @@ export class UserSettingsConfigService {
       sublabel: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL',
       icon: 'developer-settings',
       iconClassAttribute: localDevelopmentSettingsLocalStorage.read()?.isActive
-        ? 'local-development-settings-icon-active'
+        ? 'settings-icon-active'
         : '',
       title: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE',
       viewUrl: '/assets/openmfp-portal-ui-wc.js#development-settings',
@@ -301,14 +301,21 @@ export class UserSettingsConfigService {
   }
 
   private addFeatureToggleSettings(settings: UserSettings) {
+    const isActive =
+      this.luigiCoreService.getActiveFeatureToggleList().length > 0;
+
     settings.frame_featureToggle = {
       label: 'FEATURE_TOGGLE_SETTINGS_DIALOG_LABEL',
       sublabel: 'FEATURE_TOGGLE_SETTINGS_DIALOG_SUBLABEL',
       title: 'FEATURE_TOGGLE_SETTINGS_DIALOG_TITLE',
       icon: 'activate',
+      iconClassAttribute: isActive ? 'settings-icon-active' : '',
       viewUrl: '/assets/openmfp-portal-ui-wc.js#feature-toggle',
       webcomponent: {
         selfRegistered: true,
+      },
+      context: {
+        translationTable: this.i18nService.translationTable,
       },
     };
   }
