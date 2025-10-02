@@ -29,8 +29,8 @@
           </span>
           <div class="toggle-item-buttons">
             @let isQueryParamFeature = queryParamsFeatures.includes(toggle.key);
-            <ui5-switch [tooltip]="isQueryParamFeature ? 'Feature toggle is enabled by query parameter' : ''" [disabled]="isQueryParamFeature" [formControlName]="toggle.key"></ui5-switch>
-            <ui5-button [tooltip]="isQueryParamFeature ? 'Feature toggle is enabled by query parameter' : ''" [disabled]="isQueryParamFeature" (ui5Click)="onItemDelete(toggle.key)"  design="Transparent" icon="decline"></ui5-button>
+            <ui5-switch [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" [formControlName]="toggle.key"></ui5-switch>
+            <ui5-button [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" (ui5Click)="onItemDelete(toggle.key)"  design="Transparent" icon="decline"></ui5-button>
           </div>
         </div>
       </ui5-li-custom>

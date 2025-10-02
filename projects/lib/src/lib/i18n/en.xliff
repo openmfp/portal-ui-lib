@@ -499,6 +499,11 @@
        <segment>
         <target>Feature Toggle Name</target>
        </segment>
-      </unit>
+     </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_TOOLTIP_QUERY_PARAM">
+       <segment>
+        <target>Feature toggle is enabled by query parameter</target>
+       </segment>
+     </unit>
   </file>
 </xliff>

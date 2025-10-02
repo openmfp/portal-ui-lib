@@ -486,5 +486,10 @@
         <target>Feature Toggle Name</target>
       </segment>
     </unit>
+    <unit id="FEATURE_TOGGLE_SETTINGS_TOOLTIP_QUERY_PARAM">
+      <segment>
+        <target>Feature Toggle ist über Query-Parameter aktiviert</target>
+      </segment>
+    </unit>
   </file>
 </xliff>

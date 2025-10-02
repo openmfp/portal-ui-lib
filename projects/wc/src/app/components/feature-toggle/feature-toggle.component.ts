@@ -134,6 +134,9 @@ export class FeatureToggleComponent {
       nameInputLabel: this.i18nService.getTranslation(
         'FEATURE_TOGGLE_SETTINGS_NAME_INPUT_LABEL',
       ),
+      tooltipQueryParam: this.i18nService.getTranslation(
+        'FEATURE_TOGGLE_SETTINGS_TOOLTIP_QUERY_PARAM',
+      ),
     };
   }
 }
