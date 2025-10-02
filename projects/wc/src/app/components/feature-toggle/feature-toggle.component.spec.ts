@@ -2,7 +2,7 @@ import { FeatureToggleComponent } from './feature-toggle.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
-import { featureToggleLocalStorage } from '@openmfp/portal-ui-lib';
+import { I18nService, featureToggleLocalStorage } from '@openmfp/portal-ui-lib';
 
 // Mock window.location
 Object.defineProperty(window, 'location', {
@@ -16,8 +16,14 @@ describe('FeatureToggleComponent', () => {
   let component: FeatureToggleComponent;
   let fixture: ComponentFixture<FeatureToggleComponent>;
   let mockLuigiClient: any;
+  let i18nServiceMock: jest.Mocked<I18nService>;
 
   beforeEach(async () => {
+    i18nServiceMock = {
+      getTranslation: jest.fn((key) => `translated_${key}`),
+      translationTable: {},
+    } as any;
+
     mockLuigiClient = {
       getActiveFeatureToggles: jest
         .fn()
@@ -28,6 +34,7 @@ describe('FeatureToggleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [FeatureToggleComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [{ provide: I18nService, useValue: i18nServiceMock }],
     })
       .overrideComponent(FeatureToggleComponent, {
         set: { template: '' },
