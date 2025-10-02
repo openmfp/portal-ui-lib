@@ -433,7 +433,15 @@ To learn how to use feature toggles, see the "Use Feature Toggles in Luigi" sect
 ```
 
 Once you set a feature toggle in the configuration, the respective feature is not visible by default.
-To make it visible one has to use `?ft=<feature-toggle>` URL query parameter.
+To make it visible one you can use Feature Toggles in settings, in order to enable this setting provide following portal option:
+
+```
+  uiOptions: {
+    enableFeatureToggleSetting: true,
+  }
+```
+
+After that you would be able to manage your future toggles easily through ui. Or alternatively you can activate feature by adding `?ft=<feature-toggle>` URL query parameter.
 For the example above, the query parameter would be `?ft=home`.
 You can enable multiple feature toggles by providing a comma-separated list of feature toggles for example `?ft=home,project,v1`.
 
