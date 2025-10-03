@@ -1,5 +1,6 @@
 import { DevelopmentSettingsComponent } from '../components/development-settings/development-settings.component';
 import { ErrorComponent } from '../components/error/error.component';
+import { FeatureToggleComponent } from '../components/feature-toggle/feature-toggle.component';
 import { GettingStartedComponent } from '../components/getting-started/getting-started.component';
 import * as wcUtils from '../utils/wc';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
@@ -54,6 +55,7 @@ describe('provideLuigiWebComponents', () => {
         'error-component': ErrorComponent,
         'development-settings': DevelopmentSettingsComponent,
         'getting-started': GettingStartedComponent,
+        'feature-toggle': FeatureToggleComponent,
       },
       injector,
     );
@@ -75,6 +77,7 @@ describe('provideLuigiWebComponents', () => {
         'error-component': ErrorComponent,
         'development-settings': DevelopmentSettingsComponent,
         'getting-started': GettingStartedComponent,
+        'feature-toggle': FeatureToggleComponent,
       },
       injector,
     );

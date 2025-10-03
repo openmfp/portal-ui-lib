@@ -460,5 +460,50 @@
           <target>Provide value</target>
         </segment>
       </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_DIALOG_LABEL">
+        <segment>
+          <target>Feature Toggles</target>
+        </segment>
+      </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_DIALOG_SUBLABEL">
+        <segment>
+          <target>Feature Toggles settings</target>
+        </segment>
+      </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_DIALOG_TITLE">
+        <segment>
+          <target>Feature Toggles</target>
+        </segment>
+      </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_EXPLANATION">
+        <segment>
+          <target>The following setting allows you to enable or disable features. For more information about feature toggles, please follow the link:</target>
+        </segment>
+      </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_LINK">
+        <segment>
+          <target>Feature Toggles Documentation</target>
+        </segment>
+      </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_ADD_BUTTON">
+      <segment>
+        <target>Add</target>
+      </segment>
+     </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_CLEAR_BUTTON">
+      <segment>
+        <target>Clear</target>
+      </segment>
+     </unit>
+     <unit id="FEATURE_TOGGLE_SETTINGS_NAME_INPUT_LABEL">
+       <segment>
+        <target>Feature Toggle Name</target>
+       </segment>
+     </unit>
+      <unit id="FEATURE_TOGGLE_SETTINGS_TOOLTIP_QUERY_PARAM">
+       <segment>
+        <target>Feature toggle is enabled by query parameter</target>
+       </segment>
+     </unit>
   </file>
 </xliff>

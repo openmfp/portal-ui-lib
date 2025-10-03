@@ -1,13 +1,19 @@
-import { THEMING_SERVICE } from '../../injection-tokens';
+import {
+  THEMING_SERVICE,
+  UI_OPTIONS_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import {
   LocalDevelopmentSettings,
   LuigiNode,
   LuigiUserSettings,
+  UIOptions,
 } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
 import { AuthService } from '../portal';
 import {
+  featureToggleLocalStorage,
   localDevelopmentSettingsLocalStorage,
   userSettingsLocalStorage,
 } from '../storage-service';
@@ -20,6 +26,7 @@ export interface UserSettings {
   frame_appearance?: any;
   frame_development?: any;
   frame_versions?: any;
+  frame_featureToggle?: any;
 }
 
 export interface UserSettingsValues {
@@ -35,6 +42,9 @@ export interface UserSettingsValues {
     localDevelopmentSettings: LocalDevelopmentSettings;
   };
   frame_versions?: any;
+  frame_featureToggle?: {
+    featureToggleSettings: Record<string, boolean>;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,7 +54,11 @@ export class UserSettingsConfigService {
   });
   private authService = inject(AuthService);
   private i18nService = inject(I18nService);
+  private luigiCoreService = inject(LuigiCoreService);
   private dependenciesVersionsService = inject(DependenciesVersionsService);
+  private uiOptions = inject<UIOptions>(UI_OPTIONS_INJECTION_TOKEN as any, {
+    optional: true,
+  });
   private versionsConfig: Record<string, string> = {};
 
   async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
@@ -82,6 +96,9 @@ export class UserSettingsConfigService {
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
         this.saveLocalDevelopmentSettings(settings, previous);
+        if (this.uiOptions?.enableFeatureToggleSetting) {
+          this.saveFeatureToggleSettings(settings);
+        }
       },
     };
     return userSettings;
@@ -92,9 +109,22 @@ export class UserSettingsConfigService {
     await this.addUserSettings(settings);
     await this.addThemingSettings(settings);
     this.addLocalDevelopmentSettings(settings);
+    if (this.uiOptions?.enableFeatureToggleSetting) {
+      this.addFeatureToggleSettings(settings);
+    }
     this.addInfoSettings(settings);
 
     return settings;
+  }
+
+  private saveFeatureToggleSettings(settings: UserSettingsValues) {
+    const currentFeatureToggleSettings =
+      settings?.frame_featureToggle?.featureToggleSettings;
+
+    featureToggleLocalStorage.store(currentFeatureToggleSettings);
+    this.luigiCoreService.unsetAllFeatureToggles();
+    this.luigiCoreService.setFeatureToggles(currentFeatureToggleSettings);
+    this.luigiCoreService.resetLuigi();
   }
 
   private saveLocalDevelopmentSettings(
@@ -208,7 +238,7 @@ export class UserSettingsConfigService {
       sublabel: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_SUBLABEL',
       icon: 'developer-settings',
       iconClassAttribute: localDevelopmentSettingsLocalStorage.read()?.isActive
-        ? 'local-development-settings-icon-active'
+        ? 'settings-icon-active'
         : '',
       title: 'LOCAL_DEVELOPMENT_SETTINGS_DIALOG_TITLE',
       viewUrl: '/assets/openmfp-portal-ui-wc.js#development-settings',
@@ -267,6 +297,26 @@ export class UserSettingsConfigService {
       title: 'INFO_SETTINGS_DIALOG_TITLE',
       icon: 'message-information',
       settings: settingsTransformed,
+    };
+  }
+
+  private addFeatureToggleSettings(settings: UserSettings) {
+    const isActive =
+      this.luigiCoreService.getActiveFeatureToggleList().length > 0;
+
+    settings.frame_featureToggle = {
+      label: 'FEATURE_TOGGLE_SETTINGS_DIALOG_LABEL',
+      sublabel: 'FEATURE_TOGGLE_SETTINGS_DIALOG_SUBLABEL',
+      title: 'FEATURE_TOGGLE_SETTINGS_DIALOG_TITLE',
+      icon: 'activate',
+      iconClassAttribute: isActive ? 'settings-icon-active' : '',
+      viewUrl: '/assets/openmfp-portal-ui-wc.js#feature-toggle',
+      webcomponent: {
+        selfRegistered: true,
+      },
+      context: {
+        translationTable: this.i18nService.translationTable,
+      },
     };
   }
 

@@ -546,6 +546,22 @@ const portalOptions: PortalOptions = {
 }
 ```
 
+#### Configure UI options
+This options allows you to enable different UI features like Feature Toggles Setting and etc.
+
+flag `enableFeatureToggleSetting` adds the possibility of adding and switching on and off feature toggles via ui in the userr settings section
+
+In your `main.ts` you can provide it like so:
+
+```ts
+const portalOptions: PortalOptions = {
+  uiOptions: {
+    enableFeatureToggleSetting: true,
+  },
+  // ... other portal options
+}
+```
+
 ### Listen and react to Authentication Events
 
 There are following Authentication Events, to which the library consuming application can subscribe and react upon, in case required.

@@ -10,3 +10,4 @@ export * from './scene-config';
 export * from './luigi-context';
 export * from './resource';
 export * from './entity';
+export * from './ui-options';

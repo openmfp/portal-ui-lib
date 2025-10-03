@@ -35,6 +35,7 @@ const luigiMock = {
   sendCustomMessage: jest.fn(),
   featureToggles: jest.fn().mockReturnValue({
     setFeatureToggle: jest.fn(),
+    unsetFeatureToggle: jest.fn(),
     getActiveFeatureToggleList: jest.fn().mockReturnValue([]),
   }),
 };
@@ -314,6 +315,51 @@ describe('LuigiCoreService', () => {
       document.body.innerHTML = '';
       const context = service.getWcModalExtendedContext();
       expect(context).toBeUndefined();
+    });
+  });
+
+  describe('Feature Toggle Management', () => {
+    it('should call unsetFeatureToggle with correct featureToggleName', () => {
+      const featureToggleName = 'someFeature';
+      service.unsetFeatureToggle(featureToggleName);
+      expect(
+        luigiMock.featureToggles().unsetFeatureToggle,
+      ).toHaveBeenCalledWith(featureToggleName);
+    });
+
+    it('should call unsetAllFeatureToggles for all active feature toggles', () => {
+      luigiMock
+        .featureToggles()
+        .getActiveFeatureToggleList.mockReturnValue([
+          'feature1',
+          'feature2',
+          'feature3',
+        ]);
+      service.unsetFeatureToggle = jest.fn();
+
+      service.unsetAllFeatureToggles();
+
+      expect(
+        luigiMock.featureToggles().getActiveFeatureToggleList,
+      ).toHaveBeenCalled();
+      expect(service.unsetFeatureToggle).toHaveBeenCalledTimes(3);
+      expect(service.unsetFeatureToggle).toHaveBeenCalledWith('feature1');
+      expect(service.unsetFeatureToggle).toHaveBeenCalledWith('feature2');
+      expect(service.unsetFeatureToggle).toHaveBeenCalledWith('feature3');
+    });
+
+    it('should return active feature toggle list', () => {
+      const activeToggles = ['feature1', 'feature2'];
+      luigiMock
+        .featureToggles()
+        .getActiveFeatureToggleList.mockReturnValue(activeToggles);
+
+      const result = service.getActiveFeatureToggleList();
+
+      expect(
+        luigiMock.featureToggles().getActiveFeatureToggleList,
+      ).toHaveBeenCalled();
+      expect(result).toEqual(activeToggles);
     });
   });
 });

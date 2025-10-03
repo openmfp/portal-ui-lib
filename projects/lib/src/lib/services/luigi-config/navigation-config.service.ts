@@ -1,15 +1,17 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
-    LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
-    LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-    LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
+  LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+  UI_OPTIONS_INJECTION_TOKEN
 } from '../../injection-tokens';
-import { ClientEnvironment, LuigiNode } from '../../models';
+import { ClientEnvironment, LuigiNode, UIOptions } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { NodesProcessingService } from '../luigi-nodes/nodes-processing.service';
 import { ConfigService } from '../portal';
+import { featureToggleLocalStorage } from '../storage-service';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
 import { HeaderBarService } from './luigi-breadcrumb-config.service';
 import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
@@ -34,7 +36,10 @@ export class NavigationConfigService {
     @Inject(LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN)
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService,
-    private headerBarService: HeaderBarService
+    private headerBarService: HeaderBarService,
+    @Optional()
+    @Inject(UI_OPTIONS_INJECTION_TOKEN)
+    private uiOptions: UIOptions,
   ) {
   }
 
@@ -48,7 +53,7 @@ export class NavigationConfigService {
     );
 
     const portalConfig = await this.configService.getPortalConfig();
-    this.luigiCoreService.setFeatureToggles(portalConfig.featureToggles);
+    this.initFeatureToggles(portalConfig.featureToggles);
     const context = await this.navigationGlobalContextConfigService.getGlobalContext();
     const luigiNodes =
       await this.nodesProcessingService.processNodes(childrenByEntity);
@@ -70,6 +75,16 @@ export class NavigationConfigService {
       breadcrumbs:
         await this.headerBarService.getConfig(),
     };
+  }
+
+  private initFeatureToggles(configFeatureToggles: Record<string, boolean>) {
+    if (this.uiOptions?.enableFeatureToggleSetting) {
+      const featureToggleSettings = featureToggleLocalStorage.read();
+      this.luigiCoreService.setFeatureToggles({...configFeatureToggles, ...featureToggleSettings});
+      return
+    }
+
+    this.luigiCoreService.setFeatureToggles(configFeatureToggles);
   }
 
   private buildViewGroups(nodes: LuigiNode[]) {

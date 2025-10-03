@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="explanation-container">
+    <div class="explanation">
+      {{ texts.explanation }}
+    </div>
+    <ui5-link
+      class="explanation"
+      target="_blank"
+      href="https://github.com/openmfp/portal-ui-lib/blob/main/docs/readme-nodes-configuration.md#feature-toggles"
+      >{{ texts.link }}</ui5-link>
+  </div>
+  <div>
+    <ui5-label class="label" for="input-new-toggle" show-colon>
+      {{ texts.nameInputLabel }}
+    </ui5-label>
+    <div class="new-toggle-input">
+      <ui5-input class="input" id="input-new-toggle" placeholder="myToggle" [formControl]="newToggleControl"></ui5-input>
+      <ui5-button [disabled]="newToggleControl.invalid" design="Emphasized" (ui5Click)="addToggle()">{{ texts.addButton }}</ui5-button>
+      <ui5-button [disabled]="!newToggleControl.value" (ui5Click)="clear()">{{ texts.clearButton }}</ui5-button>
+    </div>
+  </div>
+
+  <ui5-list class="toggle-list" [formGroup]="togglesForm">
+    @for (toggle of togglesForm.controls | keyvalue; track toggle.key; let ind = $index) {
+      <ui5-li-custom>
+        <div class="toggle-item">
+          <span>
+            {{ toggle.key }}
+          </span>
+          <div class="toggle-item-buttons">
+            @let isQueryParamFeature = queryParamsFeatures.includes(toggle.key);
+            <ui5-switch [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" [formControlName]="toggle.key"></ui5-switch>
+            <ui5-button [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" (ui5Click)="onItemDelete(toggle.key)"  design="Transparent" icon="decline"></ui5-button>
+          </div>
+        </div>
+      </ui5-li-custom>
+    }
+  </ui5-list>
+</div>
