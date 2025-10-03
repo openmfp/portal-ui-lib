@@ -1,10 +1,21 @@
+import { LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { RoutingConfigServiceImpl } from './routing-config.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('RoutingConfigService', () => {
   let service: RoutingConfigServiceImpl;
 
   beforeEach(() => {
-    service = new RoutingConfigServiceImpl();
+    TestBed.configureTestingModule({
+      providers: [
+        RoutingConfigServiceImpl,
+        {
+          provide: LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN,
+          useValue: null, // Optional dependency, can be null
+        },
+      ],
+    });
+    service = TestBed.inject(RoutingConfigServiceImpl);
   });
 
   it('should be created', () => {
