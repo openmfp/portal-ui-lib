@@ -1,7 +1,11 @@
-import { AuthService, StaticSettingsConfigServiceImpl } from '../../services';
-import { AuthConfigService, LuigiCoreService } from '../../services';
+import {
+  AuthConfigService,
+  AuthService,
+  LuigiCoreService,
+  StaticSettingsConfigServiceImpl,
+} from '../../services';
 import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecycle-hooks-config.service';
-import { RoutingConfigService } from '../../services/luigi-config/routing-config.service';
+import { RoutingConfigServiceImpl } from '../../services/luigi-config/routing-config.service';
 import { Component, OnInit, inject } from '@angular/core';
 
 @Component({
@@ -12,7 +16,7 @@ export class LuigiComponent implements OnInit {
   private lifecycleHooksConfigService = inject(LifecycleHooksConfigService);
   private luigiCoreService = inject(LuigiCoreService);
   private authService = inject(AuthService);
-  private routingConfigService = inject(RoutingConfigService);
+  private routingConfigService = inject(RoutingConfigServiceImpl);
   private authConfigService = inject(AuthConfigService);
   private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);
 

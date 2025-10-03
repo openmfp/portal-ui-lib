@@ -1,8 +1,11 @@
-import { AuthService, StaticSettingsConfigServiceImpl } from '../../services';
-import { LuigiCoreService } from '../../services';
+import {
+  AuthService,
+  LuigiCoreService,
+  StaticSettingsConfigServiceImpl,
+} from '../../services';
 import { AuthConfigService } from '../../services/luigi-config/auth-config.service';
 import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecycle-hooks-config.service';
-import { RoutingConfigService } from '../../services/luigi-config/routing-config.service';
+import { RoutingConfigServiceImpl } from '../../services/luigi-config/routing-config.service';
 import { LuigiComponent } from './luigi.component';
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
@@ -12,7 +15,7 @@ describe('LuigiComponent', () => {
   let authService: jest.Mocked<AuthService>;
   let luigiCoreService: jest.Mocked<LuigiCoreService>;
   let authConfigService: jest.Mocked<AuthConfigService>;
-  let routingConfigService: jest.Mocked<RoutingConfigService>;
+  let routingConfigService: jest.Mocked<RoutingConfigServiceImpl>;
   let lifecycleHooksConfigService: jest.Mocked<LifecycleHooksConfigService>;
   let staticSettingsConfigService: jest.Mocked<StaticSettingsConfigServiceImpl>;
 
@@ -37,7 +40,7 @@ describe('LuigiComponent', () => {
         { provide: AuthService, useValue: authService },
         { provide: LuigiCoreService, useValue: luigiCoreService },
         { provide: AuthConfigService, useValue: authConfigService },
-        { provide: RoutingConfigService, useValue: routingConfigService },
+        { provide: RoutingConfigServiceImpl, useValue: routingConfigService },
         {
           provide: StaticSettingsConfigServiceImpl,
           useValue: staticSettingsConfigService,

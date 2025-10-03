@@ -1,10 +1,21 @@
-import { RoutingConfigService } from './routing-config.service';
+import { LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { RoutingConfigServiceImpl } from './routing-config.service';
+import { TestBed } from '@angular/core/testing';
 
 describe('RoutingConfigService', () => {
-  let service: RoutingConfigService;
+  let service: RoutingConfigServiceImpl;
 
   beforeEach(() => {
-    service = new RoutingConfigService();
+    TestBed.configureTestingModule({
+      providers: [
+        RoutingConfigServiceImpl,
+        {
+          provide: LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN,
+          useValue: null, // Optional dependency, can be null
+        },
+      ],
+    });
+    service = TestBed.inject(RoutingConfigServiceImpl);
   });
 
   it('should be created', () => {
@@ -27,7 +38,7 @@ describe('RoutingConfigService', () => {
     it('should have a skipRoutingForUrlPatterns that matches any string', () => {
       const config = service.getInitialRoutingConfig();
       expect(
-        config.skipRoutingForUrlPatterns[0].test('any string')
+        config.skipRoutingForUrlPatterns[0].test('any string'),
       ).toBeTruthy();
     });
   });

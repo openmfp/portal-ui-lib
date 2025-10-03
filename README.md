@@ -207,6 +207,59 @@ const portalOptions: PortalOptions = {
 }
 ```
 
+#### The routingConfigService Option
+
+With this you can customize [Luigis routing settings](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=routing-parameters) and override any defaults.
+Make sure to return a valid Luigi configuration object.
+
+```ts
+import { Injectable, inject } from '@angular/core';
+import { RoutingConfigService } from '@openmfp/portal-ui-lib';
+
+@Injectable()
+export class CustomRoutingConfigServiceImpl implements RoutingConfigService {
+getInitialRoutingConfig(): any {
+    return {
+      useHashRouting: false,
+      showModalPathInUrl: false,
+      modalPathParam: 'modalPathParamDisabled',
+      skipRoutingForUrlPatterns: [/.*/],
+      pageNotFoundHandler: () => {},
+    };
+  }
+
+  getRoutingConfig(): any {
+    return {
+      useHashRouting: false,
+      showModalPathInUrl: true,
+      modalPathParam: 'modal',
+      pageNotFoundHandler: (
+        notFoundPath: string,
+        isAnyPathMatched: boolean,
+      ) => {
+        return {
+          redirectTo: 'error/404',
+          keepURL: true,
+        };
+      },
+    };
+  }
+}
+```
+
+The `getInitialRoutingConfig()` method is called while constructing the Luigi initial config object.
+The `getRoutingConfig()` is called while [Luigi lifecycle hook luigiAfterInit](https://docs.luigi-project.io/docs/lifecycle-hooks?section=luigiafterinit).
+The latter adds additional setup to the root of the Luigi configuration object.
+
+In your `main.ts` you can provide your custom implementation like so:
+
+```ts
+const portalOptions: PortalOptions = {
+   routingConfigService: CustomRoutingConfigService,
+  // ... other portal options
+}
+```
+
 #### The luigiExtendedGlobalContextConfigService Option
 
 By default, in the [Luigi's global context](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=globalcontext) following data is set by the library and available:
