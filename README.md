@@ -255,7 +255,7 @@ In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalOptions = {
-  staticSettingsConfigService: StaticSettingsConfigServiceImpl,
+   routingConfigService: CustomRoutingConfigService,
   // ... other portal options
 }
 ```
