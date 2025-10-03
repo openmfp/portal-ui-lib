@@ -14,7 +14,6 @@ export class RoutingConfigServiceImpl implements RoutingConfigService {
   );
 
   getInitialRoutingConfig(): any {
-    console.log('getInitialRoutingConfig', this.customRoutingConfigService);
     return {
       useHashRouting: false,
       showModalPathInUrl: false,
@@ -34,7 +33,6 @@ export class RoutingConfigServiceImpl implements RoutingConfigService {
         notFoundPath: string,
         isAnyPathMatched: boolean,
       ) => {
-        console.log('pageNotFoundHandler', this.customRoutingConfigService);
         return {
           redirectTo: 'error/404',
           keepURL: true,
