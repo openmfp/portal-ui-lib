@@ -8,7 +8,7 @@ import { AuthConfigService } from './auth-config.service';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { NavigationConfigService } from './navigation-config.service';
-import { RoutingConfigService } from './routing-config.service';
+import { RoutingConfigServiceImpl } from './routing-config.service';
 import { StaticSettingsConfigServiceImpl } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
 import { Injectable, inject } from '@angular/core';
@@ -22,7 +22,7 @@ export class LifecycleHooksConfigService {
   private i18nService = inject(I18nService);
   private luigiNodesService = inject(LuigiNodesService);
   private luigiCoreService = inject(LuigiCoreService);
-  private routingConfigService = inject(RoutingConfigService);
+  private routingConfigService = inject(RoutingConfigServiceImpl);
   private navigationConfigService = inject(NavigationConfigService);
   private userSettingsConfigService = inject(UserSettingsConfigService);
   private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);

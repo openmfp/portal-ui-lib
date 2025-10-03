@@ -17,6 +17,7 @@ import {
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
+  LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   THEMING_SERVICE,
@@ -36,6 +37,7 @@ import {
   LuigiAuthEventsCallbacksService,
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
+  RoutingConfigService,
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
@@ -101,6 +103,9 @@ export interface PortalOptions {
 
   /** Provide a error configuration for error component to override the default values **/
   themingService?: Type<ThemingService>;
+
+  /** Service providing luigi routing configuration **/
+  routingConfigService?: Type<RoutingConfigService>;
 
   /** Provide a options for the ui **/
   uiOptions?: UIOptions;
@@ -236,6 +241,13 @@ const addOptionalProviders = (
     providers.push({
       provide: UI_OPTIONS_INJECTION_TOKEN,
       useValue: options.uiOptions,
+    });
+  }
+
+  if (options.routingConfigService) {
+    providers.push({
+      provide: LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN,
+      useClass: options.routingConfigService,
     });
   }
 

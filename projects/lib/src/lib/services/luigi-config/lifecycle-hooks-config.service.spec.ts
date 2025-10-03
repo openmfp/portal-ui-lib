@@ -11,7 +11,7 @@ import { CustomMessageListenersService } from './custom-message-listeners.servic
 import { GlobalSearchConfigService } from './global-search-config.service';
 import { LifecycleHooksConfigService } from './lifecycle-hooks-config.service';
 import { NavigationConfigService } from './navigation-config.service';
-import { RoutingConfigService } from './routing-config.service';
+import { RoutingConfigServiceImpl } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
 import { TestBed } from '@angular/core/testing';
@@ -22,7 +22,7 @@ describe('LifecycleHooksConfigService', () => {
   let i18nServiceMock: jest.Mocked<I18nService>;
   let luigiNodesServiceMock: jest.Mocked<LuigiNodesService>;
   let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
-  let routingConfigServiceMock: jest.Mocked<RoutingConfigService>;
+  let routingConfigServiceMock: jest.Mocked<RoutingConfigServiceImpl>;
   let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
   let userSettingsConfigServiceMock: jest.Mocked<UserSettingsConfigService>;
   let globalSearchConfigServiceMock: jest.Mocked<GlobalSearchConfigService>;
@@ -73,7 +73,10 @@ describe('LifecycleHooksConfigService', () => {
         },
         { provide: LuigiNodesService, useValue: luigiNodesServiceMock },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
-        { provide: RoutingConfigService, useValue: routingConfigServiceMock },
+        {
+          provide: RoutingConfigServiceImpl,
+          useValue: routingConfigServiceMock,
+        },
         {
           provide: UserSettingsConfigService,
           useValue: userSettingsConfigServiceMock,

@@ -1,10 +1,10 @@
-import { RoutingConfigService } from './routing-config.service';
+import { RoutingConfigServiceImpl } from './routing-config.service';
 
 describe('RoutingConfigService', () => {
-  let service: RoutingConfigService;
+  let service: RoutingConfigServiceImpl;
 
   beforeEach(() => {
-    service = new RoutingConfigService();
+    service = new RoutingConfigServiceImpl();
   });
 
   it('should be created', () => {
@@ -27,7 +27,7 @@ describe('RoutingConfigService', () => {
     it('should have a skipRoutingForUrlPatterns that matches any string', () => {
       const config = service.getInitialRoutingConfig();
       expect(
-        config.skipRoutingForUrlPatterns[0].test('any string')
+        config.skipRoutingForUrlPatterns[0].test('any string'),
       ).toBeTruthy();
     });
   });
