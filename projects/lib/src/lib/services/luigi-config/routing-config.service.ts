@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { EnvConfigService } from '../portal';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class RoutingConfigService {
+  private envConfigService = inject(EnvConfigService);
   getInitialRoutingConfig(): any {
     return {
       useHashRouting: false,
@@ -17,10 +19,18 @@ export class RoutingConfigService {
       useHashRouting: false,
       showModalPathInUrl: true,
       modalPathParam: 'modal',
-      pageNotFoundHandler: (
+      pageNotFoundHandler: async (
         notFoundPath: string,
-        isAnyPathMatched: boolean
+        isAnyPathMatched: boolean,
       ) => {
+        const { baseDomain } = await this.envConfigService.getEnvConfig();
+        if (window.location.hostname !== baseDomain) {
+          return {
+            redirectTo: 'welcome',
+            keepURL: true,
+          };
+        }
+
         return {
           redirectTo: 'error/404',
           keepURL: true,
