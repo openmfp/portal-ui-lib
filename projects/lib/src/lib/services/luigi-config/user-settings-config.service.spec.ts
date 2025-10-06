@@ -315,6 +315,7 @@ describe('UserSettingsConfigService', () => {
     });
 
     it('should save feature toggle settings when enabled', async () => {
+      globalThis.location.reload = jest.fn();
       const childrenByEntity = {};
       const result = await service.getUserSettings(childrenByEntity);
 
@@ -336,7 +337,7 @@ describe('UserSettingsConfigService', () => {
         feature1: true,
         feature2: false,
       });
-      expect(luigiCoreServiceMock.resetLuigi).toHaveBeenCalled();
+      expect(globalThis.location.reload).toHaveBeenCalled();
     });
 
     it('should not save feature toggle settings when disabled', async () => {
@@ -358,6 +359,7 @@ describe('UserSettingsConfigService', () => {
           },
         ],
       });
+      globalThis.location.reload = jest.fn();
 
       const disabledService = TestBed.inject(UserSettingsConfigService);
       const childrenByEntity = {};
@@ -377,7 +379,7 @@ describe('UserSettingsConfigService', () => {
         luigiCoreServiceMock.unsetAllFeatureToggles,
       ).not.toHaveBeenCalled();
       expect(luigiCoreServiceMock.setFeatureToggles).not.toHaveBeenCalled();
-      expect(luigiCoreServiceMock.resetLuigi).not.toHaveBeenCalled();
+      expect(globalThis.location.reload).not.toHaveBeenCalled();
     });
 
     it('should show inactive icon when no feature toggles are active', async () => {
