@@ -124,7 +124,7 @@ export class UserSettingsConfigService {
     featureToggleLocalStorage.store(currentFeatureToggleSettings);
     this.luigiCoreService.unsetAllFeatureToggles();
     this.luigiCoreService.setFeatureToggles(currentFeatureToggleSettings);
-    this.luigiCoreService.resetLuigi();
+    window.location.reload();
   }
 
   private saveLocalDevelopmentSettings(
