@@ -184,35 +184,6 @@ describe('Provide Portal', () => {
     });
   });
 
-  it('should set uiOptions when provided', () => {
-    const uiOptions = { enableFeatureToggleSetting: true };
-    const options: PortalOptions = {
-      uiOptions,
-    };
-
-    providePortal(options);
-
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    expect(providersArg).toContainEqual({
-      provide: tokens.UI_OPTIONS_INJECTION_TOKEN,
-      useValue: uiOptions,
-    });
-  });
-
-  it('should not set uiOptions when not provided', () => {
-    providePortal({});
-
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    const uiOptionsProvider = providersArg.find(
-      (provider: any) =>
-        provider?.provide === tokens.UI_OPTIONS_INJECTION_TOKEN,
-    );
-
-    expect(uiOptionsProvider).toBeUndefined();
-  });
-
   it('should include core Angular providers', () => {
     providePortal({});
 
