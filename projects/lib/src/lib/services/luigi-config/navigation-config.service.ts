@@ -2,10 +2,9 @@ import { Inject, Injectable, Optional } from '@angular/core';
 import {
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-  UI_OPTIONS_INJECTION_TOKEN
+  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
 } from '../../injection-tokens';
-import { ClientEnvironment, LuigiNode, UIOptions } from '../../models';
+import { ClientEnvironment, LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
@@ -37,9 +36,6 @@ export class NavigationConfigService {
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService,
     private headerBarService: HeaderBarService,
-    @Optional()
-    @Inject(UI_OPTIONS_INJECTION_TOKEN)
-    private uiOptions: UIOptions,
   ) {
   }
 
@@ -53,7 +49,7 @@ export class NavigationConfigService {
     );
 
     const portalConfig = await this.configService.getPortalConfig();
-    this.initFeatureToggles(portalConfig.featureToggles);
+    this.initFeatureToggles(portalConfig.featureToggles, envConfig);
     const context = await this.navigationGlobalContextConfigService.getGlobalContext();
     const luigiNodes =
       await this.nodesProcessingService.processNodes(childrenByEntity);
@@ -77,11 +73,14 @@ export class NavigationConfigService {
     };
   }
 
-  private initFeatureToggles(configFeatureToggles: Record<string, boolean>) {
-    if (this.uiOptions?.enableFeatureToggleSetting) {
+  private initFeatureToggles(configFeatureToggles: Record<string, boolean>, envConfig: ClientEnvironment) {
+    if (envConfig.uiOptions.includes('enableFeatureToggleSetting')) {
       const featureToggleSettings = featureToggleLocalStorage.read();
-      this.luigiCoreService.setFeatureToggles({...configFeatureToggles, ...featureToggleSettings});
-      return
+      this.luigiCoreService.setFeatureToggles({
+        ...configFeatureToggles,
+        ...featureToggleSettings,
+      });
+      return;
     }
 
     this.luigiCoreService.setFeatureToggles(configFeatureToggles);

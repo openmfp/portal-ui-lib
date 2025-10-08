@@ -21,9 +21,8 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   THEMING_SERVICE,
-  UI_OPTIONS_INJECTION_TOKEN,
 } from './injection-tokens';
-import { ErrorComponentConfig, UIOptions } from './models';
+import { ErrorComponentConfig } from './models';
 import { portalRouts } from './portal-routing';
 import {
   AppSwitcherConfigService,
@@ -106,9 +105,6 @@ export interface PortalOptions {
 
   /** Service providing luigi routing configuration **/
   routingConfigService?: Type<RoutingConfigService>;
-
-  /** Provide a options for the ui **/
-  uiOptions?: UIOptions;
 }
 
 export function providePortal(
@@ -234,13 +230,6 @@ const addOptionalProviders = (
     providers.push({
       provide: HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: options.headerBarConfigService,
-    });
-  }
-
-  if (options.uiOptions) {
-    providers.push({
-      provide: UI_OPTIONS_INJECTION_TOKEN,
-      useValue: options.uiOptions,
     });
   }
 

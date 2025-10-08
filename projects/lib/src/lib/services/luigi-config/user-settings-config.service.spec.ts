@@ -1,12 +1,14 @@
+import { THEMING_SERVICE } from '../../injection-tokens';
 import {
-  THEMING_SERVICE,
-  UI_OPTIONS_INJECTION_TOKEN,
-} from '../../injection-tokens';
-import { LuigiNode, LuigiUserSettings, UserData } from '../../models';
+  ClientEnvironment,
+  LuigiNode,
+  LuigiUserSettings,
+  UserData,
+} from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
-import { AuthService } from '../portal';
+import { AuthService, EnvConfigService } from '../portal';
 import {
   featureToggleLocalStorage,
   localDevelopmentSettingsLocalStorage,
@@ -29,8 +31,13 @@ describe('UserSettingsConfigService', () => {
   const i18nServiceMock = mock<I18nService>();
   const dependenciesVersionsService = mock<DependenciesVersionsService>();
   const luigiCoreServiceMock = mock<LuigiCoreService>();
+  const envConfigServiceMock = mock<EnvConfigService>();
 
   beforeEach(() => {
+    envConfigServiceMock.getEnvConfig.mockResolvedValue({
+      uiOptions: ['enableFeatureToggleSetting'],
+    } as ClientEnvironment);
+
     const originalLocation = window.location;
     delete window.location;
     window.location = {
@@ -52,10 +59,7 @@ describe('UserSettingsConfigService', () => {
         { provide: AuthService, useValue: authServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
-        {
-          provide: UI_OPTIONS_INJECTION_TOKEN,
-          useValue: { enableFeatureToggleSetting: true },
-        },
+        { provide: EnvConfigService, useValue: envConfigServiceMock },
       ],
     });
 
@@ -288,6 +292,9 @@ describe('UserSettingsConfigService', () => {
     });
 
     it('should not include feature toggle settings when disabled', async () => {
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
+        uiOptions: [],
+      } as ClientEnvironment);
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -300,10 +307,7 @@ describe('UserSettingsConfigService', () => {
           { provide: AuthService, useValue: authServiceMock },
           { provide: I18nService, useValue: i18nServiceMock },
           { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
-          {
-            provide: UI_OPTIONS_INJECTION_TOKEN,
-            useValue: { enableFeatureToggleSetting: false },
-          },
+          { provide: EnvConfigService, useValue: envConfigServiceMock },
         ],
       });
 
@@ -342,6 +346,10 @@ describe('UserSettingsConfigService', () => {
 
     it('should not save feature toggle settings when disabled', async () => {
       TestBed.resetTestingModule();
+      envConfigServiceMock.getEnvConfig.mockResolvedValue({
+        uiOptions: [],
+      } as ClientEnvironment);
+
       TestBed.configureTestingModule({
         providers: [
           UserSettingsConfigService,
@@ -353,10 +361,7 @@ describe('UserSettingsConfigService', () => {
           { provide: AuthService, useValue: authServiceMock },
           { provide: I18nService, useValue: i18nServiceMock },
           { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
-          {
-            provide: UI_OPTIONS_INJECTION_TOKEN,
-            useValue: { enableFeatureToggleSetting: false },
-          },
+          { provide: EnvConfigService, useValue: envConfigServiceMock },
         ],
       });
       globalThis.location.reload = jest.fn();

@@ -1,10 +1,10 @@
-import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
 import { ClientEnvironment, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
-import { ConfigService, EnvConfigService } from '../portal';
 import { LuigiCoreService } from '../luigi-core.service';
+import { ConfigService, EnvConfigService } from '../portal';
 import { NavigationConfigService } from './navigation-config.service';
+import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 
 describe('NavigationConfigService', () => {
   let service: NavigationConfigService;
@@ -48,7 +48,7 @@ describe('NavigationConfigService', () => {
   });
 
   describe('Tests which need service setup', () => {
-    const envConfig = mock<ClientEnvironment>();
+    const envConfig = mock<ClientEnvironment>({ uiOptions: [''] });
     beforeEach(async () => {
       const portalConfig = mock<PortalConfig>({
         portalContext: {
@@ -84,7 +84,7 @@ describe('NavigationConfigService', () => {
       // Act
       const navigation = await service.getNavigationConfig(
         childrenByEntity,
-        envConfig
+        envConfig,
       );
 
       // Assert

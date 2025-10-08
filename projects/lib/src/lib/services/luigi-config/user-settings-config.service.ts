@@ -1,25 +1,21 @@
-import {
-  THEMING_SERVICE,
-  UI_OPTIONS_INJECTION_TOKEN,
-} from '../../injection-tokens';
+import { Injectable, inject } from '@angular/core';
+import { isEqual } from 'lodash';
+import { THEMING_SERVICE } from '../../injection-tokens';
 import {
   LocalDevelopmentSettings,
   LuigiNode,
   LuigiUserSettings,
-  UIOptions,
 } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
-import { AuthService } from '../portal';
+import { AuthService, EnvConfigService } from '../portal';
 import {
   featureToggleLocalStorage,
   localDevelopmentSettingsLocalStorage,
   userSettingsLocalStorage,
 } from '../storage-service';
 import { ThemingService } from '../theming.service';
-import { Injectable, inject } from '@angular/core';
-import { isEqual } from 'lodash';
 
 export interface UserSettings {
   frame_userAccount?: any;
@@ -56,15 +52,14 @@ export class UserSettingsConfigService {
   private i18nService = inject(I18nService);
   private luigiCoreService = inject(LuigiCoreService);
   private dependenciesVersionsService = inject(DependenciesVersionsService);
-  private uiOptions = inject<UIOptions>(UI_OPTIONS_INJECTION_TOKEN as any, {
-    optional: true,
-  });
+  private envConfigService = inject(EnvConfigService);
   private versionsConfig: Record<string, string> = {};
 
   async getUserSettings(childrenByEntity: Record<string, LuigiNode[]>) {
     const userSettingsConfig = this.extractUserSettings(childrenByEntity);
     const groupsFromNodes = this.getGroupsFromUserSettings(userSettingsConfig);
     this.versionsConfig = await this.readDependenciesVersions();
+    const envConfig = await this.envConfigService.getEnvConfig();
 
     let coreGroups = await this.getCoreUserSettingsGroups();
 
@@ -96,7 +91,7 @@ export class UserSettingsConfigService {
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
         this.saveLocalDevelopmentSettings(settings, previous);
-        if (this.uiOptions?.enableFeatureToggleSetting) {
+        if (envConfig.uiOptions.includes('enableFeatureToggleSetting')) {
           this.saveFeatureToggleSettings(settings);
         }
       },
@@ -105,11 +100,13 @@ export class UserSettingsConfigService {
   }
 
   private async getCoreUserSettingsGroups() {
+    const envConfig = await this.envConfigService.getEnvConfig();
     const settings: UserSettings = {};
+
     await this.addUserSettings(settings);
     await this.addThemingSettings(settings);
     this.addLocalDevelopmentSettings(settings);
-    if (this.uiOptions?.enableFeatureToggleSetting) {
+    if (envConfig.uiOptions.includes('enableFeatureToggleSetting')) {
       this.addFeatureToggleSettings(settings);
     }
     this.addInfoSettings(settings);
