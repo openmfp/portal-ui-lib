@@ -63,7 +63,10 @@ export class LocalConfigurationServiceImpl {
       (result.nodes || []).forEach((node) => {
         node.context = {
           ...node.context,
-          serviceProviderConfig: localDevelopmentSettings.serviceProviderConfig,
+          serviceProviderConfig: {
+            ...node.context?.serviceProviderConfig,
+            ...localDevelopmentSettings.serviceProviderConfig,
+          },
         };
       });
 
