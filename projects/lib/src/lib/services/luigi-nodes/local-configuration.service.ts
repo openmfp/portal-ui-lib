@@ -43,7 +43,7 @@ export class LocalConfigurationServiceImpl {
 
     this.addLocalDevelopmentModeOnIndicator();
 
-    if (this.cachedLocalNodes) {
+    if (this.cachedLocalNodes?.length) {
       return this.cachedLocalNodes;
     }
 
