@@ -145,6 +145,11 @@
         <target>Enter organization name</target>
       </segment>
     </unit>
+    <unit id="ORGANIZATION_MANAGEMENT_NOT_READY_TOOLTIP">
+      <segment>
+        <target>Organization is not ready yet</target>
+      </segment>
+    </unit>
     <!-- CONFIRMATION MODAL -->
     <unit id="luigi.confirmationModal.header">
       <segment>
