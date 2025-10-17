@@ -18,5 +18,5 @@ export interface ClientEnvironment extends Record<string, any> {
   developmentInstance: boolean;
   validWebcomponentUrls?: string;
   authData: AuthTokenData;
-  uiOptions: string[];
+  uiOptions?: string[];
 }

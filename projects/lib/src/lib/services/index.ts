@@ -17,7 +17,7 @@ export * from './luigi-config/user-profile-config.service';
 export * from './luigi-config/iframe.service';
 export * from './luigi-config/luigi-breadcrumb-config.service';
 export * from './luigi-config/node-change-hook-config.service';
-export * from './luigi-config/navigation-global-context-config.service';
+export * from './luigi-config/global-context-config.service';
 export * from './luigi-config/luigi-auth-events-callbacks.service';
 export * from './luigi-config/auth-config.service';
 

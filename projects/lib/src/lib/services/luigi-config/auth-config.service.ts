@@ -27,6 +27,7 @@ export class AuthConfigService {
         idpProvider: oAuth2,
         authorizeUrl: oauthServerUrl,
         logoutUrl: '/rest/logout',
+        post_logout_redirect_uri: '/logout',
         oAuthData: {
           client_id: clientId,
           scope: 'openid',

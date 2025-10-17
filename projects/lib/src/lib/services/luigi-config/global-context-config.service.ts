@@ -5,7 +5,7 @@ import { AuthService, ConfigService } from '../portal';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
-export class NavigationGlobalContextConfigService {
+export class GlobalContextConfigService {
   private authService = inject(AuthService);
   private configService = inject(ConfigService);
   private luigiExtendedGlobalContextConfigService =

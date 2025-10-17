@@ -13,7 +13,7 @@ import { ConfigService } from '../portal';
 import { featureToggleLocalStorage } from '../storage-service';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
 import { HeaderBarService } from './luigi-breadcrumb-config.service';
-import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
+import { GlobalContextConfigService } from './global-context-config.service';
 import { NodeChangeHookConfigService } from './node-change-hook-config.service';
 import { UserProfileConfigService } from './user-profile-config.service';
 
@@ -24,7 +24,7 @@ export class NavigationConfigService {
     private luigiCoreService: LuigiCoreService,
     private luigiNodesService: LuigiNodesService,
     private intentNavigationService: IntentNavigationService,
-    private navigationGlobalContextConfigService: NavigationGlobalContextConfigService,
+    private navigationGlobalContextConfigService: GlobalContextConfigService,
     @Optional()
     @Inject(LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN)
     private userProfileConfigService: UserProfileConfigService,
