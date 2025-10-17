@@ -1,21 +1,21 @@
-import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
-import { NavigationGlobalContextConfigService } from '../luigi-config/navigation-global-context-config.service';
-import { AuthService } from '../portal';
-import { LuigiCoreService } from '../luigi-core.service';
-import { SessionRefreshService } from './session-refresh.service';
 import {
   AuthData,
   AuthEvent,
   AuthTokenData,
   LuigiGlobalContext,
 } from '../../models';
+import { GlobalContextConfigService } from '../luigi-config/global-context-config.service';
+import { LuigiCoreService } from '../luigi-core.service';
+import { AuthService } from '../portal';
+import { SessionRefreshService } from './session-refresh.service';
+import { TestBed } from '@angular/core/testing';
+import { mock } from 'jest-mock-extended';
 
 describe('SessionRefreshService', () => {
   let service: SessionRefreshService;
   let authService: jest.Mocked<AuthService>;
   let luigiCoreService: jest.Mocked<LuigiCoreService>;
-  let navigationGlobalContextConfigServiceMock: jest.Mocked<NavigationGlobalContextConfigService>;
+  let navigationGlobalContextConfigServiceMock: jest.Mocked<GlobalContextConfigService>;
 
   // Mock data
   const mockAuthData = {
@@ -43,7 +43,7 @@ describe('SessionRefreshService', () => {
         { provide: AuthService, useValue: authServiceMock },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
         {
-          provide: NavigationGlobalContextConfigService,
+          provide: GlobalContextConfigService,
           useValue: navigationGlobalContextConfigServiceMock,
         },
       ],
@@ -53,7 +53,7 @@ describe('SessionRefreshService', () => {
     service = TestBed.inject(SessionRefreshService);
     authService = TestBed.inject(AuthService) as jest.Mocked<AuthService>;
     luigiCoreService = TestBed.inject(
-      LuigiCoreService
+      LuigiCoreService,
     ) as jest.Mocked<LuigiCoreService>;
   });
 
@@ -66,7 +66,7 @@ describe('SessionRefreshService', () => {
       //Arrange
       const globalCtx = {} as LuigiGlobalContext;
       navigationGlobalContextConfigServiceMock.getGlobalContext.mockResolvedValue(
-        globalCtx
+        globalCtx,
       );
       authService.refresh.mockResolvedValue({} as AuthTokenData);
 
@@ -76,17 +76,17 @@ describe('SessionRefreshService', () => {
       // Assert
       expect(authService.refresh).toHaveBeenCalledTimes(1);
       expect(authService.authEvent).toHaveBeenCalledWith(
-        AuthEvent.AUTH_REFRESHED
+        AuthEvent.AUTH_REFRESHED,
       );
       expect(authService.getAuthData).toHaveBeenCalledTimes(1);
       expect(luigiCoreService.setAuthData).toHaveBeenCalledWith(mockAuthData);
       expect(
-        navigationGlobalContextConfigServiceMock.getGlobalContext
+        navigationGlobalContextConfigServiceMock.getGlobalContext,
       ).toHaveBeenCalledTimes(1);
       expect(luigiCoreService.setGlobalContext).toHaveBeenCalledTimes(1);
       expect(luigiCoreService.setGlobalContext).toHaveBeenCalledWith(
         globalCtx,
-        true
+        true,
       );
     });
 
@@ -94,7 +94,7 @@ describe('SessionRefreshService', () => {
       //Arrange
       const globalCtx = {} as LuigiGlobalContext;
       navigationGlobalContextConfigServiceMock.getGlobalContext.mockResolvedValue(
-        globalCtx
+        globalCtx,
       );
       authService.refresh.mockResolvedValue(null);
 
@@ -104,18 +104,18 @@ describe('SessionRefreshService', () => {
       // Assert
       expect(authService.refresh).toHaveBeenCalled();
       expect(authService.authEvent).not.toHaveBeenCalledWith(
-        AuthEvent.AUTH_REFRESHED
+        AuthEvent.AUTH_REFRESHED,
       );
       expect(authService.getAuthData).not.toHaveBeenCalled();
       expect(luigiCoreService.setAuthData).not.toHaveBeenCalledWith(
-        mockAuthData
+        mockAuthData,
       );
       expect(
-        navigationGlobalContextConfigServiceMock.getGlobalContext
+        navigationGlobalContextConfigServiceMock.getGlobalContext,
       ).not.toHaveBeenCalled();
       expect(luigiCoreService.setGlobalContext).not.toHaveBeenCalled();
       expect(
-        (window as any).IDP.setTokenExpireSoonAction
+        (window as any).IDP.setTokenExpireSoonAction,
       ).not.toHaveBeenCalled();
     });
 
@@ -157,7 +157,7 @@ describe('SessionRefreshService', () => {
         () => {
           executionOrder.push('getGlobalContext');
           return null;
-        }
+        },
       );
 
       luigiCoreService.setGlobalContext.mockImplementation(() => {

@@ -2,13 +2,13 @@ import { LUIGI_EXTENDED_GLOBAL_CONTEXT_CONFIG_SERVICE_INJECTION_TOKEN } from '..
 import { PortalConfig, UserData } from '../../models';
 import { LuigiExtendedGlobalContextConfigService } from '../luigi-nodes/luigi-extended-global-context-config.service';
 import { AuthService, ConfigService, EnvConfigService } from '../portal';
-import { NavigationGlobalContextConfigService } from './navigation-global-context-config.service';
+import { GlobalContextConfigService } from './global-context-config.service';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 
-describe('NavigationGlobalContextConfigService', () => {
-  let navigationGlobalContextConfigService: NavigationGlobalContextConfigService;
+describe('GlobalContextConfigService', () => {
+  let globalContextConfigService: GlobalContextConfigService;
   let authService: jest.Mocked<AuthService>;
   let configService: jest.Mocked<ConfigService>;
   let envConfigService: jest.Mocked<EnvConfigService>;
@@ -23,7 +23,7 @@ describe('NavigationGlobalContextConfigService', () => {
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
-        NavigationGlobalContextConfigService,
+        GlobalContextConfigService,
         { provide: AuthService, useValue: authService },
         { provide: ConfigService, useValue: configService },
         { provide: EnvConfigService, useValue: envConfigService },
@@ -34,16 +34,14 @@ describe('NavigationGlobalContextConfigService', () => {
       ],
     });
 
-    navigationGlobalContextConfigService = TestBed.inject(
-      NavigationGlobalContextConfigService,
-    );
+    globalContextConfigService = TestBed.inject(GlobalContextConfigService);
 
     delete window.location;
     window.location = { origin: 'https://example.com' } as any;
   });
 
   it('should be created', () => {
-    expect(navigationGlobalContextConfigService).toBeTruthy();
+    expect(globalContextConfigService).toBeTruthy();
   });
 
   describe('getGlobalContext', () => {
@@ -54,7 +52,7 @@ describe('NavigationGlobalContextConfigService', () => {
       );
 
       try {
-        await navigationGlobalContextConfigService.getGlobalContext();
+        await globalContextConfigService.getGlobalContext();
         fail();
       } catch (e) {
         expect(e).toEqual(error);
@@ -83,8 +81,7 @@ describe('NavigationGlobalContextConfigService', () => {
         organization: 'openmfp',
       } as any);
 
-      const result =
-        await navigationGlobalContextConfigService.getGlobalContext();
+      const result = await globalContextConfigService.getGlobalContext();
 
       expect(result).toEqual({
         ...mockExtendedContext,
@@ -116,7 +113,7 @@ describe('NavigationGlobalContextConfigService', () => {
       TestBed.configureTestingModule({
         providers: [
           provideHttpClient(),
-          NavigationGlobalContextConfigService,
+          GlobalContextConfigService,
           { provide: AuthService, useValue: authService },
           { provide: ConfigService, useValue: configService },
           { provide: EnvConfigService, useValue: envConfigService },
@@ -128,12 +125,9 @@ describe('NavigationGlobalContextConfigService', () => {
         ],
       });
 
-      navigationGlobalContextConfigService = TestBed.inject(
-        NavigationGlobalContextConfigService,
-      );
+      globalContextConfigService = TestBed.inject(GlobalContextConfigService);
 
-      const result =
-        await navigationGlobalContextConfigService.getGlobalContext();
+      const result = await globalContextConfigService.getGlobalContext();
 
       expect(result).toEqual({
         portalContext: mockPortalConfig.portalContext,
