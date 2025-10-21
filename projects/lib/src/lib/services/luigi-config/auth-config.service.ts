@@ -31,7 +31,7 @@ export class AuthConfigService {
         oAuthData: {
           client_id: clientId,
           scope: 'openid',
-          redirect_uri: '/callback',
+          redirect_uri: '/rest/auth',
           response_type: 'code',
         },
         accessTokenExpiringNotificationTime: 60,

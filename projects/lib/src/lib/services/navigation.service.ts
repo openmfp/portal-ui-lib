@@ -25,6 +25,7 @@ export class NavigationService {
       .subscribe((event: NavigationEnd) => {
         this.currentUrl = event.url;
       });
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
       .subscribe((event: NavigationStart) => {
@@ -51,16 +52,6 @@ export class NavigationService {
             queryParams: event.queryParams,
           });
           this.clearCurrentUrl();
-        },
-      });
-
-    this.loginEventService.loginEvents
-      .pipe(filter((event) => event.type === LoginEventType.LOGOUT_TRIGGERED))
-      .subscribe({
-        next: (event) => {
-          this.router.navigate(['/logout'], {
-            queryParams: event.queryParams,
-          });
         },
       });
   }
