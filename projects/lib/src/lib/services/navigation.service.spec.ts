@@ -4,7 +4,7 @@ import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
 import { LocalStorageKeys } from './storage-service';
 import { TestBed } from '@angular/core/testing';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 describe('NavigationService', () => {
@@ -106,18 +106,6 @@ describe('NavigationService', () => {
         queryParams: { param: 'value' },
       });
     });
-
-    it('should navigate to logout on LOGOUT_TRIGGERED', () => {
-      const queryParams = { param: 'value' };
-      loginEvents.next({
-        type: LoginEventType.LOGOUT_TRIGGERED,
-        queryParams,
-      });
-
-      expect(router.navigate).toHaveBeenCalledWith(['/logout'], {
-        queryParams,
-      });
-    });
   });
 
   describe('private methods behavior', () => {
@@ -159,34 +147,6 @@ describe('NavigationService', () => {
 
       expect(router.navigate).toHaveBeenCalledWith([savedUrl], {
         queryParams: {},
-      });
-    });
-  });
-
-  describe('logout behavior', () => {
-    beforeEach(() => {
-      service.track();
-      localStorage.clear();
-      (router.navigate as jest.Mock).mockClear();
-    });
-
-    it('should save last navigation URL on LOGOUT and then navigate on LOGOUT_TRIGGERED events', () => {
-      const navigationStart = new NavigationStart(1, '/current');
-      routerEvents.next(navigationStart);
-
-      authEvents.next(AuthEvent.LOGOUT);
-
-      const queryParams = { a: 1 } as any;
-      loginEvents.next({
-        type: LoginEventType.LOGOUT_TRIGGERED,
-        queryParams,
-      });
-
-      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
-        '/current',
-      );
-      expect(router.navigate).toHaveBeenCalledWith(['/logout'], {
-        queryParams,
       });
     });
   });

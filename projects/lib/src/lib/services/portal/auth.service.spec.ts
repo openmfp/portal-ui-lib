@@ -1,13 +1,13 @@
+import {
+  AuthData,
+  AuthEvent,
+  AuthTokenData,
+  UserTokenData,
+} from '../../models';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, take, toArray } from 'rxjs';
-import {
-  AuthTokenData,
-  AuthData,
-  UserTokenData,
-  AuthEvent,
-} from '../../models';
 import { jwtDecode } from 'jwt-decode';
+import { Observable, of, take, toArray } from 'rxjs';
 
 jest.mock('jwt-decode');
 
@@ -27,8 +27,7 @@ describe('AuthService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-
-  describe('auth', () => {
+  describe('refresh', () => {
     it('should make a POST request and set auth data', async () => {
       const mockResponse: AuthTokenData = {
         access_token: 'mock_access_token',
@@ -37,44 +36,28 @@ describe('AuthService', () => {
       };
       httpClientMock.post.mockReturnValue(of(mockResponse));
 
-      await service.auth('mock_code', 'mock_state');
+      await service.refresh();
 
       expect(httpClientMock.post).toHaveBeenCalledWith(
-        '/rest/auth?code=mock_code&state=mock_state',
-        {}
+        '/rest/auth/refresh',
+        {},
       );
       expect(service.getAuthData()).toEqual({
         accessTokenExpirationDate: expect.any(Number),
         idToken: 'mock_id_token',
       });
     });
-  });
 
-  describe('refresh', () => {
-    it('should make a GET request and set auth data', async () => {
-      const mockResponse: AuthTokenData = {
-        access_token: 'mock_access_token',
-        id_token: 'mock_id_token',
-        expires_in: '3600',
-      };
-      httpClientMock.get.mockReturnValue(of(mockResponse));
-
-      await service.refresh();
-
-      expect(httpClientMock.get).toHaveBeenCalledWith('/rest/auth/refresh');
-      expect(service.getAuthData()).toEqual({
-        accessTokenExpirationDate: expect.any(Number),
-        idToken: 'mock_id_token',
-      });
-    });
-
-    it('should make a GET request and not set auth data', async () => {
+    it('should make a POST request and not set auth data', async () => {
       const mockResponse: AuthTokenData = undefined;
-      httpClientMock.get.mockReturnValue(of(mockResponse));
+      httpClientMock.post.mockReturnValue(of(mockResponse));
 
       await service.refresh();
 
-      expect(httpClientMock.get).toHaveBeenCalledWith('/rest/auth/refresh');
+      expect(httpClientMock.post).toHaveBeenCalledWith(
+        '/rest/auth/refresh',
+        {},
+      );
       expect(service.getAuthData()).toBeUndefined();
     });
   });

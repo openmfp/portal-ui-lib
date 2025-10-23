@@ -1,7 +1,3 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
-import { lastValueFrom, Observable, Subject } from 'rxjs';
 import {
   AuthData,
   AuthEvent,
@@ -9,6 +5,10 @@ import {
   UserData,
   UserTokenData,
 } from '../../models';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
+import { Observable, Subject, lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,20 +27,9 @@ export class AuthService {
     this.authEventSubject.next(event);
   }
 
-  public async auth(code: string, state: string) {
-    const response = await lastValueFrom(
-      this.http.post<AuthTokenData | undefined>(
-        `/rest/auth?code=${code}&state=${state}`,
-        {}
-      )
-    );
-
-    this.setAuthData(response);
-  }
-
   public async refresh(): Promise<AuthTokenData | undefined> {
     const response = await lastValueFrom(
-      this.http.get<AuthTokenData | undefined>('/rest/auth/refresh')
+      this.http.post<AuthTokenData | undefined>('/rest/auth/refresh', {}),
     );
 
     this.setAuthData(response);
