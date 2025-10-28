@@ -7,6 +7,5 @@ export * from './local-development-settings';
 export * from './luigi';
 export * from './luigi-context';
 export * from './portal';
-export * from './resource';
 export * from './scene-config';
 export * from './user';

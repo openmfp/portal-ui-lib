@@ -1,5 +1,4 @@
 import { EntityDefinition } from './luigi';
-import { ResourceDefinition } from './resource';
 
 export interface PortalContext extends Record<string, any> {}
 
@@ -14,7 +13,6 @@ export interface LuigiGlobalContext extends Record<string, any> {
 }
 
 export interface NodeContext extends LuigiGlobalContext {
-  resourceDefinition?: ResourceDefinition;
   entityContext?: EntityContext;
   parentNavigationContexts?: string[];
   error?: {
