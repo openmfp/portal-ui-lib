@@ -63,7 +63,7 @@ describe('NodesProcessingService', () => {
 
     const portalConfig: PortalConfig = {
       providers: [{ nodes: [], creationTimestamp: '' }],
-    } as PortalConfig;
+    } as unknown as PortalConfig;
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
@@ -178,7 +178,7 @@ describe('NodesProcessingService', () => {
       entityNode,
       { myentityId, userid },
       childrenByEntity,
-      undefined,
+      [],
       entityName,
     );
 
@@ -230,13 +230,7 @@ describe('NodesProcessingService', () => {
       mygrandparententityId: 'opa',
       userid,
     };
-    await service.entityChildrenProvider(
-      entityNode,
-      ctx,
-      {},
-      undefined,
-      entityName,
-    );
+    await service.entityChildrenProvider(entityNode, ctx, {}, [], entityName);
 
     // Assert
     expect(retrieveEntityChildrenSpy).toHaveBeenCalledWith(
@@ -434,9 +428,9 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       const rootChildrenChildren =
-        rootChildren[0].children instanceof Function
+        rootChildren?.[0]?.children instanceof Function
           ? await rootChildren[0].children({})
-          : rootChildren[0].children;
+          : rootChildren?.[0]?.children;
       expect(rootChildrenChildren).toEqual([]);
     });
 
@@ -525,7 +519,7 @@ describe('NodesProcessingService', () => {
         .children as LuigiNode[];
       expect(compoundChildren.length).toBe(1);
       expect(compoundChildren[0].pathSegment).toBe('keep');
-      expect(compoundChildren[0].context.entityContext.foo).toBe('bar');
+      expect(compoundChildren[0]?.context?.entityContext?.foo).toBe('bar');
     });
 
     it('createChildrenList partitions dynamic children and merges by entity', async () => {

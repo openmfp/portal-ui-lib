@@ -259,7 +259,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should return empty server nodes when no matching local nodes', async () => {
       const serverNodes = [
         { pathSegment: '/path', entityType: null, label: 'Y', context: {} },
-      ] as LuigiNode[];
+      ] as unknown as LuigiNode[];
       getLocalNodesSpy.mockResolvedValue([
         { pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} },
       ]);

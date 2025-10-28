@@ -28,7 +28,7 @@ describe('NodeUtilsService', () => {
       const result = service.retrieveGlobalHelpContext()(node);
 
       expect(result).toBe(true);
-      expect(node.context.helpContext).toEqual(context.helpContext);
+      expect(node.context?.helpContext).toEqual(context.helpContext);
     });
   });
 

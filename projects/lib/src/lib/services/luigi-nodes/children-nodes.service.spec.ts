@@ -60,7 +60,7 @@ describe('ChildrenNodesService', () => {
     it('should return empty array when children is null', async () => {
       const result = await service.processChildrenForEntity(
         {} as LuigiNode,
-        null,
+        null as any,
         {},
       );
       expect(result).toEqual([]);
@@ -93,7 +93,7 @@ describe('ChildrenNodesService', () => {
 
       configService.getEntityConfig.mockResolvedValue({
         entityContext: { myKey: 'value' },
-        providers: null,
+        providers: null as any,
       });
       customNodeProcessingService.processNode.mockImplementation(
         async (ctx: Context, node: LuigiNode) => node,
@@ -106,7 +106,7 @@ describe('ChildrenNodesService', () => {
         ctx,
       );
 
-      expect(childResult[0].context.entityContext).toBeDefined();
+      expect(childResult[0]?.context?.entityContext).toBeDefined();
       expect(childResult[0].context).toEqual({
         entityContext: { test: { myKey: 'value' } },
       });
@@ -352,9 +352,9 @@ describe('ChildrenNodesService', () => {
         expect(containerElement.innerHTML).not.toContain('<script>');
       });
 
-      it('should use "Component" if entity label is set to "component', () => {
+      it('should use "Component" if entity label is set to "component"', () => {
         // Arrange
-        entityNode.defineEntity.label = 'component';
+        (entityNode.defineEntity as any).label = 'component';
         service.addNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 

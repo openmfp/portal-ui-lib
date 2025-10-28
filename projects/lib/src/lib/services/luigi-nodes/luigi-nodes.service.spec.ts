@@ -137,7 +137,7 @@ describe('LuigiNodesService', () => {
           },
         }),
       );
-      expect(result[0].context.error.code).toEqual(404);
+      expect(result[0]?.context?.error?.code).toEqual(404);
     });
 
     it('should handle other errors with 500 status', async () => {
@@ -159,7 +159,7 @@ describe('LuigiNodesService', () => {
           viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
         }),
       );
-      expect(result[0].context.error.code).toEqual(500);
+      expect(result[0]?.context?.error?.code).toEqual(500);
       expect(console.warn).toHaveBeenCalledWith(
         'Could not retrieve nodes for entity: testEntityType, error: ',
         genericError,
@@ -234,7 +234,7 @@ describe('LuigiNodesService', () => {
           }),
         ]),
       );
-      expect(result[0].context.error.code).toEqual(404);
+      expect(result[0]?.context?.error?.code).toEqual(404);
     });
 
     it('should handle other errors when retrieving configs for entity', async () => {
