@@ -11,8 +11,8 @@ export enum LocalStorageKeys {
 }
 
 export const localDevelopmentSettingsLocalStorage = {
-  read: (localStorageKey?: string): LocalDevelopmentSettings => {
-    let localDevelopmentSettingsFromLocalStore: string;
+  read: (localStorageKey?: string): LocalDevelopmentSettings | null => {
+    let localDevelopmentSettingsFromLocalStore: string | null;
     try {
       localDevelopmentSettingsFromLocalStore = localStorage.getItem(
         localStorageKey || LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
@@ -24,6 +24,9 @@ export const localDevelopmentSettingsLocalStorage = {
     }
 
     try {
+      if (!localDevelopmentSettingsFromLocalStore) {
+        throw new Error('Local development settings not found');
+      }
       return JSON.parse(localDevelopmentSettingsFromLocalStore);
     } catch (e) {
       console.error(

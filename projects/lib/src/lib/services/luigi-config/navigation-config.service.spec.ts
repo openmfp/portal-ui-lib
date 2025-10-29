@@ -1,4 +1,4 @@
-import { ClientEnvironment, PortalConfig } from '../../models';
+import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService, EnvConfigService } from '../portal';
@@ -23,7 +23,7 @@ describe('NavigationConfigService', () => {
     configService = TestBed.inject(ConfigService);
 
     const portalConfig: PortalConfig = {
-      providers: [{ nodes: [], creationTimestamp: '' }],
+      providers: [{ nodes: [] as LuigiNode[], creationTimestamp: '' }],
     } as PortalConfig;
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);

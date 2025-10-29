@@ -119,7 +119,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
     });
 
     it('should handle null node array', () => {
-      const result = service.getAppSwitcher(null);
+      const result = service.getAppSwitcher(null as unknown as LuigiNode[]);
 
       expect(result.items).toEqual([]);
     });
@@ -198,7 +198,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
       };
 
       // Simulate click
-      anchor.dispatchEvent(new MouseEvent('click'));
+      anchor?.dispatchEvent(new MouseEvent('click'));
 
       // Check if navigation was called
       expect(luigiCoreServiceMock.navigation).toHaveBeenCalled();

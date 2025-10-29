@@ -62,7 +62,7 @@ describe('LocalNodesService', () => {
         {
           name: 'test',
           creationTimestamp: '',
-          luigiConfigFragment: null,
+          luigiConfigFragment: null as any,
         },
       ]);
     const testRequest = httpTestingController.expectOne('/rest/localnodes');

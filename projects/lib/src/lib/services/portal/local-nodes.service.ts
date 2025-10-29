@@ -1,4 +1,4 @@
-import { ContentConfiguration, LuigiNode } from '../../models';
+import { ContentConfiguration } from '../../models';
 import { TransformResult } from '../../models/node-transform';
 import { LuigiCoreService } from '../luigi-core.service';
 import { HttpClient } from '@angular/common/http';
@@ -14,7 +14,7 @@ export class LocalNodesService {
 
   async getLuigiNodesFromConfigurations(
     contentConfigurations: ContentConfiguration[],
-  ): Promise<TransformResult> {
+  ): Promise<TransformResult | null> {
     if (contentConfigurations.length === 0) {
       return null;
     }
