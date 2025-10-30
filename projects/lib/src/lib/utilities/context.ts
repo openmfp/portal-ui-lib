@@ -8,7 +8,7 @@ export const visibleForContext = (ctx: any, node: LuigiNode): boolean => {
     return false;
   }
 
-  return matchesJMESPath(ctx, node.visibleForContext);
+  return matchesJMESPath(ctx, node.visibleForContext ?? '');
 };
 
 export const computeDynamicFetchContext = (
