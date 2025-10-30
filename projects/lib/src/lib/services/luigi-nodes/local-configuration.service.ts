@@ -64,14 +64,12 @@ export class LocalConfigurationServiceImpl {
         if (!node.context) {
           this.luigiCoreService.showAlert({
             text: `Node context is missing for node ${JSON.stringify(node)}`,
-            type: 'error',
+            type: 'warning',
           });
-
-          return;
         }
 
         node.context = {
-          ...node.context,
+          ...(node.context ?? ({} as any)),
           serviceProviderConfig: {
             ...node.context?.serviceProviderConfig,
             ...localDevelopmentSettings.serviceProviderConfig,

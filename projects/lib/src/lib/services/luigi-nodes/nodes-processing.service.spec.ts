@@ -68,6 +68,7 @@ describe('NodesProcessingService', () => {
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
     luigiCoreService.getGlobalContext = jest.fn();
+    luigiCoreService.showAlert = jest.fn();
     Object.defineProperty(luigiCoreService, 'config', {
       get: jest.fn(() => ({
         settings: { btpToolLayout: true },

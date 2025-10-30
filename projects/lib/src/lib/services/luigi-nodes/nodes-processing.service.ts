@@ -188,16 +188,8 @@ export class NodesProcessingService {
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
       const entityTypeId = entityPath || entityNode?.defineEntity?.id;
       const contextKey = entityNode?.defineEntity?.contextKey;
-      if (!contextKey) {
-        this.luigiCoreService.showAlert({
-          text: 'Entity context key is missing',
-          type: 'error',
-        });
+      const entityId = contextKey ? ctx[contextKey] : undefined;
 
-        throw new Error('Entity context key is missing');
-      }
-
-      const entityId = ctx[contextKey];
       const staticChildren = [
         ...(directChildren || []),
         ...(childrenByEntity[entityTypeId ?? ''] || []),

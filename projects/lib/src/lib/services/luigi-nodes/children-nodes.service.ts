@@ -63,9 +63,7 @@ export class ChildrenNodesService {
     );
 
     childrenNodes.forEach((child) => {
-      if (child.context) {
-        child.context = { ...child.context, entityContext };
-      }
+      child.context = { ...(child.context ?? ({} as any)), entityContext };
       child.onNodeActivation =
         this.nodeUtilsService.retrieveGlobalHelpContext();
     });

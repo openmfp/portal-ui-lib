@@ -54,7 +54,7 @@ describe('GettingStartedComponent', () => {
     });
 
     it('should initialize links with only default links when config links is null', () => {
-      luigiCoreServiceMock.config.settings.links = null;
+      luigiCoreServiceMock.config.settings!.links = null as any;
 
       fixture = TestBed.createComponent(GettingStartedComponent);
       component = fixture.componentInstance;
@@ -67,7 +67,7 @@ describe('GettingStartedComponent', () => {
     });
 
     it('should initialize links with only default links when config links is undefined', () => {
-      luigiCoreServiceMock.config.settings.links = undefined;
+      luigiCoreServiceMock.config.settings!.links = undefined as any;
 
       fixture = TestBed.createComponent(GettingStartedComponent);
       component = fixture.componentInstance;
@@ -80,7 +80,7 @@ describe('GettingStartedComponent', () => {
     });
 
     it('should initialize links with only default links when config links is empty array', () => {
-      luigiCoreServiceMock.config.settings.links = [];
+      luigiCoreServiceMock.config.settings!.links = [];
 
       fixture = TestBed.createComponent(GettingStartedComponent);
       component = fixture.componentInstance;
@@ -188,7 +188,7 @@ describe('GettingStartedComponent', () => {
 
   describe('edge cases', () => {
     it('should handle missing header title gracefully', () => {
-      luigiCoreServiceMock.config.settings.header.title = undefined;
+      luigiCoreServiceMock.config.settings!.header.title = undefined as any;
 
       fixture = TestBed.createComponent(GettingStartedComponent);
       component = fixture.componentInstance;
@@ -198,7 +198,7 @@ describe('GettingStartedComponent', () => {
     });
 
     it('should handle missing logo gracefully', () => {
-      luigiCoreServiceMock.config.settings.header.logo = undefined;
+      luigiCoreServiceMock.config.settings!.header.logo = undefined as any;
 
       fixture = TestBed.createComponent(GettingStartedComponent);
       component = fixture.componentInstance;
@@ -208,7 +208,7 @@ describe('GettingStartedComponent', () => {
     });
 
     it('should handle missing header object gracefully', () => {
-      luigiCoreServiceMock.config.settings.header = undefined;
+      luigiCoreServiceMock.config.settings!.header = undefined as any;
 
       fixture = TestBed.createComponent(GettingStartedComponent);
       component = fixture.componentInstance;
