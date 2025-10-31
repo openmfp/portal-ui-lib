@@ -25,8 +25,9 @@ export const localDevelopmentSettingsLocalStorage = {
 
     try {
       if (!localDevelopmentSettingsFromLocalStore) {
-        throw new Error('Local development settings not found');
+        return null;
       }
+
       return JSON.parse(localDevelopmentSettingsFromLocalStore);
     } catch (e) {
       console.error(
