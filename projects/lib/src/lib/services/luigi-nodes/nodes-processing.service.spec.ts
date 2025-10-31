@@ -560,4 +560,59 @@ describe('NodesProcessingService', () => {
       expect(segs).toEqual(expect.arrayContaining(['static', 'root1', 'err']));
     });
   });
+
+  it('processNodeDefineEntity should alert and throw when defineEntity is missing', () => {
+    const node = { pathSegment: 'n1' } as LuigiNode;
+    expect(() =>
+      (service as any).processNodeDefineEntity(node, {}, '', []),
+    ).toThrow('Node defineEntity is missing');
+    expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
+      text: 'Node defineEntity is missing',
+      type: 'error',
+    });
+  });
+
+  it('entityChildrenProvider should use static path when dynamicFetchId is missing', async () => {
+    const directChild: LuigiNode = { pathSegment: 'direct' } as any;
+    const entityNode: LuigiNode = {
+      defineEntity: { id: 'typeA' },
+    } as any;
+    const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
+
+    const list = await service.entityChildrenProvider(
+      entityNode,
+      {},
+      childrenByEntity as any,
+      [directChild],
+      'typeA',
+    );
+
+    const segs = list.map((n) => n.pathSegment);
+    expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
+  });
+
+  it('entityChildrenProvider should fall back to static children when dynamic fetch fails', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockRejectedValue(new Error('boom'));
+
+    const directChild: LuigiNode = { pathSegment: 'direct' } as any;
+    const entityNode: LuigiNode = {
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
+
+    const list = await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      childrenByEntity as any,
+      [directChild],
+      'typeA',
+    );
+
+    const segs = list.map((n) => n.pathSegment);
+    // dynamic failed, so only static roots should appear
+    expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
+  });
 });
