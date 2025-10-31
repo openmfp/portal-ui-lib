@@ -89,7 +89,7 @@
     "ngx-build-plus": "20.0.0",
     "nodemon": "3.1.10",
     "prettier": "3.6.2",
-    "rimraf": "6.0.1",
+    "rimraf": "6.1.0",
     "ts-jest": "29.4.5",
     "typescript": "5.9.3",
     "xliff": "6.2.2",
