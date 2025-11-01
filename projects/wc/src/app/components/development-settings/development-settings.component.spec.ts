@@ -159,7 +159,7 @@ describe('DevelopmentSettingsComponent', () => {
 
   describe('addUrl', () => {
     it('should add valid URL to configs even if the configs is null', () => {
-      component['localDevelopmentSettings'].configs = null;
+      component['localDevelopmentSettings'].configs = null as any;
       const validUrl = 'https://test.com';
       component.addUrl(validUrl);
 
@@ -228,7 +228,7 @@ describe('DevelopmentSettingsComponent', () => {
 
   describe('addServiceProviderConfig', () => {
     it('should add new config when key and value are provided and serviceProviderConfig is null', () => {
-      component['localDevelopmentSettings'].serviceProviderConfig = null;
+      component['localDevelopmentSettings'].serviceProviderConfig = null as any;
 
       component.addServiceProviderConfig('newKey', 'newValue');
 

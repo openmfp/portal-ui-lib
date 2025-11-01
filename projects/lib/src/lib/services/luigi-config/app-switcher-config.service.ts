@@ -67,8 +67,8 @@ export class AppSwitcherConfigServiceImpl implements AppSwitcherConfigService {
       })
       .map((node) => {
         const nodeConfig: NodeConfig = {
-          title: node.label,
-          icon: node.icon,
+          title: node.label || '',
+          icon: node.icon || '',
           link: '/' + node.pathSegment,
         };
         return nodeConfig;

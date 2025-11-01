@@ -44,7 +44,7 @@ describe('CustomReuseStrategy', () => {
 
     it('should return false when one route config is undefined', () => {
       const TestComponent = class {};
-      const future = { routeConfig: undefined } as ActivatedRouteSnapshot;
+      const future = { routeConfig: undefined } as unknown as ActivatedRouteSnapshot;
       const curr = {
         routeConfig: { component: TestComponent },
       } as ActivatedRouteSnapshot;

@@ -28,8 +28,8 @@ import { ButtonComponent, InputComponent, LabelComponent, LinkComponent, ListCom
 export class FeatureToggleComponent {
   private i18nService = inject(I18nService);
 
-  public context = input<any>();
-  public LuigiClient = input<LuigiClient>();
+  public context = input.required<any>();
+  public LuigiClient = input.required<LuigiClient>();
   public togglesForm = new FormGroup({});
   public newToggleControl = new FormControl('', {
     nonNullable: true,

@@ -128,7 +128,7 @@ export function providePortal(
 const addOptionalProviders = (
   options: PortalOptions,
 ): (Provider | EnvironmentProviders)[] => {
-  const providers = [];
+  const providers: (Provider | EnvironmentProviders)[] = [];
   (options.customMessageListeners || []).forEach((customMessageListenerClass) =>
     providers.push({
       provide: LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,

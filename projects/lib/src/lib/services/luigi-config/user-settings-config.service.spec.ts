@@ -39,7 +39,7 @@ describe('UserSettingsConfigService', () => {
     } as ClientEnvironment);
 
     const originalLocation = window.location;
-    delete window.location;
+    delete (window as any).location;
     window.location = {
       ...originalLocation,
       reload: jest.fn(),
@@ -293,7 +293,7 @@ describe('UserSettingsConfigService', () => {
 
     it('should not include feature toggle settings when disabled', async () => {
       envConfigServiceMock.getEnvConfig.mockResolvedValue({
-        uiOptions: [],
+        uiOptions: [] as string[],
       } as ClientEnvironment);
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
@@ -347,7 +347,7 @@ describe('UserSettingsConfigService', () => {
     it('should not save feature toggle settings when disabled', async () => {
       TestBed.resetTestingModule();
       envConfigServiceMock.getEnvConfig.mockResolvedValue({
-        uiOptions: [],
+        uiOptions: [] as string[],
       } as ClientEnvironment);
 
       TestBed.configureTestingModule({

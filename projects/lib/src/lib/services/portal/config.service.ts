@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
   providedIn: 'root',
 })
 export class ConfigService {
-  private portalConfigCachePromise: Promise<PortalConfig>;
+  private portalConfigCachePromise: Promise<PortalConfig> | undefined;
 
   private entityConfigCache: Record<
     string /* entity */,
@@ -61,8 +61,9 @@ export class ConfigService {
     }
 
     const entityCacheKey = JSON.stringify(context);
-    if (this.entityConfigCache[entity][entityCacheKey]) {
-      return this.entityConfigCache[entity][entityCacheKey];
+    const cachedConfig = this.entityConfigCache[entity][entityCacheKey];
+    if (cachedConfig) {
+      return cachedConfig;
     }
 
     const options = this.requestHeadersService.createOptionsWithAuthHeader();

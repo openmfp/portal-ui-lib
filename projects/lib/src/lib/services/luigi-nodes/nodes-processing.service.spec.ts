@@ -63,11 +63,12 @@ describe('NodesProcessingService', () => {
 
     const portalConfig: PortalConfig = {
       providers: [{ nodes: [], creationTimestamp: '' }],
-    } as PortalConfig;
+    } as unknown as PortalConfig;
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
     luigiCoreService.getGlobalContext = jest.fn();
+    luigiCoreService.showAlert = jest.fn();
     Object.defineProperty(luigiCoreService, 'config', {
       get: jest.fn(() => ({
         settings: { btpToolLayout: true },
@@ -178,7 +179,7 @@ describe('NodesProcessingService', () => {
       entityNode,
       { myentityId, userid },
       childrenByEntity,
-      undefined,
+      [],
       entityName,
     );
 
@@ -230,13 +231,7 @@ describe('NodesProcessingService', () => {
       mygrandparententityId: 'opa',
       userid,
     };
-    await service.entityChildrenProvider(
-      entityNode,
-      ctx,
-      {},
-      undefined,
-      entityName,
-    );
+    await service.entityChildrenProvider(entityNode, ctx, {}, [], entityName);
 
     // Assert
     expect(retrieveEntityChildrenSpy).toHaveBeenCalledWith(
@@ -434,9 +429,9 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       const rootChildrenChildren =
-        rootChildren[0].children instanceof Function
+        rootChildren?.[0]?.children instanceof Function
           ? await rootChildren[0].children({})
-          : rootChildren[0].children;
+          : rootChildren?.[0]?.children;
       expect(rootChildrenChildren).toEqual([]);
     });
 
@@ -525,7 +520,7 @@ describe('NodesProcessingService', () => {
         .children as LuigiNode[];
       expect(compoundChildren.length).toBe(1);
       expect(compoundChildren[0].pathSegment).toBe('keep');
-      expect(compoundChildren[0].context.entityContext.foo).toBe('bar');
+      expect(compoundChildren[0]?.context?.entityContext?.foo).toBe('bar');
     });
 
     it('createChildrenList partitions dynamic children and merges by entity', async () => {
@@ -564,5 +559,60 @@ describe('NodesProcessingService', () => {
       const segs = list.map((n) => n.pathSegment);
       expect(segs).toEqual(expect.arrayContaining(['static', 'root1', 'err']));
     });
+  });
+
+  it('processNodeDefineEntity should alert and throw when defineEntity is missing', () => {
+    const node = { pathSegment: 'n1' } as LuigiNode;
+    expect(() =>
+      (service as any).processNodeDefineEntity(node, {}, '', []),
+    ).toThrow('Node defineEntity is missing');
+    expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
+      text: 'Node defineEntity is missing',
+      type: 'error',
+    });
+  });
+
+  it('entityChildrenProvider should use static path when dynamicFetchId is missing', async () => {
+    const directChild: LuigiNode = { pathSegment: 'direct' } as any;
+    const entityNode: LuigiNode = {
+      defineEntity: { id: 'typeA' },
+    } as any;
+    const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
+
+    const list = await service.entityChildrenProvider(
+      entityNode,
+      {},
+      childrenByEntity as any,
+      [directChild],
+      'typeA',
+    );
+
+    const segs = list.map((n) => n.pathSegment);
+    expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
+  });
+
+  it('entityChildrenProvider should fall back to static children when dynamic fetch fails', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockRejectedValue(new Error('boom'));
+
+    const directChild: LuigiNode = { pathSegment: 'direct' } as any;
+    const entityNode: LuigiNode = {
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
+
+    const list = await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      childrenByEntity as any,
+      [directChild],
+      'typeA',
+    );
+
+    const segs = list.map((n) => n.pathSegment);
+    // dynamic failed, so only static roots should appear
+    expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
   });
 });

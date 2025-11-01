@@ -51,7 +51,7 @@ export class IframeService {
       }
       permissions.allow.forEach((policy) => {
         if (
-          this.isIFrameFeaturePolicyAllowed(policy, iframe.getAttribute('src'))
+          this.isIFrameFeaturePolicyAllowed(policy, this.getIframeSrc(iframe))
         ) {
           // feature policies are separated by semicolon
           allow += ` ${policy};`;
@@ -66,7 +66,7 @@ export class IframeService {
         if (
           this.isIFrameSandboxPermissionAllowed(
             permission,
-            iframe.getAttribute('src')
+            this.getIframeSrc(iframe)
           )
         ) {
           // sandbox permission are separated by whitespace
@@ -75,5 +75,19 @@ export class IframeService {
       });
       iframe.setAttribute('sandbox', sandbox.trim());
     }
+  }
+
+  private getIframeSrc(iframe: Element): string {
+    const src = iframe.getAttribute('src');
+    if (!src) {
+      this.luigiCoreService.showAlert({
+        text: 'Iframe source not found',
+        type: 'error',
+      });
+
+      throw new Error('Iframe source not found');
+    }
+
+    return src;
   }
 }

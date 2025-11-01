@@ -259,7 +259,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should return empty server nodes when no matching local nodes', async () => {
       const serverNodes = [
         { pathSegment: '/path', entityType: null, label: 'Y', context: {} },
-      ] as LuigiNode[];
+      ] as unknown as LuigiNode[];
       getLocalNodesSpy.mockResolvedValue([
         { pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} },
       ]);
@@ -278,6 +278,26 @@ describe('LocalConfigurationServiceImpl', () => {
       );
 
       expect(localNodes).toEqual(serverLuigiNodesTest);
+    });
+
+    it('should alert and throw when matching local node has no context', async () => {
+      const serverNodes = [
+        { pathSegment: '/path', entityType: 'typeA', label: 'A', context: {} },
+      ] as unknown as LuigiNode[];
+      // local node matches server node but lacks context entirely
+      getLocalNodesSpy.mockResolvedValue([
+        { pathSegment: '/path', entityType: 'typeA', label: 'X' } as any,
+      ]);
+
+      await expect(
+        service.replaceServerNodesWithLocalOnes(serverNodes, ['typeA']),
+      ).rejects.toThrow('Local node context is missing');
+      expect(luigiCoreService.showAlert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          text: expect.stringContaining('Local node context is missing'),
+          type: 'error',
+        }),
+      );
     });
   });
 
