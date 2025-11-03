@@ -1,8 +1,8 @@
+import { LuigiCoreService } from './luigi-core.service';
+import { RequestHeadersService } from './request-headers.service';
+import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { of } from 'rxjs';
-import { LuigiCoreService } from './luigi-core.service';
-import { TestBed } from '@angular/core/testing';
-import { RequestHeadersService } from './request-headers.service';
 
 describe('RequestHeadersService', () => {
   let service: RequestHeadersService;
@@ -58,10 +58,9 @@ describe('RequestHeadersService', () => {
     expect(options.headers.get('Authorization')).toBe('Bearer some_idtoken');
   });
 
-  it('should throw error if not authenticated', () => {
+  it('should return headers without authorization if not authenticated', () => {
     getLuigiCoreAuthSpy.mockReturnValue({});
-    expect(() => {
-      service.createOptionsWithAuthHeader();
-    }).toThrowError();
+    const options = service.createOptionsWithAuthHeader();
+    expect(options.headers.get('Authorization')).toBeNull();
   });
 });
