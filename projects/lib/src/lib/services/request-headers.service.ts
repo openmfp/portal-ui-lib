@@ -1,7 +1,7 @@
-import { HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { Injectable } from '@angular/core';
 import { LuigiCoreService } from './luigi-core.service';
+import { HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { LuigiCoreService } from './luigi-core.service';
 export class RequestHeadersService {
   constructor(
     private luigiCoreService: LuigiCoreService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   public createOptionsWithAuthHeader() {
@@ -21,16 +21,19 @@ export class RequestHeadersService {
         language = params['language'];
       }
     });
+
+    const headers = new HttpHeaders({
+      'Accept-Language': language || '',
+    });
+
     if (!authData?.idToken) {
-      throw new Error(
-        'Unable to create authorization header, no id token present.'
-      );
+      return {
+        headers,
+      };
     }
+
     return {
-      headers: new HttpHeaders({
-        authorization: 'Bearer ' + authData.idToken,
-        'Accept-Language': language || '',
-      }),
+      headers: headers.append('authorization', 'Bearer ' + authData.idToken),
     };
   }
 }
