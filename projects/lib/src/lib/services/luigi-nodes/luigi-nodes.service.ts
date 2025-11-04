@@ -94,16 +94,16 @@ export class LuigiNodesService {
 
       return this.createErrorNodes(
         entityDefinition,
-        additionalContext ?? {},
         errorCode,
+        additionalContext,
       );
     }
   }
 
   private createErrorNodes(
     entityDefinition: EntityDefinition,
-    additionalContext: Record<string, string>,
     errorCode: number,
+    additionalContext?: Record<string, string>,
   ): LuigiNode[] {
     return [
       {
