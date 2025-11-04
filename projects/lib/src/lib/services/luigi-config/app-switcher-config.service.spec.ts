@@ -1,4 +1,4 @@
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
@@ -132,6 +132,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
           pathSegment: 'home',
           entityType: EntityType.GLOBAL,
           hideFromNav: false,
+          context: {} as NodeContext,
         },
       ];
       const result = service.getAppSwitcher(mockLuigiOneGlobalNode);

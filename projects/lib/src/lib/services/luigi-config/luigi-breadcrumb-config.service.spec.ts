@@ -5,6 +5,7 @@ import {
   NodeItem,
 } from './luigi-breadcrumb-config.service';
 import { TestBed } from '@angular/core/testing';
+import { NodeContext } from '@openmfp/portal-ui-lib';
 import { MockProxy, mock } from 'jest-mock-extended';
 
 describe('HeaderBarService', () => {
@@ -70,7 +71,9 @@ describe('HeaderBarService', () => {
     const parent = document.createElement('div');
     parent.appendChild(container);
 
-    const nodeItems: NodeItem[] = [{ pathSegment: 'p', label: 'L' }];
+    const nodeItems: NodeItem[] = [
+      { pathSegment: 'p', label: 'L', context: {} as NodeContext },
+    ];
     const clickHandler = jest.fn();
 
     breadcrumb?.renderer(container, nodeItems, clickHandler);

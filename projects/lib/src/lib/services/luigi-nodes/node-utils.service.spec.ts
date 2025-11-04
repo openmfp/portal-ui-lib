@@ -34,13 +34,14 @@ describe('NodeUtilsService', () => {
 
   describe('isVisible', () => {
     it('should return true if visibleForFeatureToggles is not set', () => {
-      const node: LuigiNode = {};
+      const node: LuigiNode = { context: {} as NodeContext };
       expect(service.isVisible(node)).toBe(true);
     });
 
     it('should return true if all feature toggles are active', () => {
       const node: LuigiNode = {
         visibleForFeatureToggles: ['feature1', 'feature2'],
+        context: {} as NodeContext,
       };
       mockLuigiCoreService.isFeatureToggleActive.mockReturnValue(true);
 
@@ -56,6 +57,7 @@ describe('NodeUtilsService', () => {
     it('should return false if any feature toggle is inactive', () => {
       const node: LuigiNode = {
         visibleForFeatureToggles: ['feature1', 'feature2'],
+        context: {} as NodeContext,
       };
       mockLuigiCoreService.isFeatureToggleActive
         .mockReturnValueOnce(true)
@@ -67,6 +69,7 @@ describe('NodeUtilsService', () => {
     it('should handle negated feature toggles correctly', () => {
       const node: LuigiNode = {
         visibleForFeatureToggles: ['!feature1', 'feature2'],
+        context: {} as NodeContext,
       };
       mockLuigiCoreService.isFeatureToggleActive
         .mockReturnValueOnce(false) // for 'feature1'
@@ -84,6 +87,7 @@ describe('NodeUtilsService', () => {
     it('should return false if a negated feature toggle is active', () => {
       const node: LuigiNode = {
         visibleForFeatureToggles: ['!feature1', 'feature2'],
+        context: {} as NodeContext,
       };
       mockLuigiCoreService.isFeatureToggleActive.mockReturnValue(true);
 

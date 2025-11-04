@@ -1,5 +1,5 @@
 import { LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { ChildrenNodesService } from './children-nodes.service';
@@ -230,6 +230,7 @@ describe('ChildrenNodesService', () => {
       // Arrange
       const entityNode: LuigiNode = {
         pathSegment: 'test',
+        context: {} as NodeContext,
       };
 
       // Act
@@ -246,6 +247,7 @@ describe('ChildrenNodesService', () => {
         defineEntity: {
           id: 'testEntity',
         },
+        context: {} as NodeContext,
       };
 
       // Act
@@ -266,6 +268,7 @@ describe('ChildrenNodesService', () => {
         navHeader: {
           existingProp: 'test',
         },
+        context: {} as NodeContext,
       };
 
       // Act
@@ -287,6 +290,7 @@ describe('ChildrenNodesService', () => {
             id: 'testEntity',
             label: 'Test Entity',
           },
+          context: {} as NodeContext,
         };
         containerElement = document.createElement('div');
       });

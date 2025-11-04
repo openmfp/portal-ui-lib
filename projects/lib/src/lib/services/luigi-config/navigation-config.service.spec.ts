@@ -1,4 +1,9 @@
-import { ClientEnvironment, LuigiNode, PortalConfig } from '../../models';
+import {
+  ClientEnvironment,
+  LuigiNode,
+  NodeContext,
+  PortalConfig,
+} from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService, EnvConfigService } from '../portal';
@@ -71,6 +76,7 @@ describe('NavigationConfigService', () => {
         home: [
           {
             label: 'foo',
+            context: {} as NodeContext,
             viewGroup: 'abc',
             _preloadUrl: 'preload',
             _requiredIFramePermissionsForViewGroup: {

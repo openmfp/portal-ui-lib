@@ -1,7 +1,4 @@
-import {
-  ERROR_COMPONENT_CONFIG,
-  LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
-} from '../../injection-tokens';
+import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import {
   EntityConfig,
   EntityDefinition,
@@ -74,7 +71,11 @@ describe('LuigiNodesService', () => {
     };
 
     const mockExistingChildren: LuigiNode[] = [
-      { pathSegment: 'existing1', label: 'Existing Node 1' },
+      {
+        pathSegment: 'existing1',
+        label: 'Existing Node 1',
+        context: {} as NodeContext,
+      },
     ];
 
     const mockServiceProvider: ServiceProvider = {
@@ -85,10 +86,12 @@ describe('LuigiNodesService', () => {
         {
           pathSegment: 'node1',
           label: 'Test Node 1',
+          context: {} as NodeContext,
         },
         {
           pathSegment: 'node2',
           label: 'Test Node 2',
+          context: {} as NodeContext,
         },
       ],
     };
@@ -393,6 +396,7 @@ describe('LuigiNodesService', () => {
         pathSegment: 'node1',
         label: 'Node 1',
         requiredPolicies: [],
+        context: {} as NodeContext,
       };
 
       const result = service.nodePolicyResolver(node);
@@ -404,6 +408,7 @@ describe('LuigiNodesService', () => {
         pathSegment: 'node2',
         label: 'Node 2',
         requiredPolicies: ['projectMember'],
+        context: {} as NodeContext,
       };
 
       const result = service.nodePolicyResolver(node);
@@ -415,6 +420,7 @@ describe('LuigiNodesService', () => {
         pathSegment: 'node3',
         label: 'Node 3',
         requiredPolicies: ['projectMember', 'admin', 'superAdmin'],
+        context: {} as NodeContext,
       };
 
       const result = service.nodePolicyResolver(node);

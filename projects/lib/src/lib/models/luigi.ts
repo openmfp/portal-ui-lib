@@ -1,5 +1,6 @@
 import { NodeContext } from './luigi-context';
 
+
 export interface LuigiNavigationConfig {
   nodes?: LuigiNode[];
   viewGroupSettings?: any;
@@ -191,7 +192,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   compound?: any;
   badgeCounter?: LuigiBadgeCounter;
   category?: LuigiNodeCategory | string;
-  context?: NodeContext;
+  context: NodeContext;
   visibleForFeatureToggles?: string[];
   statusBadge?: LuigiStatusBadge;
   onNodeActivation?: (node: LuigiNode) => boolean;

@@ -63,7 +63,7 @@ export class ChildrenNodesService {
     );
 
     childrenNodes.forEach((child) => {
-      child.context = { ...(child.context ?? ({} as any)), entityContext };
+      child.context = { ...child.context, entityContext };
       child.onNodeActivation =
         this.nodeUtilsService.retrieveGlobalHelpContext();
     });
@@ -71,23 +71,13 @@ export class ChildrenNodesService {
     const nodes = await Promise.all(
       childrenNodes
         .filter((child) => visibleForContext(child.context, child))
-        .map((child) => {
-          if (!child.context) {
-            this.luigiCoreService.showAlert({
-              text: `Child context is missing for child ${JSON.stringify(child)}`,
-              type: 'error',
-            });
-
-            return child;
-          }
-
-          return (
+        .map(
+          (child) =>
             this.customNodeProcessingService?.processNode(
               child.context,
               child,
-            ) || child
-          );
-        }),
+            ) || child,
+        ),
     );
     return this.nodeSortingService.sortNodes(nodes);
   }

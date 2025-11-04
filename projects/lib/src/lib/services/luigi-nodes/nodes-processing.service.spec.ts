@@ -2,7 +2,12 @@ import {
   LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
+import {
+  EntityDefinition,
+  LuigiNode,
+  NodeContext,
+  PortalConfig,
+} from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
@@ -27,6 +32,7 @@ describe('NodesProcessingService', () => {
       label: 'home1',
       pathSegment: '',
       viewUrl: '',
+      context: {} as NodeContext,
     },
   ];
   const projectChildren: LuigiNode[] = [
@@ -34,6 +40,7 @@ describe('NodesProcessingService', () => {
       label: 'project1',
       pathSegment: '',
       viewUrl: '',
+      context: {} as NodeContext,
     },
   ];
 
@@ -167,6 +174,7 @@ describe('NodesProcessingService', () => {
         dynamicFetchId: entityName,
         contextKey: 'myentityId',
       },
+      context: {} as NodeContext,
     };
 
     const childrenByEntity = {
@@ -208,6 +216,7 @@ describe('NodesProcessingService', () => {
         dynamicFetchId: 'mysubentity',
         contextKey: 'mysubentityId',
       },
+      context: {} as NodeContext,
     };
     (entityNode as any).parent = {
       defineEntity: {
@@ -221,6 +230,7 @@ describe('NodesProcessingService', () => {
           dynamicFetchId: 'mygrandparententity',
           contextKey: 'mygrandparententityId',
         },
+        context: {} as NodeContext,
       },
     };
 
@@ -268,12 +278,14 @@ describe('NodesProcessingService', () => {
           {
             pathSegment: 'subsub',
             entityType: 'myentity.subentity.subsub',
+            context: {} as NodeContext,
           },
         ],
         someOtherId: [
           {
             pathSegment: 'othersubsub',
             entityType: 'myentity.subentity.subsub',
+            context: {} as NodeContext,
           },
         ],
       };
@@ -291,7 +303,7 @@ describe('NodesProcessingService', () => {
           },
         );
 
-      const childrenByEntity = {
+      const childrenByEntity: Record<string, LuigiNode[]> = {
         home: homeChildren,
         myentity: projectChildren,
         'myentity.subentity': [
@@ -302,24 +314,29 @@ describe('NodesProcessingService', () => {
               dynamicFetchId: 'subsub',
               contextKey: 'id',
             },
+            context: {} as NodeContext,
           },
         ],
       };
 
       const rootNode: LuigiNode = {
         pathSegment: 'random',
+        context: {} as NodeContext,
         children: [
           {
             pathSegment: 'random',
+            context: {} as NodeContext,
             defineEntity: {
               id: entityName,
             },
             children: [
               {
                 pathSegment: 'directChild1',
+                context: {} as NodeContext,
                 children: [
                   {
                     pathSegment: 'subentity',
+                    context: {} as NodeContext,
                     defineEntity: {
                       id: 'subentity',
                     },
@@ -364,6 +381,7 @@ describe('NodesProcessingService', () => {
     it('should filter children based on entity context', async () => {
       const rootNode: LuigiNode = {
         pathSegment: 'random',
+        context: {} as NodeContext,
         defineEntity: {
           id: entityName,
           contextKey: entityName,
@@ -377,6 +395,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar1',
               },
             },
+            context: {} as NodeContext,
             children: [
               {
                 pathSegment: 'grandChild1',
@@ -385,6 +404,7 @@ describe('NodesProcessingService', () => {
                     foo: 'bar2',
                   },
                 },
+                context: {} as NodeContext,
               },
             ],
           },
@@ -395,6 +415,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar2',
               },
             },
+            context: {} as NodeContext,
           },
         ],
         compound: {},
@@ -409,6 +430,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar1',
               },
             },
+            context: {} as NodeContext,
           },
         ],
       };
@@ -438,6 +460,7 @@ describe('NodesProcessingService', () => {
     it('should filter children based on context', async () => {
       const rootNode: LuigiNode = {
         pathSegment: 'random',
+        context: {} as NodeContext,
         defineEntity: {
           id: entityName,
           contextKey: entityName,
@@ -447,16 +470,19 @@ describe('NodesProcessingService', () => {
           {
             pathSegment: 'directChild1',
             visibleForContext: 'entityContext.myentity.foo == `bar1`',
+            context: {} as NodeContext,
             children: [
               {
                 pathSegment: 'grandChild1',
                 visibleForContext: 'entityContext.myentity.foo == `bar2`',
+                context: {} as NodeContext,
               },
             ],
           },
           {
             pathSegment: 'directChild2',
             visibleForContext: 'entityContext.myentity.foo == `bar2`',
+            context: {} as NodeContext,
           },
         ],
       };
@@ -470,6 +496,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar1',
               },
             },
+            context: {} as NodeContext,
           },
         ],
       };

@@ -61,15 +61,8 @@ export class LocalConfigurationServiceImpl {
       }
 
       (result.nodes || []).forEach((node) => {
-        if (!node.context) {
-          this.luigiCoreService.showAlert({
-            text: `Node context is missing for node ${JSON.stringify(node)}`,
-            type: 'warning',
-          });
-        }
-
         node.context = {
-          ...(node.context ?? ({} as any)),
+          ...node.context,
           serviceProviderConfig: {
             ...node.context?.serviceProviderConfig,
             ...localDevelopmentSettings.serviceProviderConfig,
@@ -145,17 +138,6 @@ export class LocalConfigurationServiceImpl {
       if (index !== -1) {
         const [localFoundNode] = localNodes.splice(index, 1);
         localReplacingNodes.push(localFoundNode);
-
-        if (!localFoundNode.context) {
-          this.luigiCoreService.showAlert({
-            text: `Local node context is missing for node ${JSON.stringify(localFoundNode)}`,
-            type: 'error',
-          });
-
-          throw new Error(
-            `Local node context is missing for node ${JSON.stringify(localFoundNode)}`,
-          );
-        }
 
         localFoundNode.context = {
           ...serverNode.context,

@@ -50,10 +50,7 @@ export class NodesProcessingService {
     ];
 
     globalNodes.forEach((node) => {
-      if (node.context) {
-        node.context = { ...node.context };
-      }
-
+      node.context = { ...node.context };
       node.globalNav = this.isGlobalNavNode(node);
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
