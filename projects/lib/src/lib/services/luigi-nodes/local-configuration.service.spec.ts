@@ -1,5 +1,5 @@
 import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { ContentConfiguration, LuigiNode } from '../../models';
+import { ContentConfiguration, LuigiNode, NodeContext } from '../../models';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesService } from '../portal';
@@ -72,7 +72,7 @@ describe('LocalConfigurationServiceImpl', () => {
       });
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockImplementation(
         async (conf: ContentConfiguration[]) => {
-          return { nodes: conf.map((c) => ({})) };
+          return { nodes: conf.map((c) => ({ context: {} as NodeContext })) };
         },
       );
       httpClient.get = jest.fn().mockReturnValue(of({}));
@@ -204,8 +204,18 @@ describe('LocalConfigurationServiceImpl', () => {
 
   describe('replaceServerNodesWithLocalOnes', () => {
     const serverLuigiNodesTest = [
-      { pathSegment: '/path', entityType: 'typeA', label: 'A', context: {} },
-      { pathSegment: '/path', entityType: 'typeB', label: 'B', context: {} },
+      {
+        pathSegment: '/path',
+        entityType: 'typeA',
+        label: 'A',
+        context: {} as NodeContext,
+      },
+      {
+        pathSegment: '/path',
+        entityType: 'typeB',
+        label: 'B',
+        context: {} as NodeContext,
+      },
     ] as LuigiNode[];
 
     let getLocalNodesSpy;
@@ -259,7 +269,7 @@ describe('LocalConfigurationServiceImpl', () => {
     it('should return empty server nodes when no matching local nodes', async () => {
       const serverNodes = [
         { pathSegment: '/path', entityType: null, label: 'Y', context: {} },
-      ] as LuigiNode[];
+      ] as unknown as LuigiNode[];
       getLocalNodesSpy.mockResolvedValue([
         { pathSegment: '/path', entityType: 'typeX', label: 'X', context: {} },
       ]);
@@ -319,7 +329,10 @@ describe('LocalConfigurationServiceImpl', () => {
     });
 
     it('should apply the serviceProviderConfig to the nodes', async () => {
-      const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
+      const luigiNodeMock: LuigiNode = {
+        viewUrl: 'https://sap.com/test',
+        context: {} as NodeContext,
+      };
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
         { nodes: [luigiNodeMock] },
       );
@@ -348,7 +361,10 @@ describe('LocalConfigurationServiceImpl', () => {
     });
 
     it('should return empty array if the local settings is not active', async () => {
-      const luigiNodeMock: LuigiNode = { viewUrl: 'https://sap.com/test' };
+      const luigiNodeMock: LuigiNode = {
+        viewUrl: 'https://sap.com/test',
+        context: {} as NodeContext,
+      };
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
         { nodes: [luigiNodeMock] },
       );

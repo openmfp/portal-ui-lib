@@ -49,7 +49,7 @@ describe('AuthService', () => {
     });
 
     it('should make a POST request and not set auth data', async () => {
-      const mockResponse: AuthTokenData = undefined;
+      const mockResponse: AuthTokenData = undefined as any;
       httpClientMock.post.mockReturnValue(of(mockResponse));
 
       await service.refresh();

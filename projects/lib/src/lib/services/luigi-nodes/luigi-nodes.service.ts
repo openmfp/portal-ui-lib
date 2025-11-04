@@ -6,9 +6,9 @@ import {
   ErrorComponentConfig,
   LuigiNode,
   NodeContext,
-  PortalConfig,
 } from '../../models';
 import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { Injectable, inject } from '@angular/core';
@@ -19,6 +19,7 @@ import { Injectable, inject } from '@angular/core';
 export class LuigiNodesService {
   private i18nService = inject(I18nService);
   private configService = inject(ConfigService);
+  private luigiCoreService = inject(LuigiCoreService);
   private localConfigurationService = inject(LocalConfigurationServiceImpl);
   private errorComponentConfig = inject<Record<string, ErrorComponentConfig>>(
     ERROR_COMPONENT_CONFIG as any,
@@ -72,34 +73,37 @@ export class LuigiNodesService {
     let errorCode = 0;
     let configsForEntity: EntityConfig;
     const entityType = entityDefinition.dynamicFetchId;
+
     try {
+      if (!entityType) {
+        throw new Error('Entity type is required');
+      }
+
       configsForEntity = await this.configService.getEntityConfig(
         entityType,
         additionalContext,
       );
+
+      return configsForEntity.providers.flatMap((p) => p.nodes);
     } catch (e) {
       errorCode = e.status || 500;
       console.warn(
         `Could not retrieve nodes for entity: ${entityType}, error: `,
         e,
       );
-    }
 
-    if (errorCode) {
       return this.createErrorNodes(
         entityDefinition,
-        additionalContext,
         errorCode,
+        additionalContext,
       );
     }
-
-    return configsForEntity.providers.flatMap((p) => p.nodes);
   }
 
   private createErrorNodes(
     entityDefinition: EntityDefinition,
-    additionalContext: Record<string, string>,
     errorCode: number,
+    additionalContext?: Record<string, string>,
   ): LuigiNode[] {
     return [
       {

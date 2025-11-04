@@ -48,7 +48,7 @@ describe('ReloadLuigiConfigListener', () => {
       origin: 'test-origin',
       action: 'test-action',
       id: '123',
-      entity: undefined,
+      entity: undefined as any,
       context: { foo: 'bar' },
     };
     await listener.onCustomMessageReceived(message, {}, {});

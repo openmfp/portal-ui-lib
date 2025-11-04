@@ -107,9 +107,9 @@ export class LocalConfigurationServiceImpl {
     this.luigiCoreService.showAlert({
       text: `
             Your local development configuration contains error(s).
-            You will not be able to see your local changes and local development results unless you correct the data and reload the page. 
+            You will not be able to see your local changes and local development results unless you correct the data and reload the page.
             Please see below the detailed information: <br/><br/>
-            
+
             ${message}
           `,
       type: 'error',
@@ -130,7 +130,7 @@ export class LocalConfigurationServiceImpl {
     }
     this.logNodesState(serverLuigiNodes, localNodes);
 
-    const localReplacingNodes = [];
+    const localReplacingNodes: LuigiNode[] = [];
     const filteredServerNodes = serverLuigiNodes.filter((serverNode) => {
       const index = localNodes.findIndex((localNode) => {
         return this.localNodeMatchesServerNode(localNode, serverNode);
@@ -138,6 +138,7 @@ export class LocalConfigurationServiceImpl {
       if (index !== -1) {
         const [localFoundNode] = localNodes.splice(index, 1);
         localReplacingNodes.push(localFoundNode);
+
         localFoundNode.context = {
           ...serverNode.context,
           ...localFoundNode.context,
@@ -178,8 +179,8 @@ export class LocalConfigurationServiceImpl {
       .filter(Boolean)
       .join(',');
     console.debug(
-      `Found '${serverLuigiNodes.length}' server nodes. 
-       Found '${localNodes.length}' local luigi nodes. 
+      `Found '${serverLuigiNodes.length}' server nodes.
+       Found '${localNodes.length}' local luigi nodes.
        The entities of the server node are: [${serverEntityTypes}]
        The entities of local nodes are: [${localEntityTypes}]`,
     );
@@ -198,14 +199,17 @@ export class LocalConfigurationServiceImpl {
   private async getLocalConfigurations(
     localDevelopmentSettings: LocalDevelopmentSettings,
   ): Promise<ContentConfiguration[]> {
-    const initialConfigurations = localDevelopmentSettings.configs
-      .filter((config) => config.data)
-      .map((config) => config.data);
+    const initialConfigurations: ContentConfiguration[] =
+      localDevelopmentSettings.configs
+        .filter(
+          (config): config is { data: ContentConfiguration } => !!config.data,
+        )
+        .map((config) => config.data);
 
     const configurations = (
       await Promise.allSettled(
         localDevelopmentSettings.configs
-          .filter((config) => config.url)
+          .filter((config): config is { url: string } => !!config.url)
           .map((config) =>
             lastValueFrom(this.http.get<ContentConfiguration>(config.url)).then(
               (contentConfiguration: ContentConfiguration) =>

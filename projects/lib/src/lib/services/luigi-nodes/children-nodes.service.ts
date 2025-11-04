@@ -53,7 +53,7 @@ export class ChildrenNodesService {
             ).entityContext;
           } catch (error) {
             console.error(
-              entityNode.defineEntity.id,
+              entityNode.defineEntity?.id,
               'does not exist',
               context,
             );

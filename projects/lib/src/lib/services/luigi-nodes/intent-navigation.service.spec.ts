@@ -1,6 +1,7 @@
 import { LuigiNode } from '../../models/luigi';
 import { IntentNavigationService } from './intent-navigation.service';
 import { TestBed } from '@angular/core/testing';
+import { NodeContext } from '@openmfp/portal-ui-lib';
 
 describe('Intent Navigation functions', () => {
   let service: IntentNavigationService;
@@ -26,6 +27,7 @@ describe('Intent Navigation functions', () => {
         {
           label: 'someRandomLabel',
           pathSegment: 'someparentPath',
+          context: {} as NodeContext,
           _intentMappings: [
             {
               baseEntityId: 'project.alpha',
@@ -48,6 +50,7 @@ describe('Intent Navigation functions', () => {
         },
         {
           pathSegment: 'someparentPath',
+          context: {} as NodeContext,
         },
       ];
 
@@ -71,6 +74,7 @@ describe('Intent Navigation functions', () => {
         {
           label: 'someRandomLabel',
           pathSegment: 'someparentPath',
+          context: {} as NodeContext,
           _intentMappings: [
             {
               baseEntityId: 'project.beta',
@@ -111,6 +115,7 @@ describe('Intent Navigation functions', () => {
         },
         {
           pathSegment: 'someparentPath',
+          context: {} as NodeContext,
         },
       ];
 
@@ -150,7 +155,7 @@ describe('Intent Navigation functions', () => {
       const expectedPath = '/test/project/:projectId/component/:componentId/';
 
       const cleanedPath = service.removeDuplicateSlash(
-        '//test/project/:projectId//component/:componentId///'
+        '//test/project/:projectId//component/:componentId///',
       );
       expect(cleanedPath).toEqual(expectedPath);
     });

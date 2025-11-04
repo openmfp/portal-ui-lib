@@ -61,11 +61,11 @@ describe('AuthConfigService', () => {
 
       const config = await service.getAuthConfig();
 
-      expect(config.use).toBe('oAuth2AuthCode');
-      expect(config.storage).toBe('none');
-      expect(config.disableAutoLogin).toBe(false);
-      expect(config.oAuth2AuthCode.authorizeUrl).toBe(oauthServerUrl);
-      expect(config.oAuth2AuthCode.oAuthData.client_id).toBe(clientId);
+      expect(config?.use).toBe('oAuth2AuthCode');
+      expect(config?.storage).toBe('none');
+      expect(config?.disableAutoLogin).toBe(false);
+      expect(config?.oAuth2AuthCode?.authorizeUrl).toBe(oauthServerUrl);
+      expect(config?.oAuth2AuthCode?.oAuthData?.client_id).toBe(clientId);
     });
 
     it('should handle userInfoFn correctly', async () => {
@@ -82,11 +82,11 @@ describe('AuthConfigService', () => {
       } as any);
 
       const config = await service.getAuthConfig();
-      const userInfoFn = config.oAuth2AuthCode.userInfoFn;
+      const userInfoFn = config?.oAuth2AuthCode?.userInfoFn;
 
       global.fetch = jest.fn().mockResolvedValue({ ok: true });
 
-      const result = await userInfoFn();
+      const result = await userInfoFn?.();
 
       expect(result).toEqual(userInfo);
       expect(global.fetch).toHaveBeenCalledWith(
@@ -109,11 +109,11 @@ describe('AuthConfigService', () => {
         baseDomain: 'https://example.com',
       } as any);
       const config = await service.getAuthConfig();
-      const userInfoFn = config.oAuth2AuthCode.userInfoFn;
+      const userInfoFn = config?.oAuth2AuthCode?.userInfoFn;
 
       global.fetch = jest.fn().mockRejectedValue(new Error('Fetch failed'));
 
-      const result = await userInfoFn();
+      const result = await userInfoFn?.();
 
       expect(result).toEqual({ ...userInfo, picture: '' });
       expect(global.fetch).toHaveBeenCalledWith(

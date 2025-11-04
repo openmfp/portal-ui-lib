@@ -25,7 +25,7 @@ describe('ConfigService', () => {
     jest
       .spyOn(requestHeadersService, 'createOptionsWithAuthHeader')
       .mockReturnValue({
-        headers: null,
+        headers: null as any,
       });
   });
 
@@ -80,7 +80,7 @@ describe('ConfigService', () => {
         toString: jest.fn(),
       } as any;
 
-      delete window.location;
+      delete (window as any).location;
       window.location = mockLocation;
 
       const configPromise = service.getPortalConfig();
@@ -111,7 +111,7 @@ describe('ConfigService', () => {
       const response = { providers: [] };
 
       // Act
-      const reloadPromise = service.reloadConfig(undefined);
+      const reloadPromise = service.reloadConfig(undefined as any);
       const testRequest = httpTestingController.expectOne('/rest/config');
       testRequest.flush(response);
       await reloadPromise;

@@ -4,11 +4,11 @@ import { isMatch } from 'lodash';
 
 export const visibleForContext = (ctx: any, node: LuigiNode): boolean => {
   // visibleForEntityContext is deprecated
-  if (!isMatch(ctx.entityContext, node.visibleForEntityContext)) {
+  if (!isMatch(ctx?.entityContext, node.visibleForEntityContext)) {
     return false;
   }
 
-  return matchesJMESPath(ctx, node.visibleForContext);
+  return matchesJMESPath(ctx, node.visibleForContext ?? '');
 };
 
 export const computeDynamicFetchContext = (

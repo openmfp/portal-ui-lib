@@ -2,6 +2,7 @@ import { LuigiNode } from '../../models/luigi';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeSortingService } from './node-sorting.service';
 import { TestBed } from '@angular/core/testing';
+import { NodeContext } from '@openmfp/portal-ui-lib';
 
 describe('NodeSortingService', () => {
   let service: NodeSortingService;
@@ -144,11 +145,12 @@ describe('NodeSortingService', () => {
     });
 
     it('should sort a list of given nodes correctly', async () => {
-      const nodeList = [
+      const nodeList: LuigiNode[] = [
         {
           label: '1',
           order: '2',
           category: 'c2',
+          context: {} as NodeContext,
         },
         {
           label: '2',
@@ -156,13 +158,16 @@ describe('NodeSortingService', () => {
           category: {
             label: 'c1',
           },
+          context: {} as NodeContext,
         },
         {
           label: '3',
+          context: {} as NodeContext,
         },
         {
           label: 'last-one',
           order: '1000',
+          context: {} as NodeContext,
         },
         {
           label: '4',
@@ -170,14 +175,17 @@ describe('NodeSortingService', () => {
           category: {
             label: 'c2',
           },
+          context: {} as NodeContext,
         },
         {
           label: '5',
           order: '3',
+          context: {} as NodeContext,
         },
         {
           label: '6',
           order: '0',
+          context: {} as NodeContext,
         },
       ];
       nodeList.sort(service.nodeComparison);
@@ -185,6 +193,7 @@ describe('NodeSortingService', () => {
         {
           label: '6',
           order: '0',
+          context: {} as NodeContext,
         },
         {
           label: '2',
@@ -192,11 +201,13 @@ describe('NodeSortingService', () => {
           category: {
             label: 'c1',
           },
+          context: {} as NodeContext,
         },
         {
           label: '1',
           order: '2',
           category: 'c2',
+          context: {} as NodeContext,
         },
         {
           label: '4',
@@ -204,18 +215,22 @@ describe('NodeSortingService', () => {
           category: {
             label: 'c2',
           },
+          context: {} as NodeContext,
         },
         {
           label: '5',
           order: '3',
+          context: {} as NodeContext,
         },
         {
           label: '3',
           order: '999',
+          context: {} as NodeContext,
         },
         {
           label: 'last-one',
           order: '1000',
+          context: {} as NodeContext,
         },
       ]);
     });
@@ -225,8 +240,8 @@ describe('NodeSortingService', () => {
       slotNode.category = { label: 'cat2' };
 
       service.appendChildrenToSlot(entityDefinitionNode1.children, slotNode, [
-        { label: 'n1' },
-        { label: 'n2' },
+        { label: 'n1', context: {} as NodeContext },
+        { label: 'n2', context: {} as NodeContext },
       ]);
       expect(entityDefinitionNode1.children.length).toBe(10);
       expect(entityDefinitionNode1.children[0].label).toEqual('firstnode');

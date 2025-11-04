@@ -1,9 +1,9 @@
 import {
-  Component,
-  ViewEncapsulation,
   CUSTOM_ELEMENTS_SCHEMA,
+  Component,
   Input,
   OnInit,
+  ViewEncapsulation,
   inject,
 } from '@angular/core';
 import {
@@ -15,11 +15,11 @@ import {
 } from '@fundamental-ngx/core';
 import {
   ButtonConfig,
-  SceneConfig,
-  ErrorComponentConfig,
   EntityDefinition,
+  ErrorComponentConfig,
   I18nService,
   LuigiCoreService,
+  SceneConfig,
 } from '@openmfp/portal-ui-lib';
 
 interface ErrorNodeContext {
@@ -87,20 +87,22 @@ export class ErrorComponent implements OnInit {
   private async setSceneConfig() {
     if (this.nodeContext.error?.entityDefinition) {
       const entityDefinition = this.nodeContext.error.entityDefinition;
-      const typeStr = entityDefinition.label;
-      const typeStrPlural: string = entityDefinition.pluralLabel;
+      const typeStr = entityDefinition.label ?? '';
+      const typeStrPlural = entityDefinition.pluralLabel ?? '';
 
       const sceneId =
-        entityDefinition.notFoundConfig?.sapIllusSVG || 'Scene-NoSearchResults';
+        entityDefinition.notFoundConfig?.sapIllusSVG ?? 'Scene-NoSearchResults';
 
-      const id = this.nodeContext.error.additionalContext
-        ? this.nodeContext.error.additionalContext[
-            entityDefinition.dynamicFetchId
-          ]
-        : '';
+      const id =
+        this.nodeContext.error.additionalContext &&
+        entityDefinition.dynamicFetchId
+          ? this.nodeContext.error.additionalContext[
+              entityDefinition.dynamicFetchId
+            ]
+          : '';
       const gotoNavContext =
         entityDefinition.notFoundConfig?.entityListNavigationContext;
-      const buttons = [];
+      const buttons: ButtonConfig[] = [];
 
       if (gotoNavContext && typeStrPlural) {
         buttons.push({
@@ -109,7 +111,7 @@ export class ErrorComponent implements OnInit {
           },
           label: await this.i18nService.getTranslationAsync(
             'ERROR_ENTITY_VIEW_ALL_BUTTON',
-            { entityTypePlural: typeStrPlural }
+            { entityTypePlural: typeStrPlural },
           ),
         });
       }
@@ -121,7 +123,7 @@ export class ErrorComponent implements OnInit {
           typeStr,
           typeStrPlural,
           gotoNavContext,
-          buttons
+          buttons,
         );
       } else if (this.nodeContext.error.code === 403) {
         this.config = await this.getError403Config();
@@ -143,13 +145,23 @@ export class ErrorComponent implements OnInit {
         }
       }
     }
+
+    if (!this.config.sceneConfig) {
+      this.luigiCoreService.showAlert({
+        text: 'Scene config not found',
+        type: 'error',
+      });
+
+      return;
+    }
+
     this.sceneConfig = this.config.sceneConfig;
   }
 
   private async getError404Config() {
     const confButtons =
       (this.nodeContext.error.errorComponentConfig || {})['404']?.buttons || [];
-    const buttons = [];
+    const buttons: ButtonConfig[] = [];
     for (let i = 0; i < confButtons.length; i++) {
       buttons.push({
         url: confButtons[i].url,
@@ -165,10 +177,10 @@ export class ErrorComponent implements OnInit {
         },
       },
       illustratedMessageTitle: await this.i18nService.getTranslationAsync(
-        'ERROR_CONTENT_NOT_FOUND_TITLE'
+        'ERROR_CONTENT_NOT_FOUND_TITLE',
       ),
       illustratedMessageText: await this.i18nService.getTranslationAsync(
-        'ERROR_CONTENT_NOT_FOUND_TEXT'
+        'ERROR_CONTENT_NOT_FOUND_TEXT',
       ),
       buttons,
     };
@@ -176,7 +188,7 @@ export class ErrorComponent implements OnInit {
 
   private async getError403Config() {
     const illustratedMessageText = await this.i18nService.getTranslationAsync(
-      'ERROR_CONTENT_NOT_ALLOWED_NO_PROJECT_MEMBER_TEXT'
+      'ERROR_CONTENT_NOT_ALLOWED_NO_PROJECT_MEMBER_TEXT',
     );
 
     return {
@@ -192,13 +204,13 @@ export class ErrorComponent implements OnInit {
         {
           url: '',
           label: await this.i18nService.getTranslationAsync(
-            'ERROR_CONTENT_NOT_ALLOWED_JOIN_PROJECT_BUTTON'
+            'ERROR_CONTENT_NOT_ALLOWED_JOIN_PROJECT_BUTTON',
           ),
         },
         {
           url: '',
           label: await this.i18nService.getTranslationAsync(
-            'ERROR_CONTENT_NOT_ALLOWED_VIEW_PROJECT_BUTTON'
+            'ERROR_CONTENT_NOT_ALLOWED_VIEW_PROJECT_BUTTON',
           ),
         },
       ],
@@ -214,7 +226,7 @@ export class ErrorComponent implements OnInit {
         },
       },
       illustratedMessageTitle: await this.i18nService.getTranslationAsync(
-        'ERROR_UNIDENTIFIED_TITLE'
+        'ERROR_UNIDENTIFIED_TITLE',
       ),
       illustratedMessageText: '',
       buttons: [],
@@ -227,11 +239,11 @@ export class ErrorComponent implements OnInit {
     typeStr: string,
     typeStrPlural: string,
     gotoNavContext: any,
-    buttons: any[]
+    buttons: any[],
   ) {
     const illustratedMessageTitle = await this.i18nService.getTranslationAsync(
       'ERROR_ENTITY_NOT_FOUND_TITLE',
-      { entityType: typeStr, entityId: `<b>${id}</b>` }
+      { entityType: typeStr, entityId: `<b>${id}</b>` },
     );
     const illustratedMessageText =
       typeStrPlural && gotoNavContext
@@ -240,10 +252,10 @@ export class ErrorComponent implements OnInit {
             {
               entityTypePlural: typeStrPlural,
               entityTypePlural_lowerCase: typeStrPlural.toLowerCase(),
-            }
+            },
           )
         : await this.i18nService.getTranslationAsync(
-            'ERROR_ENTITY_NOT_FOUND_TEXT_NO_LIST'
+            'ERROR_ENTITY_NOT_FOUND_TEXT_NO_LIST',
           );
 
     return {
