@@ -20,6 +20,11 @@ export class AuthConfigService {
   public async getAuthConfig() {
     const { oauthServerUrl, clientId } =
       await this.envConfigService.getEnvConfig();
+
+    if (!oauthServerUrl || !clientId) {
+      return undefined;
+    }
+
     return {
       use: 'oAuth2AuthCode',
       storage: 'none',
