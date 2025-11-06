@@ -43,7 +43,6 @@ export class ConfigService {
     context?: Record<string, string>,
   ): Promise<void> {
     if (!entity) {
-      console.log('reloadPortalConfig', entity, context);
       this.portalConfigCachePromise = undefined;
       await this.getPortalConfig();
     } else {
@@ -65,7 +64,6 @@ export class ConfigService {
     entity: string,
     context?: Record<string, string>,
   ): Promise<EntityConfig> {
-    console.log('getEntityConfig', entity, context);
     if (!this.entityConfigCache[entity]) {
       this.entityConfigCache[entity] = {};
     }
