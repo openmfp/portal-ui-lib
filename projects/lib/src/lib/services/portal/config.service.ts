@@ -43,11 +43,20 @@ export class ConfigService {
     context?: Record<string, string>,
   ): Promise<void> {
     if (!entity) {
+      console.log('reloadPortalConfig', entity, context);
       this.portalConfigCachePromise = undefined;
       await this.getPortalConfig();
     } else {
-      const entityCacheKey = JSON.stringify(context);
-      delete this.entityConfigCache[entity][entityCacheKey];
+      try {
+        const entityCacheKey = JSON.stringify(context);
+        delete this.entityConfigCache[entity][entityCacheKey];
+      } catch (e) {
+        console.debug(
+          `Error deleting entity config cache for entity: ${entity}, context: ${JSON.stringify(context)}, cache: ${JSON.stringify(this.entityConfigCache)}`,
+          e,
+        );
+      }
+
       await this.getEntityConfig(entity, context);
     }
   }
@@ -56,6 +65,7 @@ export class ConfigService {
     entity: string,
     context?: Record<string, string>,
   ): Promise<EntityConfig> {
+    console.log('getEntityConfig', entity, context);
     if (!this.entityConfigCache[entity]) {
       this.entityConfigCache[entity] = {};
     }
