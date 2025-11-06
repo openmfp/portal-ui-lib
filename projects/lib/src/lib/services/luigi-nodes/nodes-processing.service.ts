@@ -50,7 +50,10 @@ export class NodesProcessingService {
     ];
 
     globalNodes.forEach((node) => {
-      node.context = { ...node.context };
+      node.context = {
+        ...node.context,
+        entityDefinition: node.defineEntity,
+      };
       node.globalNav = this.isGlobalNavNode(node);
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
@@ -197,6 +200,8 @@ export class NodesProcessingService {
         entityNode,
         ctx,
       );
+
+      entityNode.context.entityDefinition = entityNode.defineEntity;
 
       if (!entityTypeId || !entityNode.defineEntity?.dynamicFetchId) {
         const serverAndLocalNodes =

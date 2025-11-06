@@ -551,17 +551,27 @@ describe('NodesProcessingService', () => {
     });
 
     it('createChildrenList partitions dynamic children and merges by entity', async () => {
-      const staticChild: LuigiNode = { pathSegment: 'static' } as any;
+      const staticChild: LuigiNode = {
+        pathSegment: 'static',
+        context: {} as NodeContext,
+      } as any;
       const entityNode: LuigiNode = {
         defineEntity: {
           id: 'typeA',
           dynamicFetchId: 'typeA',
           contextKey: 'id',
         },
+        context: {} as NodeContext,
       } as any;
       const childrenByEntity: Record<string, LuigiNode[]> = {
         typeA: [staticChild],
-        typeB: [{ pathSegment: 'existingB', entityType: 'typeB' } as any],
+        typeB: [
+          {
+            pathSegment: 'existingB',
+            entityType: 'typeB',
+            context: {} as NodeContext,
+          } as any,
+        ],
       } as any;
 
       jest
@@ -600,9 +610,13 @@ describe('NodesProcessingService', () => {
   });
 
   it('entityChildrenProvider should use static path when dynamicFetchId is missing', async () => {
-    const directChild: LuigiNode = { pathSegment: 'direct' } as any;
+    const directChild: LuigiNode = {
+      pathSegment: 'direct',
+      context: {} as NodeContext,
+    } as any;
     const entityNode: LuigiNode = {
       defineEntity: { id: 'typeA' },
+      context: {} as NodeContext,
     } as any;
     const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
 
@@ -623,8 +637,11 @@ describe('NodesProcessingService', () => {
       .spyOn(luigiNodesService, 'retrieveEntityChildren')
       .mockRejectedValue(new Error('boom'));
 
-    const directChild: LuigiNode = { pathSegment: 'direct' } as any;
+    const directChild: LuigiNode = {
+      pathSegment: 'direct',
+    } as any;
     const entityNode: LuigiNode = {
+      context: {} as NodeContext,
       defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
     } as any;
 
