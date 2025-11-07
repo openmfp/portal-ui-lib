@@ -45,7 +45,7 @@
     "@luigi-project/client-support-angular": "20.0.1",
     "@luigi-project/core": "2.25.1",
     "@luigi-project/plugin-auth-oauth2": "2.25.1",
-    "@ui5/webcomponents-ngx": "0.5.7",
+    "@ui5/webcomponents-ngx": "0.5.8",
     "apollo-angular": "11.0.0",
     "gql-query-builder": "3.8.0",
     "graphql": "16.12.0",
