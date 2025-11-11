@@ -1,5 +1,4 @@
 import {
-  LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
@@ -16,15 +15,14 @@ import { CustomGlobalNodesService } from './custom-global-nodes.service';
 import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
-import { NodeContextProcessingService } from './node-context-processing.service';
+import { NodeContextProcessingServiceImpl } from './node-context-processing.service';
 import { NodeSortingService } from './node-sorting.service';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
-  private nodeContextProcessingService = inject<NodeContextProcessingService>(
-    LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
-    { optional: true },
+  private nodeContextProcessingService = inject(
+    NodeContextProcessingServiceImpl,
   );
   private luigiCoreService = inject(LuigiCoreService);
   private luigiNodesService = inject(LuigiNodesService);
@@ -50,10 +48,7 @@ export class NodesProcessingService {
     ];
 
     globalNodes.forEach((node) => {
-      node.context = {
-        ...node.context,
-        entityDefinition: node.defineEntity,
-      };
+      node.context = { ...node.context };
       node.globalNav = this.isGlobalNavNode(node);
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
@@ -200,8 +195,6 @@ export class NodesProcessingService {
         entityNode,
         ctx,
       );
-
-      entityNode.context.entityDefinition = entityNode.defineEntity;
 
       if (!entityTypeId || !entityNode.defineEntity?.dynamicFetchId) {
         const serverAndLocalNodes =
