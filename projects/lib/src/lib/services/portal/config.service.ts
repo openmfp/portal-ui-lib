@@ -46,8 +46,16 @@ export class ConfigService {
       this.portalConfigCachePromise = undefined;
       await this.getPortalConfig();
     } else {
-      const entityCacheKey = JSON.stringify(context);
-      delete this.entityConfigCache[entity][entityCacheKey];
+      try {
+        const entityCacheKey = JSON.stringify(context);
+        delete this.entityConfigCache[entity][entityCacheKey];
+      } catch (e) {
+        console.debug(
+          `Error deleting entity config cache for entity: ${entity}, context: ${JSON.stringify(context)}, cache: ${JSON.stringify(this.entityConfigCache)}`,
+          e,
+        );
+      }
+
       await this.getEntityConfig(entity, context);
     }
   }
