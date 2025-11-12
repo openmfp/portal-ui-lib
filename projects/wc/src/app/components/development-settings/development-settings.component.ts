@@ -52,7 +52,7 @@ export class DevelopmentSettingsComponent implements OnInit {
   private i18nService = inject(I18nService);
 
   protected texts: any = {};
-  protected errors = [];
+  protected errors: string[] = [];
   protected readonly Object = Object;
   protected readonly defaultConfig = [
     {

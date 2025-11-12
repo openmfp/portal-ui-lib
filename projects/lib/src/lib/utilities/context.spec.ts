@@ -1,4 +1,4 @@
-import { LuigiGlobalContext, LuigiNode } from '../models';
+import { LuigiGlobalContext, LuigiNode, NodeContext } from '../models';
 import { computeDynamicFetchContext, visibleForContext } from './context';
 import { matchesJMESPath } from './jmespath';
 import { isMatch } from 'lodash';
@@ -17,7 +17,10 @@ describe('visibleForContext', () => {
 
   it('should return false when entityContext does not match', () => {
     const ctx = { entityContext: { type: 'user' } };
-    const node = { visibleForEntityContext: { type: 'admin' } } as LuigiNode;
+    const node = {
+      visibleForEntityContext: { type: 'admin' },
+      context: {} as NodeContext,
+    } as LuigiNode;
 
     (isMatch as jest.Mock).mockReturnValue(false);
 

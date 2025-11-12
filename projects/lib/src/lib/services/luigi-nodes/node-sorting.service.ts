@@ -64,10 +64,10 @@ export class NodeSortingService {
   }
 
   sortNodes(nodes: LuigiNode[]): LuigiNode[] {
-    const entityRootNodes = [];
+    const entityRootNodes: LuigiNode[] = [];
     const slottedChildrenMap = {};
-    const otherChildren = [];
-    const slotNodes = [];
+    const otherChildren: LuigiNode[] = [];
+    const slotNodes: LuigiNode[] = [];
     let defaultSlot;
 
     nodes.forEach((node) => {
@@ -94,6 +94,10 @@ export class NodeSortingService {
 
     if (slotNodes.length > 0) {
       slotNodes.forEach((slotNode) => {
+        if (!slotNode.defineSlot) {
+          return;
+        }
+
         if (slottedChildrenMap[slotNode.defineSlot]) {
           this.appendChildrenToSlot(
             sortedNodes,
@@ -120,8 +124,8 @@ export class NodeSortingService {
     }
 
     // move nodes without categories to top
-    const singleNodes = [];
-    const catNodes = [];
+    const singleNodes: LuigiNode[] = [];
+    const catNodes: LuigiNode[] = [];
     sortedNodes.forEach((node) => {
       (node.category ? catNodes : singleNodes).push(node);
     });

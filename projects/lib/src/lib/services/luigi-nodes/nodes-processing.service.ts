@@ -1,5 +1,4 @@
 import {
-  LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
@@ -9,22 +8,23 @@ import {
   computeDynamicFetchContext,
   visibleForContext,
 } from '../../utilities/context';
+import { LuigiCoreService } from '../luigi-core.service';
 import { ChildrenNodesService } from './children-nodes.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
 import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
-import { NodeContextProcessingService } from './node-context-processing.service';
+import { NodeContextProcessingServiceImpl } from './node-context-processing.service';
 import { NodeSortingService } from './node-sorting.service';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NodesProcessingService {
-  private nodeContextProcessingService = inject<NodeContextProcessingService>(
-    LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
-    { optional: true },
+  private nodeContextProcessingService = inject(
+    NodeContextProcessingServiceImpl,
   );
+  private luigiCoreService = inject(LuigiCoreService);
   private luigiNodesService = inject(LuigiNodesService);
   private localConfigurationService = inject(LocalConfigurationServiceImpl);
   private nodeSortingService = inject(NodeSortingService);
@@ -110,6 +110,15 @@ export class NodesProcessingService {
     parentEntityPath: string,
     directChildren: LuigiNode[],
   ) {
+    if (!node.defineEntity) {
+      this.luigiCoreService.showAlert({
+        text: 'Node defineEntity is missing',
+        type: 'error',
+      });
+
+      throw new Error('Node defineEntity is missing');
+    }
+
     let newEntityPath = parentEntityPath;
     if (parentEntityPath?.length > 0) {
       newEntityPath = parentEntityPath + '.' + node.defineEntity.id;
@@ -168,15 +177,17 @@ export class NodesProcessingService {
     entityNode: LuigiNode,
     ctx: any,
     childrenByEntity: Record<string, LuigiNode[]>,
-    directChildren?: LuigiNode[],
-    entityPath?: string,
+    directChildren: LuigiNode[],
+    entityPath: string,
   ) {
     return new Promise<LuigiNode[]>(async (resolve, reject) => {
       const entityTypeId = entityPath || entityNode?.defineEntity?.id;
-      const entityId = ctx[entityNode?.defineEntity?.contextKey];
+      const contextKey = entityNode?.defineEntity?.contextKey;
+      const entityId = contextKey ? ctx[contextKey] : undefined;
+
       const staticChildren = [
         ...(directChildren || []),
-        ...(childrenByEntity[entityTypeId] || []),
+        ...(childrenByEntity[entityTypeId ?? ''] || []),
       ];
 
       await this.nodeContextProcessingService?.processNodeContext(
@@ -203,7 +214,7 @@ export class NodesProcessingService {
       }
 
       let dynamicRetrievedChildren: LuigiNode[],
-        staticRetrievedChildren: LuigiNode[];
+        staticRetrievedChildren: LuigiNode[] | undefined;
 
       try {
         const fetchContext = computeDynamicFetchContext(entityNode, ctx);
@@ -222,7 +233,7 @@ export class NodesProcessingService {
         staticRetrievedChildren = staticChildren;
       } catch (error) {
         dynamicRetrievedChildren = staticChildren;
-        staticRetrievedChildren = null;
+        staticRetrievedChildren = undefined;
       }
 
       const childrenList = await this.createChildrenList(

@@ -2,7 +2,12 @@ import {
   LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
   LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { EntityDefinition, LuigiNode, PortalConfig } from '../../models';
+import {
+  EntityDefinition,
+  LuigiNode,
+  NodeContext,
+  PortalConfig,
+} from '../../models';
 import { providePortal } from '../../portal-providers';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
@@ -27,6 +32,7 @@ describe('NodesProcessingService', () => {
       label: 'home1',
       pathSegment: '',
       viewUrl: '',
+      context: {} as NodeContext,
     },
   ];
   const projectChildren: LuigiNode[] = [
@@ -34,6 +40,7 @@ describe('NodesProcessingService', () => {
       label: 'project1',
       pathSegment: '',
       viewUrl: '',
+      context: {} as NodeContext,
     },
   ];
 
@@ -63,11 +70,12 @@ describe('NodesProcessingService', () => {
 
     const portalConfig: PortalConfig = {
       providers: [{ nodes: [], creationTimestamp: '' }],
-    } as PortalConfig;
+    } as unknown as PortalConfig;
 
     luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
     luigiCoreService.resetLuigi = jest.fn();
     luigiCoreService.getGlobalContext = jest.fn();
+    luigiCoreService.showAlert = jest.fn();
     Object.defineProperty(luigiCoreService, 'config', {
       get: jest.fn(() => ({
         settings: { btpToolLayout: true },
@@ -166,6 +174,7 @@ describe('NodesProcessingService', () => {
         dynamicFetchId: entityName,
         contextKey: 'myentityId',
       },
+      context: {} as NodeContext,
     };
 
     const childrenByEntity = {
@@ -178,7 +187,7 @@ describe('NodesProcessingService', () => {
       entityNode,
       { myentityId, userid },
       childrenByEntity,
-      undefined,
+      [],
       entityName,
     );
 
@@ -207,6 +216,7 @@ describe('NodesProcessingService', () => {
         dynamicFetchId: 'mysubentity',
         contextKey: 'mysubentityId',
       },
+      context: {} as NodeContext,
     };
     (entityNode as any).parent = {
       defineEntity: {
@@ -220,6 +230,7 @@ describe('NodesProcessingService', () => {
           dynamicFetchId: 'mygrandparententity',
           contextKey: 'mygrandparententityId',
         },
+        context: {} as NodeContext,
       },
     };
 
@@ -230,13 +241,7 @@ describe('NodesProcessingService', () => {
       mygrandparententityId: 'opa',
       userid,
     };
-    await service.entityChildrenProvider(
-      entityNode,
-      ctx,
-      {},
-      undefined,
-      entityName,
-    );
+    await service.entityChildrenProvider(entityNode, ctx, {}, [], entityName);
 
     // Assert
     expect(retrieveEntityChildrenSpy).toHaveBeenCalledWith(
@@ -273,12 +278,14 @@ describe('NodesProcessingService', () => {
           {
             pathSegment: 'subsub',
             entityType: 'myentity.subentity.subsub',
+            context: {} as NodeContext,
           },
         ],
         someOtherId: [
           {
             pathSegment: 'othersubsub',
             entityType: 'myentity.subentity.subsub',
+            context: {} as NodeContext,
           },
         ],
       };
@@ -296,7 +303,7 @@ describe('NodesProcessingService', () => {
           },
         );
 
-      const childrenByEntity = {
+      const childrenByEntity: Record<string, LuigiNode[]> = {
         home: homeChildren,
         myentity: projectChildren,
         'myentity.subentity': [
@@ -307,24 +314,29 @@ describe('NodesProcessingService', () => {
               dynamicFetchId: 'subsub',
               contextKey: 'id',
             },
+            context: {} as NodeContext,
           },
         ],
       };
 
       const rootNode: LuigiNode = {
         pathSegment: 'random',
+        context: {} as NodeContext,
         children: [
           {
             pathSegment: 'random',
+            context: {} as NodeContext,
             defineEntity: {
               id: entityName,
             },
             children: [
               {
                 pathSegment: 'directChild1',
+                context: {} as NodeContext,
                 children: [
                   {
                     pathSegment: 'subentity',
+                    context: {} as NodeContext,
                     defineEntity: {
                       id: 'subentity',
                     },
@@ -369,6 +381,7 @@ describe('NodesProcessingService', () => {
     it('should filter children based on entity context', async () => {
       const rootNode: LuigiNode = {
         pathSegment: 'random',
+        context: {} as NodeContext,
         defineEntity: {
           id: entityName,
           contextKey: entityName,
@@ -382,6 +395,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar1',
               },
             },
+            context: {} as NodeContext,
             children: [
               {
                 pathSegment: 'grandChild1',
@@ -390,6 +404,7 @@ describe('NodesProcessingService', () => {
                     foo: 'bar2',
                   },
                 },
+                context: {} as NodeContext,
               },
             ],
           },
@@ -400,6 +415,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar2',
               },
             },
+            context: {} as NodeContext,
           },
         ],
         compound: {},
@@ -414,6 +430,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar1',
               },
             },
+            context: {} as NodeContext,
           },
         ],
       };
@@ -434,15 +451,16 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       const rootChildrenChildren =
-        rootChildren[0].children instanceof Function
+        rootChildren?.[0]?.children instanceof Function
           ? await rootChildren[0].children({})
-          : rootChildren[0].children;
+          : rootChildren?.[0]?.children;
       expect(rootChildrenChildren).toEqual([]);
     });
 
     it('should filter children based on context', async () => {
       const rootNode: LuigiNode = {
         pathSegment: 'random',
+        context: {} as NodeContext,
         defineEntity: {
           id: entityName,
           contextKey: entityName,
@@ -452,16 +470,19 @@ describe('NodesProcessingService', () => {
           {
             pathSegment: 'directChild1',
             visibleForContext: 'entityContext.myentity.foo == `bar1`',
+            context: {} as NodeContext,
             children: [
               {
                 pathSegment: 'grandChild1',
                 visibleForContext: 'entityContext.myentity.foo == `bar2`',
+                context: {} as NodeContext,
               },
             ],
           },
           {
             pathSegment: 'directChild2',
             visibleForContext: 'entityContext.myentity.foo == `bar2`',
+            context: {} as NodeContext,
           },
         ],
       };
@@ -475,6 +496,7 @@ describe('NodesProcessingService', () => {
                 foo: 'bar1',
               },
             },
+            context: {} as NodeContext,
           },
         ],
       };
@@ -525,21 +547,31 @@ describe('NodesProcessingService', () => {
         .children as LuigiNode[];
       expect(compoundChildren.length).toBe(1);
       expect(compoundChildren[0].pathSegment).toBe('keep');
-      expect(compoundChildren[0].context.entityContext.foo).toBe('bar');
+      expect(compoundChildren[0]?.context?.entityContext?.foo).toBe('bar');
     });
 
     it('createChildrenList partitions dynamic children and merges by entity', async () => {
-      const staticChild: LuigiNode = { pathSegment: 'static' } as any;
+      const staticChild: LuigiNode = {
+        pathSegment: 'static',
+        context: {} as NodeContext,
+      } as any;
       const entityNode: LuigiNode = {
         defineEntity: {
           id: 'typeA',
           dynamicFetchId: 'typeA',
           contextKey: 'id',
         },
+        context: {} as NodeContext,
       } as any;
       const childrenByEntity: Record<string, LuigiNode[]> = {
         typeA: [staticChild],
-        typeB: [{ pathSegment: 'existingB', entityType: 'typeB' } as any],
+        typeB: [
+          {
+            pathSegment: 'existingB',
+            entityType: 'typeB',
+            context: {} as NodeContext,
+          } as any,
+        ],
       } as any;
 
       jest
@@ -564,5 +596,67 @@ describe('NodesProcessingService', () => {
       const segs = list.map((n) => n.pathSegment);
       expect(segs).toEqual(expect.arrayContaining(['static', 'root1', 'err']));
     });
+  });
+
+  it('processNodeDefineEntity should alert and throw when defineEntity is missing', () => {
+    const node = { pathSegment: 'n1' } as LuigiNode;
+    expect(() =>
+      (service as any).processNodeDefineEntity(node, {}, '', []),
+    ).toThrow('Node defineEntity is missing');
+    expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
+      text: 'Node defineEntity is missing',
+      type: 'error',
+    });
+  });
+
+  it('entityChildrenProvider should use static path when dynamicFetchId is missing', async () => {
+    const directChild: LuigiNode = {
+      pathSegment: 'direct',
+      context: {} as NodeContext,
+    } as any;
+    const entityNode: LuigiNode = {
+      defineEntity: { id: 'typeA' },
+      context: {} as NodeContext,
+    } as any;
+    const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
+
+    const list = await service.entityChildrenProvider(
+      entityNode,
+      {},
+      childrenByEntity as any,
+      [directChild],
+      'typeA',
+    );
+
+    const segs = list.map((n) => n.pathSegment);
+    expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
+  });
+
+  it('entityChildrenProvider should fall back to static children when dynamic fetch fails', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockRejectedValue(new Error('boom'));
+
+    const directChild: LuigiNode = {
+      pathSegment: 'direct',
+    } as any;
+    const entityNode: LuigiNode = {
+      context: {} as NodeContext,
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    const childrenByEntity = { typeA: [{ pathSegment: 'byEntity' } as any] };
+
+    const list = await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      childrenByEntity as any,
+      [directChild],
+      'typeA',
+    );
+
+    const segs = list.map((n) => n.pathSegment);
+    // dynamic failed, so only static roots should appear
+    expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
   });
 });

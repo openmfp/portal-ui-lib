@@ -74,7 +74,7 @@ export class NavigationConfigService {
   }
 
   private initFeatureToggles(configFeatureToggles: Record<string, boolean>, envConfig: ClientEnvironment) {
-    if (envConfig.uiOptions.includes('enableFeatureToggleSetting')) {
+    if (envConfig.uiOptions?.includes('enableFeatureToggleSetting')) {
       const featureToggleSettings = featureToggleLocalStorage.read();
       this.luigiCoreService.setFeatureToggles({
         ...configFeatureToggles,

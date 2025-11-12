@@ -1,4 +1,4 @@
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
@@ -119,7 +119,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
     });
 
     it('should handle null node array', () => {
-      const result = service.getAppSwitcher(null);
+      const result = service.getAppSwitcher(null as unknown as LuigiNode[]);
 
       expect(result.items).toEqual([]);
     });
@@ -132,6 +132,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
           pathSegment: 'home',
           entityType: EntityType.GLOBAL,
           hideFromNav: false,
+          context: {} as NodeContext,
         },
       ];
       const result = service.getAppSwitcher(mockLuigiOneGlobalNode);
@@ -198,7 +199,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
       };
 
       // Simulate click
-      anchor.dispatchEvent(new MouseEvent('click'));
+      anchor?.dispatchEvent(new MouseEvent('click'));
 
       // Check if navigation was called
       expect(luigiCoreServiceMock.navigation).toHaveBeenCalled();

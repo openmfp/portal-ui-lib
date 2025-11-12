@@ -96,7 +96,7 @@ describe('SessionRefreshService', () => {
       globalContextConfigServiceMock.getGlobalContext.mockResolvedValue(
         globalCtx,
       );
-      authService.refresh.mockResolvedValue(null);
+      authService.refresh.mockResolvedValue(undefined);
 
       // Act
       await service.refresh();
@@ -155,7 +155,7 @@ describe('SessionRefreshService', () => {
 
       globalContextConfigServiceMock.getGlobalContext.mockImplementation(() => {
         executionOrder.push('getGlobalContext');
-        return null;
+        return null as any;
       });
 
       luigiCoreService.setGlobalContext.mockImplementation(() => {

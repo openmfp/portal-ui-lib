@@ -1,5 +1,5 @@
 import { LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { ChildrenNodesService } from './children-nodes.service';
@@ -60,7 +60,7 @@ describe('ChildrenNodesService', () => {
     it('should return empty array when children is null', async () => {
       const result = await service.processChildrenForEntity(
         {} as LuigiNode,
-        null,
+        null as any,
         {},
       );
       expect(result).toEqual([]);
@@ -93,7 +93,7 @@ describe('ChildrenNodesService', () => {
 
       configService.getEntityConfig.mockResolvedValue({
         entityContext: { myKey: 'value' },
-        providers: null,
+        providers: null as any,
       });
       customNodeProcessingService.processNode.mockImplementation(
         async (ctx: Context, node: LuigiNode) => node,
@@ -106,7 +106,7 @@ describe('ChildrenNodesService', () => {
         ctx,
       );
 
-      expect(childResult[0].context.entityContext).toBeDefined();
+      expect(childResult[0]?.context?.entityContext).toBeDefined();
       expect(childResult[0].context).toEqual({
         entityContext: { test: { myKey: 'value' } },
       });
@@ -230,6 +230,7 @@ describe('ChildrenNodesService', () => {
       // Arrange
       const entityNode: LuigiNode = {
         pathSegment: 'test',
+        context: {} as NodeContext,
       };
 
       // Act
@@ -246,6 +247,7 @@ describe('ChildrenNodesService', () => {
         defineEntity: {
           id: 'testEntity',
         },
+        context: {} as NodeContext,
       };
 
       // Act
@@ -266,6 +268,7 @@ describe('ChildrenNodesService', () => {
         navHeader: {
           existingProp: 'test',
         },
+        context: {} as NodeContext,
       };
 
       // Act
@@ -287,6 +290,7 @@ describe('ChildrenNodesService', () => {
             id: 'testEntity',
             label: 'Test Entity',
           },
+          context: {} as NodeContext,
         };
         containerElement = document.createElement('div');
       });
@@ -352,9 +356,9 @@ describe('ChildrenNodesService', () => {
         expect(containerElement.innerHTML).not.toContain('<script>');
       });
 
-      it('should use "Component" if entity label is set to "component', () => {
+      it('should use "Component" if entity label is set to "component"', () => {
         // Arrange
-        entityNode.defineEntity.label = 'component';
+        (entityNode.defineEntity as any).label = 'component';
         service.addNavigationHeader(entityNode);
         const navHeader = { label: 'Test Label' };
 

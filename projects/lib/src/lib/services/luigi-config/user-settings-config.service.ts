@@ -1,21 +1,14 @@
-import { Injectable, inject } from '@angular/core';
-import { isEqual } from 'lodash';
 import { THEMING_SERVICE } from '../../injection-tokens';
-import {
-  LocalDevelopmentSettings,
-  LuigiNode,
-  LuigiUserSettings,
-} from '../../models';
+import { LocalDevelopmentSettings, LuigiNode, LuigiUserSettings } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { AuthService, EnvConfigService } from '../portal';
-import {
-  featureToggleLocalStorage,
-  localDevelopmentSettingsLocalStorage,
-  userSettingsLocalStorage,
-} from '../storage-service';
+import { featureToggleLocalStorage, localDevelopmentSettingsLocalStorage, userSettingsLocalStorage } from '../storage-service';
 import { ThemingService } from '../theming.service';
+import { Injectable, inject } from '@angular/core';
+import { isEqual } from 'lodash';
+
 
 export interface UserSettings {
   frame_userAccount?: any;
@@ -27,8 +20,8 @@ export interface UserSettings {
 
 export interface UserSettingsValues {
   frame_userAccount?: {
-    name: string;
-    email: string;
+    name?: string;
+    email?: string;
     language: string;
   };
   frame_appearance?: {
@@ -91,7 +84,7 @@ export class UserSettingsConfigService {
         this.applyNewTheme(settings, previous);
         this.changeToSelectedLanguage(settings, previous);
         this.saveLocalDevelopmentSettings(settings, previous);
-        if (envConfig.uiOptions.includes('enableFeatureToggleSetting')) {
+        if (envConfig.uiOptions?.includes('enableFeatureToggleSetting')) {
           this.saveFeatureToggleSettings(settings);
         }
       },
@@ -106,7 +99,7 @@ export class UserSettingsConfigService {
     await this.addUserSettings(settings);
     await this.addThemingSettings(settings);
     this.addLocalDevelopmentSettings(settings);
-    if (envConfig.uiOptions.includes('enableFeatureToggleSetting')) {
+    if (envConfig.uiOptions?.includes('enableFeatureToggleSetting')) {
       this.addFeatureToggleSettings(settings);
     }
     this.addInfoSettings(settings);
@@ -118,10 +111,12 @@ export class UserSettingsConfigService {
     const currentFeatureToggleSettings =
       settings?.frame_featureToggle?.featureToggleSettings;
 
-    featureToggleLocalStorage.store(currentFeatureToggleSettings);
-    this.luigiCoreService.unsetAllFeatureToggles();
-    this.luigiCoreService.setFeatureToggles(currentFeatureToggleSettings);
-    globalThis.location.reload();
+    if (currentFeatureToggleSettings) {
+      featureToggleLocalStorage.store(currentFeatureToggleSettings);
+      this.luigiCoreService.unsetAllFeatureToggles();
+      this.luigiCoreService.setFeatureToggles(currentFeatureToggleSettings);
+      globalThis.location.reload();
+    }
   }
 
   private saveLocalDevelopmentSettings(
@@ -210,10 +205,12 @@ export class UserSettingsConfigService {
     const userSettings = await userSettingsLocalStorage.read(user);
     const selectedTheme =
       userSettings?.frame_appearance?.selectedTheme ||
-      this.luigiThemingService.getDefaultThemeId();
-    return this.luigiThemingService
-      .getAvailableThemes()
-      .find((t) => t.id === selectedTheme)?.name;
+      this.luigiThemingService?.getDefaultThemeId();
+    return (
+      this.luigiThemingService
+        ?.getAvailableThemes()
+        ?.find((t) => t.id === selectedTheme)?.name || ''
+    );
   }
 
   private async addThemingSettings(settings: UserSettings) {

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { LuigiNode } from '../../models';
+import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { IframeService } from './iframe.service';
 
@@ -27,6 +27,7 @@ describe('IframeService', () => {
     beforeEach(() => {
       node = {
         label: 'label',
+        context: {} as NodeContext,
         requiredIFramePermissions: {
           allow: ['clipboard-read', 'clipboard-write'],
           sandbox: ['allow-top-navigation', 'allow-forms'],

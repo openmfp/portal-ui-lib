@@ -4,6 +4,7 @@ import { I18nService } from '../i18n.service';
 import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { NodeContext } from '@openmfp/portal-ui-lib';
 
 describe('CommonGlobalLuigiNodesService', () => {
   let service: CommonGlobalLuigiNodesService;
@@ -42,6 +43,7 @@ describe('CommonGlobalLuigiNodesService', () => {
           pathSegment: 'error',
           label: 'Content not found',
           order: '1000',
+          context: {} as NodeContext,
           hideFromNav: true,
           children: [
             {

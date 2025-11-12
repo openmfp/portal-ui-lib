@@ -81,7 +81,7 @@ describe('ErrorComponent', () => {
       };
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig.scene.id).toBe('sapIllus-test-scene');
+      expect(component.config.sceneConfig?.scene.id).toBe('sapIllus-test-scene');
     });
 
     it('should set entity 403 config', async () => {
@@ -95,7 +95,7 @@ describe('ErrorComponent', () => {
       };
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig.scene.id).toBe(
+      expect(component.config.sceneConfig?.scene.id).toBe(
         'tnt-Scene-UnsuccessfulAuth'
       );
     });
@@ -111,7 +111,7 @@ describe('ErrorComponent', () => {
       };
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig.scene.id).toBe('');
+      expect(component.config.sceneConfig?.scene.id).toBe('');
     });
 
     it('should set non-entity 404 config', async () => {
@@ -127,7 +127,7 @@ describe('ErrorComponent', () => {
       };
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig.scene.id).toBe(
+      expect(component.config.sceneConfig?.scene.id).toBe(
         'sapIllus-Scene-NoEntries'
       );
     });
@@ -140,7 +140,7 @@ describe('ErrorComponent', () => {
       };
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig.scene.id).toBe(
+      expect(component.config.sceneConfig?.scene.id).toBe(
         'tnt-Scene-UnsuccessfulAuth'
       );
     });
@@ -153,7 +153,7 @@ describe('ErrorComponent', () => {
       };
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig.scene.id).toBe('');
+      expect(component.config.sceneConfig?.scene.id).toBe('');
     });
   });
 });

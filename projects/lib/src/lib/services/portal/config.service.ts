@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
   providedIn: 'root',
 })
 export class ConfigService {
-  private portalConfigCachePromise: Promise<PortalConfig>;
+  private portalConfigCachePromise: Promise<PortalConfig> | undefined;
 
   private entityConfigCache: Record<
     string /* entity */,
@@ -46,8 +46,16 @@ export class ConfigService {
       this.portalConfigCachePromise = undefined;
       await this.getPortalConfig();
     } else {
-      const entityCacheKey = JSON.stringify(context);
-      delete this.entityConfigCache[entity][entityCacheKey];
+      try {
+        const entityCacheKey = JSON.stringify(context);
+        delete this.entityConfigCache[entity][entityCacheKey];
+      } catch (e) {
+        console.debug(
+          `Error deleting entity config cache for entity: ${entity}, context: ${JSON.stringify(context)}, cache: ${JSON.stringify(this.entityConfigCache)}`,
+          e,
+        );
+      }
+
       await this.getEntityConfig(entity, context);
     }
   }
@@ -61,8 +69,9 @@ export class ConfigService {
     }
 
     const entityCacheKey = JSON.stringify(context);
-    if (this.entityConfigCache[entity][entityCacheKey]) {
-      return this.entityConfigCache[entity][entityCacheKey];
+    const cachedConfig = this.entityConfigCache[entity][entityCacheKey];
+    if (cachedConfig) {
+      return cachedConfig;
     }
 
     const options = this.requestHeadersService.createOptionsWithAuthHeader();
