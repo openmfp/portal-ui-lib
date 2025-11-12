@@ -72,7 +72,7 @@
     "@openmfp/eslint-config-typescript": "0.7.7",
     "@types/jest": "29.5.14",
     "@types/jmespath": "0.15.2",
-    "@types/node": "24.10.0",
+    "@types/node": "24.10.1",
     "@typescript-eslint/eslint-plugin": "8.46.4",
     "@typescript-eslint/parser": "8.46.4",
     "cpx2": "8.0.0",
