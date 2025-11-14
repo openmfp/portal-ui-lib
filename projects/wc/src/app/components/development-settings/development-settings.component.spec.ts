@@ -59,7 +59,8 @@ describe('DevelopmentSettingsComponent', () => {
 
     fixture = TestBed.createComponent(DevelopmentSettingsComponent);
     component = fixture.componentInstance;
-    component.LuigiClient = { publishEvent: jest.fn() } as any;
+    fixture.componentRef.setInput('LuigiClient', { publishEvent: jest.fn() });
+    fixture.componentRef.setInput('context', { translationTable: {} });
   });
 
   afterEach(() => {
@@ -80,11 +81,9 @@ describe('DevelopmentSettingsComponent', () => {
 
       component.ngOnInit();
 
-      expect(component['localDevelopmentSettings']).toEqual({
-        isActive: mockSettings.isActive,
-        configs: [],
-        serviceProviderConfig: {},
-      });
+      expect(component.isActive()).toEqual(mockSettings.isActive);
+      expect(component.configs()).toEqual([]);
+      expect(component.serviceProviderConfig()).toEqual({});
     });
 
     it('should initialize with wrong stored settings without config and service missing', () => {
@@ -98,11 +97,9 @@ describe('DevelopmentSettingsComponent', () => {
 
       component.ngOnInit();
 
-      expect(component['localDevelopmentSettings']).toEqual({
-        isActive: mockSettings.isActive,
-        configs: [],
-        serviceProviderConfig: {},
-      });
+      expect(component.isActive()).toEqual(mockSettings.isActive);
+      expect(component.configs()).toEqual([]);
+      expect(component.serviceProviderConfig()).toEqual({});
     });
 
     it('should initialize with stored settings when available in DEVELOPMENT_MODE_CONFIG', () => {
@@ -117,7 +114,11 @@ describe('DevelopmentSettingsComponent', () => {
         .mockReturnValue(mockSettings);
 
       component.ngOnInit();
-      expect(component['localDevelopmentSettings']).toEqual(mockSettings);
+      expect(component.isActive()).toEqual(mockSettings.isActive);
+      expect(component.configs()).toEqual(mockSettings.configs);
+      expect(component.serviceProviderConfig()).toEqual(
+        mockSettings.serviceProviderConfig,
+      );
     });
 
     it('should initialize with fallback stored settings when DEVELOPMENT_MODE_CONFIG is not available', () => {
@@ -133,7 +134,11 @@ describe('DevelopmentSettingsComponent', () => {
         .mockReturnValueOnce(mockSettings);
 
       component.ngOnInit();
-      expect(component['localDevelopmentSettings']).toEqual(mockSettings);
+      expect(component.isActive()).toEqual(mockSettings.isActive);
+      expect(component.configs()).toEqual(mockSettings.configs);
+      expect(component.serviceProviderConfig()).toEqual(
+        mockSettings.serviceProviderConfig,
+      );
     });
 
     it('should initialize with default settings when no stored settings available', () => {
@@ -142,136 +147,109 @@ describe('DevelopmentSettingsComponent', () => {
         .mockReturnValue(null);
 
       component.ngOnInit();
-      expect(component['localDevelopmentSettings']).toEqual({
-        isActive: false,
-        configs: [
-          {
-            url: 'http://localhost:4200/assets/content-configuration-global.json',
-          },
-          {
-            url: 'http://localhost:4200/assets/content-configuration.json',
-          },
-        ],
-        serviceProviderConfig: {},
-      });
+      expect(component.isActive()).toEqual(false);
+      expect(component.configs()).toEqual([
+        {
+          url: 'http://localhost:4200/assets/content-configuration-global.json',
+        },
+        {
+          url: 'http://localhost:4200/assets/content-configuration.json',
+        },
+      ]);
+      expect(component.serviceProviderConfig()).toEqual({});
     });
   });
 
   describe('addUrl', () => {
-    it('should add valid URL to configs even if the configs is null', () => {
-      component['localDevelopmentSettings'].configs = null as any;
-      const validUrl = 'https://test.com';
-      component.addUrl(validUrl);
-
-      expect(component['localDevelopmentSettings'].configs).toContainEqual({
-        url: validUrl,
-      });
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
-    });
-
     it('should add valid URL to configs', () => {
+      component.configs.set([]);
       const validUrl = 'https://test.com';
       component.addUrl(validUrl);
 
-      expect(component['localDevelopmentSettings'].configs).toContainEqual({
+      expect(component.configs()).toContainEqual({
         url: validUrl,
       });
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
 
     it('should not add duplicate URL', () => {
       const validUrl = 'https://test.com';
-      component['localDevelopmentSettings'].configs = [{ url: validUrl }];
+      component.configs.set([{ url: validUrl }]);
 
       component.addUrl(validUrl);
-      expect(component['localDevelopmentSettings'].configs).toHaveLength(1);
+      expect(component.configs()).toHaveLength(1);
     });
 
     it('should add error for invalid URL', () => {
       const invalidUrl = 'invalid-url';
       component.addUrl(invalidUrl);
 
-      expect(component['errors']).toContain('pattern');
+      expect(component['errors']()).toContain('pattern');
     });
   });
 
   describe('removeUrl', () => {
     it('should remove URL at specified index', () => {
-      component['localDevelopmentSettings'].configs = [
+      component.configs.set([
         { url: 'https://test1.com' },
         { url: 'https://test2.com' },
-      ];
+      ]);
 
       component.removeUrl(0);
-      expect(component['localDevelopmentSettings'].configs).toHaveLength(1);
-      expect(component['localDevelopmentSettings'].configs[0].url).toBe(
-        'https://test2.com',
-      );
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
+      expect(component.configs()).toHaveLength(1);
+      expect(component.configs()[0].url).toBe('https://test2.com');
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
   });
 
   describe('removeServiceProviderConfig', () => {
     it('should remove config by key', () => {
-      component['localDevelopmentSettings'].serviceProviderConfig = {
+      component.serviceProviderConfig.set({
         key1: 'value1',
         key2: 'value2',
-      };
+      });
 
       component.removeServiceProviderConfig('key1');
-      expect(
-        component['localDevelopmentSettings'].serviceProviderConfig,
-      ).not.toHaveProperty('key1');
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
+      expect(component.serviceProviderConfig()).not.toHaveProperty('key1');
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
   });
 
   describe('addServiceProviderConfig', () => {
     it('should add new config when key and value are provided and serviceProviderConfig is null', () => {
-      component['localDevelopmentSettings'].serviceProviderConfig = null as any;
+      component.serviceProviderConfig.set({});
 
       component.addServiceProviderConfig('newKey', 'newValue');
 
-      expect(
-        component['localDevelopmentSettings'].serviceProviderConfig['newKey'],
-      ).toBe('newValue');
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
+      expect(component.serviceProviderConfig()['newKey']).toBe('newValue');
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
 
     it('should add new config when key and value are provided', () => {
+      component.serviceProviderConfig.set({});
       component.addServiceProviderConfig('newKey', 'newValue');
-      expect(
-        component['localDevelopmentSettings'].serviceProviderConfig['newKey'],
-      ).toBe('newValue');
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
+      expect(component.serviceProviderConfig()['newKey']).toBe('newValue');
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
 
     it('should not add config when key or value is missing', () => {
+      component.serviceProviderConfig.set({});
       component.addServiceProviderConfig('', 'value');
-      expect(
-        Object.keys(
-          component['localDevelopmentSettings'].serviceProviderConfig,
-        ),
-      ).toHaveLength(0);
+      expect(Object.keys(component.serviceProviderConfig())).toHaveLength(0);
 
+      component.serviceProviderConfig.set({});
       component.addServiceProviderConfig('key', '');
-      expect(
-        Object.keys(
-          component['localDevelopmentSettings'].serviceProviderConfig,
-        ),
-      ).toHaveLength(0);
+      expect(Object.keys(component.serviceProviderConfig())).toHaveLength(0);
     });
   });
 
   describe('switchIsActive', () => {
     it('should toggle isActive property', () => {
-      const initialState = component['localDevelopmentSettings'].isActive;
+      const initialState = component.isActive();
 
       component.switchIsActive();
-      expect(component['localDevelopmentSettings'].isActive).toBe(
-        !initialState,
-      );
-      expect(component.LuigiClient.publishEvent).toHaveBeenCalled();
+      expect(component.isActive()).toBe(!initialState);
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
   });
 
@@ -289,7 +267,7 @@ describe('DevelopmentSettingsComponent', () => {
 
   describe('readTranslations', () => {
     it('should return object with all translated strings', () => {
-      const translations = component['readTranslations']();
+      const translations = (component as any).texts();
 
       expect(translations.explanation).toBe(
         'translated_LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION',
@@ -339,7 +317,7 @@ describe('DevelopmentSettingsComponent', () => {
     });
   });
 
-  describe('context setter', () => {
+  describe('context input', () => {
     it('should set translation table and update texts when context is provided', () => {
       const mockContext = {
         translationTable: {
@@ -348,12 +326,11 @@ describe('DevelopmentSettingsComponent', () => {
         },
       };
 
-      component.context = mockContext;
+      fixture.componentRef.setInput('context', mockContext);
+      fixture.detectChanges();
 
-      expect(i18nServiceMock.translationTable).toBe(
-        mockContext.translationTable,
-      );
-      expect((component as any).texts).toBeDefined();
+      const texts = (component as any).texts();
+      expect(texts).toBeDefined();
       expect(i18nServiceMock.getTranslation).toHaveBeenCalled();
     });
 
@@ -362,11 +339,9 @@ describe('DevelopmentSettingsComponent', () => {
         translationTable: {},
       };
 
-      component.context = mockContext;
+      fixture.componentRef.setInput('context', mockContext);
+      fixture.detectChanges();
 
-      expect(i18nServiceMock.translationTable).toBe(
-        mockContext.translationTable,
-      );
       expect((component as any).texts).toBeDefined();
     });
 
@@ -375,9 +350,9 @@ describe('DevelopmentSettingsComponent', () => {
         translationTable: undefined,
       };
 
-      component.context = mockContext;
+      fixture.componentRef.setInput('context', mockContext);
+      fixture.detectChanges();
 
-      expect(i18nServiceMock.translationTable).toBeUndefined();
       expect((component as any).texts).toBeDefined();
     });
 
@@ -407,9 +382,10 @@ describe('DevelopmentSettingsComponent', () => {
         },
       };
 
-      component.context = mockContext;
+      fixture.componentRef.setInput('context', mockContext);
+      fixture.detectChanges();
 
-      expect((component as any).texts).toEqual({
+      expect((component as any).texts()).toEqual({
         explanation: 'translated_LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION',
         link: 'translated_LOCAL_DEVELOPMENT_SETTINGS_LINK',
         addButton: 'translated_LOCAL_DEVELOPMENT_SETTINGS_ADD_BUTTON',

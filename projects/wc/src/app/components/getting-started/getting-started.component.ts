@@ -1,12 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
-
 
 @Component({
   selector: 'wc-getting-started',
   imports: [],
   templateUrl: './getting-started.component.html',
   styleUrl: './getting-started.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GettingStartedComponent {
   private luigiCoreService = inject(LuigiCoreService);

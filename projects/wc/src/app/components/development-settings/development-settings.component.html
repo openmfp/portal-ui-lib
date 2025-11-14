@@ -1,29 +1,30 @@
 <div>
+  @let textTable = texts();
   <div class="container">
     <div>
-      <div class="explanation">{{ texts.explanation }}</div>
+      <div class="explanation">{{ textTable.explanation }}</div>
       <a
         class="explanation"
         fd-link
         target="_blank"
         href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
-        >{{ texts.link }}</a
+        >{{ textTable.link }}</a
       >
     </div>
 
     <div class="is-active-switch">
-      <h4>{{ texts.isDevelopmentModeActive }}</h4>
+      <h4>{{ textTable.isDevelopmentModeActive }}</h4>
       <fd-switch
         class="switch-active"
-        [checked]="localDevelopmentSettings.isActive"
+        [checked]="isActive()"
         (checkedChange)="switchIsActive()"
       ></fd-switch>
     </div>
 
     <div fd-form-item class="config-input">
-      <h4>{{ texts.urlsInput?.title }}</h4>
+      <h4>{{ textTable.urlsInput.title }}</h4>
       <label [colon]="true" fd-form-label for="input-url">
-        {{ texts.urlsInput?.label }}
+        {{ textTable.urlsInput.label }}
       </label>
       <input
         fd-form-control
@@ -33,20 +34,20 @@
         aria-required="true"
         #urlInput
       />
-      @if (errors.length) {
-        <div>{{ texts.urlsInput?.error }}</div>
+      @if (errors().length) {
+        <div>{{ textTable.urlsInput.error }}</div>
       }
       <div class="config-input-buttons">
         <button
           fd-button
-          label="{{ texts.addButton }}"
+          label="{{ textTable.addButton }}"
           fdType="emphasized"
           fdCompact
           (click)="addUrl(urlInput.elementRef.nativeElement.value)"
         ></button>
         <button
           fd-button
-          label="{{ texts.clearButton }}"
+          label="{{ textTable.clearButton }}"
           fdType="ghost"
           fdCompact
           (click)="urlInput.elementRef.nativeElement.value = ''"
@@ -55,7 +56,7 @@
       <div class="config-list">
         <ul fd-list>
           @for (
-            item of localDevelopmentSettings.configs;
+            item of configs();
             track item;
             let ind = $index
           ) {
@@ -68,7 +69,7 @@
                   fd-button
                   fdType="transparent"
                   glyph="decline"
-                  title="{{ texts.removeButton }}"
+                  title="{{ textTable.removeButton }}"
                   (click)="removeUrl(ind)"
                 ></button>
               </span>
@@ -79,38 +80,38 @@
     </div>
 
     <div fd-form-item class="config-input">
-      <h4>{{ texts.serviceProviderConfig?.title }}</h4>
+      <h4>{{ textTable.serviceProviderConfig.title }}</h4>
       <label [colon]="false" fd-form-label for="input-key">
-        {{ texts.serviceProviderConfig?.explanation }}
+        {{ textTable.serviceProviderConfig.explanation }}
       </label>
       <br />
       <label [colon]="true" fd-form-label for="input-key">
-        {{ texts.serviceProviderConfig?.keyInput.label }}
+        {{ textTable.serviceProviderConfig.keyInput.label }}
       </label>
       <input
         fd-form-control
         type="text"
         id="input-key"
-        placeholder="{{ texts.serviceProviderConfig?.keyInput.placeholder }}"
+        placeholder="{{ textTable.serviceProviderConfig.keyInput.placeholder }}"
         aria-required="true"
         #inputKey
       />
       <br />
       <label [colon]="true" fd-form-label for="input-value">
-        {{ texts.serviceProviderConfig?.valueInput.label }}
+        {{ textTable.serviceProviderConfig.valueInput.label }}
       </label>
       <input
         fd-form-control
         type="text"
         id="input-value"
-        placeholder="{{ texts.serviceProviderConfig?.valueInput.placeholder }}"
+        placeholder="{{ textTable.serviceProviderConfig.valueInput.placeholder }}"
         aria-required="true"
         #inputValue
       />
       <div class="config-input-buttons">
         <button
           fd-button
-          label="{{ texts.addButton }}"
+          label="{{ textTable.addButton }}"
           fdType="emphasized"
           fdCompact
           (click)="
@@ -122,7 +123,7 @@
         ></button>
         <button
           fd-button
-          label="{{ texts.clearButton }}"
+          label="{{ textTable.clearButton }}"
           fdType="ghost"
           fdCompact
           (click)="
@@ -135,7 +136,7 @@
         <ul fd-list>
           @for (
             item of Object.entries(
-              localDevelopmentSettings.serviceProviderConfig
+              serviceProviderConfig()
             );
             track item[0];
             let ind = $index
@@ -149,7 +150,7 @@
                   fd-button
                   fdType="transparent"
                   glyph="decline"
-                  title="{{ texts.removeButton }}"
+                  title="{{ textTable.removeButton }}"
                   (click)="removeServiceProviderConfig(item[0])"
                 ></button>
               </span>

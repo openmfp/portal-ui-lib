@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ErrorComponent } from './error.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
+  ButtonConfig,
   I18nService,
   LuigiCoreService,
-  ButtonConfig,
 } from '@openmfp/portal-ui-lib';
 
 describe('ErrorComponent', () => {
@@ -15,12 +15,14 @@ describe('ErrorComponent', () => {
   beforeEach(async () => {
     i18nServiceMock = {
       getTranslationAsync: jest.fn().mockResolvedValue('translated text'),
+      translationTable: {},
     } as any;
 
     luigiCoreServiceMock = {
       navigation: jest.fn().mockReturnValue({
         navigate: jest.fn(),
       }),
+      showAlert: jest.fn(),
     } as any;
 
     await TestBed.configureTestingModule({
@@ -62,7 +64,7 @@ describe('ErrorComponent', () => {
 
   describe('setSceneConfig', () => {
     it('should set entity 404 config', async () => {
-      component.context = {
+      const testContext = {
         error: {
           code: 404,
           entityDefinition: {
@@ -78,44 +80,54 @@ describe('ErrorComponent', () => {
             testId: 'TEST-123',
           },
         },
+        translationTable: {},
       };
 
+      fixture.componentRef.setInput('context', testContext);
       await component.ngOnInit();
-      expect(component.config.sceneConfig?.scene.id).toBe('sapIllus-test-scene');
+      expect(component.config.sceneConfig?.scene.id).toBe(
+        'sapIllus-test-scene',
+      );
     });
 
     it('should set entity 403 config', async () => {
-      component.context = {
+      const testContext = {
         error: {
           code: 403,
           entityDefinition: {
             label: 'Test',
           },
         },
+        translationTable: {},
       };
+
+      fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe(
-        'tnt-Scene-UnsuccessfulAuth'
+        'tnt-Scene-UnsuccessfulAuth',
       );
     });
 
     it('should set entity default error config', async () => {
-      component.context = {
+      const testContext = {
         error: {
           code: 500,
           entityDefinition: {
             label: 'Test',
           },
         },
+        translationTable: {},
       };
+
+      fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe('');
     });
 
     it('should set non-entity 404 config', async () => {
-      component.context = {
+      const testContext = {
         error: {
           code: 404,
           errorComponentConfig: {
@@ -124,33 +136,42 @@ describe('ErrorComponent', () => {
             },
           },
         },
+        translationTable: {},
       };
+
+      fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe(
-        'sapIllus-Scene-NoEntries'
+        'sapIllus-Scene-NoEntries',
       );
     });
 
     it('should set non-entity 403 config', async () => {
-      component.context = {
+      const testContext = {
         error: {
           code: 403,
         },
+        translationTable: {},
       };
+
+      fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe(
-        'tnt-Scene-UnsuccessfulAuth'
+        'tnt-Scene-UnsuccessfulAuth',
       );
     });
 
     it('should set default error config for unknown error code', async () => {
-      component.context = {
+      const testContext = {
         error: {
           code: 500,
         },
+        translationTable: {},
       };
+
+      fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe('');
