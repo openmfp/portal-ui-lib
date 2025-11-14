@@ -1,31 +1,9 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  ViewEncapsulation,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  ButtonComponent,
-  ContentDensityDirective,
-  FormControlComponent,
-  FormItemComponent,
-  FormLabelComponent,
-  LinkComponent,
-  ListComponent,
-  ListItemComponent,
-  ListSecondaryDirective,
-  ListTitleDirective,
-  SwitchComponent,
-} from '@fundamental-ngx/core';
+import { ButtonComponent, ContentDensityDirective, FormControlComponent, FormItemComponent, FormLabelComponent, LinkComponent, ListComponent, ListItemComponent, ListSecondaryDirective, ListTitleDirective, SwitchComponent } from '@fundamental-ngx/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import {
-  I18nService,
-  LocalDevelopmentSettings,
-  LocalStorageKeys,
-  localDevelopmentSettingsLocalStorage,
-} from '@openmfp/portal-ui-lib';
+import { Config, I18nService, LocalStorageKeys, localDevelopmentSettingsLocalStorage } from '@openmfp/portal-ui-lib';
+
 
 @Component({
   selector: 'development-settings',
@@ -47,12 +25,16 @@ import {
     LinkComponent,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevelopmentSettingsComponent implements OnInit {
   private i18nService = inject(I18nService);
 
-  protected texts: any = {};
-  protected errors: string[] = [];
+  public context = input.required<any>();
+  public LuigiClient = input.required<LuigiClient>();
+
+  protected texts = computed(() => this.readTranslations());
+  protected errors = signal<string[]>([]);
   protected readonly Object = Object;
   protected readonly defaultConfig = [
     {
@@ -62,91 +44,74 @@ export class DevelopmentSettingsComponent implements OnInit {
       url: 'http://localhost:4200/assets/content-configuration.json',
     },
   ];
-  protected localDevelopmentSettings: LocalDevelopmentSettings = {
-    isActive: false,
-    configs: this.defaultConfig,
-    serviceProviderConfig: {},
-  };
+  public isActive = signal<boolean>(false);
+  public configs = signal<Config[]>(this.defaultConfig);
+  public serviceProviderConfig = signal<Record<string, string>>({});
 
-  @Input()
-  set context(context: any) {
-    this.i18nService.translationTable = context.translationTable;
-    this.texts = this.readTranslations();
-  }
-
-  @Input()
-  LuigiClient: LuigiClient;
+  protected localDevelopmentSettings = computed(() => ({
+    isActive: this.isActive(),
+    configs: this.configs(),
+    serviceProviderConfig: this.serviceProviderConfig(),
+  }));
 
   ngOnInit(): void {
-    this.readTranslations();
-
-    this.localDevelopmentSettings =
+    const localDevelopmentSettings =
       localDevelopmentSettingsLocalStorage.read(
         LocalStorageKeys.DEVELOPMENT_MODE_CONFIG,
       ) ||
       localDevelopmentSettingsLocalStorage.read() ||
-      this.localDevelopmentSettings;
+      this.localDevelopmentSettings();
 
-    if (!this.localDevelopmentSettings.configs) {
-      this.localDevelopmentSettings.configs = [];
-    }
-
-    if (!this.localDevelopmentSettings.serviceProviderConfig) {
-      this.localDevelopmentSettings.serviceProviderConfig = {};
-    }
+    this.isActive.set(localDevelopmentSettings.isActive);
+    this.configs.set(localDevelopmentSettings.configs || []);
+    this.serviceProviderConfig.set(localDevelopmentSettings.serviceProviderConfig || {});
   }
 
   private saveDevelopmentSettings() {
-    this.LuigiClient.publishEvent(
+    this.LuigiClient().publishEvent(
       new CustomEvent('luigi.updateUserSettings', {
         detail: {
-          localDevelopmentSettings: this.localDevelopmentSettings,
+          localDevelopmentSettings: this.localDevelopmentSettings(),
         },
       }),
     );
   }
 
   addUrl(url: string) {
-    if (!this.localDevelopmentSettings.configs) {
-      this.localDevelopmentSettings.configs = [];
-    }
-
     if (!this.isValidUrl(url)) {
-      this.errors.push('pattern');
-    } else if (
-      url &&
-      !this.localDevelopmentSettings.configs.find((e) => e.url === url)
-    ) {
-      this.errors.length = 0;
-      this.localDevelopmentSettings.configs.push({ url });
+      this.errors.set([...this.errors(), 'pattern']);
+    } else if (url && !this.configs().find((e) => e.url === url)) {
+      this.errors.set([]);
+      this.configs.update((configs) => [...configs, { url }]);
       this.saveDevelopmentSettings();
     }
   }
 
   removeUrl(index: number) {
-    this.localDevelopmentSettings.configs.splice(index, 1);
+    this.configs.update((configs) => configs.filter((_, i) => i !== index));
     this.saveDevelopmentSettings();
   }
 
   removeServiceProviderConfig(key: string) {
-    delete this.localDevelopmentSettings.serviceProviderConfig[key];
+    this.serviceProviderConfig.update((config) => {
+      delete config[key];
+      return { ...config };
+    });
     this.saveDevelopmentSettings();
   }
 
   addServiceProviderConfig(key: string, value: string) {
-    if (!this.localDevelopmentSettings.serviceProviderConfig) {
-      this.localDevelopmentSettings.serviceProviderConfig = {};
-    }
-
     if (key && value) {
-      this.localDevelopmentSettings.serviceProviderConfig[key] = value;
+      this.serviceProviderConfig.update((config) => {
+        config[key] = value;
+        return { ...config };
+      });
       this.saveDevelopmentSettings();
     }
   }
 
   switchIsActive() {
-    this.localDevelopmentSettings.isActive =
-      !this.localDevelopmentSettings.isActive;
+    this.isActive.update((isActive) => !isActive);
     this.saveDevelopmentSettings();
   }
 
@@ -160,6 +125,7 @@ export class DevelopmentSettingsComponent implements OnInit {
   }
 
   private readTranslations() {
+    this.i18nService.translationTable = this.context().translationTable;
     return {
       explanation: this.i18nService.getTranslation(
         'LOCAL_DEVELOPMENT_SETTINGS_EXPLANATION',

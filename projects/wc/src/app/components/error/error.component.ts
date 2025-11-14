@@ -1,10 +1,13 @@
 import {
   CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
-  Input,
   OnInit,
   ViewEncapsulation,
+  effect,
   inject,
+  input,
 } from '@angular/core';
 import {
   ButtonComponent,
@@ -37,6 +40,7 @@ interface ErrorNodeContext {
   standalone: true,
   templateUrl: './error.component.html',
   encapsulation: ViewEncapsulation.ShadowDom,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     IllustratedMessageComponent,
@@ -49,13 +53,14 @@ interface ErrorNodeContext {
 export class ErrorComponent implements OnInit {
   private i18nService = inject(I18nService);
   private luigiCoreService = inject(LuigiCoreService);
+  private cdr = inject(ChangeDetectorRef);
 
-  private nodeContext: ErrorNodeContext;
+  public context = input.required<any>();
 
-  @Input()
-  set context(context: any) {
-    this.nodeContext = context;
-    this.i18nService.translationTable = context.translationTable;
+  constructor() {
+    effect(() => {
+      this.i18nService.translationTable = this.context().translationTable;
+    });
   }
 
   config: ErrorComponentConfig = {
@@ -85,8 +90,9 @@ export class ErrorComponent implements OnInit {
   }
 
   private async setSceneConfig() {
-    if (this.nodeContext.error?.entityDefinition) {
-      const entityDefinition = this.nodeContext.error.entityDefinition;
+    const nodeContext = this.context();
+    if (nodeContext.error?.entityDefinition) {
+      const entityDefinition = nodeContext.error.entityDefinition;
       const typeStr = entityDefinition.label ?? '';
       const typeStrPlural = entityDefinition.pluralLabel ?? '';
 
@@ -94,11 +100,8 @@ export class ErrorComponent implements OnInit {
         entityDefinition.notFoundConfig?.sapIllusSVG ?? 'Scene-NoSearchResults';
 
       const id =
-        this.nodeContext.error.additionalContext &&
-        entityDefinition.dynamicFetchId
-          ? this.nodeContext.error.additionalContext[
-              entityDefinition.dynamicFetchId
-            ]
+        nodeContext.error.additionalContext && entityDefinition.dynamicFetchId
+          ? nodeContext.error.additionalContext[entityDefinition.dynamicFetchId]
           : '';
       const gotoNavContext =
         entityDefinition.notFoundConfig?.entityListNavigationContext;
@@ -116,7 +119,7 @@ export class ErrorComponent implements OnInit {
         });
       }
 
-      if (this.nodeContext.error.code === 404) {
+      if (nodeContext.error.code === 404) {
         this.config = await this.getErrorEntity404NotFoundConfig(
           id,
           sceneId,
@@ -125,13 +128,13 @@ export class ErrorComponent implements OnInit {
           gotoNavContext,
           buttons,
         );
-      } else if (this.nodeContext.error.code === 403) {
+      } else if (nodeContext.error.code === 403) {
         this.config = await this.getError403Config();
       } else {
         this.config = await this.getErrorDefaultConfig();
       }
     } else {
-      switch (this.nodeContext.error.code) {
+      switch (nodeContext.error.code) {
         case 403: {
           this.config = await this.getError403Config();
           break;
@@ -156,11 +159,12 @@ export class ErrorComponent implements OnInit {
     }
 
     this.sceneConfig = this.config.sceneConfig;
+    this.cdr.markForCheck();
   }
 
   private async getError404Config() {
     const confButtons =
-      (this.nodeContext.error.errorComponentConfig || {})['404']?.buttons || [];
+      (this.context().error.errorComponentConfig || {})['404']?.buttons || [];
     const buttons: ButtonConfig[] = [];
     for (let i = 0; i < confButtons.length; i++) {
       buttons.push({
