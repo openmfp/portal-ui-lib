@@ -1,14 +1,21 @@
 import { THEMING_SERVICE } from '../../injection-tokens';
-import { LocalDevelopmentSettings, LuigiNode, LuigiUserSettings } from '../../models';
+import {
+  LocalDevelopmentSettings,
+  LuigiNode,
+  LuigiUserSettings,
+} from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { AuthService, EnvConfigService } from '../portal';
-import { featureToggleLocalStorage, localDevelopmentSettingsLocalStorage, userSettingsLocalStorage } from '../storage-service';
+import {
+  featureToggleLocalStorage,
+  localDevelopmentSettingsLocalStorage,
+  userSettingsLocalStorage,
+} from '../storage-service';
 import { ThemingService } from '../theming.service';
 import { Injectable, inject } from '@angular/core';
 import { isEqual } from 'lodash';
-
 
 export interface UserSettings {
   frame_userAccount?: any;
@@ -56,7 +63,7 @@ export class UserSettingsConfigService {
 
     let coreGroups = await this.getCoreUserSettingsGroups();
 
-    const userSettings = {
+    return {
       userSettingsProfileMenuEntry: {
         label: 'USERSETTINGSPROFILEMENUENTRY_SETTINGS',
       },
@@ -67,16 +74,18 @@ export class UserSettingsConfigService {
       },
       userSettingGroups: { ...coreGroups, ...groupsFromNodes },
 
-      readUserSettings: async () => {
-        const setting: any =
-          (await userSettingsLocalStorage.read(
-            this.authService.getUserInfo(),
-          )) || {};
-        setting.frame_versions = this.versionsConfig;
-        return setting;
+      readUserSettings: () => {
+        return userSettingsLocalStorage
+          .read(this.authService.getUserInfo())
+          .then((setting: any) => {
+            return {
+              ...(setting || {}),
+              frame_versions: this.versionsConfig,
+            };
+          });
       },
 
-      storeUserSettings: async (
+      storeUserSettings: (
         settings: UserSettingsValues,
         previous: UserSettingsValues,
       ) => {
@@ -89,7 +98,6 @@ export class UserSettingsConfigService {
         }
       },
     };
-    return userSettings;
   }
 
   private async getCoreUserSettingsGroups() {
