@@ -87,8 +87,8 @@ export class NodesProcessingService {
           parentEntityPath,
         );
       });
-      node.children = async (ctx: any) =>
-        await Promise.all(
+      node.children = (ctx: any) =>
+        Promise.all(
           directChildren
             .filter((child) => visibleForContext(ctx, child))
             .map(
