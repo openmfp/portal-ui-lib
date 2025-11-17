@@ -54,7 +54,7 @@ export const localDevelopmentSettingsLocalStorage = {
 };
 
 export const userSettingsLocalStorage = {
-  read: async (userInfo: UserData): Promise<UserSettingsValues> => {
+  read: (userInfo: UserData): Promise<UserSettingsValues> => {
     const transientSettings = {
       frame_userAccount: {
         name: userInfo.name || '',
