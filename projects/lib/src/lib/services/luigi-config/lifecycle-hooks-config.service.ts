@@ -33,8 +33,8 @@ export class LifecycleHooksConfigService {
 
   getLifecycleHooksConfig() {
     return {
-      luigiAfterInit: async () => {
-        await this.constructLuigiConfiguration();
+      luigiAfterInit: () => {
+        return this.constructLuigiConfiguration();
       },
     };
   }

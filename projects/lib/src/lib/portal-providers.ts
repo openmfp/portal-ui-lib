@@ -36,13 +36,13 @@ import {
   LuigiAuthEventsCallbacksService,
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
+  NodeContextProcessingService,
   RoutingConfigService,
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
   UserSettingsConfigService,
 } from './services';
-import { NodeContextProcessingService } from './services/luigi-nodes/node-context-processing.service';
 import { CustomReuseStrategy } from './utilities';
 import { provideHttpClient } from '@angular/common/http';
 import {
@@ -50,7 +50,6 @@ import {
   Provider,
   Type,
   makeEnvironmentProviders,
-  provideZoneChangeDetection,
 } from '@angular/core';
 import { RouteReuseStrategy, provideRouter } from '@angular/router';
 
@@ -112,7 +111,6 @@ export function providePortal(
 ): EnvironmentProviders {
   const providers: (Provider | EnvironmentProviders)[] = [
     provideHttpClient(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideBootstrap(),
     provideSessionRefresh(),
     provideNavigationTracker(),
