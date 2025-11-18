@@ -1,9 +1,34 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent, ContentDensityDirective, FormControlComponent, FormItemComponent, FormLabelComponent, LinkComponent, ListComponent, ListItemComponent, ListSecondaryDirective, ListTitleDirective, SwitchComponent } from '@fundamental-ngx/core';
+import {
+  ButtonComponent,
+  ContentDensityDirective,
+  FormControlComponent,
+  FormItemComponent,
+  FormLabelComponent,
+  LinkComponent,
+  ListComponent,
+  ListItemComponent,
+  ListSecondaryDirective,
+  ListTitleDirective,
+  SwitchComponent,
+} from '@fundamental-ngx/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
-import { Config, I18nService, LocalStorageKeys, localDevelopmentSettingsLocalStorage } from '@openmfp/portal-ui-lib';
-
+import {
+  Config,
+  I18nService,
+  LocalStorageKeys,
+  localDevelopmentSettingsLocalStorage,
+} from '@openmfp/portal-ui-lib';
 
 @Component({
   selector: 'development-settings',
@@ -64,7 +89,9 @@ export class DevelopmentSettingsComponent implements OnInit {
 
     this.isActive.set(localDevelopmentSettings.isActive);
     this.configs.set(localDevelopmentSettings.configs || []);
-    this.serviceProviderConfig.set(localDevelopmentSettings.serviceProviderConfig || {});
+    this.serviceProviderConfig.set(
+      localDevelopmentSettings.serviceProviderConfig || {},
+    );
   }
 
   private saveDevelopmentSettings() {

@@ -47,6 +47,7 @@ describe('UserSettingsConfigService', () => {
 
     dependenciesVersionsService.read.mockResolvedValue({});
     luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([]);
+    userSettingsLocalStorage.read = jest.fn().mockResolvedValue({});
 
     TestBed.configureTestingModule({
       providers: [
