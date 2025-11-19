@@ -14,7 +14,7 @@ export interface ClientEnvironment extends Record<string, any> {
   baseDomain?: string;
   oauthServerUrl?: string;
   clientId?: string;
-  userAvatarImageUrl?: string;
+  userAvatarUrl?: string;
   isLocal: boolean;
   developmentInstance: boolean;
   validWebcomponentUrls?: string;
