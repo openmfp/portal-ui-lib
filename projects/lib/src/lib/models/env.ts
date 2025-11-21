@@ -10,13 +10,14 @@ export interface AuthData {
 }
 
 export interface ClientEnvironment extends Record<string, any> {
-  idpName: string;
-  baseDomain: string;
-  oauthServerUrl: string;
-  clientId: string;
+  idpName?: string;
+  baseDomain?: string;
+  oauthServerUrl?: string;
+  clientId?: string;
+  userAvatarUrl?: string;
   isLocal: boolean;
   developmentInstance: boolean;
   validWebcomponentUrls?: string;
-  authData: AuthTokenData;
+  authData?: AuthTokenData;
   uiOptions?: string[];
 }

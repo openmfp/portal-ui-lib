@@ -255,35 +255,40 @@ export class UserSettingsConfigService {
 
   private async addUserSettings(settings: UserSettings) {
     const userInfo = this.authService.getUserInfo();
-    settings.frame_userAccount = {
-      label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
-      sublabel: userInfo.name,
-      icon: `https://avatars.wdf.sap.corp/avatar/${userInfo.userId}`,
-      title: userInfo.name,
-      initials: userInfo.initials,
-      iconClassAttribute:
-        'fd-avatar fd-avatar--s fd-avatar--circle fd-avatar--thumbnail lui-avatar-space',
-      settings: {
-        name: {
-          type: 'string',
-          label: 'USERSETTINGSDIALOG_NAME',
-          isEditable: false,
-        },
-        email: {
-          type: 'string',
-          label: 'USERSETTINGSDIALOG_EMAIL',
-          isEditable: false,
-        },
-      },
-    };
+    const { userAvatarUrl } = await this.envConfigService.getEnvConfig();
+    const imageUrl = userAvatarUrl?.replace('${userId}', userInfo.userId);
 
-    const validLanguages = await this.i18nService.getValidLanguages();
-    if (validLanguages.length > 1) {
-      settings.frame_userAccount.settings['language'] = {
-        type: 'enum',
-        label: 'USERSETTINGSDIALOG_LANGUAGE',
-        options: validLanguages,
+    if (userInfo.email || userInfo.userId) {
+      settings.frame_userAccount = {
+        label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
+        sublabel: userInfo.name,
+        icon: imageUrl || 'person-placeholder',
+        title: userInfo.name,
+        initials: userInfo.initials,
+        iconClassAttribute:
+          'fd-avatar fd-avatar--s fd-avatar--circle fd-avatar--thumbnail lui-avatar-space',
+        settings: {
+          name: {
+            type: 'string',
+            label: 'USERSETTINGSDIALOG_NAME',
+            isEditable: false,
+          },
+          email: {
+            type: 'string',
+            label: 'USERSETTINGSDIALOG_EMAIL',
+            isEditable: false,
+          },
+        },
       };
+
+      const validLanguages = await this.i18nService.getValidLanguages();
+      if (validLanguages.length > 1) {
+        settings.frame_userAccount.settings['language'] = {
+          type: 'enum',
+          label: 'USERSETTINGSDIALOG_LANGUAGE',
+          options: validLanguages,
+        };
+      }
     }
   }
 
