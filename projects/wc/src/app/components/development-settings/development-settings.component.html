@@ -1,139 +1,148 @@
 <div>
   @let textTable = texts();
   <div class="container">
-    <div>
-      <div class="explanation">{{ textTable.explanation }}</div>
-      <a
-        class="explanation"
-        fd-link
-        target="_blank"
-        href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
-        >{{ textTable.link }}</a
-      >
-    </div>
+      <div>
+        <div class="explanation">{{ textTable.explanation }}</div>
+        <ui5-link
+          class="line-height-normal"
+          target="_blank"
+          href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
+        >
+          {{ textTable.link }}
+        </ui5-link>
+      </div>
 
-    <div class="is-active-switch">
-      <h4>{{ textTable.isDevelopmentModeActive }}</h4>
-      <fd-switch
-        class="switch-active"
-        [checked]="isActive()"
-        (checkedChange)="switchIsActive()"
-      ></fd-switch>
-    </div>
+      <div class="is-active-switch">
+        <h4 class="line-height-normal">{{ textTable.isDevelopmentModeActive }}</h4>
+        <ui5-switch
+          class="switch-active"
+          [checked]="isActive()"
+          (change)="switchIsActive()"
+        ></ui5-switch>
+      </div>
 
-    <div fd-form-item class="config-input">
-      <h4>{{ textTable.urlsInput.title }}</h4>
-      <label [colon]="true" fd-form-label for="input-url">
+    <div class="config-input">
+      <h4 class="line-height-normal">{{ textTable.urlsInput.title }}</h4>
+      <ui5-label class="line-height-normal field-label" for="input-url">
         {{ textTable.urlsInput.label }}
-      </label>
-      <input
-        fd-form-control
-        type="text"
+      </ui5-label>
+      <ui5-input
+        class="line-height-normal field-control"
         id="input-url"
+        type="Text"
         placeholder="http://localhost:4200/assets/content-configuration.json"
         aria-required="true"
         #urlInput
-      />
+      ></ui5-input>
       @if (errors().length) {
-        <div>{{ textTable.urlsInput.error }}</div>
+        <div class="line-height-normal">{{ textTable.urlsInput.error }}</div>
       }
       <div class="config-input-buttons">
-        <button
-          fd-button
-          label="{{ textTable.addButton }}"
-          fdType="emphasized"
-          fdCompact
-          (click)="addUrl(urlInput.elementRef.nativeElement.value)"
-        ></button>
-        <button
-          fd-button
-          label="{{ textTable.clearButton }}"
-          fdType="ghost"
-          fdCompact
-          (click)="urlInput.elementRef.nativeElement.value = ''"
-        ></button>
+        <ui5-button
+          design="Emphasized"
+          class="compact-button"
+          (click)="addUrl(urlInput.value)"
+        >
+          {{ textTable.addButton }}
+        </ui5-button>
+        <ui5-button
+          design="Transparent"
+          class="compact-button"
+          (click)="urlInput.value = ''"
+        >
+          {{ textTable.clearButton }}
+        </ui5-button>
       </div>
       <div class="config-list">
-        <ul fd-list>
+        <ui5-list class="config-list-wrapper" separators="Inner">
           @for (
             item of configs();
             track item;
             let ind = $index
           ) {
-            <li fd-list-item>
-              <span fd-list-title>
-                {{ item.url }}
-              </span>
-              <span fd-list-secondary>
-                <button
-                  fd-button
-                  fdType="transparent"
-                  glyph="decline"
-                  title="{{ textTable.removeButton }}"
+            <ui5-li-custom class="config-list-item">
+              <div class="list-item-row">
+                <span class="list-item-text">{{ item.url }}</span>
+                <ui5-button
+                  class="remove-button"
+                  design="Transparent"
+                  icon="decline"
+                  tooltip="{{ textTable.removeButton }}"
                   (click)="removeUrl(ind)"
-                ></button>
-              </span>
-            </li>
+                ></ui5-button>
+              </div>
+            </ui5-li-custom>
           }
-        </ul>
+        </ui5-list>
       </div>
     </div>
 
-    <div fd-form-item class="config-input">
-      <h4>{{ textTable.serviceProviderConfig.title }}</h4>
-      <label [colon]="false" fd-form-label for="input-key">
+    <div class="config-input line-height-normal">
+      <h4 class="line-height-normal">
+        {{ textTable.serviceProviderConfig.title }}
+      </h4>
+      <ui5-label
+        class="line-height-normal field-label"
+        for="input-key"
+      >
         {{ textTable.serviceProviderConfig.explanation }}
-      </label>
+      </ui5-label>
       <br />
-      <label [colon]="true" fd-form-label for="input-key">
+      <ui5-label
+        class="line-height-normal field-label"
+        for="input-key"
+      >
         {{ textTable.serviceProviderConfig.keyInput.label }}
-      </label>
-      <input
-        fd-form-control
-        type="text"
+      </ui5-label>
+      <ui5-input
+        class="line-height-normal field-control"
         id="input-key"
+        type="Text"
         placeholder="{{ textTable.serviceProviderConfig.keyInput.placeholder }}"
         aria-required="true"
         #inputKey
-      />
+      ></ui5-input>
       <br />
-      <label [colon]="true" fd-form-label for="input-value">
+      <ui5-label
+        class="line-height-normal field-label"
+        for="input-value"
+      >
         {{ textTable.serviceProviderConfig.valueInput.label }}
-      </label>
-      <input
-        fd-form-control
-        type="text"
+      </ui5-label>
+      <ui5-input
+        class="line-height-normal field-control"
         id="input-value"
+        type="Text"
         placeholder="{{ textTable.serviceProviderConfig.valueInput.placeholder }}"
         aria-required="true"
         #inputValue
-      />
+      ></ui5-input>
       <div class="config-input-buttons">
-        <button
-          fd-button
-          label="{{ textTable.addButton }}"
-          fdType="emphasized"
-          fdCompact
+        <ui5-button
+          design="Emphasized"
+          class="compact-button"
           (click)="
             addServiceProviderConfig(
-              inputKey.elementRef.nativeElement.value,
-              inputValue.elementRef.nativeElement.value
+              inputKey.value,
+              inputValue.value
             )
           "
-        ></button>
-        <button
-          fd-button
-          label="{{ textTable.clearButton }}"
-          fdType="ghost"
-          fdCompact
+        >
+          {{ textTable.addButton }}
+        </ui5-button>
+        <ui5-button
+          design="Transparent"
+          class="compact-button"
           (click)="
-            inputKey.elementRef.nativeElement.value = '';
-            inputValue.elementRef.nativeElement.value = ''
+            inputKey.value = '';
+            inputValue.value = ''
           "
-        ></button>
+        >
+          {{ textTable.clearButton }}
+        </ui5-button>
       </div>
       <div class="config-list">
-        <ul fd-list>
+        <ui5-list class="config-list-wrapper" separators="Inner">
           @for (
             item of Object.entries(
               serviceProviderConfig()
@@ -141,22 +150,22 @@
             track item[0];
             let ind = $index
           ) {
-            <li fd-list-item>
-              <span fd-list-title>
-                Key: {{ item[0] }}, Value: {{ item[1] }}
-              </span>
-              <span fd-list-secondary>
-                <button
-                  fd-button
-                  fdType="transparent"
-                  glyph="decline"
-                  title="{{ textTable.removeButton }}"
+            <ui5-li-custom class="config-list-item">
+              <div class="list-item-row">
+                <span class="list-item-text">
+                  Key: {{ item[0] }}, Value: {{ item[1] }}
+                </span>
+                <ui5-button
+                  class="remove-button"
+                  design="Transparent"
+                  icon="decline"
+                  tooltip="{{ textTable.removeButton }}"
                   (click)="removeServiceProviderConfig(item[0])"
-                ></button>
-              </span>
-            </li>
+                ></ui5-button>
+              </div>
+            </ui5-li-custom>
           }
-        </ul>
+        </ui5-list>
       </div>
     </div>
   </div>
