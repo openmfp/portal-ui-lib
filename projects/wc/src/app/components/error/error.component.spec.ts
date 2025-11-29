@@ -5,6 +5,11 @@ import {
   I18nService,
   LuigiCoreService,
 } from '@openmfp/portal-ui-lib';
+import {
+  ButtonComponent,
+  IllustratedMessageComponent,
+  TitleComponent,
+} from '@ui5/webcomponents-ngx';
 
 describe('ErrorComponent', () => {
   let component: ErrorComponent;
@@ -26,7 +31,12 @@ describe('ErrorComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [ErrorComponent],
+      imports: [
+        ErrorComponent,
+        IllustratedMessageComponent,
+        ButtonComponent,
+        TitleComponent,
+      ],
       providers: [
         { provide: I18nService, useValue: i18nServiceMock },
         { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
@@ -105,7 +115,7 @@ describe('ErrorComponent', () => {
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe(
-        'tnt-Scene-UnsuccessfulAuth',
+        'tnt/UnsuccessfulAuth',
       );
     });
 
@@ -143,7 +153,7 @@ describe('ErrorComponent', () => {
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe(
-        'sapIllus-Scene-NoEntries',
+        'fiori/NoEntries',
       );
     });
 
@@ -159,7 +169,7 @@ describe('ErrorComponent', () => {
 
       await component.ngOnInit();
       expect(component.config.sceneConfig?.scene.id).toBe(
-        'tnt-Scene-UnsuccessfulAuth',
+        'tnt/UnsuccessfulAuth',
       );
     });
 

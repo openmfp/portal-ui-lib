@@ -1,29 +1,11 @@
-import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewEncapsulation,
-  effect,
-  inject,
-  input,
-} from '@angular/core';
-import {
-  ButtonComponent,
-  ContentDensityDirective,
-  IllustratedMessageComponent,
-  IllustratedMessageTextDirective,
-  IllustratedMessageTitleDirective,
-} from '@fundamental-ngx/core';
-import {
-  ButtonConfig,
-  EntityDefinition,
-  ErrorComponentConfig,
-  I18nService,
-  LuigiCoreService,
-  SceneConfig,
-} from '@openmfp/portal-ui-lib';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, effect, inject, input } from '@angular/core';
+import { ButtonConfig, EntityDefinition, ErrorComponentConfig, I18nService, LuigiCoreService, SceneConfig } from '@openmfp/portal-ui-lib';
+import '@ui5/webcomponents-fiori/dist/illustrations/NoEntries.js';
+import '@ui5/webcomponents-fiori/dist/illustrations/NoSearchResults.js';
+import '@ui5/webcomponents-fiori/dist/illustrations/UnableToLoad.js';
+import '@ui5/webcomponents-fiori/dist/illustrations/tnt/UnsuccessfulAuth.js';
+import { ButtonComponent, IllustratedMessageComponent, TitleComponent } from '@ui5/webcomponents-ngx';
+
 
 interface ErrorNodeContext {
   error: {
@@ -41,14 +23,7 @@ interface ErrorNodeContext {
   templateUrl: './error.component.html',
   encapsulation: ViewEncapsulation.ShadowDom,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    IllustratedMessageComponent,
-    IllustratedMessageTextDirective,
-    IllustratedMessageTitleDirective,
-    ButtonComponent,
-    ContentDensityDirective,
-  ],
+  imports: [IllustratedMessageComponent, ButtonComponent, TitleComponent],
 })
 export class ErrorComponent implements OnInit {
   private i18nService = inject(I18nService);
@@ -158,7 +133,7 @@ export class ErrorComponent implements OnInit {
       return;
     }
 
-    this.sceneConfig = this.config.sceneConfig;
+    this.sceneConfig = this.config.sceneConfig as SceneConfig;
     this.cdr.markForCheck();
   }
 
@@ -177,7 +152,7 @@ export class ErrorComponent implements OnInit {
       sceneConfig: {
         scene: {
           url: 'assets/moments/sapIllus-Scene-NoEntries.svg',
-          id: 'sapIllus-Scene-NoEntries',
+          id: 'fiori/NoEntries',
         },
       },
       illustratedMessageTitle: await this.i18nService.getTranslationAsync(
@@ -199,7 +174,7 @@ export class ErrorComponent implements OnInit {
       sceneConfig: {
         scene: {
           url: 'assets/moments/tnt-Scene-UnsuccessfulAuth.svg',
-          id: 'tnt-Scene-UnsuccessfulAuth',
+          id: 'tnt/UnsuccessfulAuth',
         },
       },
       illustratedMessageTitle: '',
@@ -226,7 +201,7 @@ export class ErrorComponent implements OnInit {
       sceneConfig: {
         scene: {
           url: '',
-          id: '',
+          id: 'UnableToLoad',
         },
       },
       illustratedMessageTitle: await this.i18nService.getTranslationAsync(

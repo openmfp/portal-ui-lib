@@ -1,28 +1,22 @@
 @if (sceneConfig) {
     <div class="page">
       <div class="container">
-        <figure fd-illustrated-message [svgConfig]="sceneConfig">
-          <figcaption fd-illustrated-message-figcaption>
-            <h3
-              fd-illustrated-message-title
-              [innerHTML]="config.illustratedMessageTitle"
-            ></h3>
-            <p
-              fd-illustrated-message-text
-              [innerHTML]="config.illustratedMessageText"
-            ></p>
-          </figcaption>
-          <fd-illustrated-message-actions>
+        <ui5-illustrated-message [name]="sceneConfig.scene.id">
+          <ui5-title slot="title" level="H1">{{config.illustratedMessageTitle}}</ui5-title>
+          <div slot="subtitle">
+            <p>{{config.illustratedMessageText}}</p>
+          </div>
+          <div>
               @for (button of config.buttons; track button.url) {
-                  <button
-                    fd-button
+                  <ui5-button
+                    design="Transparent"
                     (click)="goTo(button)"
-                    label="{{ button.label }}"
-                    [fdCompact]="true"
-                  ></button>
+                  >
+                    {{ button.label }}
+                  </ui5-button>
               }
-          </fd-illustrated-message-actions>
-        </figure>
+          </div>
+        </ui5-illustrated-message>
       </div>
     </div>
 }

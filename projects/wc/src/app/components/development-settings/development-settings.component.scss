@@ -10,6 +10,10 @@
   padding-bottom: 1rem;
 }
 
+.line-height-normal {
+  line-height: normal;
+}
+
 .is-active-switch {
   display: flex;
   align-items: center;
@@ -17,16 +21,13 @@
   padding-top: 1.5rem;
 }
 
-.switch-active .fd-switch {
-  padding-block: 0 !important;
-}
-
 .config-list {
   padding: 16px 0;
 }
 
 .config-input {
-  padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .config-input-buttons {
@@ -34,4 +35,46 @@
   justify-content: flex-end;
   gap: 8px;
   margin-top: 16px;
+}
+
+.field-label {
+  display: inline-block;
+  font-weight: 400;
+  margin-bottom: -0.125rem;
+  color: var(--sapContent_LabelColor, #4a4a4a);
+  text-wrap: nowrap;
+}
+
+.field-control {
+  width: 100%;
+  height: 2.25rem;
+}
+
+.config-list-wrapper::part(list) {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.config-list-item {
+  width: 100%;
+  padding: 0;
+}
+
+.config-list-item::part(native-li) {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.list-item-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+}
+
+.list-item-text {
+  flex: 1;
 }
