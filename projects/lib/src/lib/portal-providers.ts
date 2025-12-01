@@ -30,6 +30,7 @@ import {
   CustomGlobalNodesService,
   CustomMessageListener,
   CustomNodeProcessingService,
+  DefaultUserProfileConfigService,
   GlobalSearchConfigService,
   HeaderBarConfigService,
   LocalConfigurationService,
@@ -140,12 +141,11 @@ const addOptionalProviders = (
     useClass: options.appSwitcherConfigService || AppSwitcherConfigServiceImpl,
   });
 
-  if (options.userProfileConfigService) {
-    providers.push({
-      provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
-      useClass: options.userProfileConfigService,
-    });
-  }
+  providers.push({
+    provide: LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+    useClass:
+      options.userProfileConfigService || DefaultUserProfileConfigService,
+  });
 
   if (options.luigiExtendedGlobalContextConfigService) {
     providers.push({

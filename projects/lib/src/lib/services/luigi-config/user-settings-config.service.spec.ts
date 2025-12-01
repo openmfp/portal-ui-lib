@@ -95,10 +95,10 @@ describe('UserSettingsConfigService', () => {
 
       expect(result.userSettingsDialog).toBeDefined();
       expect(result.userSettingsProfileMenuEntry).toBeDefined();
-      expect(result.userSettingGroups.frame_userAccount).toBeDefined();
       expect(result.userSettingGroups.frame_appearance).toBeDefined();
       expect(result.userSettingGroups.frame_development).toBeDefined();
       expect(result.userSettingGroups.frame_versions).toBeDefined();
+      expect(result.userSettingGroups.frame_userAccount).toBeDefined();
     });
 
     it('should return user settings configuration with default versions', async () => {
