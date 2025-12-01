@@ -133,7 +133,7 @@ describe('ErrorComponent', () => {
       fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig?.scene.id).toBe('');
+      expect(component.config.sceneConfig?.scene.id).toBe('UnableToLoad');
     });
 
     it('should set non-entity 404 config', async () => {
@@ -152,9 +152,7 @@ describe('ErrorComponent', () => {
       fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig?.scene.id).toBe(
-        'fiori/NoEntries',
-      );
+      expect(component.config.sceneConfig?.scene.id).toBe('fiori/NoEntries');
     });
 
     it('should set non-entity 403 config', async () => {
@@ -184,7 +182,7 @@ describe('ErrorComponent', () => {
       fixture.componentRef.setInput('context', testContext);
 
       await component.ngOnInit();
-      expect(component.config.sceneConfig?.scene.id).toBe('');
+      expect(component.config.sceneConfig?.scene.id).toBe('UnableToLoad');
     });
   });
 });
