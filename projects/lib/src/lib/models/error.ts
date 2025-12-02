@@ -1,7 +1,7 @@
-import { ButtonConfig, SceneConfig } from './scene-config';
+import { ButtonConfig } from './scene-config';
 
 export interface ErrorComponentConfig {
-  sceneConfig?: SceneConfig;
+  scene?: string;
   illustratedMessageTitle?: string;
   illustratedMessageText?: string;
   buttons?: ButtonConfig[];

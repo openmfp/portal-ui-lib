@@ -1,5 +1,4 @@
 import { DevelopmentSettingsComponent } from '../components/development-settings/development-settings.component';
-import { ErrorComponent } from '../components/error/error.component';
 import { FeatureToggleComponent } from '../components/feature-toggle/feature-toggle.component';
 import { GettingStartedComponent } from '../components/getting-started/getting-started.component';
 import * as wcUtils from '../utils/wc';
@@ -52,7 +51,6 @@ describe('provideLuigiWebComponents', () => {
 
     expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledWith(
       {
-        'error-component': ErrorComponent,
         'development-settings': DevelopmentSettingsComponent,
         'getting-started': GettingStartedComponent,
         'feature-toggle': FeatureToggleComponent,
@@ -74,25 +72,11 @@ describe('provideLuigiWebComponents', () => {
     expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledTimes(1);
     expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledWith(
       {
-        'error-component': ErrorComponent,
         'development-settings': DevelopmentSettingsComponent,
         'getting-started': GettingStartedComponent,
         'feature-toggle': FeatureToggleComponent,
       },
       injector,
     );
-  });
-
-  it('should verify registerLuigiWebComponents is called with ErrorComponent', () => {
-    TestBed.configureTestingModule({
-      providers: [provideLuigiWebComponents()],
-    });
-
-    const factoryFn = TestBed.inject(APP_INITIALIZER)[0];
-    factoryFn();
-
-    const [[components]] = (wcUtils.registerLuigiWebComponents as jest.Mock)
-      .mock.calls;
-    expect(components['error-component']).toBe(ErrorComponent);
   });
 });

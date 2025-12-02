@@ -10,7 +10,6 @@ import {
 } from '../../utilities/context';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ChildrenNodesService } from './children-nodes.service';
-import { CommonGlobalLuigiNodesService } from './common-global-luigi-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
 import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
@@ -29,7 +28,6 @@ export class NodesProcessingService {
   private localConfigurationService = inject(LocalConfigurationServiceImpl);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
-  private commonGlobalLuigiNodesService = inject(CommonGlobalLuigiNodesService);
   private customNodeProcessingService = inject<CustomNodeProcessingService>(
     LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
@@ -44,7 +42,6 @@ export class NodesProcessingService {
       ...(childrenByEntity[EntityType.GLOBAL] || []),
       ...(childrenByEntity[EntityType.GLOBAL_TOPNAV] || []),
       ...((await this.customGlobalNodesService?.getCustomGlobalNodes()) || []),
-      ...this.commonGlobalLuigiNodesService.getContentNotFoundGlobalNode(),
     ];
 
     globalNodes.forEach((node) => {
