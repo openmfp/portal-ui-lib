@@ -260,6 +260,51 @@ const portalOptions: PortalOptions = {
 }
 ```
 
+#### The errorComponentConfig Option
+
+With this option you can configure custom error handling when entity error occurs.
+By default, the library shows an alert with the error message.
+
+```ts
+import { ErrorComponentConfig, EntityDefinition, LuigiNode } from '@openmfp/portal-ui-lib';
+
+const errorComponentConfig: ErrorComponentConfig = {
+  handleEntityRetrievalError: (
+    entityDefinition: EntityDefinition,
+    errorCode: number,
+    additionalContext?: Record<string, string>,
+  ): LuigiNode[] => {
+    if (errorCode === 404) {
+      return [
+        {
+          pathSegment: 'not-found',
+          label: 'Not Found',
+          viewUrl: '/assets/not-found.html',
+        },
+      ];
+    }
+
+    return [
+      {
+        pathSegment: 'error',
+        label: 'Error',
+        viewUrl: `/assets/error.html?code=${errorCode}`,
+      },
+    ];
+  },
+};
+```
+The `handleEntityRetrievalError()` method is called when entity configuration retrieval fails. It receives the entity definition, HTTP error code, and optional additional context. Return an array of Luigi nodes to display instead of failed content.
+
+In your `main.ts` you can provide your configuration like so:
+
+```ts
+const portalOptions: PortalOptions = {
+  errorComponentConfig: errorComponentConfig,
+  // ... other portal options
+}
+```
+
 #### The luigiExtendedGlobalContextConfigService Option
 
 By default, in the [Luigi's global context](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=globalcontext) following data is set by the library and available:
