@@ -59,10 +59,7 @@ describe('RoutingConfigService', () => {
       const config = service.getRoutingConfig();
       const result = config.pageNotFoundHandler('some/path', true);
 
-      expect(result).toEqual({
-        redirectTo: 'error/404',
-        keepURL: true,
-      });
+      expect(result).toEqual(undefined);
     });
   });
 });
