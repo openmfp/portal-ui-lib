@@ -34,20 +34,3 @@ jest.mock('@ui5/webcomponents-ngx', () => {
     LinkComponent: MockComponent,
   };
 });
-
-jest.mock('@ui5/webcomponents-fiori/dist/illustrations/NoEntries', () => ({}));
-
-jest.mock(
-  '@ui5/webcomponents-fiori/dist/illustrations/NoSearchResults',
-  () => ({}),
-);
-
-jest.mock(
-  '@ui5/webcomponents-fiori/dist/illustrations/tnt/UnsuccessfulAuth',
-  () => ({}),
-);
-
-jest.mock(
-  '@ui5/webcomponents-fiori/dist/illustrations/UnableToLoad',
-  () => ({}),
-);
