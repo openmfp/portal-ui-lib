@@ -29,7 +29,6 @@ export const registerLuigiWebComponents = (
 
 export const getSrc = () => {
   const src = document.currentScript?.getAttribute('src');
-  console.log('currentScript', document.currentScript, src);
   if (!src) {
     throw new Error('Not defined src of currentScript.');
   }
