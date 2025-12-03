@@ -3,17 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import {
   ButtonComponent,
-  ContentDensityDirective,
-  FormControlComponent,
-  FormItemComponent,
-  FormLabelComponent,
+  InputComponent,
+  LabelComponent,
   LinkComponent,
   ListComponent,
-  ListItemComponent,
-  ListSecondaryDirective,
-  ListTitleDirective,
+  ListItemCustomComponent,
   SwitchComponent,
-} from '@fundamental-ngx/core';
+} from '@ui5/webcomponents-ngx';
 import {
   I18nService,
   localDevelopmentSettingsLocalStorage,
@@ -40,13 +36,9 @@ describe('DevelopmentSettingsComponent', () => {
         DevelopmentSettingsComponent,
         ListComponent,
         ButtonComponent,
-        ListItemComponent,
-        ListTitleDirective,
-        FormLabelComponent,
-        FormItemComponent,
-        FormControlComponent,
-        ContentDensityDirective,
-        ListSecondaryDirective,
+        InputComponent,
+        LabelComponent,
+        ListItemCustomComponent,
         SwitchComponent,
         LinkComponent,
       ],

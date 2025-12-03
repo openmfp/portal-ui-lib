@@ -29,15 +29,7 @@ export class RoutingConfigServiceImpl implements RoutingConfigService {
       useHashRouting: false,
       showModalPathInUrl: true,
       modalPathParam: 'modal',
-      pageNotFoundHandler: (
-        notFoundPath: string,
-        isAnyPathMatched: boolean,
-      ) => {
-        return {
-          redirectTo: 'error/404',
-          keepURL: true,
-        };
-      },
+      pageNotFoundHandler: () => {},
       ...(this.customRoutingConfigService?.getRoutingConfig?.() || {}),
     };
   }

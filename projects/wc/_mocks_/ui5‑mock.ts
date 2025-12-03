@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ButtonComponent } from '@ui5/webcomponents-ngx';
+
 
 @Component({ selector: 'ui5-component', template: '', standalone: true })
 export class MockComponent {}

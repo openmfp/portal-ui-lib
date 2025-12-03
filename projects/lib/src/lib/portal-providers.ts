@@ -98,7 +98,7 @@ export interface PortalOptions {
   luigiAuthEventsCallbacksService?: Type<LuigiAuthEventsCallbacksService>;
 
   /** Provide a error configuration for error component to override the default values **/
-  errorComponentConfig?: Record<string, ErrorComponentConfig>;
+  errorComponentConfig?: ErrorComponentConfig;
 
   /** Provide a error configuration for error component to override the default values **/
   themingService?: Type<ThemingService>;

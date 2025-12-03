@@ -8,20 +8,6 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import {
-  ButtonComponent,
-  ContentDensityDirective,
-  FormControlComponent,
-  FormItemComponent,
-  FormLabelComponent,
-  LinkComponent,
-  ListComponent,
-  ListItemComponent,
-  ListSecondaryDirective,
-  ListTitleDirective,
-  SwitchComponent,
-} from '@fundamental-ngx/core';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   Config,
@@ -29,6 +15,15 @@ import {
   LocalStorageKeys,
   localDevelopmentSettingsLocalStorage,
 } from '@openmfp/portal-ui-lib';
+import {
+  ButtonComponent,
+  InputComponent,
+  LabelComponent,
+  LinkComponent,
+  ListComponent,
+  ListItemCustomComponent,
+  SwitchComponent,
+} from '@ui5/webcomponents-ngx';
 
 @Component({
   selector: 'development-settings',
@@ -36,18 +31,13 @@ import {
   templateUrl: './development-settings.component.html',
   styleUrl: './development-settings.component.scss',
   imports: [
-    ListComponent,
-    ButtonComponent,
-    ListItemComponent,
-    ListTitleDirective,
-    FormLabelComponent,
-    FormItemComponent,
-    FormControlComponent,
-    ContentDensityDirective,
-    ListSecondaryDirective,
     SwitchComponent,
-    FormsModule,
     LinkComponent,
+    ButtonComponent,
+    InputComponent,
+    LabelComponent,
+    ListComponent,
+    ListItemCustomComponent,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
   changeDetection: ChangeDetectionStrategy.OnPush,

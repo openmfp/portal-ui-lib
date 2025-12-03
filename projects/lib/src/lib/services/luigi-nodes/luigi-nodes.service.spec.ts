@@ -2,12 +2,13 @@ import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import {
   EntityConfig,
   EntityDefinition,
+  ErrorComponentConfig,
   LuigiNode,
   NodeContext,
   PortalConfig,
   ServiceProvider,
 } from '../../models';
-import { EntityType } from '../../models/entity';
+import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
@@ -20,9 +21,16 @@ describe('LuigiNodesService', () => {
   let service: LuigiNodesService;
   let configService: ConfigService;
   let localConfigurationServiceMock: jest.Mocked<LocalConfigurationServiceImpl>;
-  const errorComponentConfig = {};
+  let errorComponentConfig: jest.Mocked<ErrorComponentConfig>;
+  let luigiCoreService: jest.Mocked<LuigiCoreService>;
 
   beforeEach(() => {
+    errorComponentConfig = mock<ErrorComponentConfig>({
+      handleEntityRetrievalError: jest.fn(),
+    });
+    luigiCoreService = mock<LuigiCoreService>({
+      showAlert: jest.fn(),
+    });
     localConfigurationServiceMock = mock();
     localConfigurationServiceMock.getLocalNodes.mockResolvedValue([]);
     localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockImplementation(
@@ -40,6 +48,10 @@ describe('LuigiNodesService', () => {
         {
           provide: ERROR_COMPONENT_CONFIG,
           useValue: errorComponentConfig,
+        },
+        {
+          provide: LuigiCoreService,
+          useValue: luigiCoreService,
         },
         provideHttpClient(),
       ],
@@ -117,7 +129,7 @@ describe('LuigiNodesService', () => {
       );
     });
 
-    it('should handle 404 error and return error node', async () => {
+    it('should handle 404 error and call error component config', async () => {
       const notFoundError = new HttpErrorResponse({ status: 404 });
       jest
         .spyOn(configService, 'getEntityConfig')
@@ -125,22 +137,9 @@ describe('LuigiNodesService', () => {
 
       const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
-      expect(result.length).toBe(1);
-      expect(result[0]).toEqual(
-        expect.objectContaining({
-          pathSegment: 'error',
-          entityType: EntityType.ENTITY_ERROR,
-          hideFromNav: true,
-          hideSideNav: true,
-          viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
-          isolateView: true,
-          showBreadcrumbs: false,
-          webcomponent: {
-            selfRegistered: true,
-          },
-        }),
-      );
-      expect(result[0]?.context?.error?.code).toEqual(404);
+      expect(
+        errorComponentConfig.handleEntityRetrievalError,
+      ).toHaveBeenCalledWith(mockEntityDefinition, 404, undefined);
     });
 
     it('should handle other errors with 500 status', async () => {
@@ -152,21 +151,18 @@ describe('LuigiNodesService', () => {
 
       const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
-      expect(result.length).toBe(1);
-      expect(result[0]).toEqual(
-        expect.objectContaining({
-          pathSegment: 'error',
-          entityType: EntityType.ENTITY_ERROR,
-          hideFromNav: true,
-          hideSideNav: true,
-          viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
-        }),
-      );
-      expect(result[0]?.context?.error?.code).toEqual(500);
-      expect(console.warn).toHaveBeenCalledWith(
-        'Could not retrieve nodes for entity: testEntityType, error: ',
-        genericError,
-      );
+      expect(
+        errorComponentConfig.handleEntityRetrievalError,
+      ).toHaveBeenCalledWith(mockEntityDefinition, 500, undefined);
+    });
+
+    it('should show alert if error component config is not provided', async () => {
+      errorComponentConfig.handleEntityRetrievalError = undefined;
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
+      expect(luigiCoreService.showAlert).toHaveBeenCalledWith({
+        text: 'Could not retrieve nodes for entity: testEntityType',
+        type: 'error',
+      });
     });
 
     it('should pass additional context to getEntityConfig', async () => {
@@ -202,42 +198,6 @@ describe('LuigiNodesService', () => {
 
       expect(result.length).toBe(2);
       expect(result).toEqual(mockServiceProvider.nodes);
-    });
-
-    it('should handle 404 error when retrieving configs for entity', async () => {
-      const entityDefinition: EntityDefinition = {
-        id: 'id',
-        dynamicFetchId: 'someEntity',
-      };
-      const existingChildren: LuigiNode[] = [];
-      const parentEntityPath = 'parent';
-      const additionalContext = { someContext: 'value' };
-
-      const serviceProviderServiceSpy = jest
-        .spyOn(configService, 'getEntityConfig')
-        .mockRejectedValue(new HttpErrorResponse({ status: 404 }));
-
-      const result = await service.retrieveEntityChildren(
-        entityDefinition,
-        additionalContext,
-      );
-
-      expect(serviceProviderServiceSpy).toHaveBeenCalledWith(
-        'someEntity',
-        additionalContext,
-      );
-      expect(result).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            pathSegment: 'error',
-            entityType: EntityType.ENTITY_ERROR,
-            hideFromNav: true,
-            hideSideNav: true,
-            viewUrl: `/assets/openmfp-portal-ui-wc.js#error-component`,
-          }),
-        ]),
-      );
-      expect(result[0]?.context?.error?.code).toEqual(404);
     });
 
     it('should handle other errors when retrieving configs for entity', async () => {

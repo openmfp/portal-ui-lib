@@ -1,8 +1,9 @@
-import { ButtonConfig, SceneConfig } from './scene-config';
+import { EntityDefinition, LuigiNode } from './luigi';
 
 export interface ErrorComponentConfig {
-  sceneConfig?: SceneConfig;
-  illustratedMessageTitle?: string;
-  illustratedMessageText?: string;
-  buttons?: ButtonConfig[];
+  handleEntityRetrievalError?: (
+    entityDefinition: EntityDefinition,
+    errorCode: number,
+    additionalContext?: Record<string, string>,
+  ) => LuigiNode[];
 }

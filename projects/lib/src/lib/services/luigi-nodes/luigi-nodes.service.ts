@@ -2,12 +2,9 @@ import { ERROR_COMPONENT_CONFIG } from '../../injection-tokens';
 import {
   EntityConfig,
   EntityDefinition,
-  EntityType,
   ErrorComponentConfig,
   LuigiNode,
-  NodeContext,
 } from '../../models';
-import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { LocalConfigurationServiceImpl } from './local-configuration.service';
@@ -17,11 +14,10 @@ import { Injectable, inject } from '@angular/core';
   providedIn: 'root',
 })
 export class LuigiNodesService {
-  private i18nService = inject(I18nService);
   private configService = inject(ConfigService);
   private luigiCoreService = inject(LuigiCoreService);
   private localConfigurationService = inject(LocalConfigurationServiceImpl);
-  private errorComponentConfig = inject<Record<string, ErrorComponentConfig>>(
+  private errorComponentConfig = inject<ErrorComponentConfig>(
     ERROR_COMPONENT_CONFIG as any,
     {
       optional: true,
@@ -92,7 +88,7 @@ export class LuigiNodesService {
         e,
       );
 
-      return this.createErrorNodes(
+      return this.handleEntityRetrievalError(
         entityDefinition,
         errorCode,
         additionalContext,
@@ -100,34 +96,24 @@ export class LuigiNodesService {
     }
   }
 
-  private createErrorNodes(
+  private handleEntityRetrievalError(
     entityDefinition: EntityDefinition,
     errorCode: number,
     additionalContext?: Record<string, string>,
   ): LuigiNode[] {
-    return [
-      {
-        pathSegment: 'error',
-        entityType: EntityType.ENTITY_ERROR,
-        hideFromNav: true,
-        hideSideNav: true,
-        viewUrl: '/assets/openmfp-portal-ui-wc.js#error-component',
-        context: {
-          error: {
-            code: errorCode,
-            errorComponentConfig: this.errorComponentConfig,
-            entityDefinition,
-            additionalContext,
-          },
-          translationTable: this.i18nService.translationTable,
-        } as NodeContext,
-        isolateView: true,
-        showBreadcrumbs: false,
-        webcomponent: {
-          selfRegistered: true,
-        },
-      },
-    ];
+    if (this.errorComponentConfig?.handleEntityRetrievalError) {
+      return this.errorComponentConfig.handleEntityRetrievalError(
+        entityDefinition,
+        errorCode,
+        additionalContext,
+      );
+    }
+
+    this.luigiCoreService.showAlert({
+      text: `Could not retrieve nodes for entity: ${entityDefinition.dynamicFetchId}`,
+      type: 'error',
+    });
+    return [];
   }
 
   nodePolicyResolver(nodeToCheckPermissionFor): boolean {
