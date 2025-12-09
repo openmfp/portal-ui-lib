@@ -47,6 +47,7 @@ export class NodesProcessingService {
     globalNodes.forEach((node) => {
       node.context = { ...node.context };
       node.globalNav = this.isGlobalNavNode(node);
+      node.parent = undefined;
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
 
@@ -78,6 +79,7 @@ export class NodesProcessingService {
       );
     } else {
       directChildren.forEach((child) => {
+        child.parent = node;
         this.applyEntityChildrenRecursively(
           child,
           childrenByEntity,
@@ -284,6 +286,7 @@ export class NodesProcessingService {
     }
 
     entityRootChildren.forEach((child) => {
+      child.parent = entityNode;
       this.applyEntityChildrenRecursively(
         child,
         mergedChildrenByEntity,
