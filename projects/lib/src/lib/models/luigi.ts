@@ -1,6 +1,5 @@
 import { NodeContext } from './luigi-context';
 
-
 export interface LuigiNavigationConfig {
   nodes?: LuigiNode[];
   viewGroupSettings?: any;
@@ -57,6 +56,7 @@ export interface EntityDefinition {
   id: string;
   dynamicFetchId?: string;
   contextKey?: string;
+  additionalContextKeys?: string[];
   useBack?: boolean;
   label?: string;
   pluralLabel?: string;
