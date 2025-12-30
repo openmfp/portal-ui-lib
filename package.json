@@ -25,7 +25,7 @@
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
-    "@luigi-project/plugin-auth-oauth2": "^2.25.1",
+    "@luigi-project/plugin-auth-oauth2": "^2.26.0",
     "jwt-decode": "^4.0.0",
     "tslib": "^2.8.1"
   },
