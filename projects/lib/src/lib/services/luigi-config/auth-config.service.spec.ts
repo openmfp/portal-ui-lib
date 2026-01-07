@@ -71,7 +71,7 @@ describe('AuthConfigService', () => {
     it('should handle userInfoFn correctly', async () => {
       const userInfo = {
         name: 'Test User',
-        picture: 'https://example.com/pic.jpg',
+        icon: 'https://example.com/pic.jpg',
       } as UserData;
       authServiceMock.getUserInfo.mockReturnValue(userInfo);
 
@@ -89,37 +89,6 @@ describe('AuthConfigService', () => {
       const result = await userInfoFn?.();
 
       expect(result).toEqual(userInfo);
-      expect(global.fetch).toHaveBeenCalledWith(
-        userInfo.picture,
-        expect.any(Object),
-      );
-    });
-
-    it('should handle userInfoFn when fetch fails', async () => {
-      const userPicture = 'https://example.com/pic.jpg';
-      const userInfo = {
-        name: 'Test User',
-        picture: userPicture,
-      } as UserData;
-      authServiceMock.getUserInfo.mockReturnValue(userInfo);
-
-      envConfigServiceMock.getEnvConfig.mockResolvedValue({
-        oauthServerUrl: 'https://example.com/oauth',
-        clientId: 'client-id',
-        baseDomain: 'https://example.com',
-      } as any);
-      const config = await service.getAuthConfig();
-      const userInfoFn = config?.oAuth2AuthCode?.userInfoFn;
-
-      global.fetch = jest.fn().mockRejectedValue(new Error('Fetch failed'));
-
-      const result = await userInfoFn?.();
-
-      expect(result).toEqual({ ...userInfo, picture: '' });
-      expect(global.fetch).toHaveBeenCalledWith(
-        userPicture,
-        expect.any(Object),
-      );
     });
   });
 
