@@ -295,16 +295,15 @@ The following section explains Portal-specific parameters related to entity type
   > NOTE: The **projectId** is available in the Luigi context object and can be retrieved by the micro frontend using the [initListener](https://docs.luigi-project.io/docs/luigi-client-api/?section=addinitlistener) / [contextUpdateListener](https://docs.luigi-project.io/docs/luigi-client-api/?section=addcontextupdatelistener).
   For example: `LuigiClient.addInitListener((context) => console.log(context.projectId))`.
 
-- **defineEntity** - defines a new **entityType** (see above section). Next to the mandatory **id**, two additional properties can be specified to dynamically fetch additional micro frontends from the extension manager for a particular entity instance: **dynamicFetchId** specifies the ScopeType and **contextKey** defines the property key in the luigi context that holds the instance id.
-    - Static example:
+- **defineEntity** - defines a new **entityType** (see above section). Next to the mandatory **id**, additional properties can be specified to dynamically fetch additional micro frontends from the extension manager for a particular entity instance: **dynamicFetchId** specifies the ScopeType, **contextKey** defines the property key in the luigi context that holds the instance id, and **additionalContextKeys** allows specifying extra context keys to be included from Luigi context to the dynamic fetch context.
+  - Static example:    - Static example:
 
       ```json
         "nodes": [{
             "label": "{{sample}}",
             "pathSegment": "sample",
             "entityType": "project",
-            "urlSuffix": "/sample"
-  
+            "urlSuffix": "/sample",
             "defineEntity": {
               "id": "custom"
             }
@@ -326,23 +325,24 @@ The following section explains Portal-specific parameters related to entity type
                 "label": "Child Sample",
                 "urlSuffix": "/#sample-child/:someId",
                 "context": {
-                  "sampleInstanceId": ":someId"
+                  "sampleInstanceId": ":someId",
                 },
                 "defineEntity": {
                   "id": "sampleEntity",
                   "contextKey": "sampleInstanceId",
-                  "dynamicFetchId": "sample"
+                  "dynamicFetchId": "sample",
+                  "additionalContextKeys": ["tenantId"]
                 }
             }]
         }]
       ```
-      Unlike the static example, here **dynamicFetchId** and **contextKey** are defined, so additional nodes will be fetched from the extension manager for this entity type.
 
-      For example, a route `/projects/123ProjectId/sample/123someId` will result in a request with the following data:
+    Unlike the static example, here **dynamicFetchId** and **contextKey** are defined, so additional nodes will be fetched from the extension manager for this entity type. The **additionalContextKeys** property allows including extra context values (e.g., `tenantId`) in the dynamic fetch context alongside the main entity instance id.
 
-        - Entity Type: `sample` - dynamicFetchId
-        - Entity Id: `123sampleId` - this value is retrieved from the node **context** object, specified by the `contextKey` property.
-        - Entity context information: `{ project: '123ProjectId' }` - Extension Type/Id pairs for all dynamic parent entities.
+    For example, a route `/projects/123ProjectId/sample/123someId` will result in a request with the following data:
+    - Entity Type: `sample` - dynamicFetchId
+    - Entity Id: `123sampleId` - this value is retrieved from the node **context** object, specified by the `contextKey` property.
+    - Entity context information: `{ project: '123ProjectId', tenantId: '456tenantId' }` - Extension Type/Id pairs for all dynamic parent entities, including values from `additionalContextKeys`.
 
       The extension manager will map these data to its according SCOPES and filters and return the relevant extension instances.
       The retrieved nodes will then be added as children to the entity navigation node.
