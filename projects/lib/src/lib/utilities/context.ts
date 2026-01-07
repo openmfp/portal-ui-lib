@@ -31,6 +31,12 @@ export const computeDynamicFetchContext = (
         node.defineEntity.dynamicFetchId,
         ctx[node.defineEntity.contextKey],
       );
+
+      if (node.defineEntity?.additionalContextKeys) {
+        node.defineEntity.additionalContextKeys.forEach((key: string) => {
+          addToAll(key, ctx[key]);
+        });
+      }
     }
     node = node.parent;
   }
