@@ -65,9 +65,10 @@ export interface EntityDefinition {
     sapIllusSVG: string;
   };
   graphqlEntity?: {
-    group: 'string';
-    kind: 'string';
-    query: 'string';
+    group: string;
+    kind: string;
+    query: string;
+    version: string;
   };
 }
 
