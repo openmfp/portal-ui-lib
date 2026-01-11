@@ -132,10 +132,8 @@ describe('AuthService', () => {
       expect(service.getUserInfo()).toEqual({
         description: '',
         email: '',
-        icon: false,
         initials: '',
         name: ' ',
-        picture: '',
         userId: '',
       });
     });
@@ -188,9 +186,7 @@ describe('AuthService', () => {
         name: 'John Doe',
         email: 'john.doe@example.com',
         description: 'john.doe@example.com',
-        picture: '',
         userId: 'user123',
-        icon: false,
         initials: 'JD',
       });
     });
@@ -207,8 +203,6 @@ describe('AuthService', () => {
         name: ' ',
         email: 'john.doe@example.com',
         description: 'john.doe@example.com',
-        picture: '',
-        icon: false,
         initials: '',
         userId: 'user123',
       });

@@ -8,7 +8,7 @@ https://api.reuse.software/badge/github.com/openmfp/portal-ui-lib)](https://api.
 
 This library helps you to set up your angular project consuming [Luigi](https://luigi-project.io/) configuration.
 
-Main features of this library are:
+The main features of this library are:
 
 * Enable dynamic Luigi configuration consumption in a microfrontend.
 * Provide authentication capabilities with Auth Server
@@ -28,7 +28,7 @@ Main features of this library are:
       - [The luigiExtendedGlobalContextConfigService Option](#the-luigiextendedglobalcontextconfigservice-option)
       - [The userSettingsConfigService Option](#the-usersettingsconfigservice-option)
       - [The globalSearchConfigService option](#the-globalsearchconfigservice-option)
-      - [The luigiBreadcrumbConfigService Option](#the-luigibreadcrumbconfigservice-option)
+      - [The luigiBreadcrumbConfigService Option](#the-headerBarConfigService-option)
       - [The userProfileConfigService Option](#the-userprofileconfigservice-option)
     - [Functional Services](#functional-services)
       - [The luigiAuthEventsCallbacksService Option](#the-luigiautheventscallbacksservice-option)
@@ -165,7 +165,7 @@ export class StaticSettingsConfigServiceImpl
 {
   constructor() {}
 
-  getInitialStaticSettingsConfig() {
+  getStaticSettingsConfig() {
     const logo = 'assets/my-logo.svg';
 
     return {
@@ -181,20 +181,9 @@ export class StaticSettingsConfigServiceImpl
       // ... the rest of the configuration 
     };
   }
-
-  getStaticSettingsConfig() {
-    return {
-      ...this.getInitialStaticSettingsConfig(),
-      appLoadingIndicator: {
-        hideAutomatically: true,
-      },
-      // ... the rest of the configuration 
-    }
-  }
 }
 ```
 
-The `getInitialStaticSettingsConfig()` method is called while constructing the Luigi initial config object.
 The `getStaticSettingsConfig()` is called while [Luigi lifecycle hook luigiAfterInit](https://docs.luigi-project.io/docs/lifecycle-hooks?section=luigiafterinit).
 The latter adds additional setup to the root of the Luigi configuration object.
 
@@ -312,6 +301,7 @@ By default, in the [Luigi's global context](https://docs.luigi-project.io/docs/n
 ```json
 {
   "portalContext": {...} ,
+  "portalBaseUrl": "portal base url",
   "userId": "logged in user id",
   "userEmail": "logged in user email",
   "token": "id token of the logged in user"
@@ -464,7 +454,7 @@ In your `main.ts` you can provide your custom implementation like so:
 
 ```ts
 const portalOptions: PortalOptions = {
-  luigiBreadcrumbConfigService: LuigiBreadcrumbConfigServiceImpl,
+  headerBarConfigService: HeaderBarConfigServiceImpl,
   // ... other portal options
 }
 ```
@@ -547,7 +537,7 @@ const portalOptions: PortalOptions = {
 With this option it is possible to define listeners for [Luigi custom messages](https://docs.luigi-project.io/docs/communication?section=custom-messages).
 
 Custom messages are sent from any part of your application to Luigi and then routed to any other micro frontend application in the same application.
-A custom message is sent by using Luigis `sendCustomMessage({ id: 'unique.message.id'});` method (see also the following example).
+A custom message is sent by using Luigi `sendCustomMessage({ id: 'unique.message.id'});` method (see also the following example).
 
 ```ts
 import { inject, Injectable } from '@angular/core';
@@ -563,7 +553,7 @@ export class MessageService {
 }
 ```
 
-In order to react on such a message in your micro frontend, you have to provide a custom message listener.
+To react on such a message in your micro frontend, you have to provide a custom message listener.
 You have to specify the corresponding message id you want to listen to.
 If there is a match, the callback function `onCustomMessageReceived()` will be called.
 Make sure to return a valid Luigi configuration object.
@@ -617,7 +607,7 @@ export class CustomGlobalNodesServiceImpl implements CustomGlobalNodesService {
   private async createGlobalNode1(): LuigiNode {
     return {
       label: 'Global 1',
-      entityType: 'global.topnav',
+      entityType: 'global',
       link: '/global_1',
       // ... other luigi node properties
     };

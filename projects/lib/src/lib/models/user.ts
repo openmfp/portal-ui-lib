@@ -2,8 +2,7 @@ export interface UserData {
   name: string;
   email: string;
   description: string;
-  picture: string;
-  icon: boolean;
+  icon: string;
   initials: string;
   userId: string;
 }
@@ -15,5 +14,7 @@ export interface UserTokenData {
   family_name: string;
   mail: string;
   email: string;
+  userId: string;
+  icon: string;
   sub: string;
 }
