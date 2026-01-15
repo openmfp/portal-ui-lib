@@ -60,15 +60,6 @@ export interface EntityDefinition {
   useBack?: boolean;
   label?: string;
   pluralLabel?: string;
-  notFoundConfig?: {
-    entityListNavigationContext: string;
-    sapIllusSVG: string;
-  };
-  graphqlEntity?: {
-    group: 'string';
-    kind: 'string';
-    query: 'string';
-  };
 }
 
 export interface LuigiStatusBadge {
