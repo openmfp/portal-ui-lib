@@ -199,8 +199,7 @@ export class UserSettingsConfigService {
     luigiUserSettings.forEach((userConfig) => {
       if (userConfig?.groups) {
         Object.keys(userConfig.groups).forEach((groupId) => {
-          const groupConfig = userConfig.groups[groupId];
-          settingsGroups[groupId] = groupConfig;
+          settingsGroups[groupId] = userConfig.groups[groupId];
         });
       }
     });
@@ -262,7 +261,7 @@ export class UserSettingsConfigService {
       settings.frame_userAccount = {
         label: 'USERSETTINGSDIALOG_USER_ACCOUNT',
         sublabel: userInfo.name,
-        icon: imageUrl || 'person-placeholder',
+        icon: imageUrl || userInfo.icon || 'person-placeholder',
         title: userInfo.name,
         initials: userInfo.initials,
         iconClassAttribute:
