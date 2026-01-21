@@ -84,7 +84,7 @@
     "ng-packagr": "20.3.0",
     "ngx-build-plus": "20.0.0",
     "nodemon": "3.1.11",
-    "prettier": "3.8.0",
+    "prettier": "3.8.1",
     "rimraf": "6.1.2",
     "ts-jest": "29.4.5",
     "typescript": "5.9.3",
