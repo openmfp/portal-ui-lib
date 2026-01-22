@@ -11,9 +11,7 @@ export interface NodeContextProcessingService {
 }
 
 @Injectable({ providedIn: 'root' })
-export class NodeContextProcessingServiceImpl
-  implements NodeContextProcessingService
-{
+export class NodeContextProcessingServiceImpl implements NodeContextProcessingService {
   private customNodeContextProcessingService =
     inject<NodeContextProcessingService>(
       LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
