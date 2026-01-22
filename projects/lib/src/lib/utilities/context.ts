@@ -36,7 +36,7 @@ export const computeDynamicFetchContext = (
         node.defineEntity.additionalContextKeys.forEach((key: string) => {
           const value = ctx[key];
           if (value) {
-            addToAll(key, ctx[key]);
+            addToAll(key, value);
           }
         });
       }
