@@ -119,6 +119,27 @@ describe('computeFetchContext', () => {
     expect(result.get('project')).toEqual({ project: 'proj1', user: 'user1' });
   });
 
+  it('should omit context keys if not present', () => {
+    const entityNode = {
+      defineEntity: {
+        contextKey: 'projectId',
+        additionalContextKeys: ['myUserId'],
+        dynamicFetchId: 'project',
+      },
+    } as LuigiNode;
+    const ctx = {
+      projectId: 'proj1',
+      userid: 'user1',
+    } as unknown as LuigiGlobalContext;
+
+    const result = computeDynamicFetchContext(entityNode, ctx);
+
+    expect(result.get('project')).toStrictEqual({
+      project: 'proj1',
+      user: 'user1',
+    });
+  });
+
   it('should process parent nodes with entity definitions', () => {
     const parent = {
       defineEntity: {
