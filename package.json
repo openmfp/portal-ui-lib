@@ -88,7 +88,7 @@
     "rimraf": "6.1.2",
     "ts-jest": "29.4.5",
     "typescript": "5.9.3",
-    "xliff": "6.2.2",
+    "xliff": "6.3.0",
     "yalc": "1.0.0-pre.53",
     "zone.js": "^0.15.1"
   }
