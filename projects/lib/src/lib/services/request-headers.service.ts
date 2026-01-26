@@ -1,18 +1,16 @@
 import { LuigiCoreService } from './luigi-core.service';
 import { AuthService } from './portal';
 import { HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequestHeadersService {
-  constructor(
-    private luigiCoreService: LuigiCoreService,
-    private authService: AuthService,
-    private route: ActivatedRoute,
-  ) {}
+  private luigiCoreService = inject(LuigiCoreService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   public createOptionsWithAuthHeader() {
     let language = this.luigiCoreService.i18n().getCurrentLocale();
