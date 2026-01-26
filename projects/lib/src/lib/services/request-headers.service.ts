@@ -1,4 +1,5 @@
 import { LuigiCoreService } from './luigi-core.service';
+import { AuthService } from './portal';
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -9,12 +10,13 @@ import { ActivatedRoute } from '@angular/router';
 export class RequestHeadersService {
   constructor(
     private luigiCoreService: LuigiCoreService,
+    private authService: AuthService,
     private route: ActivatedRoute,
   ) {}
 
   public createOptionsWithAuthHeader() {
     let language = this.luigiCoreService.i18n().getCurrentLocale();
-    const authData = this.luigiCoreService.getAuthData();
+    const authData = this.authService.getAuthData();
 
     this.route.queryParams.subscribe((params) => {
       if (params['language']) {
