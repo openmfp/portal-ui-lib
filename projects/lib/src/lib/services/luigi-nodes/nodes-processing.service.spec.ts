@@ -659,4 +659,95 @@ describe('NodesProcessingService', () => {
     // dynamic failed, so only static roots should appear
     expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
   });
+
+  it('entityChildrenProvider should update view groups after dynamic fetch', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    jest
+      .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    const setConfigSpy = jest
+      .spyOn(luigiCoreService, 'setConfig')
+      .mockImplementation(() => {});
+    Object.defineProperty(luigiCoreService, 'config', {
+      get: jest.fn(() => ({
+        navigation: { viewGroupSettings: { existing: { preloadUrl: '/old' } } },
+      })),
+      configurable: true,
+    });
+
+    const entityNode: LuigiNode = {
+      context: {} as NodeContext,
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      {},
+      [],
+      'typeA',
+    );
+
+    expect(setConfigSpy).toHaveBeenCalledWith({
+      navigation: {
+        viewGroupSettings: {
+          existing: { preloadUrl: '/old' },
+          alpha: { preloadUrl: '/alpha', requiredIFramePermissions: undefined },
+        },
+      },
+    });
+  });
+
+  it('entityChildrenProvider should skip updating view groups without navigation config', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    jest
+      .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    const setConfigSpy = jest
+      .spyOn(luigiCoreService, 'setConfig')
+      .mockImplementation(() => {});
+    Object.defineProperty(luigiCoreService, 'config', {
+      get: jest.fn(() => ({})),
+      configurable: true,
+    });
+
+    const entityNode: LuigiNode = {
+      context: {} as NodeContext,
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      {},
+      [],
+      'typeA',
+    );
+
+    expect(setConfigSpy).not.toHaveBeenCalled();
+  });
 });
