@@ -16,6 +16,7 @@ import { HeaderBarService } from './luigi-breadcrumb-config.service';
 import { GlobalContextConfigService } from './global-context-config.service';
 import { NodeChangeHookConfigService } from './node-change-hook-config.service';
 import { UserProfileConfigService } from './user-profile-config.service';
+import { buildViewGroups } from '../../utilities/build-view-groups';
 
 @Injectable({ providedIn: 'root' })
 export class NavigationConfigService {
@@ -56,7 +57,7 @@ export class NavigationConfigService {
 
     return {
       nodes: luigiNodes,
-      viewGroupSettings: this.buildViewGroups(allNodes),
+      viewGroupSettings: buildViewGroups(allNodes),
       appSwitcher: this.appSwitcherConfigService?.getAppSwitcher(luigiNodes),
       globalContext: context,
       profile: await this.userProfileConfigService?.getProfile(),
@@ -86,18 +87,4 @@ export class NavigationConfigService {
     this.luigiCoreService.setFeatureToggles(configFeatureToggles);
   }
 
-  private buildViewGroups(nodes: LuigiNode[]) {
-    const viewGroups = {};
-    nodes.forEach((node) => {
-      if (node.viewGroup && node._preloadUrl) {
-        viewGroups[node.viewGroup] = {
-          preloadUrl: node._preloadUrl,
-          requiredIFramePermissions:
-            node._requiredIFramePermissionsForViewGroup,
-        };
-      }
-    });
-
-    return viewGroups;
-  }
 }
