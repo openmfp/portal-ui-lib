@@ -230,7 +230,7 @@ export class NodesProcessingService {
         dynamicRetrievedChildren = [...staticChildren, ...serverAndLocalNodes];
         staticRetrievedChildren = staticChildren;
 
-        this.updateLuigiConfigWithDynamichNodes(dynamicRetrievedChildren);
+        this.updateLuigiConfigWithDynamicRetrievedNodes(dynamicRetrievedChildren);
       } catch (error) {
         dynamicRetrievedChildren = staticChildren;
         staticRetrievedChildren = undefined;
@@ -300,7 +300,7 @@ export class NodesProcessingService {
     );
   }
 
-  private updateLuigiConfigWithDynamichNodes(nodes: LuigiNode[]) {
+  private updateLuigiConfigWithDynamicRetrievedNodes(nodes: LuigiNode[]) {
     this.updateViewGroupSettings(nodes);
   }
 
