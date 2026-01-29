@@ -24,7 +24,6 @@ export class AuthConfigService {
     if (!oauthServerUrl || !clientId) {
       return undefined;
     }
-
     return {
       use: 'oAuth2AuthCode',
       storage: 'none',
