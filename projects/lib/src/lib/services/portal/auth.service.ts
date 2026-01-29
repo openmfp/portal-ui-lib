@@ -87,10 +87,9 @@ export class AuthService {
       name: `${firstName} ${lastName}`,
       email: user.mail || user.email || '',
       description: user.mail || user.email || '',
-      picture: '',
-      icon: false,
+      icon: user.icon,
       initials: initialsFirstName + initialsLastName,
-      userId: user.sub || '',
+      userId: user.userId || user.sub || '',
     };
   }
 
