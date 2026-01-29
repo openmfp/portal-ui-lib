@@ -1,24 +1,14 @@
 import { AuthEvent } from '../models';
-import {
-  AuthService,
-  LuigiCoreService,
-  SessionRefreshService,
-} from '../services';
+import { AuthService, SessionRefreshService } from '../services';
 import { inject, provideAppInitializer } from '@angular/core';
 import { filter } from 'rxjs';
 
 export async function initializeAutomaticSessionRefresh(
   sessionRefreshService: SessionRefreshService,
   authService: AuthService,
-  luigiCoreService: LuigiCoreService,
 ) {
   authService.authEvents
-    .pipe(
-      filter((event: AuthEvent) => event === AuthEvent.AUTH_EXPIRE_SOON),
-      filter(() =>
-        luigiCoreService.isFeatureToggleActive('enableSessionAutoRefresh'),
-      ),
-    )
+    .pipe(filter((event: AuthEvent) => event === AuthEvent.AUTH_EXPIRE_SOON))
     .subscribe({
       next: async () => {
         try {
@@ -35,6 +25,5 @@ export const provideSessionRefresh = () =>
     initializeAutomaticSessionRefresh(
       inject(SessionRefreshService),
       inject(AuthService),
-      inject(LuigiCoreService),
     ),
   );
