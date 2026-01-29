@@ -76,6 +76,7 @@ describe('NodesProcessingService', () => {
     luigiCoreService.resetLuigi = jest.fn();
     luigiCoreService.getGlobalContext = jest.fn();
     luigiCoreService.showAlert = jest.fn();
+    luigiCoreService.getConfigValue = jest.fn().mockReturnValue(undefined);
     Object.defineProperty(luigiCoreService, 'config', {
       get: jest.fn(() => ({
         settings: { btpToolLayout: true },
@@ -677,15 +678,12 @@ describe('NodesProcessingService', () => {
           _preloadUrl: '/alpha',
         } as any,
       ]);
-    const setConfigSpy = jest
-      .spyOn(luigiCoreService, 'setConfig')
-      .mockImplementation(() => {});
-    Object.defineProperty(luigiCoreService, 'config', {
-      get: jest.fn(() => ({
-        navigation: { viewGroupSettings: { existing: { preloadUrl: '/old' } } },
-      })),
-      configurable: true,
-    });
+    const navigationConfig = {
+      viewGroupSettings: { existing: { preloadUrl: '/old' } },
+    };
+    (luigiCoreService.getConfigValue as jest.Mock).mockReturnValue(
+      navigationConfig,
+    );
 
     const entityNode: LuigiNode = {
       context: {} as NodeContext,
@@ -700,13 +698,9 @@ describe('NodesProcessingService', () => {
       'typeA',
     );
 
-    expect(setConfigSpy).toHaveBeenCalledWith({
-      navigation: {
-        viewGroupSettings: {
-          existing: { preloadUrl: '/old' },
-          alpha: { preloadUrl: '/alpha', requiredIFramePermissions: undefined },
-        },
-      },
+    expect(navigationConfig.viewGroupSettings).toEqual({
+      existing: { preloadUrl: '/old' },
+      alpha: { preloadUrl: '/alpha', requiredIFramePermissions: undefined },
     });
   });
 
@@ -727,13 +721,8 @@ describe('NodesProcessingService', () => {
           _preloadUrl: '/alpha',
         } as any,
       ]);
-    const setConfigSpy = jest
-      .spyOn(luigiCoreService, 'setConfig')
-      .mockImplementation(() => {});
-    Object.defineProperty(luigiCoreService, 'config', {
-      get: jest.fn(() => ({})),
-      configurable: true,
-    });
+    const getConfigValueSpy = luigiCoreService.getConfigValue as jest.Mock;
+    getConfigValueSpy.mockReturnValue(undefined);
 
     const entityNode: LuigiNode = {
       context: {} as NodeContext,
@@ -748,6 +737,6 @@ describe('NodesProcessingService', () => {
       'typeA',
     );
 
-    expect(setConfigSpy).not.toHaveBeenCalled();
+    expect(getConfigValueSpy).toHaveBeenCalledWith('navigation');
   });
 });
