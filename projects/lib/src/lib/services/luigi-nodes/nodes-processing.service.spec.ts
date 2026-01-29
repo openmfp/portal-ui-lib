@@ -76,6 +76,7 @@ describe('NodesProcessingService', () => {
     luigiCoreService.resetLuigi = jest.fn();
     luigiCoreService.getGlobalContext = jest.fn();
     luigiCoreService.showAlert = jest.fn();
+    luigiCoreService.getConfigValue = jest.fn().mockReturnValue(undefined);
     Object.defineProperty(luigiCoreService, 'config', {
       get: jest.fn(() => ({
         settings: { btpToolLayout: true },
@@ -658,5 +659,84 @@ describe('NodesProcessingService', () => {
     const segs = list.map((n) => n.pathSegment);
     // dynamic failed, so only static roots should appear
     expect(segs).toEqual(expect.arrayContaining(['direct', 'byEntity']));
+  });
+
+  it('entityChildrenProvider should update view groups after dynamic fetch', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    jest
+      .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    const navigationConfig = {
+      viewGroupSettings: { existing: { preloadUrl: '/old' } },
+    };
+    (luigiCoreService.getConfigValue as jest.Mock).mockReturnValue(
+      navigationConfig,
+    );
+
+    const entityNode: LuigiNode = {
+      context: {} as NodeContext,
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      {},
+      [],
+      'typeA',
+    );
+
+    expect(navigationConfig.viewGroupSettings).toEqual({
+      existing: { preloadUrl: '/old' },
+      alpha: { preloadUrl: '/alpha', requiredIFramePermissions: undefined },
+    });
+  });
+
+  it('entityChildrenProvider should skip updating view groups without navigation config', async () => {
+    jest
+      .spyOn(luigiNodesService, 'retrieveEntityChildren')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    jest
+      .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
+      .mockResolvedValue([
+        {
+          viewGroup: 'alpha',
+          _preloadUrl: '/alpha',
+        } as any,
+      ]);
+    const getConfigValueSpy = luigiCoreService.getConfigValue as jest.Mock;
+    getConfigValueSpy.mockReturnValue(undefined);
+
+    const entityNode: LuigiNode = {
+      context: {} as NodeContext,
+      defineEntity: { id: 'typeA', dynamicFetchId: 'typeA', contextKey: 'id' },
+    } as any;
+
+    await service.entityChildrenProvider(
+      entityNode,
+      { id: '1' },
+      {},
+      [],
+      'typeA',
+    );
+
+    expect(getConfigValueSpy).toHaveBeenCalledWith('navigation');
   });
 });

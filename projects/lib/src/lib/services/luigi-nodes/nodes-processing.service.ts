@@ -4,6 +4,7 @@ import {
 } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
+import { buildViewGroups } from '../../utilities/build-view-groups';
 import {
   computeDynamicFetchContext,
   visibleForContext,
@@ -228,6 +229,8 @@ export class NodesProcessingService {
           );
         dynamicRetrievedChildren = [...staticChildren, ...serverAndLocalNodes];
         staticRetrievedChildren = staticChildren;
+
+        this.updateLuigiConfigWithDynamicRetrievedNodes(dynamicRetrievedChildren);
       } catch (error) {
         dynamicRetrievedChildren = staticChildren;
         staticRetrievedChildren = undefined;
@@ -295,5 +298,21 @@ export class NodesProcessingService {
       entityRootChildren,
       ctx,
     );
+  }
+
+  private updateLuigiConfigWithDynamicRetrievedNodes(nodes: LuigiNode[]) {
+    this.updateViewGroupSettings(nodes);
+  }
+
+  private updateViewGroupSettings(nodes: LuigiNode[]) {
+    const viewGroups = buildViewGroups(nodes);
+    const navigationConfig = this.luigiCoreService.getConfigValue('navigation');
+
+    if (navigationConfig) {
+      navigationConfig.viewGroupSettings = {
+        ...navigationConfig.viewGroupSettings,
+        ...viewGroups,
+      };
+    }
   }
 }
