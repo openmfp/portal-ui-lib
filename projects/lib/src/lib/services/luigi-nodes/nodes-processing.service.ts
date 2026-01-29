@@ -1,4 +1,7 @@
-import { LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN, LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import {
+  LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
+  LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
+} from '../../injection-tokens';
 import { LuigiNode } from '../../models';
 import { EntityType } from '../../models/entity';
 import { buildViewGroups } from '../../utilities/build-view-groups';
@@ -6,7 +9,6 @@ import {
   computeDynamicFetchContext,
   visibleForContext,
 } from '../../utilities/context';
-import { NavigationConfigService } from '../luigi-config/navigation-config.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { ChildrenNodesService } from './children-nodes.service';
 import { CustomGlobalNodesService } from './custom-global-nodes.service';
@@ -304,15 +306,13 @@ export class NodesProcessingService {
 
   private updateViewGroupSettings(nodes: LuigiNode[]) {
     const viewGroups = buildViewGroups(nodes);
-    const config = this.luigiCoreService.config;
+    const navigationConfig = this.luigiCoreService.getConfigValue('navigation');
 
-    if (config?.navigation) {
-      const oldViewGroupSettings = config.navigation.viewGroupSettings;
-      config.navigation.viewGroupSettings = {
-        ...oldViewGroupSettings,
+    if (navigationConfig) {
+      navigationConfig.viewGroupSettings = {
+        ...navigationConfig.viewGroupSettings,
         ...viewGroups,
       };
-      this.luigiCoreService.setConfig(config);
     }
   }
 }
