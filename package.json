@@ -42,7 +42,6 @@
     "@angular/platform-browser-dynamic": "^19.2.16 || ^20.3.14 || ^21.1.2",
     "@angular/router": "^19.2.16 || ^20.3.14 || ^21.1.2",
     "@fundamental-ngx/ui5-webcomponents": "^0.58.1 || ^0.59.1-rc.20",
-    "@fundamental-ngx/ui5-webcomponents-fiori": "^0.58.1 || ^0.59.1-rc.20",
     "@luigi-project/client": "^2.25.1",
     "@luigi-project/client-support-angular": "^2.22.1 || ^20.0.1 || ^21.1.0",
     "@luigi-project/core": "^2.25.1",
