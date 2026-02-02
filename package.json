@@ -19,7 +19,10 @@
     "build:wc:dev": "ng build wc --configuration development && npm run build:wc:rename && npm run build:wc:copy",
     "build:watch": "mkdirp dist && nodemon --ignore dist --ignore dist-wc --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build:dev && cd dist && yalc publish --push --sig\"",
     "watch": "npm run build --watch --configuration development",
-    "test": "ng test",
+    "test": "ng test --watch=false",
+    "test:watch": "ng test",
+    "test:wc": "ng test wc --watch=false",
+    "test:lib": "ng test lib --watch=false",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix"
   },
@@ -27,7 +30,6 @@
   "dependencies": {
     "@luigi-project/plugin-auth-oauth2": "^2.25.1",
     "jwt-decode": "^4.0.0",
-    "lodash": "^4.17.23",
     "tslib": "^2.8.1"
   },
   "peerDependencies": {
@@ -40,6 +42,7 @@
     "@angular/platform-browser-dynamic": "^19.2.16 || ^20.3.14 || ^21.1.2",
     "@angular/router": "^19.2.16 || ^20.3.14 || ^21.1.2",
     "@fundamental-ngx/ui5-webcomponents": "^0.58.1 || ^0.59.1-rc.20",
+    "@fundamental-ngx/ui5-webcomponents-fiori": "^0.58.1 || ^0.59.1-rc.20",
     "@luigi-project/client": "^2.25.1",
     "@luigi-project/client-support-angular": "^2.22.1 || ^20.0.1 || ^21.1.0",
     "@luigi-project/core": "^2.25.1",
@@ -48,9 +51,9 @@
     "gql-query-builder": "^3.8.0",
     "graphql": "^16.12.0",
     "graphql-sse": "^2.6.0",
+    "lodash": "^4.17.23",
     "jsonpath": "^1.1.1",
-    "rxjs": "^7.8.2",
-    "tslib": "^2.8.1"
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.1.2",
