@@ -8,6 +8,8 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Button, Input, Label, Link, List, ListItemCustom, Switch } from '@fundamental-ngx/ui5-webcomponents';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   Config,
@@ -15,15 +17,6 @@ import {
   LocalStorageKeys,
   localDevelopmentSettingsLocalStorage,
 } from '@openmfp/portal-ui-lib';
-import {
-  ButtonComponent,
-  InputComponent,
-  LabelComponent,
-  LinkComponent,
-  ListComponent,
-  ListItemCustomComponent,
-  SwitchComponent,
-} from '@ui5/webcomponents-ngx';
 
 @Component({
   selector: 'development-settings',
@@ -31,13 +24,14 @@ import {
   templateUrl: './development-settings.component.html',
   styleUrl: './development-settings.component.scss',
   imports: [
-    SwitchComponent,
-    LinkComponent,
-    ButtonComponent,
-    InputComponent,
-    LabelComponent,
-    ListComponent,
-    ListItemCustomComponent,
+    Switch,
+    Link,
+    Button,
+    Input,
+    Label,
+    List,
+    ListItemCustom,
+    ReactiveFormsModule,
   ],
   encapsulation: ViewEncapsulation.ShadowDom,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +62,12 @@ export class DevelopmentSettingsComponent implements OnInit {
     configs: this.configs(),
     serviceProviderConfig: this.serviceProviderConfig(),
   }));
+
+  public urlInput = new FormControl('', { nonNullable: true });
+  public serviceProviderFrom = new FormGroup({
+    key: new FormControl('', { nonNullable: true }),
+    value: new FormControl('', { nonNullable: true }),
+  });
 
   ngOnInit(): void {
     const localDevelopmentSettings =

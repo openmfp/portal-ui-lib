@@ -2,14 +2,14 @@ import { DevelopmentSettingsComponent } from './development-settings.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import {
-  ButtonComponent,
-  InputComponent,
-  LabelComponent,
-  LinkComponent,
-  ListComponent,
-  ListItemCustomComponent,
-  SwitchComponent,
-} from '@ui5/webcomponents-ngx';
+  Button,
+  Input,
+  Label,
+  Link,
+  List,
+  ListItemCustom,
+  Switch,
+} from '@fundamental-ngx/ui5-webcomponents';
 import {
   I18nService,
   localDevelopmentSettingsLocalStorage,
@@ -34,13 +34,13 @@ describe('DevelopmentSettingsComponent', () => {
       imports: [
         FormsModule,
         DevelopmentSettingsComponent,
-        ListComponent,
-        ButtonComponent,
-        InputComponent,
-        LabelComponent,
-        ListItemCustomComponent,
-        SwitchComponent,
-        LinkComponent,
+        List,
+        Button,
+        Input,
+        Label,
+        ListItemCustom,
+        Switch,
+        Link,
       ],
       providers: [{ provide: I18nService, useValue: i18nServiceMock }],
     })
