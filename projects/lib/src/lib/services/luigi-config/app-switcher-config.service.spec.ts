@@ -1,28 +1,30 @@
+import { mock } from 'vitest-mock-extended';
 import { LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
 import { AppSwitcherConfigServiceImpl } from './app-switcher-config.service';
 import { TestBed } from '@angular/core/testing';
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('AppSwitcherConfigServiceImpl', () => {
   let service: AppSwitcherConfigServiceImpl;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
-  let nodeUtilsServiceMock: jest.Mocked<NodeUtilsService>;
+  let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
+  let nodeUtilsServiceMock: MockedObject<NodeUtilsService>;
 
   const mockNavigationObject = {
-    navigate: jest.fn(),
+    navigate: vi.fn(),
   };
 
   beforeEach(() => {
     // Create mock services
-    luigiCoreServiceMock = {
-      navigation: jest.fn().mockReturnValue(mockNavigationObject),
-    } as unknown as jest.Mocked<LuigiCoreService>;
+    luigiCoreServiceMock = mock<LuigiCoreService>({
+      navigation: vi.fn().mockReturnValue(mockNavigationObject),
+    });
 
-    nodeUtilsServiceMock = {
-      isVisible: jest.fn().mockReturnValue(true),
-    } as unknown as jest.Mocked<NodeUtilsService>;
+    nodeUtilsServiceMock = mock<NodeUtilsService>({
+      isVisible: vi.fn().mockReturnValue(true),
+    });
 
     // Configure TestBed
     TestBed.configureTestingModule({
@@ -168,7 +170,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
       mockSlot = document.createElement('div');
 
       mockAppSwitcherApiObj = {
-        closeDropDown: jest.fn(),
+        closeDropDown: vi.fn(),
       };
 
       itemRenderer = service.getAppSwitcher([]).itemRenderer;
@@ -195,7 +197,7 @@ describe('AppSwitcherConfigServiceImpl', () => {
 
       const anchor = mockSlot.querySelector('a');
       const mockEvent = {
-        stopPropagation: jest.fn(),
+        stopPropagation: vi.fn(),
       };
 
       // Simulate click

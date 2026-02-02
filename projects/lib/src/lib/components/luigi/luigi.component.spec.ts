@@ -8,31 +8,32 @@ import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecyc
 import { RoutingConfigServiceImpl } from '../../services/luigi-config/routing-config.service';
 import { LuigiComponent } from './luigi.component';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('LuigiComponent', () => {
   let component: LuigiComponent;
-  let authService: jest.Mocked<AuthService>;
-  let luigiCoreService: jest.Mocked<LuigiCoreService>;
-  let authConfigService: jest.Mocked<AuthConfigService>;
-  let routingConfigService: jest.Mocked<RoutingConfigServiceImpl>;
-  let lifecycleHooksConfigService: jest.Mocked<LifecycleHooksConfigService>;
-  let staticSettingsConfigService: jest.Mocked<StaticSettingsConfigServiceImpl>;
+  let authService: MockedObject<AuthService>;
+  let luigiCoreService: MockedObject<LuigiCoreService>;
+  let authConfigService: MockedObject<AuthConfigService>;
+  let routingConfigService: MockedObject<RoutingConfigServiceImpl>;
+  let lifecycleHooksConfigService: MockedObject<LifecycleHooksConfigService>;
+  let staticSettingsConfigService: MockedObject<StaticSettingsConfigServiceImpl>;
 
   beforeEach(() => {
     staticSettingsConfigService = mock();
     authService = {
-      getAuthData: jest.fn().mockReturnValue({ user: 'u' }),
+      getAuthData: vi.fn().mockReturnValue({ user: 'u' }),
     } as any;
-    luigiCoreService = { setAuthData: jest.fn(), setConfig: jest.fn() } as any;
+    luigiCoreService = { setAuthData: vi.fn(), setConfig: vi.fn() } as any;
     authConfigService = {
-      getAuthConfig: jest.fn().mockResolvedValue({ auth: 'config' }),
+      getAuthConfig: vi.fn().mockResolvedValue({ auth: 'config' }),
     } as any;
     routingConfigService = {
-      getInitialRoutingConfig: jest.fn().mockReturnValue({ route: 'r' }),
+      getInitialRoutingConfig: vi.fn().mockReturnValue({ route: 'r' }),
     } as any;
     lifecycleHooksConfigService = {
-      getLifecycleHooksConfig: jest.fn().mockReturnValue({ hook: 'h' }),
+      getLifecycleHooksConfig: vi.fn().mockReturnValue({ hook: 'h' }),
     } as any;
 
     TestBed.configureTestingModule({
@@ -73,7 +74,9 @@ describe('LuigiComponent', () => {
   it('should log error if init fails', async () => {
     const error = new Error('fail');
     authConfigService.getAuthConfig.mockRejectedValue(error);
-    const spy = jest.spyOn(console, 'error').mockImplementation();
+    const spy = vi
+      .spyOn(console, 'error')
+      .mockImplementation((message: string) => {});
     await component.ngOnInit();
     expect(spy).toHaveBeenCalledWith(
       `Luigi Component init failed: ${error.toString()}`,

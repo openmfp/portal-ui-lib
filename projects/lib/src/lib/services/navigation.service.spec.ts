@@ -6,12 +6,13 @@ import { LocalStorageKeys } from './storage-service';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, MockedObject, vi } from 'vitest';
 
 describe('NavigationService', () => {
   let service: NavigationService;
-  let router: jest.Mocked<Router>;
-  let authService: jest.Mocked<AuthService>;
-  let loginEventService: jest.Mocked<LoginEventService>;
+  let router: MockedObject<Router>;
+  let authService: MockedObject<AuthService>;
+  let loginEventService: MockedObject<LoginEventService>;
   let routerEvents: Subject<any>;
   let authEvents: Subject<AuthEvent>;
   let loginEvents: Subject<any>;
@@ -23,7 +24,7 @@ describe('NavigationService', () => {
 
     router = {
       events: routerEvents.asObservable(),
-      navigate: jest.fn(),
+      navigate: vi.fn(),
     } as any;
 
     authService = {

@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LuigiNode } from '../../models/luigi';
 import { IntentNavigationService } from './intent-navigation.service';
 import { TestBed } from '@angular/core/testing';
@@ -14,7 +15,7 @@ describe('Intent Navigation functions', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create', () => {

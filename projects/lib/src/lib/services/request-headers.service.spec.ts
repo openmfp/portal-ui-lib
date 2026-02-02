@@ -3,17 +3,26 @@ import { AuthService } from './portal';
 import { RequestHeadersService } from './request-headers.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { mock } from 'jest-mock-extended';
 import { of } from 'rxjs';
+import {
+  MockedObject,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('RequestHeadersService', () => {
   let service: RequestHeadersService;
-  let luigiCoreService: jest.Mocked<LuigiCoreService>;
-  let authService: jest.Mocked<AuthService>;
-  let activatedRoute: jest.Mocked<ActivatedRoute>;
+  let luigiCoreService: MockedObject<LuigiCoreService>;
+  let authService: MockedObject<AuthService>;
+  let activatedRoute: MockedObject<ActivatedRoute>;
 
   const mockI18n = {
-    getCurrentLocale: jest.fn(),
+    getCurrentLocale: vi.fn(),
   };
 
   beforeEach(() => {
@@ -38,7 +47,7 @@ describe('RequestHeadersService', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('createOptionsWithAuthHeader', () => {
@@ -184,7 +193,7 @@ describe('RequestHeadersService', () => {
     });
 
     it('should subscribe to route.queryParams', () => {
-      const subscribeSpy = jest.spyOn(activatedRoute.queryParams, 'subscribe');
+      const subscribeSpy = vi.spyOn(activatedRoute.queryParams, 'subscribe');
       mockI18n.getCurrentLocale.mockReturnValue('en-US');
 
       service.createOptionsWithAuthHeader();

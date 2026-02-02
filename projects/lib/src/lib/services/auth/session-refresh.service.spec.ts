@@ -9,13 +9,14 @@ import { LuigiCoreService } from '../luigi-core.service';
 import { AuthService } from '../portal';
 import { SessionRefreshService } from './session-refresh.service';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('SessionRefreshService', () => {
   let service: SessionRefreshService;
-  let authService: jest.Mocked<AuthService>;
-  let luigiCoreService: jest.Mocked<LuigiCoreService>;
-  let globalContextConfigServiceMock: jest.Mocked<GlobalContextConfigService>;
+  let authService: MockedObject<AuthService>;
+  let luigiCoreService: MockedObject<LuigiCoreService>;
+  let globalContextConfigServiceMock: MockedObject<GlobalContextConfigService>;
 
   // Mock data
   const mockAuthData = {
@@ -27,12 +28,12 @@ describe('SessionRefreshService', () => {
     globalContextConfigServiceMock = mock();
 
     // Create mock services
-    (window as any).IDP = { setTokenExpireSoonAction: jest.fn() };
+    (window as any).IDP = { setTokenExpireSoonAction: vi.fn() };
 
     const authServiceMock = {
-      refresh: jest.fn().mockResolvedValue(undefined),
-      authEvent: jest.fn(),
-      getAuthData: jest.fn().mockReturnValue(mockAuthData),
+      refresh: vi.fn().mockResolvedValue(undefined),
+      authEvent: vi.fn(),
+      getAuthData: vi.fn().mockReturnValue(mockAuthData),
     };
 
     const luigiCoreServiceMock = mock<LuigiCoreService>();
@@ -51,10 +52,10 @@ describe('SessionRefreshService', () => {
 
     // Get instances
     service = TestBed.inject(SessionRefreshService);
-    authService = TestBed.inject(AuthService) as jest.Mocked<AuthService>;
+    authService = TestBed.inject(AuthService) as MockedObject<AuthService>;
     luigiCoreService = TestBed.inject(
       LuigiCoreService,
-    ) as jest.Mocked<LuigiCoreService>;
+    ) as MockedObject<LuigiCoreService>;
   });
 
   it('should be created', () => {

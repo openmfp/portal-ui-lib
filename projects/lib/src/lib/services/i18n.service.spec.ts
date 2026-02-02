@@ -2,13 +2,13 @@ import { I18nService } from './i18n.service';
 import { LuigiCoreService } from './luigi-core.service';
 import { EnvConfigService } from './portal';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
-
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('I18nService', () => {
   let i18nService: I18nService;
-  let luigiCoreServiceMock: LuigiCoreService;
-  let envConfigServiceMock: jest.Mocked<EnvConfigService>;
+  let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
+  let envConfigServiceMock: MockedObject<EnvConfigService>;
   const translationTable = {
     de: {
       SOME_TEST_KEY: 'some test key',
@@ -20,12 +20,12 @@ describe('I18nService', () => {
 
   beforeEach(() => {
     envConfigServiceMock = mock();
-    luigiCoreServiceMock = {
-      i18n: jest.fn().mockReturnValue({
-        getCurrentLocale: jest.fn().mockReturnValue('de'),
-        addCurrentLocaleChangeListener: jest.fn(),
+    luigiCoreServiceMock = mock<LuigiCoreService>({
+      i18n: vi.fn().mockReturnValue({
+        getCurrentLocale: vi.fn().mockReturnValue('de'),
+        addCurrentLocaleChangeListener: vi.fn(),
       }),
-    } as unknown as LuigiCoreService;
+    });
 
     TestBed.configureTestingModule({
       providers: [
@@ -160,19 +160,18 @@ describe('I18nService', () => {
   });
 
   it('getTranslation', () => {
-    spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
-    const spyFindTranslation = spyOn(
-      i18nService,
-      'findTranslation',
-    ).and.returnValue('some test key');
+    i18nService.translationTable = translationTable;
+    const spyFindTranslation = vi
+      .spyOn(i18nService, 'findTranslation')
+      .mockReturnValue('some test key');
     const result = i18nService.getTranslation('SOME_TEST_KEY', undefined, 'de');
     expect(spyFindTranslation).toHaveBeenCalled();
     expect(result).toEqual('some test key');
   });
 
   it('getTranslationAsync', async () => {
-    spyOn(i18nService, 'translationTable').and.returnValue(translationTable);
-    spyOn(i18nService, 'findTranslation').and.returnValue('some test key');
+    i18nService.translationTable = translationTable;
+    vi.spyOn(i18nService, 'findTranslation').mockReturnValue('some test key');
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
       undefined,
@@ -189,17 +188,14 @@ describe('I18nService', () => {
         SOME_TEST_KEY3: 'some test key 3',
       },
     };
-    spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
-    spyOn(i18nService, 'translationTable').and.returnValue(
-      fallbackTranslationTable,
-    );
-    i18nService.fetchTranslationFile = jest
+    i18nService.fallbackLanguage = 'en';
+    i18nService.translationTable = fallbackTranslationTable;
+    i18nService.fetchTranslationFile = vi
       .fn()
       .mockResolvedValue('some test key 3');
-    spyOn(i18nService, 'findTranslation').and.returnValues(
-      undefined,
-      'some test key 3',
-    );
+    vi.spyOn(i18nService, 'findTranslation')
+      .mockReturnValueOnce(undefined)
+      .mockReturnValueOnce('some test key 3');
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY3',
       undefined,
@@ -211,7 +207,7 @@ describe('I18nService', () => {
   it('fetchTranslationFile', async () => {
     const locale = 'de';
     const mockData = { SOME_TEST_KEY: 'mocked translation' };
-    globalThis.fetch = jest.fn(() =>
+    globalThis.fetch = vi.fn(() =>
       Promise.resolve({
         json: () => Promise.resolve(mockData),
       } as Response),
@@ -223,7 +219,7 @@ describe('I18nService', () => {
 
   it('fetchTranslationFile should handle fetch error', async () => {
     const locale = 'de';
-    globalThis.fetch = jest.fn(() => Promise.reject('Fetch error'));
+    globalThis.fetch = vi.fn(() => Promise.reject('Fetch error'));
     await i18nService.fetchTranslationFile(locale);
     expect(i18nService.translationTable[locale]).toEqual({});
   });
@@ -234,11 +230,9 @@ describe('I18nService', () => {
         SOME_TEST_KEY: 'some test key',
       },
     };
-    spyOn(i18nService, 'fallbackLanguage').and.returnValue('en');
-    spyOn(i18nService, 'translationTable').and.returnValue(
-      fallbackTranslationTable,
-    );
-    globalThis.fetch = jest.fn(() => Promise.reject('Fetch error'));
+    i18nService.fallbackLanguage = 'en';
+    i18nService.translationTable = fallbackTranslationTable;
+    globalThis.fetch = vi.fn(() => Promise.reject('Fetch error'));
 
     const result = await i18nService.getTranslationAsync(
       'SOME_TEST_KEY',
@@ -246,7 +240,7 @@ describe('I18nService', () => {
       'de',
     );
 
-    expect(result).toEqual('SOME_TEST_KEY');
+    expect(result).toEqual('some test key');
   });
 
   it('getTranslationAsync with fallback language', async () => {

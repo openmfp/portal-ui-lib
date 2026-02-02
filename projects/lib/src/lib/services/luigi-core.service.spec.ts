@@ -1,58 +1,63 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthData, LuigiConfig } from '../models';
 import { TestBed } from '@angular/core/testing';
 
 const luigiMock = {
-  auth: jest.fn().mockReturnValue({
+  auth: vi.fn().mockReturnValue({
     store: {
-      setAuthData: jest.fn(),
-      getAuthData: jest.fn().mockReturnValue({
+      setAuthData: vi.fn(),
+      getAuthData: vi.fn().mockReturnValue({
         accessTokenExpirationDate: 34,
         idToken: 'id_token_mock',
       }),
-      setNewlyAuthorized: jest.fn(),
-      removeAuthData: jest.fn(),
+      setNewlyAuthorized: vi.fn(),
+      removeAuthData: vi.fn(),
     },
   }),
-  getGlobalContext: jest.fn(),
-  setGlobalContext: jest.fn(),
-  setConfig: jest.fn(),
-  getConfig: jest.fn(),
-  getConfigValue: jest.fn(),
-  unload: jest.fn(),
-  configChanged: jest.fn(),
-  customMessages: jest.fn(),
-  navigation: jest.fn(),
-  reset: jest.fn(),
-  clearNavigationCache: jest.fn(),
-  showAlert: jest.fn(),
-  ux: jest.fn(),
-  theming: jest.fn(),
-  i18n: jest.fn().mockReturnValue({
-    setCurrentLocale: jest.fn(),
+  getGlobalContext: vi.fn(),
+  setGlobalContext: vi.fn(),
+  setConfig: vi.fn(),
+  getConfig: vi.fn(),
+  getConfigValue: vi.fn(),
+  unload: vi.fn(),
+  configChanged: vi.fn(),
+  customMessages: vi.fn(),
+  navigation: vi.fn(),
+  reset: vi.fn(),
+  clearNavigationCache: vi.fn(),
+  showAlert: vi.fn(),
+  ux: vi.fn(),
+  theming: vi.fn(),
+  i18n: vi.fn().mockReturnValue({
+    setCurrentLocale: vi.fn(),
   }),
-  globalSearch: jest.fn(),
-  routing: jest.fn(),
-  sendCustomMessage: jest.fn(),
-  featureToggles: jest.fn().mockReturnValue({
-    setFeatureToggle: jest.fn(),
-    unsetFeatureToggle: jest.fn(),
-    getActiveFeatureToggleList: jest.fn().mockReturnValue([]),
+  globalSearch: vi.fn(),
+  routing: vi.fn(),
+  sendCustomMessage: vi.fn(),
+  featureToggles: vi.fn().mockReturnValue({
+    setFeatureToggle: vi.fn(),
+    unsetFeatureToggle: vi.fn(),
+    getActiveFeatureToggleList: vi.fn().mockReturnValue([]),
   }),
 };
-
-(globalThis as any).Luigi = luigiMock;
 
 describe('LuigiCoreService', () => {
   let service: any;
   let LuigiCoreService: any;
 
   beforeEach(async () => {
+    vi.resetModules();
+    vi.stubGlobal('Luigi', luigiMock);
     const module = await import('./luigi-core.service');
     LuigiCoreService = module.LuigiCoreService;
     TestBed.configureTestingModule({
       providers: [LuigiCoreService],
     });
     service = TestBed.inject(LuigiCoreService);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('should be created', () => {
@@ -232,7 +237,7 @@ describe('LuigiCoreService', () => {
         feature2: false,
         feature3: true,
       };
-      service.setFeatureToggle = jest.fn();
+      service.setFeatureToggle = vi.fn();
 
       service.setFeatureToggles(featureToggles);
 
@@ -246,7 +251,7 @@ describe('LuigiCoreService', () => {
         feature1: false,
         feature2: false,
       };
-      service.setFeatureToggle = jest.fn();
+      service.setFeatureToggle = vi.fn();
 
       service.setFeatureToggles(featureToggles);
 
@@ -254,7 +259,7 @@ describe('LuigiCoreService', () => {
     });
 
     it('should handle an empty object', () => {
-      service.setFeatureToggle = jest.fn();
+      service.setFeatureToggle = vi.fn();
 
       service.setFeatureToggles({});
 
@@ -262,7 +267,7 @@ describe('LuigiCoreService', () => {
     });
 
     it('should handle undefined input', () => {
-      service.setFeatureToggle = jest.fn();
+      service.setFeatureToggle = vi.fn();
 
       service.setFeatureToggles(undefined);
 
@@ -335,7 +340,7 @@ describe('LuigiCoreService', () => {
           'feature2',
           'feature3',
         ]);
-      service.unsetFeatureToggle = jest.fn();
+      service.unsetFeatureToggle = vi.fn();
 
       service.unsetAllFeatureToggles();
 

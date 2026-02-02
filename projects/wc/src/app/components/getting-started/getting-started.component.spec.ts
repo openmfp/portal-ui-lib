@@ -1,11 +1,20 @@
 import { GettingStartedComponent } from './getting-started.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
+import {
+  MockedObject,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 describe('GettingStartedComponent', () => {
   let component: GettingStartedComponent;
   let fixture: ComponentFixture<GettingStartedComponent>;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
+  let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
 
   beforeEach(async () => {
     luigiCoreServiceMock = {
@@ -36,7 +45,7 @@ describe('GettingStartedComponent', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create', () => {

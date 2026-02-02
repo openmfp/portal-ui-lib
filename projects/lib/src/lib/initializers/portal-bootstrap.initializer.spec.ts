@@ -1,18 +1,19 @@
 import { AuthService, EnvConfigService } from '../services';
 import { bootstrap, provideBootstrap } from './portal-bootstrap.initializer';
 import { TestBed } from '@angular/core/testing';
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('bootstrap', () => {
-  let authService: jest.Mocked<AuthService>;
-  let envConfigService: jest.Mocked<EnvConfigService>;
+  let authService: MockedObject<AuthService>;
+  let envConfigService: MockedObject<EnvConfigService>;
 
   beforeEach(() => {
     authService = {
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     } as any;
 
     envConfigService = {
-      getEnvConfig: jest.fn(),
+      getEnvConfig: vi.fn(),
     } as any;
 
     TestBed.configureTestingModule({
@@ -107,7 +108,9 @@ describe('bootstrap', () => {
   });
 
   it('should handle getEnvConfig error gracefully', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation((message: string) => {});
     const error = new Error('Config error');
     envConfigService.getEnvConfig.mockRejectedValue(error);
 
@@ -125,7 +128,9 @@ describe('bootstrap', () => {
   });
 
   it('should handle refresh error gracefully', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation((message: string) => {});
     const error = new Error('Refresh error');
     envConfigService.getEnvConfig.mockResolvedValue({
       oauthServerUrl: 'https://oauth.example.com',
@@ -160,16 +165,16 @@ describe('bootstrap', () => {
 });
 
 describe('provideBootstrap', () => {
-  let authService: jest.Mocked<AuthService>;
-  let envConfigService: jest.Mocked<EnvConfigService>;
+  let authService: MockedObject<AuthService>;
+  let envConfigService: MockedObject<EnvConfigService>;
 
   beforeEach(() => {
     authService = {
-      refresh: jest.fn(),
+      refresh: vi.fn(),
     } as any;
 
     envConfigService = {
-      getEnvConfig: jest.fn().mockResolvedValue({
+      getEnvConfig: vi.fn().mockResolvedValue({
         oauthServerUrl: 'https://oauth.example.com',
         clientId: 'client-123',
       }),
@@ -182,5 +187,10 @@ describe('provideBootstrap', () => {
         provideBootstrap(),
       ],
     });
+  });
+
+  it('returns environment providers', () => {
+    const providers = provideBootstrap();
+    expect(providers).toBeDefined();
   });
 });

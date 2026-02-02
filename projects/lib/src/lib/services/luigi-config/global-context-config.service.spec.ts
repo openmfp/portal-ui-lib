@@ -5,14 +5,16 @@ import { AuthService, ConfigService, EnvConfigService } from '../portal';
 import { GlobalContextConfigService } from './global-context-config.service';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { fail } from 'assert';
+import { MockedObject, beforeEach, describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('GlobalContextConfigService', () => {
   let globalContextConfigService: GlobalContextConfigService;
-  let authService: jest.Mocked<AuthService>;
-  let configService: jest.Mocked<ConfigService>;
-  let envConfigService: jest.Mocked<EnvConfigService>;
-  let extendedGlobalContextService: jest.Mocked<LuigiExtendedGlobalContextConfigService>;
+  let authService: MockedObject<AuthService>;
+  let configService: MockedObject<ConfigService>;
+  let envConfigService: MockedObject<EnvConfigService>;
+  let extendedGlobalContextService: MockedObject<LuigiExtendedGlobalContextConfigService>;
 
   beforeEach(() => {
     authService = mock();

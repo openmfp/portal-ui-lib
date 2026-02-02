@@ -6,7 +6,8 @@ import {
 } from './luigi-breadcrumb-config.service';
 import { TestBed } from '@angular/core/testing';
 import { NodeContext } from '@openmfp/portal-ui-lib';
-import { MockProxy, mock } from 'jest-mock-extended';
+import { MockProxy, mock } from 'vitest-mock-extended';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('HeaderBarService', () => {
   let service: HeaderBarService;
@@ -51,8 +52,8 @@ describe('HeaderBarService', () => {
   });
 
   it('should return LuigiBreadcrumb with proper renderer', async () => {
-    const leftRendererMock = jest.fn();
-    const rightRendererMock = jest.fn();
+    const leftRendererMock = vi.fn();
+    const rightRendererMock = vi.fn();
     const mockConfig = {
       pendingItemLabel: 'Test',
       omitRoot: false,
@@ -74,7 +75,7 @@ describe('HeaderBarService', () => {
     const nodeItems: NodeItem[] = [
       { pathSegment: 'p', label: 'L', context: {} as NodeContext },
     ];
-    const clickHandler = jest.fn();
+    const clickHandler = vi.fn();
 
     breadcrumb?.renderer(container, nodeItems, clickHandler);
 
@@ -111,7 +112,7 @@ describe('HeaderBarService', () => {
 
     const breadcrumb = await service.getConfig();
     const container = document.createElement('div');
-    breadcrumb?.renderer(container, [], jest.fn());
+    breadcrumb?.renderer(container, [], vi.fn());
 
     expect(container.children.length).toBe(2);
     expect(container.querySelectorAll('div').length).toBe(2);
@@ -129,7 +130,7 @@ describe('HeaderBarService', () => {
 
     const breadcrumb = await service.getConfig();
     const container = document.createElement('div');
-    breadcrumb?.renderer(container, [], jest.fn());
+    breadcrumb?.renderer(container, [], vi.fn());
 
     const [left, right] = container.children as any as HTMLDivElement[];
 

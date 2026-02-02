@@ -3,6 +3,15 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
 import { I18nService, featureToggleLocalStorage } from '@openmfp/portal-ui-lib';
+import {
+  MockedObject,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 // Mock window.location
 Object.defineProperty(window, 'location', {
@@ -16,19 +25,19 @@ describe('FeatureToggleComponent', () => {
   let component: FeatureToggleComponent;
   let fixture: ComponentFixture<FeatureToggleComponent>;
   let mockLuigiClient: any;
-  let i18nServiceMock: jest.Mocked<I18nService>;
+  let i18nServiceMock: MockedObject<I18nService>;
 
   beforeEach(async () => {
     i18nServiceMock = {
-      getTranslation: jest.fn((key) => `translated_${key}`),
+      getTranslation: vi.fn((key) => `translated_${key}`),
       translationTable: {},
     } as any;
 
     mockLuigiClient = {
-      getActiveFeatureToggles: jest
+      getActiveFeatureToggles: vi
         .fn()
         .mockReturnValue(['feature1', 'feature2']),
-      publishEvent: jest.fn(),
+      publishEvent: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -47,7 +56,7 @@ describe('FeatureToggleComponent', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create', () => {
@@ -57,10 +66,8 @@ describe('FeatureToggleComponent', () => {
   describe('ngOnInit', () => {
     it('should initialize feature toggles from localStorage and LuigiClient', () => {
       const mockSettings = { feature1: false, feature2: true };
-      jest
-        .spyOn(featureToggleLocalStorage, 'read')
-        .mockReturnValue(mockSettings);
-      jest.spyOn(featureToggleLocalStorage, 'store').mockImplementation();
+      vi.spyOn(featureToggleLocalStorage, 'read').mockReturnValue(mockSettings);
+      vi.spyOn(featureToggleLocalStorage, 'store').mockImplementation(() => {});
 
       component.ngOnInit();
 
@@ -71,10 +78,8 @@ describe('FeatureToggleComponent', () => {
 
     it('should disable controls for features from query params', () => {
       const mockSettings = { feature1: false, feature2: true };
-      jest
-        .spyOn(featureToggleLocalStorage, 'read')
-        .mockReturnValue(mockSettings);
-      jest.spyOn(featureToggleLocalStorage, 'store').mockImplementation();
+      vi.spyOn(featureToggleLocalStorage, 'read').mockReturnValue(mockSettings);
+      vi.spyOn(featureToggleLocalStorage, 'store').mockImplementation(() => {});
 
       component.ngOnInit();
 

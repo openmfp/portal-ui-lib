@@ -14,19 +14,28 @@ import {
   I18nService,
   localDevelopmentSettingsLocalStorage,
 } from '@openmfp/portal-ui-lib';
+import {
+  MockedObject,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
-jest.mock('@luigi-project/client', () => ({
-  sendCustomMessage: jest.fn(),
+vi.mock('@luigi-project/client', () => ({
+  sendCustomMessage: vi.fn(),
 }));
 
 describe('DevelopmentSettingsComponent', () => {
   let component: DevelopmentSettingsComponent;
   let fixture: ComponentFixture<DevelopmentSettingsComponent>;
-  let i18nServiceMock: jest.Mocked<I18nService>;
+  let i18nServiceMock: MockedObject<I18nService>;
 
   beforeEach(async () => {
     i18nServiceMock = {
-      getTranslation: jest.fn((key) => `translated_${key}`),
+      getTranslation: vi.fn((key) => `translated_${key}`),
       translationTable: {},
     } as any;
 
@@ -51,12 +60,12 @@ describe('DevelopmentSettingsComponent', () => {
 
     fixture = TestBed.createComponent(DevelopmentSettingsComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('LuigiClient', { publishEvent: jest.fn() });
+    fixture.componentRef.setInput('LuigiClient', { publishEvent: vi.fn() });
     fixture.componentRef.setInput('context', { translationTable: {} });
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('ngOnInit', () => {
@@ -67,7 +76,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: null,
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -83,7 +92,7 @@ describe('DevelopmentSettingsComponent', () => {
         isActive: true,
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -101,7 +110,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: { key: 'value' },
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -120,7 +129,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: {},
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValueOnce(null)
         .mockReturnValueOnce(mockSettings);
@@ -134,9 +143,7 @@ describe('DevelopmentSettingsComponent', () => {
     });
 
     it('should initialize with default settings when no stored settings available', () => {
-      localDevelopmentSettingsLocalStorage.read = jest
-        .fn()
-        .mockReturnValue(null);
+      localDevelopmentSettingsLocalStorage.read = vi.fn().mockReturnValue(null);
 
       component.ngOnInit();
       expect(component.isActive()).toEqual(false);

@@ -4,29 +4,30 @@ import { AuthService, EnvConfigService } from '../portal';
 import { AuthConfigService } from './auth-config.service';
 import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('AuthConfigService', () => {
   let service: AuthConfigService;
-  let authServiceMock: jest.Mocked<AuthService>;
-  let envConfigServiceMock: jest.Mocked<EnvConfigService>;
-  let luigiAuthEventsCallbacksServiceMock: jest.Mocked<LuigiAuthEventsCallbacksService>;
+  let authServiceMock: MockedObject<AuthService>;
+  let envConfigServiceMock: MockedObject<EnvConfigService>;
+  let luigiAuthEventsCallbacksServiceMock: MockedObject<LuigiAuthEventsCallbacksService>;
 
   beforeEach(() => {
     envConfigServiceMock = mock();
 
     authServiceMock = {
-      getUserInfo: jest.fn(),
-      authEvent: jest.fn(),
+      getUserInfo: vi.fn(),
+      authEvent: vi.fn(),
     } as any;
 
     luigiAuthEventsCallbacksServiceMock = {
-      onAuthSuccessful: jest.fn(),
-      onAuthError: jest.fn(),
-      onAuthExpired: jest.fn(),
-      onLogout: jest.fn(),
-      onAuthExpireSoon: jest.fn(),
-      onAuthConfigError: jest.fn(),
+      onAuthSuccessful: vi.fn(),
+      onAuthError: vi.fn(),
+      onAuthExpired: vi.fn(),
+      onLogout: vi.fn(),
+      onAuthExpireSoon: vi.fn(),
+      onAuthConfigError: vi.fn(),
     } as any;
 
     TestBed.configureTestingModule({
@@ -84,7 +85,7 @@ describe('AuthConfigService', () => {
       const config = await service.getAuthConfig();
       const userInfoFn = config?.oAuth2AuthCode?.userInfoFn;
 
-      global.fetch = jest.fn().mockResolvedValue({ ok: true });
+      global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
       const result = await userInfoFn?.();
 

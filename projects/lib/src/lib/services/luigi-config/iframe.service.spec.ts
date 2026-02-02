@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TestBed } from '@angular/core/testing';
 import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
@@ -17,7 +18,7 @@ describe('IframeService', () => {
   beforeEach(() => {
     service = TestBed.inject(IframeService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
-    jest.spyOn(luigiCoreService, 'getConfigValue').mockImplementation();
+    vi.spyOn(luigiCoreService, 'getConfigValue').mockImplementation(() => {});
     interceptor = service.iFrameCreationInterceptor();
   });
 
@@ -97,7 +98,7 @@ describe('IframeService', () => {
       const frame2 = createFrame();
       const frame3 = createFrame();
 
-      jest.spyOn(luigiCoreService, 'getConfigValue').mockReturnValue({
+      vi.spyOn(luigiCoreService, 'getConfigValue').mockReturnValue({
         vg1: {
           requiredIFramePermissions: {
             allow: ['vg-clipboard-read', 'vg-clipboard-write'],

@@ -3,6 +3,7 @@ import { LuigiCoreService } from '../luigi-core.service';
 import { NodeSortingService } from './node-sorting.service';
 import { TestBed } from '@angular/core/testing';
 import { NodeContext } from '@openmfp/portal-ui-lib';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('NodeSortingService', () => {
   let service: NodeSortingService;
@@ -23,7 +24,7 @@ describe('NodeSortingService', () => {
   beforeEach(() => {
     service = TestBed.inject(NodeSortingService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
-    jest.spyOn(luigiCoreService, 'getConfigValue').mockImplementation();
+    vi.spyOn(luigiCoreService, 'getConfigValue').mockImplementation(() => {});
   });
   beforeEach(() => {
     entityDefinitionNode1 = {

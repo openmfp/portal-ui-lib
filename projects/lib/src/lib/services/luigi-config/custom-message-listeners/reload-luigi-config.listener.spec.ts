@@ -2,26 +2,29 @@ import { LuigiCoreService } from '../../luigi-core.service';
 import { ConfigService } from '../../portal';
 import { ReloadLuigiConfigListener } from './reload-luigi-config.listener';
 import { TestBed } from '@angular/core/testing';
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('ReloadLuigiConfigListener', () => {
   let listener: ReloadLuigiConfigListener;
-  let configService: jest.Mocked<ConfigService>;
-  let luigiCoreService: jest.Mocked<LuigiCoreService>;
+  let configService: MockedObject<ConfigService>;
+  let luigiCoreService: MockedObject<LuigiCoreService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         ReloadLuigiConfigListener,
-        { provide: ConfigService, useValue: { reloadConfig: jest.fn() } },
-        { provide: LuigiCoreService, useValue: { resetLuigi: jest.fn() } },
+        { provide: ConfigService, useValue: { reloadConfig: vi.fn() } },
+        { provide: LuigiCoreService, useValue: { resetLuigi: vi.fn() } },
       ],
     });
 
     listener = TestBed.inject(ReloadLuigiConfigListener);
-    configService = TestBed.inject(ConfigService) as jest.Mocked<ConfigService>;
+    configService = TestBed.inject(
+      ConfigService,
+    ) as MockedObject<ConfigService>;
     luigiCoreService = TestBed.inject(
       LuigiCoreService,
-    ) as jest.Mocked<LuigiCoreService>;
+    ) as MockedObject<LuigiCoreService>;
   });
 
   it('should return correct messageId', () => {

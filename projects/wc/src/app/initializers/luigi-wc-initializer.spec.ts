@@ -5,9 +5,10 @@ import * as wcUtils from '../utils/wc';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
 import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-jest.mock('../utils/wc', () => ({
-  registerLuigiWebComponents: jest.fn(),
+vi.mock('../utils/wc', () => ({
+  registerLuigiWebComponents: vi.fn(),
 }));
 
 describe('provideLuigiWebComponents', () => {
@@ -15,7 +16,7 @@ describe('provideLuigiWebComponents', () => {
 
   beforeEach(() => {
     provider = provideLuigiWebComponents();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return provider object', () => {

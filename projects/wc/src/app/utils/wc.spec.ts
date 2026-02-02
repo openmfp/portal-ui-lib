@@ -1,16 +1,24 @@
 import * as wc from './wc';
-import { mock } from 'jest-mock-extended';
 import { Injector, Type } from '@angular/core';
-
-jest.mock('@angular/elements', () => ({
-  createCustomElement: jest.fn(),
-}));
-
 import * as angularElements from '@angular/elements';
+import {
+  MockedFunction,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { mock } from 'vitest-mock-extended';
+
+vi.mock('@angular/elements', () => ({
+  createCustomElement: vi.fn(),
+}));
 
 describe('Luigi WebComponents Utils', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('registerLuigiWebComponent', () => {
@@ -20,15 +28,15 @@ describe('Luigi WebComponents Utils', () => {
     const src = 'src-of-the-script';
 
     const createCustomElementSpy = (
-      angularElements.createCustomElement as jest.MockedFunction<
+      angularElements.createCustomElement as MockedFunction<
         typeof angularElements.createCustomElement
       >
     ).mockReturnValue(element);
-    const _registerWebcomponent = jest.fn();
+    const _registerWebcomponent = vi.fn();
     // @ts-ignore
     window.Luigi = { _registerWebcomponent };
 
-    const getSrcSpy = jest.spyOn(wc, 'getSrc').mockReturnValue(src);
+    const getSrcSpy = vi.spyOn(wc, 'getSrc').mockReturnValue(src);
 
     wc.registerLuigiWebComponent(component, injector);
 
@@ -48,11 +56,11 @@ describe('Luigi WebComponents Utils', () => {
     };
     const injector = mock<Injector>();
 
-    const getSrcSpy = jest
+    const getSrcSpy = vi
       .spyOn(wc, 'getSrc')
       .mockReturnValue('http://localhost:12345/main.js#component1');
 
-    const registerLuigiWebComponentSpy = jest
+    const registerLuigiWebComponentSpy = vi
       .spyOn(wc, 'registerLuigiWebComponent')
       .mockReturnValue(void 0);
 
@@ -61,7 +69,7 @@ describe('Luigi WebComponents Utils', () => {
     expect(getSrcSpy).toHaveBeenCalled();
     expect(registerLuigiWebComponentSpy).toHaveBeenCalledWith(
       component1,
-      injector
+      injector,
     );
   });
 
@@ -74,11 +82,11 @@ describe('Luigi WebComponents Utils', () => {
     };
     const injector = mock<Injector>();
 
-    const getSrcSpy = jest
+    const getSrcSpy = vi
       .spyOn(wc, 'getSrc')
       .mockReturnValue('http://localhost:12345/main.js');
 
-    const registerLuigiWebComponentSpy = jest
+    const registerLuigiWebComponentSpy = vi
       .spyOn(wc, 'registerLuigiWebComponent')
       .mockReturnValue(void 0);
 
@@ -97,11 +105,11 @@ describe('Luigi WebComponents Utils', () => {
     };
     const injector = mock<Injector>();
 
-    const getSrcSpy = jest
+    const getSrcSpy = vi
       .spyOn(wc, 'getSrc')
       .mockReturnValue('http://localhost:12345/main.js#component7');
 
-    const registerLuigiWebComponentSpy = jest
+    const registerLuigiWebComponentSpy = vi
       .spyOn(wc, 'registerLuigiWebComponent')
       .mockReturnValue(void 0);
 

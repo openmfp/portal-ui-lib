@@ -8,35 +8,36 @@ import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
 import { TestBed } from '@angular/core/testing';
 import { Context } from '@luigi-project/client';
+import { beforeEach, describe, expect, it, MockedObject, vi } from 'vitest';
 
 describe('ChildrenNodesService', () => {
   let service: ChildrenNodesService;
-  let luigiCoreService: jest.Mocked<LuigiCoreService>;
-  let configService: jest.Mocked<ConfigService>;
-  let nodeUtilsService: jest.Mocked<NodeUtilsService>;
-  let nodeSortingService: jest.Mocked<NodeSortingService>;
-  let customNodeProcessingService: jest.Mocked<CustomNodeProcessingService>;
+  let luigiCoreService: MockedObject<LuigiCoreService>;
+  let configService: MockedObject<ConfigService>;
+  let nodeUtilsService: MockedObject<NodeUtilsService>;
+  let nodeSortingService: MockedObject<NodeSortingService>;
+  let customNodeProcessingService: MockedObject<CustomNodeProcessingService>;
 
   beforeEach(() => {
     luigiCoreService = {
-      isFeatureToggleActive: jest.fn(),
+      isFeatureToggleActive: vi.fn(),
       config: { settings: { btpToolLayout: true } },
     } as any;
 
     configService = {
-      getEntityConfig: jest.fn(),
+      getEntityConfig: vi.fn(),
     } as any;
 
     nodeUtilsService = {
-      retrieveGlobalHelpContext: jest.fn(),
+      retrieveGlobalHelpContext: vi.fn(),
     } as any;
 
     nodeSortingService = {
-      sortNodes: jest.fn(),
+      sortNodes: vi.fn(),
     } as any;
 
     customNodeProcessingService = {
-      processNode: jest.fn(),
+      processNode: vi.fn(),
     } as any;
 
     TestBed.configureTestingModule({

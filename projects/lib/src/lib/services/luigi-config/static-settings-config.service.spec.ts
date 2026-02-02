@@ -1,19 +1,20 @@
-import { provideHttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { I18nService } from '../i18n.service';
 import { IframeService } from './iframe.service';
 import {
   StaticSettingsConfigService,
   StaticSettingsConfigServiceImpl,
 } from './static-settings-config.service';
-import { I18nService } from '../i18n.service';
-import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
+import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { MockedObject, beforeEach, describe, expect, it } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('StaticSettingsConfigServiceImpl', () => {
   let service: StaticSettingsConfigServiceImpl;
-  let iframeServiceMock: jest.Mocked<IframeService>;
-  let i18nServiceMock: jest.Mocked<I18nService>;
-  let customStaticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
+  let iframeServiceMock: MockedObject<IframeService>;
+  let i18nServiceMock: MockedObject<I18nService>;
+  let customStaticSettingsConfigServiceMock: MockedObject<StaticSettingsConfigService>;
 
   let interceptFunction;
 
@@ -23,7 +24,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
     customStaticSettingsConfigServiceMock = mock();
     interceptFunction = () => {};
     iframeServiceMock.iFrameCreationInterceptor.mockReturnValue(
-      interceptFunction
+      interceptFunction,
     );
     TestBed.configureTestingModule({
       providers: [
@@ -39,7 +40,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
     });
 
     service = TestBed.inject<StaticSettingsConfigServiceImpl>(
-      StaticSettingsConfigServiceImpl
+      StaticSettingsConfigServiceImpl,
     );
   });
 
@@ -90,7 +91,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
       };
 
       customStaticSettingsConfigServiceMock.getStaticSettingsConfig.mockResolvedValue(
-        customConfig
+        customConfig,
       );
 
       const config = await service.getStaticSettingsConfig();

@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { mock } from 'jest-mock-extended';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('ConfigService', () => {
   let service: ConfigService;
@@ -22,11 +22,12 @@ describe('ConfigService', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
     const requestHeadersService = TestBed.inject(RequestHeadersService);
 
-    jest
-      .spyOn(requestHeadersService, 'createOptionsWithAuthHeader')
-      .mockReturnValue({
-        headers: null as any,
-      });
+    vi.spyOn(
+      requestHeadersService,
+      'createOptionsWithAuthHeader',
+    ).mockReturnValue({
+      headers: null as any,
+    });
   });
 
   it('should be created', () => {
@@ -65,7 +66,7 @@ describe('ConfigService', () => {
 
     it('should handle 403 error', async () => {
       const mockLocation = {
-        assign: jest.fn(),
+        assign: vi.fn(),
         href: '',
         pathname: '',
         search: '',
@@ -75,9 +76,9 @@ describe('ConfigService', () => {
         port: '',
         protocol: '',
         origin: '',
-        reload: jest.fn(),
-        replace: jest.fn(),
-        toString: jest.fn(),
+        reload: vi.fn(),
+        replace: vi.fn(),
+        toString: vi.fn(),
       } as any;
 
       delete (window as any).location;

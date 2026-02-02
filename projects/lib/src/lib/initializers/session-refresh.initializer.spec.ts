@@ -8,23 +8,34 @@ import {
   initializeAutomaticSessionRefresh,
   provideSessionRefresh,
 } from './session-refresh.initializer';
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
+import {
+  MockedObject,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { mock } from 'vitest-mock-extended';
+
+const flush = async () => {
+  return await new Promise((resolve) => setTimeout(resolve, 0));
+};
 
 describe('Session Refresh Provider', () => {
-  let authServiceMock: jest.Mocked<AuthService>;
-  let sessionRefreshServiceMock: jest.Mocked<SessionRefreshService>;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
+  let authServiceMock: MockedObject<AuthService>;
+  let sessionRefreshServiceMock: MockedObject<SessionRefreshService>;
+  let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
   let authEventsSubject: Subject<AuthEvent>;
 
   beforeEach(() => {
     authEventsSubject = new Subject<AuthEvent>();
     sessionRefreshServiceMock = mock<SessionRefreshService>();
     luigiCoreServiceMock = mock<LuigiCoreService>();
-    luigiCoreServiceMock.isFeatureToggleActive = jest
-      .fn()
-      .mockReturnValue(true);
+    luigiCoreServiceMock.isFeatureToggleActive = vi.fn().mockReturnValue(true);
 
     authServiceMock = {
       authEvents: authEventsSubject.asObservable(),
@@ -46,68 +57,54 @@ describe('Session Refresh Provider', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Session refresh initialization', () => {
-    it('should subscribe and handle AUTH_EXPIRE_SOON event', fakeAsync(() => {
-      // Act
+    it('should subscribe and handle AUTH_EXPIRE_SOON event', async () => {
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-      tick();
+      await flush();
 
-      // Assert
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
-    }));
+    });
 
-    it('should not call refresh for other auth events', fakeAsync(() => {
-      // Act
+    it('should not call refresh for other auth events', async () => {
       authEventsSubject.next(AuthEvent.AUTH_REFRESHED);
-      tick();
+      await flush();
 
-      // Assert
       expect(sessionRefreshServiceMock.refresh).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('should handle refresh failures gracefully', fakeAsync(() => {
-      try {
-        // Arrange
-        const error = new Error('Refresh failed');
-        sessionRefreshServiceMock.refresh.mockRejectedValueOnce(error);
-        console.error = jest.fn();
+    it('should handle refresh failures gracefully', async () => {
+      const error = new Error('Refresh failed');
+      sessionRefreshServiceMock.refresh.mockRejectedValueOnce(error);
+      console.error = vi.fn();
 
-        // Act
-        authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-        tick();
-
-        // Assert
-        expect(sessionRefreshServiceMock.refresh).toHaveBeenCalled();
-        expect(console.error).toHaveBeenCalledWith(
-          'Error executing session refresh: Error: Refresh failed',
-        );
-      } catch {}
-    }));
-
-    it('should maintain subscription for multiple events when feature is enabled', fakeAsync(() => {
-      // Act
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-      tick();
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-      tick();
+      await flush();
 
-      // Assert
+      expect(sessionRefreshServiceMock.refresh).toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(
+        'Error executing session refresh: ',
+        error,
+      );
+    });
+
+    it('should maintain subscription for multiple events when feature is enabled', async () => {
+      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
+      await flush();
+      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
+      await flush();
+
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(2);
-    }));
+    });
 
-    it('should complete subscription when subject is completed', fakeAsync(() => {
-      // Act
+    it('should complete subscription when subject is completed', async () => {
       authEventsSubject.complete();
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
+      await flush();
 
-      // Wait for async operations
-      tick();
-
-      // Assert
       expect(sessionRefreshServiceMock.refresh).not.toHaveBeenCalled();
-    }));
+    });
   });
 });
