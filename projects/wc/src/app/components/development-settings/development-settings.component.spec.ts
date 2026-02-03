@@ -32,6 +32,7 @@ describe('DevelopmentSettingsComponent', () => {
   let component: DevelopmentSettingsComponent;
   let fixture: ComponentFixture<DevelopmentSettingsComponent>;
   let i18nServiceMock: MockedObject<I18nService>;
+  let luigiClientMock: { publishEvent: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     i18nServiceMock = {
@@ -60,7 +61,8 @@ describe('DevelopmentSettingsComponent', () => {
 
     fixture = TestBed.createComponent(DevelopmentSettingsComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('LuigiClient', { publishEvent: vi.fn() });
+    luigiClientMock = { publishEvent: vi.fn() };
+    fixture.componentRef.setInput('LuigiClient', luigiClientMock);
     fixture.componentRef.setInput('context', { translationTable: {} });
   });
 
@@ -185,6 +187,27 @@ describe('DevelopmentSettingsComponent', () => {
 
       expect(component['errors']()).toContain('pattern');
     });
+
+    it('should ignore empty URL without updating configs', () => {
+      component.configs.set([]);
+
+      component.addUrl('');
+
+      expect(component.configs()).toEqual([]);
+      expect(component['errors']()).toEqual(['pattern']);
+      expect(component.LuigiClient().publishEvent).not.toHaveBeenCalled();
+    });
+
+    it('should clear errors when a valid URL is added after invalid', () => {
+      const validUrl = 'https://valid.com';
+
+      component.addUrl('invalid-url');
+      component.addUrl(validUrl);
+
+      expect(component['errors']()).toEqual([]);
+      expect(component.configs()).toContainEqual({ url: validUrl });
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('removeUrl', () => {
@@ -249,6 +272,22 @@ describe('DevelopmentSettingsComponent', () => {
       component.switchIsActive();
       expect(component.isActive()).toBe(!initialState);
       expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
+    });
+
+    it('should publish event with localDevelopmentSettings details', () => {
+      component.isActive.set(true);
+      component.configs.set([{ url: 'https://one.test' }]);
+      component.serviceProviderConfig.set({ key1: 'value1' });
+
+      component.switchIsActive();
+
+      const event = luigiClientMock.publishEvent.mock.calls[0][0];
+      expect(event.type).toBe('luigi.updateUserSettings');
+      expect(event.detail.localDevelopmentSettings).toEqual({
+        isActive: false,
+        configs: [{ url: 'https://one.test' }],
+        serviceProviderConfig: { key1: 'value1' },
+      });
     });
   });
 

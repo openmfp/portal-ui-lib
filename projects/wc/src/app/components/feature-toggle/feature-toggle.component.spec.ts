@@ -53,6 +53,7 @@ describe('FeatureToggleComponent', () => {
     fixture = TestBed.createComponent(FeatureToggleComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('LuigiClient', mockLuigiClient);
+    fixture.componentRef.setInput('context', { translationTable: {} });
   });
 
   afterEach(() => {
@@ -85,6 +86,35 @@ describe('FeatureToggleComponent', () => {
 
       expect(component.togglesForm.get('feature1')?.disabled).toBe(true);
       expect(component.togglesForm.get('feature2')?.disabled).toBe(true);
+    });
+
+    it('should keep controls enabled when not in query params', () => {
+      const mockSettings = { feature1: true, feature2: true };
+      vi.spyOn(featureToggleLocalStorage, 'read').mockReturnValue(mockSettings);
+      vi.spyOn(featureToggleLocalStorage, 'store').mockImplementation(() => {});
+      component.queryParamsFeatures = [];
+
+      component.ngOnInit();
+
+      expect(component.togglesForm.get('feature1')?.disabled).toBe(false);
+      expect(component.togglesForm.get('feature2')?.disabled).toBe(false);
+      expect(featureToggleLocalStorage.store).toHaveBeenCalledWith(
+        mockSettings,
+      );
+    });
+
+    it('should add missing active toggles as enabled and store them', () => {
+      const mockSettings = { feature1: false };
+      vi.spyOn(featureToggleLocalStorage, 'read').mockReturnValue(mockSettings);
+      vi.spyOn(featureToggleLocalStorage, 'store').mockImplementation(() => {});
+
+      component.ngOnInit();
+
+      expect(component.togglesForm.get('feature2')?.value).toBe(true);
+      expect(featureToggleLocalStorage.store).toHaveBeenCalledWith({
+        feature1: true,
+        feature2: true,
+      });
     });
   });
 
@@ -161,6 +191,58 @@ describe('FeatureToggleComponent', () => {
           },
         }),
       );
+    });
+
+    it('should publish event when togglesForm changes', () => {
+      component.togglesForm.addControl('testFeature', new FormControl(true), {
+        emitEvent: false,
+      });
+      mockLuigiClient.publishEvent.mockClear();
+
+      const control = component.togglesForm.get(
+        'testFeature',
+      ) as unknown as FormControl<boolean>;
+      control.setValue(false);
+
+      expect(mockLuigiClient.publishEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'luigi.updateUserSettings',
+          detail: {
+            featureToggleSettings: { testFeature: false },
+          },
+        }),
+      );
+    });
+  });
+
+  describe('readTranslations', () => {
+    it('should update texts and translationTable from context', () => {
+      const context = {
+        translationTable: {
+          FEATURE_TOGGLE_SETTINGS_EXPLANATION: 'explanation',
+          FEATURE_TOGGLE_SETTINGS_LINK: 'link',
+          FEATURE_TOGGLE_SETTINGS_ADD_BUTTON: 'add',
+          FEATURE_TOGGLE_SETTINGS_CLEAR_BUTTON: 'clear',
+          FEATURE_TOGGLE_SETTINGS_NAME_INPUT_LABEL: 'name',
+          FEATURE_TOGGLE_SETTINGS_TOOLTIP_QUERY_PARAM: 'tooltip',
+        },
+      };
+
+      fixture.componentRef.setInput('context', context);
+      fixture.detectChanges();
+
+      expect(i18nServiceMock.translationTable).toEqual(
+        context.translationTable,
+      );
+      expect((component as any).texts).toEqual({
+        explanation: 'translated_FEATURE_TOGGLE_SETTINGS_EXPLANATION',
+        link: 'translated_FEATURE_TOGGLE_SETTINGS_LINK',
+        addButton: 'translated_FEATURE_TOGGLE_SETTINGS_ADD_BUTTON',
+        clearButton: 'translated_FEATURE_TOGGLE_SETTINGS_CLEAR_BUTTON',
+        nameInputLabel: 'translated_FEATURE_TOGGLE_SETTINGS_NAME_INPUT_LABEL',
+        tooltipQueryParam:
+          'translated_FEATURE_TOGGLE_SETTINGS_TOOLTIP_QUERY_PARAM',
+      });
     });
   });
 });
