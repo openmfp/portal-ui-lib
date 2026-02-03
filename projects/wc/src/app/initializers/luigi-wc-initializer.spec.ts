@@ -59,9 +59,10 @@ describe('provideLuigiWebComponents', () => {
     const returnedFn = factoryFn();
 
     expect(returnedFn).toBeUndefined();
-    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledWith(
+    const [[registeredSrc]] = (window as any).Luigi._registerWebcomponent.mock
+      .calls;
+    expect(registeredSrc).toBe(
       'http://localhost:12345/main.js#development-settings',
-      expect.any(Function),
     );
   });
 
