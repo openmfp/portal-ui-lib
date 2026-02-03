@@ -6,21 +6,8 @@ import {
 } from '../../models';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
-import { jwtDecode } from 'jwt-decode';
 import { Observable, firstValueFrom, of, take, toArray } from 'rxjs';
-import {
-  MockedFunction,
-  MockedObject,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
-
-vi.mock('jwt-decode', () => ({
-  jwtDecode: vi.fn(),
-}));
+import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -116,28 +103,21 @@ describe('AuthService', () => {
   describe('getUser', () => {
     it('should return decoded token if auth data exists', () => {
       const mockDecodedToken = { sub: 'user123' };
-      (jwtDecode as MockedFunction<typeof jwtDecode>).mockReturnValue(
-        mockDecodedToken,
-      );
+      const mockToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIn0.c2lnbmF0dXJl';
 
       const mockAuthData: AuthData = {
         accessTokenExpirationDate: 123456789,
-        idToken: 'mock_token',
+        idToken: mockToken,
       };
       vi.spyOn(service, 'getAuthData').mockReturnValue(mockAuthData);
 
       const user = service['getUser']();
 
       expect(user).toEqual(mockDecodedToken);
-      expect(jwtDecode).toHaveBeenCalledWith('mock_token');
     });
 
     it('should return decoded user data', () => {
-      (jwtDecode as MockedFunction<typeof jwtDecode>).mockImplementationOnce(
-        () => {
-          throw new Error('Invalid token');
-        },
-      );
       service['setAuthData']({
         access_token: 'test_token',
         id_token: 'mock_id_token',

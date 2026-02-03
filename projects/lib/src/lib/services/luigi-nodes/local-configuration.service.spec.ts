@@ -11,8 +11,17 @@ import {
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import {
+  MockedObject,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  test,
+  vi,
+} from 'vitest';
 import { MockProxy, mock } from 'vitest-mock-extended';
-import { afterEach, beforeEach, describe, expect, it, MockedObject, test, vi } from 'vitest';
 
 describe('LocalConfigurationServiceImpl', () => {
   let service: LocalConfigurationServiceImpl;
@@ -465,7 +474,7 @@ describe('LocalConfigurationServiceImpl', () => {
         expect(document.createElement).not.toHaveBeenCalled();
       });
 
-      test('should add indicator when local development is active and popover exists', () => {
+      test('should add indicator when local development is active and popover exists', async () => {
         const mockSpan = {
           classList: {
             add: vi.fn(),
@@ -486,12 +495,10 @@ describe('LocalConfigurationServiceImpl', () => {
 
         service.addLocalDevelopmentModeOnIndicator();
 
-        new Promise((resolve) => {
+        await new Promise((resolve) => {
           setTimeout(() => {
-            expect(document.querySelector).toHaveBeenCalledWith(
-              '#profilePopover',
-            );
-            expect(document.createElement).toHaveBeenCalledWith('span');
+            expect(mockQuerySelector).toHaveBeenCalledWith('#profilePopover');
+            expect(mockCreateElement).toHaveBeenCalledWith('span');
             expect(mockSpan.classList.add).toHaveBeenCalledWith(
               'sap-icon--developer-settings',
               'local-development-settings-indication',
