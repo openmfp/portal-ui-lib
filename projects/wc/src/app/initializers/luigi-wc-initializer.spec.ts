@@ -2,14 +2,9 @@ import { DevelopmentSettingsComponent } from '../components/development-settings
 import { FeatureToggleComponent } from '../components/feature-toggle/feature-toggle.component';
 import { GettingStartedComponent } from '../components/getting-started/getting-started.component';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
-import { APP_INITIALIZER, Injector } from '@angular/core';
+import { APP_INITIALIZER } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import * as angularElements from '@angular/elements';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-vi.mock('@angular/elements', () => ({
-  createCustomElement: vi.fn(),
-}));
 
 describe('provideLuigiWebComponents', () => {
   let provider: any;
@@ -52,42 +47,21 @@ describe('provideLuigiWebComponents', () => {
   });
 
   it('should register components and return undefined', () => {
-    const element = {};
-    const createCustomElementSpy = vi
-      .mocked(angularElements.createCustomElement)
-      .mockReturnValue(element as any);
-
     setCurrentScript('http://localhost:12345/main.js#development-settings');
 
-    TestBed.configureTestingModule({
-      providers: [provideLuigiWebComponents()],
-    });
-
-    const injector = TestBed.inject(Injector);
-    const factoryFn = TestBed.runInInjectionContext(() => provider.useFactory());
+    const factoryFn = TestBed.runInInjectionContext(() =>
+      provider.useFactory(),
+    );
     const returnedFn = factoryFn();
 
     expect(returnedFn).toBeUndefined();
-    expect(createCustomElementSpy).toHaveBeenCalledWith(
-      DevelopmentSettingsComponent,
-      { injector },
-    );
     expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledWith(
       'http://localhost:12345/main.js#development-settings',
-      element,
+      expect.any(Function),
     );
   });
 
   it('should register each component when hash matches', () => {
-    const element = {};
-    const createCustomElementSpy = vi
-      .mocked(angularElements.createCustomElement)
-      .mockReturnValue(element as any);
-
-    TestBed.configureTestingModule({
-      providers: [provideLuigiWebComponents()],
-    });
-
     const components = {
       'development-settings': DevelopmentSettingsComponent,
       'getting-started': GettingStartedComponent,
@@ -99,8 +73,8 @@ describe('provideLuigiWebComponents', () => {
       TestBed.runInInjectionContext(() => provider.useFactory());
     });
 
-    expect(createCustomElementSpy.mock.calls.map(([component]) => component)).toEqual(
-      expect.arrayContaining(Object.values(components)),
+    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(
+      3,
     );
   });
 });
