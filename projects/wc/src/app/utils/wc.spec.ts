@@ -1,15 +1,7 @@
 import * as wc from './wc';
 import { Injector, Type } from '@angular/core';
 import * as angularElements from '@angular/elements';
-import {
-  MockedFunction,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedFunction } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 vi.mock('@angular/elements', () => ({

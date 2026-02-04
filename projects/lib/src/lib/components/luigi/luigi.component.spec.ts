@@ -8,7 +8,7 @@ import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecyc
 import { RoutingConfigServiceImpl } from '../../services/luigi-config/routing-config.service';
 import { LuigiComponent } from './luigi.component';
 import { TestBed } from '@angular/core/testing';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 describe('LuigiComponent', () => {

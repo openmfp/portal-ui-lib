@@ -7,7 +7,6 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { NodeContext } from '@openmfp/portal-ui-lib';
 import { MockProxy, mock } from 'vitest-mock-extended';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('HeaderBarService', () => {
   let service: HeaderBarService;

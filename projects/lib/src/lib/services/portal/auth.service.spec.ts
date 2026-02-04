@@ -7,7 +7,7 @@ import {
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom, of, take, toArray } from 'rxjs';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('AuthService', () => {
   let service: AuthService;

@@ -4,7 +4,6 @@ import { GettingStartedComponent } from '../components/getting-started/getting-s
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
 import { APP_INITIALIZER } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@angular/elements', () => ({
   createCustomElement: vi.fn().mockReturnValue(() => () => {}),

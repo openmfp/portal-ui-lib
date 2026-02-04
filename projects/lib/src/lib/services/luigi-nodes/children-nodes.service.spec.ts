@@ -8,7 +8,7 @@ import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
 import { TestBed } from '@angular/core/testing';
 import { Context } from '@luigi-project/client';
-import { beforeEach, describe, expect, it, MockedObject, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('ChildrenNodesService', () => {
   let service: ChildrenNodesService;

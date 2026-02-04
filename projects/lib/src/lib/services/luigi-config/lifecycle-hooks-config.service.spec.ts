@@ -15,8 +15,8 @@ import { RoutingConfigServiceImpl } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
 import { TestBed } from '@angular/core/testing';
+import { MockedObject } from 'vitest';
 import { mock } from 'vitest-mock-extended';
-import { beforeEach, describe, expect, it, MockedObject, vi } from 'vitest';
 
 describe('LifecycleHooksConfigService', () => {
   let service: LifecycleHooksConfigService;

@@ -10,15 +10,7 @@ import {
 } from './session-refresh.initializer';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import {
-  MockedObject,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedObject } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 const flush = async () => {

@@ -14,15 +14,7 @@ import {
   I18nService,
   localDevelopmentSettingsLocalStorage,
 } from '@openmfp/portal-ui-lib';
-import {
-  MockedObject,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedObject } from 'vitest';
 
 vi.mock('@luigi-project/client', () => ({
   sendCustomMessage: vi.fn(),

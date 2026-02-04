@@ -9,7 +9,6 @@ import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService, EnvConfigService } from '../portal';
 import { NavigationConfigService } from './navigation-config.service';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 describe('NavigationConfigService', () => {

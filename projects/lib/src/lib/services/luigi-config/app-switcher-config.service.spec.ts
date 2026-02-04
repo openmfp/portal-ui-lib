@@ -1,11 +1,11 @@
-import { mock } from 'vitest-mock-extended';
 import { LuigiNode, NodeContext } from '../../models';
 import { EntityType } from '../../models/entity';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
 import { AppSwitcherConfigServiceImpl } from './app-switcher-config.service';
 import { TestBed } from '@angular/core/testing';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('AppSwitcherConfigServiceImpl', () => {
   let service: AppSwitcherConfigServiceImpl;

@@ -4,7 +4,7 @@ import { AuthService, EnvConfigService } from '../portal';
 import { AuthConfigService } from './auth-config.service';
 import { LuigiAuthEventsCallbacksService } from './luigi-auth-events-callbacks.service';
 import { TestBed } from '@angular/core/testing';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 describe('AuthConfigService', () => {

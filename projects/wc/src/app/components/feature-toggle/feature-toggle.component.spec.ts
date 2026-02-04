@@ -3,15 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
 import { I18nService, featureToggleLocalStorage } from '@openmfp/portal-ui-lib';
-import {
-  MockedObject,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedObject } from 'vitest';
 
 // Mock window.location
 Object.defineProperty(window, 'location', {

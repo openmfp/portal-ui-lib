@@ -4,15 +4,7 @@ import { RequestHeadersService } from './request-headers.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import {
-  MockedObject,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedObject } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 describe('RequestHeadersService', () => {

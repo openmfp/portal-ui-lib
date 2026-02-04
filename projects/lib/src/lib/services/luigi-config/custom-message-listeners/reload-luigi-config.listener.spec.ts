@@ -2,7 +2,7 @@ import { LuigiCoreService } from '../../luigi-core.service';
 import { ConfigService } from '../../portal';
 import { ReloadLuigiConfigListener } from './reload-luigi-config.listener';
 import { TestBed } from '@angular/core/testing';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('ReloadLuigiConfigListener', () => {
   let listener: ReloadLuigiConfigListener;

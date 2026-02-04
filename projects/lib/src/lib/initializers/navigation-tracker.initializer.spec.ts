@@ -3,7 +3,7 @@ import {
   provideNavigationTracker,
   track,
 } from './navigation-tracker.initializer';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('track', () => {
   let navigationService: MockedObject<NavigationService>;

@@ -11,16 +11,7 @@ import {
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import {
-  MockedObject,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  test,
-  vi,
-} from 'vitest';
+import { MockedObject } from 'vitest';
 import { MockProxy, mock } from 'vitest-mock-extended';
 
 describe('LocalConfigurationServiceImpl', () => {

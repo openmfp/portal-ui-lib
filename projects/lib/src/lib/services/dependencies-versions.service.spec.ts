@@ -2,7 +2,7 @@ import { DependenciesVersionsService } from './dependencies-versions.service';
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('DependenciesVersionsService', () => {
   let service: DependenciesVersionsService;

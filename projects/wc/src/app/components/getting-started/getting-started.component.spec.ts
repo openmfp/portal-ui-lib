@@ -1,15 +1,7 @@
 import { GettingStartedComponent } from './getting-started.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LuigiCoreService } from '@openmfp/portal-ui-lib';
-import {
-  MockedObject,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('GettingStartedComponent', () => {
   let component: GettingStartedComponent;

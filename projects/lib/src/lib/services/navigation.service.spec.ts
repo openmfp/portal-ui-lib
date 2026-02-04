@@ -6,7 +6,7 @@ import { LocalStorageKeys } from './storage-service';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { afterEach, beforeEach, describe, expect, it, MockedObject, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('NavigationService', () => {
   let service: NavigationService;

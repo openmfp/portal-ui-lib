@@ -21,7 +21,6 @@ import {
 } from './user-settings-config.service';
 import { TestBed } from '@angular/core/testing';
 import { mock } from 'vitest-mock-extended';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('UserSettingsConfigService', () => {
   let service: UserSettingsConfigService;
@@ -47,21 +46,17 @@ describe('UserSettingsConfigService', () => {
     dependenciesVersionsService.read.mockResolvedValue({});
     luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([]);
     vi.spyOn(userSettingsLocalStorage, 'read').mockResolvedValue({});
-    vi
-      .spyOn(userSettingsLocalStorage, 'store')
-      .mockImplementation(async (settings) => settings);
-    vi
-      .spyOn(localDevelopmentSettingsLocalStorage, 'read')
-      .mockReturnValue(null);
-    vi
-      .spyOn(localDevelopmentSettingsLocalStorage, 'store')
-      .mockImplementation(() => {});
-    vi
-      .spyOn(featureToggleLocalStorage, 'read')
-      .mockReturnValue({});
-    vi
-      .spyOn(featureToggleLocalStorage, 'store')
-      .mockImplementation(() => {});
+    vi.spyOn(userSettingsLocalStorage, 'store').mockImplementation(
+      async (settings) => settings,
+    );
+    vi.spyOn(localDevelopmentSettingsLocalStorage, 'read').mockReturnValue(
+      null,
+    );
+    vi.spyOn(localDevelopmentSettingsLocalStorage, 'store').mockImplementation(
+      () => {},
+    );
+    vi.spyOn(featureToggleLocalStorage, 'read').mockReturnValue({});
+    vi.spyOn(featureToggleLocalStorage, 'store').mockImplementation(() => {});
 
     TestBed.configureTestingModule({
       providers: [

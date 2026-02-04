@@ -5,15 +5,7 @@ import {
   userSettingsLocalStorage,
 } from '../services';
 import { initLanguage, provideLanguageServices } from './language.initializer';
-import {
-  MockedFunction,
-  MockedObject,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedFunction, MockedObject } from 'vitest';
 
 describe('initLanguage', () => {
   let i18nService: MockedObject<I18nService>;
@@ -38,9 +30,11 @@ describe('initLanguage', () => {
   });
 
   it('uses stored language if valid', async () => {
-    (userSettingsLocalStorage.read as MockedFunction<
-      typeof userSettingsLocalStorage.read
-    >).mockResolvedValue({
+    (
+      userSettingsLocalStorage.read as MockedFunction<
+        typeof userSettingsLocalStorage.read
+      >
+    ).mockResolvedValue({
       frame_userAccount: { language: 'de' },
     });
     i18nService.getValidLanguages.mockResolvedValue([
@@ -55,9 +49,11 @@ describe('initLanguage', () => {
   });
 
   it('falls back to default if no valid stored language', async () => {
-    (userSettingsLocalStorage.read as MockedFunction<
-      typeof userSettingsLocalStorage.read
-    >).mockResolvedValue({});
+    (
+      userSettingsLocalStorage.read as MockedFunction<
+        typeof userSettingsLocalStorage.read
+      >
+    ).mockResolvedValue({});
     i18nService.getValidLanguages.mockResolvedValue([
       { value: 'fr', label: 'French' },
     ]);

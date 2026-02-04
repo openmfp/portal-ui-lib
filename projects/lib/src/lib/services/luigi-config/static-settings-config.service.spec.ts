@@ -7,7 +7,7 @@ import {
 } from './static-settings-config.service';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { MockedObject, beforeEach, describe, expect, it } from 'vitest';
+import { MockedObject } from 'vitest';
 import { mock } from 'vitest-mock-extended';
 
 describe('StaticSettingsConfigServiceImpl', () => {

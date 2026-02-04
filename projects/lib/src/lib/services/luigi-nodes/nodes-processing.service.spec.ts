@@ -16,15 +16,7 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodesProcessingService } from './nodes-processing.service';
 import { TestBed } from '@angular/core/testing';
-import {
-  MockedFunction,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { MockedFunction } from 'vitest';
 
 describe('NodesProcessingService', () => {
   let service: NodesProcessingService;

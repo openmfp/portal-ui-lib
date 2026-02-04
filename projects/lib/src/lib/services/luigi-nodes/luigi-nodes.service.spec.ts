@@ -15,7 +15,7 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 import { MockProxy, mock } from 'vitest-mock-extended';
 
 describe('LuigiNodesService', () => {

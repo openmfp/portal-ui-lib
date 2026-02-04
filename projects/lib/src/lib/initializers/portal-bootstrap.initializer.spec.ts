@@ -1,7 +1,7 @@
 import { AuthService, EnvConfigService } from '../services';
 import { bootstrap, provideBootstrap } from './portal-bootstrap.initializer';
 import { TestBed } from '@angular/core/testing';
-import { MockedObject, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MockedObject } from 'vitest';
 
 describe('bootstrap', () => {
   let authService: MockedObject<AuthService>;
