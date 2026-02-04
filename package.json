@@ -52,7 +52,6 @@
     "gql-query-builder": "^3.8.0",
     "graphql": "^16.12.0",
     "graphql-sse": "^2.6.0",
-    "jsonpath": "^1.1.1",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
