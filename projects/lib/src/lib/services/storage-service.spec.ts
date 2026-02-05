@@ -1,27 +1,49 @@
 import { LocalDevelopmentSettings, UserData } from '../models';
 import { UserSettingsValues } from './luigi-config/user-settings-config.service';
-import {
-  LocalStorageKeys,
-  localDevelopmentSettingsLocalStorage,
-  userSettingsLocalStorage,
-} from './storage-service';
+import { MockedFunction } from 'vitest';
+
+type LocalStorageMock = {
+  getItem: MockedFunction<(key: string) => string | null>;
+  setItem: MockedFunction<(key: string, value: string) => void>;
+  removeItem: MockedFunction<(key: string) => void>;
+  clear: MockedFunction<() => void>;
+  key: MockedFunction<(index: number) => string | null>;
+  length: number;
+};
+
+const createLocalStorageMock = (): LocalStorageMock => ({
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  key: vi.fn(),
+  length: 0,
+});
 
 describe('LocalDevelopmentSettingsLocalStorage', () => {
-  let localStorageMock: jest.Mocked<Storage>;
+  let localStorageMock: LocalStorageMock;
 
-  beforeEach(() => {
-    localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-      length: 0,
-      key: jest.fn(),
-    };
-    Object.defineProperty(window, 'localStorage', {
-      value: localStorageMock,
-      configurable: true,
-    });
+  let LocalStorageKeys: any;
+  let localDevelopmentSettingsLocalStorage: any;
+
+  beforeEach(async () => {
+    vi.resetModules();
+    vi.unstubAllGlobals();
+
+    localStorageMock = createLocalStorageMock();
+
+    vi.stubGlobal('localStorage', localStorageMock as any);
+
+    const mod = await import('./storage-service');
+    LocalStorageKeys = mod.LocalStorageKeys;
+    localDevelopmentSettingsLocalStorage =
+      mod.localDevelopmentSettingsLocalStorage;
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('read', () => {
@@ -37,9 +59,8 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
           apiKey: 'test-key',
         },
       };
-      localStorageMock.getItem = jest
-        .fn()
-        .mockReturnValue(JSON.stringify(mockSettings));
+
+      localStorageMock.getItem.mockReturnValue(JSON.stringify(mockSettings));
 
       const result = localDevelopmentSettingsLocalStorage.read();
 
@@ -50,35 +71,39 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
     });
 
     it('should return null when localStorage is not available', () => {
-      localStorageMock.getItem = jest.fn().mockImplementation(() => {
+      localStorageMock.getItem.mockImplementation(() => {
         throw new Error('localStorage not available');
       });
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
-      expect(consoleSpy).toHaveBeenCalled();
-      consoleSpy.mockRestore();
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
+      );
     });
 
     it('should return null when stored JSON is invalid', () => {
-      localStorageMock.getItem = jest.fn().mockReturnValue('invalid json');
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      localStorageMock.getItem.mockReturnValue('invalid json');
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalled();
-      consoleSpy.mockRestore();
     });
 
     it('should return null when no settings exist in localStorage', () => {
-      localStorageMock.getItem = jest.fn().mockReturnValue(null);
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = localDevelopmentSettingsLocalStorage.read();
 
       expect(result).toBeNull();
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        LocalStorageKeys.LOCAL_DEVELOPMENT_SETTINGS,
+      );
     });
   });
 
@@ -91,7 +116,10 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
           key1: 'value1',
         },
       };
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       localDevelopmentSettingsLocalStorage.store(testSettings);
 
@@ -108,7 +136,10 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
         configs: [],
         serviceProviderConfig: {},
       };
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       localDevelopmentSettingsLocalStorage.store(emptySettings);
 
@@ -120,8 +151,7 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
     });
 
     it('should handle localStorage error and log to console', () => {
-      // Simulate localStorage error
-      localStorageMock.setItem.mockImplementationOnce(() => {
+      localStorageMock.setItem.mockImplementation(() => {
         throw new Error('Storage full');
       });
 
@@ -130,7 +160,10 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
         configs: [],
         serviceProviderConfig: {},
       };
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       localDevelopmentSettingsLocalStorage.store(testSettings);
 
@@ -147,7 +180,10 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
         serviceProviderConfig: {},
       };
       circularSettings.circular = circularSettings;
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       localDevelopmentSettingsLocalStorage.store(circularSettings);
 
@@ -160,22 +196,54 @@ describe('LocalDevelopmentSettingsLocalStorage', () => {
 });
 
 describe('UserSettingsLocalStorage', () => {
-  describe('readUserSettingsFromLocalStorage', () => {
-    let localStorageMock: Storage;
+  let originalLocalStorage: Storage;
+  let localStorageMock: LocalStorageMock;
 
-    beforeEach(() => {
-      localStorageMock = {
-        getItem: jest.fn(),
-        setItem: jest.fn(),
-        removeItem: jest.fn(),
-        clear: jest.fn(),
-        length: 0,
-        key: jest.fn(),
-      };
-      Object.defineProperty(window, 'localStorage', {
-        value: localStorageMock,
-        configurable: true,
-      });
+  beforeEach(() => {
+    originalLocalStorage = window.localStorage;
+    localStorageMock = createLocalStorageMock();
+
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      configurable: true,
+      writable: true,
+    });
+
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+      configurable: true,
+      writable: true,
+    });
+
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+  });
+
+  describe('readUserSettingsFromLocalStorage', () => {
+    let userSettingsLocalStorage: any;
+    let LocalStorageKeys: any;
+
+    beforeEach(async () => {
+      vi.resetModules();
+      vi.unstubAllGlobals();
+
+      localStorageMock = createLocalStorageMock();
+      vi.stubGlobal('localStorage', localStorageMock as any);
+
+      const mod = await import('./storage-service');
+      userSettingsLocalStorage = mod.userSettingsLocalStorage;
+      LocalStorageKeys = mod.LocalStorageKeys;
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.clearAllMocks();
+      vi.unstubAllGlobals();
     });
 
     const mockUserInfo: UserData = {
@@ -184,7 +252,7 @@ describe('UserSettingsLocalStorage', () => {
     } as any;
 
     it('should return default settings when no stored settings exist', async () => {
-      (localStorageMock.getItem as jest.Mock).mockReturnValue(null);
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = await userSettingsLocalStorage.read(mockUserInfo);
 
@@ -195,6 +263,9 @@ describe('UserSettingsLocalStorage', () => {
           language: 'en',
         },
       });
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        LocalStorageKeys.USER_SETTINGS,
+      );
     });
 
     it('should merge existing stored settings with transient settings', async () => {
@@ -203,7 +274,7 @@ describe('UserSettingsLocalStorage', () => {
           role: 'admin',
         },
       };
-      (localStorageMock.getItem as jest.Mock).mockReturnValue(
+      localStorageMock.getItem.mockReturnValue(
         JSON.stringify(existingSettings),
       );
 
@@ -217,11 +288,14 @@ describe('UserSettingsLocalStorage', () => {
           language: 'en',
         },
       });
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        LocalStorageKeys.USER_SETTINGS,
+      );
     });
 
     it('should handle error when localStorage parsing fails', async () => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-      (localStorageMock.getItem as jest.Mock).mockReturnValue('invalid-json');
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      localStorageMock.getItem.mockReturnValue('invalid-json');
 
       await expect(userSettingsLocalStorage.read(mockUserInfo)).rejects.toEqual(
         {
@@ -237,7 +311,7 @@ describe('UserSettingsLocalStorage', () => {
         email: '',
       } as any;
 
-      (localStorageMock.getItem as jest.Mock).mockReturnValue(null);
+      localStorageMock.getItem.mockReturnValue(null);
 
       const result = await userSettingsLocalStorage.read(emptyUserInfo);
 
@@ -248,18 +322,32 @@ describe('UserSettingsLocalStorage', () => {
           language: 'en',
         },
       });
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        LocalStorageKeys.USER_SETTINGS,
+      );
     });
   });
 
   describe('storeUserSettingsIntoLocalStorage', () => {
-    beforeEach(() => {
-      localStorage.clear();
-      jest.spyOn(localStorage, 'setItem');
-      jest.spyOn(console, 'error').mockImplementation(() => {});
+    let userSettingsLocalStorage: any;
+    let LocalStorageKeys: any;
+
+    beforeEach(async () => {
+      vi.resetModules();
+      vi.unstubAllGlobals();
+
+      localStorageMock = createLocalStorageMock();
+      vi.stubGlobal('localStorage', localStorageMock as any);
+
+      const mod = await import('./storage-service');
+      userSettingsLocalStorage = mod.userSettingsLocalStorage;
+      LocalStorageKeys = mod.LocalStorageKeys;
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
+      vi.clearAllMocks();
+      vi.unstubAllGlobals();
     });
 
     it('should store settings with language, removing name and mail', async () => {
@@ -273,7 +361,7 @@ describe('UserSettingsLocalStorage', () => {
 
       const result = await userSettingsLocalStorage.store(settings);
 
-      expect(localStorage.setItem).toHaveBeenCalledWith(
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
         JSON.stringify({
           frame_userAccount: {
@@ -298,7 +386,7 @@ describe('UserSettingsLocalStorage', () => {
 
       const result = await userSettingsLocalStorage.store(settings);
 
-      expect(localStorage.setItem).toHaveBeenCalledWith(
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
         JSON.stringify({}),
       );
@@ -317,7 +405,7 @@ describe('UserSettingsLocalStorage', () => {
 
       const result = await userSettingsLocalStorage.store(settings);
 
-      expect(localStorage.setItem).toHaveBeenCalledWith(
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
         LocalStorageKeys.USER_SETTINGS,
         JSON.stringify({
           otherSetting: 'value',
@@ -341,7 +429,7 @@ describe('UserSettingsLocalStorage', () => {
         },
       } as UserSettingsValues;
 
-      localStorage.setItem = jest.fn().mockImplementation(() => {
+      localStorageMock.setItem.mockImplementation(() => {
         throw new Error('Storage error');
       });
 

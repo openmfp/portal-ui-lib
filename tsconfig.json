@@ -21,7 +21,8 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "useDefineForClassFields": false,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["vitest/globals"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

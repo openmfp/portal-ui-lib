@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { LocalNodesService } from './local-nodes.service';
@@ -28,7 +29,7 @@ describe('LocalNodesService', () => {
     service = TestBed.inject(LocalNodesService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
 
-    i18nSpy = jest.spyOn(luigiCoreService, 'i18n');
+    i18nSpy = vi.spyOn(luigiCoreService, 'i18n');
     i18nSpy.mockReturnValue({
       getCurrentLocale: () => {
         return 'en';

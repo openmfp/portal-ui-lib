@@ -16,6 +16,7 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodesProcessingService } from './nodes-processing.service';
 import { TestBed } from '@angular/core/testing';
+import { MockedFunction } from 'vitest';
 
 describe('NodesProcessingService', () => {
   let service: NodesProcessingService;
@@ -24,7 +25,7 @@ describe('NodesProcessingService', () => {
   let luigiCoreService: LuigiCoreService;
   let configService: ConfigService;
   let nodeContextProcessingService: NodeContextProcessingService;
-  let customGlobalNodesService = { getCustomGlobalNodes: jest.fn() } as any;
+  let customGlobalNodesService = { getCustomGlobalNodes: vi.fn() } as any;
   const entityName = 'myentity';
 
   const homeChildren: LuigiNode[] = [
@@ -50,7 +51,7 @@ describe('NodesProcessingService', () => {
         providePortal(),
         {
           provide: LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
-          useValue: { processNodeContext: jest.fn() },
+          useValue: { processNodeContext: vi.fn() },
         },
         {
           provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
@@ -72,30 +73,27 @@ describe('NodesProcessingService', () => {
       providers: [{ nodes: [], creationTimestamp: '' }],
     } as unknown as PortalConfig;
 
-    luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
-    luigiCoreService.resetLuigi = jest.fn();
-    luigiCoreService.getGlobalContext = jest.fn();
-    luigiCoreService.showAlert = jest.fn();
-    luigiCoreService.getConfigValue = jest.fn().mockReturnValue(undefined);
+    luigiCoreService.isFeatureToggleActive = vi.fn().mockReturnValue(true);
+    luigiCoreService.resetLuigi = vi.fn();
+    luigiCoreService.getGlobalContext = vi.fn();
+    luigiCoreService.showAlert = vi.fn();
+    luigiCoreService.getConfigValue = vi.fn().mockReturnValue(undefined);
+    luigiCoreService.setCurrentLocale = vi.fn();
     Object.defineProperty(luigiCoreService, 'config', {
-      get: jest.fn(() => ({
+      get: vi.fn(() => ({
         settings: { btpToolLayout: true },
       })),
       configurable: true,
     });
 
-    jest
-      .spyOn(configService, 'getPortalConfig')
-      .mockResolvedValue(portalConfig);
+    vi.spyOn(configService, 'getPortalConfig').mockResolvedValue(portalConfig);
 
     const entityConfig = { providers: [], entityContext: {} };
-    jest
-      .spyOn(configService, 'getEntityConfig')
-      .mockResolvedValue(entityConfig);
+    vi.spyOn(configService, 'getEntityConfig').mockResolvedValue(entityConfig);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should create', () => {
@@ -128,7 +126,7 @@ describe('NodesProcessingService', () => {
       hideFromNav: true,
       context: { ...baseCtx } as any,
     };
-    customGlobalNodesService.getCustomGlobalNodes = jest
+    customGlobalNodesService.getCustomGlobalNodes = vi
       .fn()
       .mockResolvedValue([customNode]);
 
@@ -163,7 +161,7 @@ describe('NodesProcessingService', () => {
 
   it('should return a promise resolving entity nodes', async () => {
     // Arrange
-    const retrieveEntityChildrenSpy = jest
+    const retrieveEntityChildrenSpy = vi
       .spyOn(luigiNodesService, 'retrieveEntityChildren')
       .mockResolvedValue([]);
 
@@ -205,7 +203,7 @@ describe('NodesProcessingService', () => {
 
   it('should add parent entity ids to fetch context', async () => {
     // Arrange
-    const retrieveEntityChildrenSpy = jest
+    const retrieveEntityChildrenSpy = vi
       .spyOn(luigiNodesService, 'retrieveEntityChildren')
       .mockResolvedValue([]);
 
@@ -265,11 +263,12 @@ describe('NodesProcessingService', () => {
 
   describe('entity children', () => {
     beforeEach(() => {
-      jest
-        .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
-        .mockImplementation((nodes: LuigiNode[], entities: string[]) => {
-          return Promise.resolve(nodes);
-        });
+      vi.spyOn(
+        localConfigurationService,
+        'replaceServerNodesWithLocalOnes',
+      ).mockImplementation((nodes: LuigiNode[], entities: string[]) => {
+        return Promise.resolve(nodes);
+      });
     });
 
     it('should apply entity children recursively', async () => {
@@ -291,18 +290,16 @@ describe('NodesProcessingService', () => {
         ],
       };
 
-      jest
-        .spyOn(luigiNodesService, 'retrieveEntityChildren')
-        .mockImplementation(
-          (
-            _entityDefinition: EntityDefinition,
-            additionalContext: Record<string, string>,
-          ) => {
-            return Promise.resolve(
-              subsubchildren[additionalContext['subsub']] || [],
-            );
-          },
-        );
+      vi.spyOn(luigiNodesService, 'retrieveEntityChildren').mockImplementation(
+        (
+          _entityDefinition: EntityDefinition,
+          additionalContext: Record<string, string>,
+        ) => {
+          return Promise.resolve(
+            subsubchildren[additionalContext['subsub']] || [],
+          );
+        },
+      );
 
       const childrenByEntity: Record<string, LuigiNode[]> = {
         home: homeChildren,
@@ -436,7 +433,7 @@ describe('NodesProcessingService', () => {
         ],
       };
 
-      jest.spyOn(configService, 'getEntityConfig').mockResolvedValue({
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue({
         providers: [],
         entityContext: { foo: 'bar1' },
       });
@@ -502,7 +499,7 @@ describe('NodesProcessingService', () => {
         ],
       };
 
-      jest.spyOn(configService, 'getEntityConfig').mockResolvedValue({
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue({
         providers: [],
         entityContext: { foo: 'bar1' },
       });
@@ -575,15 +572,13 @@ describe('NodesProcessingService', () => {
         ],
       } as any;
 
-      jest
-        .spyOn(luigiNodesService, 'retrieveEntityChildren')
-        .mockResolvedValue([
-          { pathSegment: 'root1', entityType: 'typeA' } as any,
-          { pathSegment: 'err', entityType: 'entity.error' as any } as any,
-          staticChild,
-          { pathSegment: 'childOfOther', entityType: 'typeB' } as any,
-          { pathSegment: 'noType' } as any,
-        ]);
+      vi.spyOn(luigiNodesService, 'retrieveEntityChildren').mockResolvedValue([
+        { pathSegment: 'root1', entityType: 'typeA' } as any,
+        { pathSegment: 'err', entityType: 'entity.error' as any } as any,
+        staticChild,
+        { pathSegment: 'childOfOther', entityType: 'typeB' } as any,
+        { pathSegment: 'noType' } as any,
+      ]);
 
       const list = await service.entityChildrenProvider(
         entityNode,
@@ -634,9 +629,9 @@ describe('NodesProcessingService', () => {
   });
 
   it('entityChildrenProvider should fall back to static children when dynamic fetch fails', async () => {
-    jest
-      .spyOn(luigiNodesService, 'retrieveEntityChildren')
-      .mockRejectedValue(new Error('boom'));
+    vi.spyOn(luigiNodesService, 'retrieveEntityChildren').mockRejectedValue(
+      new Error('boom'),
+    );
 
     const directChild: LuigiNode = {
       pathSegment: 'direct',
@@ -662,28 +657,29 @@ describe('NodesProcessingService', () => {
   });
 
   it('entityChildrenProvider should update view groups after dynamic fetch', async () => {
-    jest
-      .spyOn(luigiNodesService, 'retrieveEntityChildren')
-      .mockResolvedValue([
-        {
-          viewGroup: 'alpha',
-          _preloadUrl: '/alpha',
-        } as any,
-      ]);
-    jest
-      .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
-      .mockResolvedValue([
-        {
-          viewGroup: 'alpha',
-          _preloadUrl: '/alpha',
-        } as any,
-      ]);
+    vi.spyOn(luigiNodesService, 'retrieveEntityChildren').mockResolvedValue([
+      {
+        viewGroup: 'alpha',
+        _preloadUrl: '/alpha',
+      } as any,
+    ]);
+    vi.spyOn(
+      localConfigurationService,
+      'replaceServerNodesWithLocalOnes',
+    ).mockResolvedValue([
+      {
+        viewGroup: 'alpha',
+        _preloadUrl: '/alpha',
+      } as any,
+    ]);
     const navigationConfig = {
       viewGroupSettings: { existing: { preloadUrl: '/old' } },
     };
-    (luigiCoreService.getConfigValue as jest.Mock).mockReturnValue(
-      navigationConfig,
-    );
+    (
+      luigiCoreService.getConfigValue as MockedFunction<
+        typeof luigiCoreService.getConfigValue
+      >
+    ).mockReturnValue(navigationConfig);
 
     const entityNode: LuigiNode = {
       context: {} as NodeContext,
@@ -705,23 +701,24 @@ describe('NodesProcessingService', () => {
   });
 
   it('entityChildrenProvider should skip updating view groups without navigation config', async () => {
-    jest
-      .spyOn(luigiNodesService, 'retrieveEntityChildren')
-      .mockResolvedValue([
-        {
-          viewGroup: 'alpha',
-          _preloadUrl: '/alpha',
-        } as any,
-      ]);
-    jest
-      .spyOn(localConfigurationService, 'replaceServerNodesWithLocalOnes')
-      .mockResolvedValue([
-        {
-          viewGroup: 'alpha',
-          _preloadUrl: '/alpha',
-        } as any,
-      ]);
-    const getConfigValueSpy = luigiCoreService.getConfigValue as jest.Mock;
+    vi.spyOn(luigiNodesService, 'retrieveEntityChildren').mockResolvedValue([
+      {
+        viewGroup: 'alpha',
+        _preloadUrl: '/alpha',
+      } as any,
+    ]);
+    vi.spyOn(
+      localConfigurationService,
+      'replaceServerNodesWithLocalOnes',
+    ).mockResolvedValue([
+      {
+        viewGroup: 'alpha',
+        _preloadUrl: '/alpha',
+      } as any,
+    ]);
+    const getConfigValueSpy = luigiCoreService.getConfigValue as MockedFunction<
+      typeof luigiCoreService.getConfigValue
+    >;
     getConfigValueSpy.mockReturnValue(undefined);
 
     const entityNode: LuigiNode = {

@@ -1,16 +1,17 @@
 import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { NodeUtilsService } from './node-utils.service';
+import { MockedObject } from 'vitest';
 
 describe('NodeUtilsService', () => {
   let service: NodeUtilsService;
-  let mockLuigiCoreService: jest.Mocked<LuigiCoreService>;
+  let mockLuigiCoreService: MockedObject<LuigiCoreService>;
 
   beforeEach(() => {
     mockLuigiCoreService = {
-      isFeatureToggleActive: jest.fn(),
-      getGlobalContext: jest.fn(),
-    } as unknown as jest.Mocked<LuigiCoreService>;
+      isFeatureToggleActive: vi.fn(),
+      getGlobalContext: vi.fn(),
+    } as unknown as MockedObject<LuigiCoreService>;
 
     service = new NodeUtilsService(mockLuigiCoreService);
   });

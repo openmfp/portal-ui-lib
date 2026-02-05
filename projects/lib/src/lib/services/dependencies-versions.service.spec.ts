@@ -1,15 +1,16 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
 import { DependenciesVersionsService } from './dependencies-versions.service';
+import { HttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { MockedObject } from 'vitest';
 
 describe('DependenciesVersionsService', () => {
   let service: DependenciesVersionsService;
-  let httpClient: jest.Mocked<HttpClient>;
+  let httpClient: MockedObject<HttpClient>;
 
   beforeEach(() => {
     httpClient = {
-      get: jest.fn(),
+      get: vi.fn(),
     } as any;
 
     TestBed.configureTestingModule({
@@ -30,7 +31,7 @@ describe('DependenciesVersionsService', () => {
       const result = await service.read();
 
       expect(httpClient.get).toHaveBeenCalledWith(
-        '/assets/dependencies-versions.json'
+        '/assets/dependencies-versions.json',
       );
       expect(result).toEqual(mockResponse);
     });

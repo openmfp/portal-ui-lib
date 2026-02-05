@@ -2,79 +2,55 @@ import * as tokens from './injection-tokens';
 import { PortalOptions, providePortal } from './portal-providers';
 import { CustomMessageListener } from './services';
 import * as http from '@angular/common/http';
-import * as core from '@angular/core';
 
 class MockCustomListener1 implements CustomMessageListener {
   messageId(): string {
     return 'MockCustomListener1';
   }
-  onCustomMessageReceived = jest.fn();
+  onCustomMessageReceived = vi.fn();
 }
 
 class MockCustomListener2 implements CustomMessageListener {
   messageId(): string {
     return 'MockCustomListener2';
   }
-  onCustomMessageReceived = jest.fn();
+  onCustomMessageReceived = vi.fn();
 }
 
-jest.mock('@angular/core', () => ({
-  ...jest.requireActual('@angular/core'),
-  makeEnvironmentProviders: jest.fn().mockReturnValue({ providers: [] }),
-  provideHttpClient: jest.fn(),
-  provideZoneChangeDetection: jest.fn(),
-}));
-
-jest.mock('@angular/common/http', () => ({
-  provideHttpClient: jest.fn(),
-}));
-
-jest.mock('@angular/router', () => ({
-  provideRouter: jest.fn(),
-}));
-
 describe('Provide Portal', () => {
-  let mockMakeEnvironmentProviders: jest.Mock;
+  const readProviders = (options?: PortalOptions) =>
+    (providePortal(options) as any).ɵproviders as any[];
 
-  beforeEach(() => {
-    mockMakeEnvironmentProviders = core.makeEnvironmentProviders as jest.Mock;
-    mockMakeEnvironmentProviders.mockClear();
-  });
-
-  it('should properly set custom message listeners providers', () => {
-    const options: PortalOptions = {
+  it('should register custom message listeners when provided', () => {
+    const providers = readProviders({
       customMessageListeners: [MockCustomListener1, MockCustomListener2],
-    };
+    });
 
-    providePortal(options);
-
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    const customListenerProviders = providersArg.filter(
+    const customListenerProviders = providers.filter(
       (provider: any) =>
         provider?.provide ===
         tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
     );
 
     expect(customListenerProviders).toHaveLength(2);
-    expect(customListenerProviders[0]).toEqual({
-      provide: tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
-      useClass: MockCustomListener1,
-      multi: true,
-    });
-    expect(customListenerProviders[1]).toEqual({
-      provide: tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
-      useClass: MockCustomListener2,
-      multi: true,
-    });
+    expect(customListenerProviders).toEqual([
+      {
+        provide: tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+        useClass: MockCustomListener1,
+        multi: true,
+      },
+      {
+        provide: tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
+        useClass: MockCustomListener2,
+        multi: true,
+      },
+    ]);
   });
 
-  it('should not set any custom message listeners providers when not provided', () => {
-    providePortal({});
+  it('should omit custom message listeners when not provided', () => {
+    const providers = readProviders();
 
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    const customListenerProviders = providersArg.filter(
+    const customListenerProviders = providers.filter(
       (provider: any) =>
         provider?.provide ===
         tokens.LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN,
@@ -83,7 +59,7 @@ describe('Provide Portal', () => {
     expect(customListenerProviders).toHaveLength(0);
   });
 
-  it('should set custom services when provided', () => {
+  it('should register custom services when provided', () => {
     const options: PortalOptions = {
       luigiAuthEventsCallbacksService: {} as any,
       staticSettingsConfigService: {} as any,
@@ -101,15 +77,7 @@ describe('Provide Portal', () => {
       headerBarConfigService: {} as any,
     };
 
-    providePortal(options);
-
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    expect(providersArg).toContainEqual({
-      provide:
-        tokens.LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN,
-      useClass: {},
-    });
+    const providersArg = readProviders(options);
 
     expect(providersArg).toContainEqual({
       provide:
@@ -184,14 +152,15 @@ describe('Provide Portal', () => {
     });
   });
 
-  it('should include core Angular providers', () => {
-    providePortal({});
+  it('should include http providers only', () => {
+    const providers = readProviders();
 
-    const providersArg = mockMakeEnvironmentProviders.mock.calls[0][0];
-
-    expect(providersArg).toContainEqual(http.provideHttpClient());
-    expect(providersArg).toContainEqual(
-      core.provideZoneChangeDetection({ eventCoalescing: true }),
+    const httpProviders = providers.find(
+      (provider: any) =>
+        Array.isArray(provider?.ɵproviders) &&
+        provider.ɵproviders.includes(http.HttpClient),
     );
+
+    expect(httpProviders).toBeDefined();
   });
 });

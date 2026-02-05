@@ -2,31 +2,33 @@ import { DevelopmentSettingsComponent } from './development-settings.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import {
-  ButtonComponent,
-  InputComponent,
-  LabelComponent,
-  LinkComponent,
-  ListComponent,
-  ListItemCustomComponent,
-  SwitchComponent,
-} from '@ui5/webcomponents-ngx';
+  Button,
+  Input,
+  Label,
+  Link,
+  List,
+  ListItemCustom,
+  Switch,
+} from '@fundamental-ngx/ui5-webcomponents';
 import {
   I18nService,
   localDevelopmentSettingsLocalStorage,
 } from '@openmfp/portal-ui-lib';
+import { MockedObject } from 'vitest';
 
-jest.mock('@luigi-project/client', () => ({
-  sendCustomMessage: jest.fn(),
+vi.mock('@luigi-project/client', () => ({
+  sendCustomMessage: vi.fn(),
 }));
 
 describe('DevelopmentSettingsComponent', () => {
   let component: DevelopmentSettingsComponent;
   let fixture: ComponentFixture<DevelopmentSettingsComponent>;
-  let i18nServiceMock: jest.Mocked<I18nService>;
+  let i18nServiceMock: MockedObject<I18nService>;
+  let luigiClientMock: { publishEvent: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     i18nServiceMock = {
-      getTranslation: jest.fn((key) => `translated_${key}`),
+      getTranslation: vi.fn((key) => `translated_${key}`),
       translationTable: {},
     } as any;
 
@@ -34,13 +36,13 @@ describe('DevelopmentSettingsComponent', () => {
       imports: [
         FormsModule,
         DevelopmentSettingsComponent,
-        ListComponent,
-        ButtonComponent,
-        InputComponent,
-        LabelComponent,
-        ListItemCustomComponent,
-        SwitchComponent,
-        LinkComponent,
+        List,
+        Button,
+        Input,
+        Label,
+        ListItemCustom,
+        Switch,
+        Link,
       ],
       providers: [{ provide: I18nService, useValue: i18nServiceMock }],
     })
@@ -51,12 +53,13 @@ describe('DevelopmentSettingsComponent', () => {
 
     fixture = TestBed.createComponent(DevelopmentSettingsComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('LuigiClient', { publishEvent: jest.fn() });
+    luigiClientMock = { publishEvent: vi.fn() };
+    fixture.componentRef.setInput('LuigiClient', luigiClientMock);
     fixture.componentRef.setInput('context', { translationTable: {} });
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('ngOnInit', () => {
@@ -67,7 +70,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: null,
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -83,7 +86,7 @@ describe('DevelopmentSettingsComponent', () => {
         isActive: true,
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -101,7 +104,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: { key: 'value' },
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValue(mockSettings);
 
@@ -120,7 +123,7 @@ describe('DevelopmentSettingsComponent', () => {
         serviceProviderConfig: {},
       };
 
-      localDevelopmentSettingsLocalStorage.read = jest
+      localDevelopmentSettingsLocalStorage.read = vi
         .fn()
         .mockReturnValueOnce(null)
         .mockReturnValueOnce(mockSettings);
@@ -134,9 +137,7 @@ describe('DevelopmentSettingsComponent', () => {
     });
 
     it('should initialize with default settings when no stored settings available', () => {
-      localDevelopmentSettingsLocalStorage.read = jest
-        .fn()
-        .mockReturnValue(null);
+      localDevelopmentSettingsLocalStorage.read = vi.fn().mockReturnValue(null);
 
       component.ngOnInit();
       expect(component.isActive()).toEqual(false);
@@ -177,6 +178,27 @@ describe('DevelopmentSettingsComponent', () => {
       component.addUrl(invalidUrl);
 
       expect(component['errors']()).toContain('pattern');
+    });
+
+    it('should ignore empty URL without updating configs', () => {
+      component.configs.set([]);
+
+      component.addUrl('');
+
+      expect(component.configs()).toEqual([]);
+      expect(component['errors']()).toEqual(['pattern']);
+      expect(component.LuigiClient().publishEvent).not.toHaveBeenCalled();
+    });
+
+    it('should clear errors when a valid URL is added after invalid', () => {
+      const validUrl = 'https://valid.com';
+
+      component.addUrl('invalid-url');
+      component.addUrl(validUrl);
+
+      expect(component['errors']()).toEqual([]);
+      expect(component.configs()).toContainEqual({ url: validUrl });
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -242,6 +264,22 @@ describe('DevelopmentSettingsComponent', () => {
       component.switchIsActive();
       expect(component.isActive()).toBe(!initialState);
       expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
+    });
+
+    it('should publish event with localDevelopmentSettings details', () => {
+      component.isActive.set(true);
+      component.configs.set([{ url: 'https://one.test' }]);
+      component.serviceProviderConfig.set({ key1: 'value1' });
+
+      component.switchIsActive();
+
+      const event = luigiClientMock.publishEvent.mock.calls[0][0];
+      expect(event.type).toBe('luigi.updateUserSettings');
+      expect(event.detail.localDevelopmentSettings).toEqual({
+        isActive: false,
+        configs: [{ url: 'https://one.test' }],
+        serviceProviderConfig: { key1: 'value1' },
+      });
     });
   });
 

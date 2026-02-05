@@ -1,10 +1,10 @@
 import { LuigiNode } from '../models';
 import { matchesJMESPath } from './jmespath';
-import { isMatch } from 'lodash';
+import isMatch from 'lodash.ismatch';
 
 export const visibleForContext = (ctx: any, node: LuigiNode): boolean => {
   // visibleForEntityContext is deprecated
-  if (!isMatch(ctx?.entityContext, node.visibleForEntityContext)) {
+  if (!isMatch(ctx?.entityContext, node.visibleForEntityContext ?? {})) {
     return false;
   }
 

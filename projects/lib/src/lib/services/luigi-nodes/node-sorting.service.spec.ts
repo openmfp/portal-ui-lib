@@ -23,7 +23,7 @@ describe('NodeSortingService', () => {
   beforeEach(() => {
     service = TestBed.inject(NodeSortingService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
-    jest.spyOn(luigiCoreService, 'getConfigValue').mockImplementation();
+    vi.spyOn(luigiCoreService, 'getConfigValue').mockImplementation(() => {});
   });
   beforeEach(() => {
     entityDefinitionNode1 = {

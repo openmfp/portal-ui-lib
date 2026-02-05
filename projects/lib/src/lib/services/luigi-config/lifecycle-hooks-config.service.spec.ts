@@ -15,47 +15,48 @@ import { RoutingConfigServiceImpl } from './routing-config.service';
 import { StaticSettingsConfigService } from './static-settings-config.service';
 import { UserSettingsConfigService } from './user-settings-config.service';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { MockedObject } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('LifecycleHooksConfigService', () => {
   let service: LifecycleHooksConfigService;
-  let i18nServiceMock: jest.Mocked<I18nService>;
-  let luigiNodesServiceMock: jest.Mocked<LuigiNodesService>;
-  let luigiCoreServiceMock: jest.Mocked<LuigiCoreService>;
-  let routingConfigServiceMock: jest.Mocked<RoutingConfigServiceImpl>;
-  let staticSettingsConfigServiceMock: jest.Mocked<StaticSettingsConfigService>;
-  let userSettingsConfigServiceMock: jest.Mocked<UserSettingsConfigService>;
-  let globalSearchConfigServiceMock: jest.Mocked<GlobalSearchConfigService>;
-  let navigationConfigServiceMock: jest.Mocked<NavigationConfigService>;
-  let envConfigServiceMock: jest.Mocked<EnvConfigService>;
-  let authConfigServiceMock: jest.Mocked<AuthConfigService>;
-  let customMessageListenersServiceMock: jest.Mocked<CustomMessageListenersService>;
+  let i18nServiceMock: MockedObject<I18nService>;
+  let luigiNodesServiceMock: MockedObject<LuigiNodesService>;
+  let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
+  let routingConfigServiceMock: MockedObject<RoutingConfigServiceImpl>;
+  let staticSettingsConfigServiceMock: MockedObject<StaticSettingsConfigService>;
+  let userSettingsConfigServiceMock: MockedObject<UserSettingsConfigService>;
+  let globalSearchConfigServiceMock: MockedObject<GlobalSearchConfigService>;
+  let navigationConfigServiceMock: MockedObject<NavigationConfigService>;
+  let envConfigServiceMock: MockedObject<EnvConfigService>;
+  let authConfigServiceMock: MockedObject<AuthConfigService>;
+  let customMessageListenersServiceMock: MockedObject<CustomMessageListenersService>;
 
   beforeEach(() => {
     i18nServiceMock = mock();
     envConfigServiceMock = mock();
     authConfigServiceMock = mock();
     customMessageListenersServiceMock = mock();
-    luigiNodesServiceMock = { retrieveChildrenByEntity: jest.fn() } as any;
+    luigiNodesServiceMock = { retrieveChildrenByEntity: vi.fn() } as any;
     luigiCoreServiceMock = {
-      setConfig: jest.fn(),
-      ux: jest.fn().mockReturnValue({ hideAppLoadingIndicator: jest.fn() }),
-      isFeatureToggleActive: jest.fn(),
-      resetLuigi: jest.fn(),
-      showAlert: jest.fn().mockReturnValue(Promise.resolve()),
+      setConfig: vi.fn(),
+      ux: vi.fn().mockReturnValue({ hideAppLoadingIndicator: vi.fn() }),
+      isFeatureToggleActive: vi.fn(),
+      resetLuigi: vi.fn(),
+      showAlert: vi.fn().mockReturnValue(Promise.resolve()),
     } as any;
     Object.defineProperty(luigiCoreServiceMock, 'config', {
-      get: jest.fn(),
+      get: vi.fn(),
       configurable: true,
     });
-    routingConfigServiceMock = { getRoutingConfig: jest.fn() } as any;
+    routingConfigServiceMock = { getRoutingConfig: vi.fn() } as any;
     staticSettingsConfigServiceMock = {
-      getStaticSettingsConfig: jest.fn(),
-      getInitialStaticSettingsConfig: jest.fn(),
+      getStaticSettingsConfig: vi.fn(),
+      getInitialStaticSettingsConfig: vi.fn(),
     } as any;
-    userSettingsConfigServiceMock = { getUserSettings: jest.fn() } as any;
-    globalSearchConfigServiceMock = { getGlobalSearchConfig: jest.fn() } as any;
-    navigationConfigServiceMock = { getNavigationConfig: jest.fn() } as any;
+    userSettingsConfigServiceMock = { getUserSettings: vi.fn() } as any;
+    globalSearchConfigServiceMock = { getGlobalSearchConfig: vi.fn() } as any;
+    navigationConfigServiceMock = { getNavigationConfig: vi.fn() } as any;
 
     TestBed.configureTestingModule({
       providers: [
@@ -136,14 +137,14 @@ describe('LifecycleHooksConfigService', () => {
         const error = new Error('Test error');
         luigiNodesServiceMock.retrieveChildrenByEntity.mockRejectedValue(error);
         Object.defineProperty(luigiCoreServiceMock, 'config', {
-          get: jest.fn(() => ({
+          get: vi.fn(() => ({
             settings: {
               header: { title: 'Test App', logo: 'assets/logo.png' },
             },
           })),
           configurable: true,
         });
-        console.error = jest.fn();
+        console.error = vi.fn();
 
         const config = service.getLifecycleHooksConfig();
         await config.luigiAfterInit();

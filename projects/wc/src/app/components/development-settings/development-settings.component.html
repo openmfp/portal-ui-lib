@@ -32,7 +32,7 @@
         type="Text"
         placeholder="http://localhost:4200/assets/content-configuration.json"
         aria-required="true"
-        #urlInput
+        [formControl]="urlInput"
       ></ui5-input>
       @if (errors().length) {
         <div class="line-height-normal">{{ textTable.urlsInput.error }}</div>
@@ -48,7 +48,7 @@
         <ui5-button
           design="Transparent"
           class="compact-button"
-          (click)="urlInput.value = ''"
+          (click)="urlInput.reset()"
         >
           {{ textTable.clearButton }}
         </ui5-button>
@@ -88,43 +88,45 @@
         {{ textTable.serviceProviderConfig.explanation }}
       </ui5-label>
       <br />
-      <ui5-label
-        class="line-height-normal field-label"
-        for="input-key"
-      >
-        {{ textTable.serviceProviderConfig.keyInput.label }}
-      </ui5-label>
-      <ui5-input
-        class="line-height-normal field-control"
-        id="input-key"
-        type="Text"
-        placeholder="{{ textTable.serviceProviderConfig.keyInput.placeholder }}"
-        aria-required="true"
-        #inputKey
-      ></ui5-input>
-      <br />
-      <ui5-label
-        class="line-height-normal field-label"
-        for="input-value"
-      >
-        {{ textTable.serviceProviderConfig.valueInput.label }}
-      </ui5-label>
-      <ui5-input
-        class="line-height-normal field-control"
-        id="input-value"
-        type="Text"
-        placeholder="{{ textTable.serviceProviderConfig.valueInput.placeholder }}"
-        aria-required="true"
-        #inputValue
-      ></ui5-input>
+      <div [formGroup]="serviceProviderForm">
+        <ui5-label
+          class="line-height-normal field-label"
+          for="input-key"
+        >
+          {{ textTable.serviceProviderConfig.keyInput.label }}
+        </ui5-label>
+        <ui5-input
+          class="line-height-normal field-control"
+          id="input-key"
+          type="Text"
+          placeholder="{{ textTable.serviceProviderConfig.keyInput.placeholder }}"
+          aria-required="true"
+          [formControl]="serviceProviderForm.controls.key"
+        ></ui5-input>
+        <br />
+        <ui5-label
+          class="line-height-normal field-label"
+          for="input-value"
+        >
+          {{ textTable.serviceProviderConfig.valueInput.label }}
+        </ui5-label>
+        <ui5-input
+          class="line-height-normal field-control"
+          id="input-value"
+          type="Text"
+          placeholder="{{ textTable.serviceProviderConfig.valueInput.placeholder }}"
+          aria-required="true"
+          [formControl]="serviceProviderForm.controls.value"
+          ></ui5-input>
+      </div>
       <div class="config-input-buttons">
         <ui5-button
           design="Emphasized"
           class="compact-button"
           (click)="
             addServiceProviderConfig(
-              inputKey.value,
-              inputValue.value
+              serviceProviderForm.controls.key.value,
+              serviceProviderForm.controls.value.value
             )
           "
         >
@@ -134,8 +136,7 @@
           design="Transparent"
           class="compact-button"
           (click)="
-            inputKey.value = '';
-            inputValue.value = ''
+            serviceProviderForm.reset()
           "
         >
           {{ textTable.clearButton }}
