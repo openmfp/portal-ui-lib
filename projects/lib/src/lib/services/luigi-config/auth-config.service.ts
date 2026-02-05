@@ -24,7 +24,6 @@ export class AuthConfigService {
     if (!oauthServerUrl || !clientId) {
       return undefined;
     }
-
     return {
       use: 'oAuth2AuthCode',
       storage: 'none',
@@ -43,19 +42,8 @@ export class AuthConfigService {
         expirationCheckInterval: 5,
         userInfoFn: () => {
           const userInfo = this.authService.getUserInfo();
-
           return new Promise((resolve) => {
-            fetch(userInfo.picture, {
-              method: 'HEAD',
-              mode: 'no-cors',
-            })
-              .then(() => {
-                resolve(userInfo);
-              })
-              .catch(() => {
-                userInfo.picture = '';
-                resolve(userInfo);
-              });
+            resolve(userInfo);
           });
         },
       },

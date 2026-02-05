@@ -36,14 +36,12 @@ describe('Session Refresh Provider', () => {
         provideSessionRefresh(),
         { provide: SessionRefreshService, useValue: sessionRefreshServiceMock },
         { provide: AuthService, useValue: authServiceMock },
-        { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
       ],
     });
 
     initializeAutomaticSessionRefresh(
       sessionRefreshServiceMock,
       authServiceMock,
-      luigiCoreServiceMock,
     );
   });
 
@@ -52,33 +50,18 @@ describe('Session Refresh Provider', () => {
   });
 
   describe('Session refresh initialization', () => {
-    it('should subscribe and handle AUTH_EXPIRE_SOON event when feature is enabled', fakeAsync(() => {
+    it('should subscribe and handle AUTH_EXPIRE_SOON event', fakeAsync(() => {
       // Act
       authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       tick();
 
       // Assert
-      expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledWith(
-        'enableSessionAutoRefresh',
-      );
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
     }));
 
     it('should not call refresh for other auth events', fakeAsync(() => {
       // Act
       authEventsSubject.next(AuthEvent.AUTH_REFRESHED);
-      tick();
-
-      // Assert
-      expect(sessionRefreshServiceMock.refresh).not.toHaveBeenCalled();
-    }));
-
-    it('should not call refresh when feature toggle is disabled', fakeAsync(() => {
-      // Arrange
-      luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(false);
-
-      // Act
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
       tick();
 
       // Assert
@@ -113,25 +96,6 @@ describe('Session Refresh Provider', () => {
 
       // Assert
       expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(2);
-    }));
-
-    it('should check feature toggle for each event', fakeAsync(() => {
-      // Arrange
-      luigiCoreServiceMock.isFeatureToggleActive
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(false);
-
-      // Act
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-      tick();
-      authEventsSubject.next(AuthEvent.AUTH_EXPIRE_SOON);
-      tick();
-
-      // Assert
-      expect(luigiCoreServiceMock.isFeatureToggleActive).toHaveBeenCalledTimes(
-        2,
-      );
-      expect(sessionRefreshServiceMock.refresh).toHaveBeenCalledTimes(1);
     }));
 
     it('should complete subscription when subject is completed', fakeAsync(() => {

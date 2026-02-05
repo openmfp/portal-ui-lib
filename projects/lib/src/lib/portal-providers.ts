@@ -42,7 +42,6 @@ import {
   StaticSettingsConfigService,
   ThemingService,
   UserProfileConfigService,
-  UserSettingsConfigService,
 } from './services';
 import { CustomReuseStrategy } from './utilities';
 import { provideHttpClient } from '@angular/common/http';
@@ -63,9 +62,6 @@ export interface PortalOptions {
 
   /** Service providing local configuration services **/
   localConfigurationService?: Type<LocalConfigurationService>;
-
-  /** Service providing user setting specific configuration **/
-  userSettingsConfigService?: Type<UserSettingsConfigService>;
 
   /** Service providing global search configuration **/
   globalSearchConfigService?: Type<GlobalSearchConfigService>;
