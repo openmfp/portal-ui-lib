@@ -2,15 +2,7 @@ import { KeyValuePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, effect, inject, input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {
-  Button,
-  Input,
-  Label,
-  Link,
-  List,
-  ListItemCustom,
-  Switch,
-} from '@fundamental-ngx/ui5-webcomponents';
+import { Button, Input, Label, Link, List, ListItemCustom, Switch } from '@fundamental-ngx/ui5-webcomponents';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import { I18nService, featureToggleLocalStorage } from '@openmfp/portal-ui-lib';
 
@@ -71,9 +63,7 @@ export class FeatureToggleComponent {
       });
 
     Object.entries(featureToggleSettings).forEach(([key, value]) => {
-      this.togglesForm.addControl(key, new FormControl(value), {
-        emitEvent: false,
-      });
+      this.togglesForm.addControl(key, new FormControl(value));
 
       if (this.queryParamsFeatures.includes(key)) {
         this.togglesForm.get(key)!.disable({ emitEvent: false });
@@ -101,6 +91,12 @@ export class FeatureToggleComponent {
 
   onItemDelete(featureToggle: string) {
     this.togglesForm.removeControl(featureToggle);
+  }
+
+  public onToggleChange(featureToggle: string) {
+    this.togglesForm
+      .get(featureToggle)!
+      .setValue(!this.togglesForm.get(featureToggle)!.value);
   }
 
   private extractFeatureToggleValues(queryString: string): string[] {

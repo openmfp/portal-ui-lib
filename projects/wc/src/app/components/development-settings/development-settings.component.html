@@ -101,7 +101,7 @@
           type="Text"
           placeholder="{{ textTable.serviceProviderConfig.keyInput.placeholder }}"
           aria-required="true"
-          formControlName="'key'"
+          [formControl]="serviceProviderFrom.controls.key"
         ></ui5-input>
         <br />
         <ui5-label
@@ -116,7 +116,7 @@
           type="Text"
           placeholder="{{ textTable.serviceProviderConfig.valueInput.placeholder }}"
           aria-required="true"
-          formControlName="'value'"
+          [formControl]="serviceProviderFrom.controls.value"
           ></ui5-input>
       </div>
       <div class="config-input-buttons">

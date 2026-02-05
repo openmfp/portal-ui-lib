@@ -153,6 +153,24 @@ describe('FeatureToggleComponent', () => {
     });
   });
 
+  describe('onToggleChange', () => {
+    it('should invert toggle value from false to true', () => {
+      component.togglesForm.addControl('testFeature', new FormControl(false));
+
+      component.onToggleChange('testFeature');
+
+      expect(component.togglesForm.get('testFeature')?.value).toBe(true);
+    });
+
+    it('should invert toggle value from true to false', () => {
+      component.togglesForm.addControl('testFeature', new FormControl(true));
+
+      component.onToggleChange('testFeature');
+
+      expect(component.togglesForm.get('testFeature')?.value).toBe(false);
+    });
+  });
+
   describe('extractFeatureToggleValues', () => {
     it('should extract feature toggle values from query string', () => {
       const result = component['extractFeatureToggleValues'](
