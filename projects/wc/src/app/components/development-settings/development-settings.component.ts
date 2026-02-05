@@ -64,7 +64,7 @@ export class DevelopmentSettingsComponent implements OnInit {
   }));
 
   public urlInput = new FormControl('', { nonNullable: true });
-  public serviceProviderFrom = new FormGroup({
+  public serviceProviderForm = new FormGroup({
     key: new FormControl('', { nonNullable: true }),
     value: new FormControl('', { nonNullable: true }),
   });
