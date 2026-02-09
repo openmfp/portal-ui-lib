@@ -20,9 +20,7 @@ import {
   UserSettingsValues,
 } from './user-settings-config.service';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
-
-jest.mock('../storage-service');
+import { mock } from 'vitest-mock-extended';
 
 describe('UserSettingsConfigService', () => {
   let service: UserSettingsConfigService;
@@ -42,12 +40,23 @@ describe('UserSettingsConfigService', () => {
     delete (window as any).location;
     window.location = {
       ...originalLocation,
-      reload: jest.fn(),
+      reload: vi.fn(),
     } as any;
 
     dependenciesVersionsService.read.mockResolvedValue({});
     luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([]);
-    userSettingsLocalStorage.read = jest.fn().mockResolvedValue({});
+    vi.spyOn(userSettingsLocalStorage, 'read').mockResolvedValue({});
+    vi.spyOn(userSettingsLocalStorage, 'store').mockImplementation(
+      async (settings) => settings,
+    );
+    vi.spyOn(localDevelopmentSettingsLocalStorage, 'read').mockReturnValue(
+      null,
+    );
+    vi.spyOn(localDevelopmentSettingsLocalStorage, 'store').mockImplementation(
+      () => {},
+    );
+    vi.spyOn(featureToggleLocalStorage, 'read').mockReturnValue({});
+    vi.spyOn(featureToggleLocalStorage, 'store').mockImplementation(() => {});
 
     TestBed.configureTestingModule({
       providers: [
@@ -67,7 +76,7 @@ describe('UserSettingsConfigService', () => {
     service = TestBed.inject(UserSettingsConfigService);
 
     // Reset mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getUserSettings', () => {
@@ -109,7 +118,7 @@ describe('UserSettingsConfigService', () => {
 
       expect(result.userSettingsDialog).toBeDefined();
       expect(service['versionsConfig']).toEqual({
-        browser: jasmine.any(String),
+        browser: expect.any(String),
       });
     });
 
@@ -223,7 +232,7 @@ describe('UserSettingsConfigService', () => {
         },
       } as UserSettingsValues;
 
-      globalThis.location.reload = jest.fn();
+      globalThis.location.reload = vi.fn();
 
       await result.storeUserSettings(newSettings, previousSettings);
       expect(localDevelopmentSettingsLocalStorage.store).toHaveBeenCalledWith({
@@ -240,7 +249,7 @@ describe('UserSettingsConfigService', () => {
           selectedTheme: 'custom-theme',
         },
       };
-      userSettingsLocalStorage.read = jest
+      userSettingsLocalStorage.read = vi
         .fn()
         .mockResolvedValue(mockUserSettings);
       themingServiceMock.getAvailableThemes.mockReturnValue([
@@ -256,7 +265,7 @@ describe('UserSettingsConfigService', () => {
     });
 
     it('should fall back to default theme when no theme is selected', async () => {
-      userSettingsLocalStorage.read = jest.fn().mockResolvedValue({});
+      userSettingsLocalStorage.read = vi.fn().mockResolvedValue({});
       themingServiceMock.getDefaultThemeId.mockReturnValue('default-theme');
       themingServiceMock.getAvailableThemes.mockReturnValue([
         { id: 'default-theme', name: 'Default Theme', description: 'des' },
@@ -320,7 +329,7 @@ describe('UserSettingsConfigService', () => {
     });
 
     it('should save feature toggle settings when enabled', async () => {
-      globalThis.location.reload = jest.fn();
+      globalThis.location.reload = vi.fn();
       const childrenByEntity = {};
       const result = await service.getUserSettings(childrenByEntity);
 
@@ -365,7 +374,7 @@ describe('UserSettingsConfigService', () => {
           { provide: EnvConfigService, useValue: envConfigServiceMock },
         ],
       });
-      globalThis.location.reload = jest.fn();
+      globalThis.location.reload = vi.fn();
 
       const disabledService = TestBed.inject(UserSettingsConfigService);
       const childrenByEntity = {};

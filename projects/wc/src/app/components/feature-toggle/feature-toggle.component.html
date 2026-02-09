@@ -29,7 +29,7 @@
           </span>
           <div class="toggle-item-buttons">
             @let isQueryParamFeature = queryParamsFeatures.includes(toggle.key);
-            <ui5-switch [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" [formControlName]="toggle.key"></ui5-switch>
+            <ui5-switch [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" [checked]="togglesForm.get(toggle.key)!.value" (ui5Change)="onToggleChange(toggle.key)"></ui5-switch>
             <ui5-button [tooltip]="isQueryParamFeature ? texts.tooltipQueryParam : ''" [disabled]="isQueryParamFeature" (ui5Click)="onItemDelete(toggle.key)"  design="Transparent" icon="decline"></ui5-button>
           </div>
         </div>

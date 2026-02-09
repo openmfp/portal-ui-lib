@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
 import { CustomMessageListener } from './custom-message-listener';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
@@ -11,14 +12,14 @@ describe('CustomMessageListenersService', () => {
     messageId(): string {
       return 'ProjectCreatedListener';
     },
-    onCustomMessageReceived: jest.fn(),
+    onCustomMessageReceived: vi.fn(),
   } as CustomMessageListener;
 
   const entityChangedListener: CustomMessageListener = {
     messageId(): string {
       return 'EntityChangedListener';
     },
-    onCustomMessageReceived: jest.fn(),
+    onCustomMessageReceived: vi.fn(),
   } as CustomMessageListener;
 
   beforeEach(() => {
@@ -30,7 +31,7 @@ describe('CustomMessageListenersService', () => {
             messageId(): string {
               return 'ReloadLuigiConfigListener';
             },
-            onCustomMessageReceived: jest.fn(),
+            onCustomMessageReceived: vi.fn(),
           },
         },
         {

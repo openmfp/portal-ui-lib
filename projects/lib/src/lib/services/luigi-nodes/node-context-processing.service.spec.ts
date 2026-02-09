@@ -5,14 +5,15 @@ import {
   NodeContextProcessingServiceImpl,
 } from './node-context-processing.service';
 import { TestBed } from '@angular/core/testing';
+import { MockedObject } from 'vitest';
 
 describe('NodeContextProcessingServiceImpl', () => {
   let service: NodeContextProcessingServiceImpl;
-  let customNodeContextProcessingService: jest.Mocked<NodeContextProcessingService> | null;
+  let customNodeContextProcessingService: MockedObject<NodeContextProcessingService> | null;
 
   beforeEach(() => {
     customNodeContextProcessingService = {
-      processNodeContext: jest.fn(),
+      processNodeContext: vi.fn(),
     };
 
     TestBed.configureTestingModule({
@@ -29,7 +30,7 @@ describe('NodeContextProcessingServiceImpl', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should be created', () => {

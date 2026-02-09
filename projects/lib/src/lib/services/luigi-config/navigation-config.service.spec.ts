@@ -9,7 +9,7 @@ import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService, EnvConfigService } from '../portal';
 import { NavigationConfigService } from './navigation-config.service';
 import { TestBed } from '@angular/core/testing';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('NavigationConfigService', () => {
   let service: NavigationConfigService;
@@ -31,21 +31,19 @@ describe('NavigationConfigService', () => {
       providers: [{ nodes: [] as LuigiNode[], creationTimestamp: '' }],
     } as PortalConfig;
 
-    luigiCoreService.isFeatureToggleActive = jest.fn().mockReturnValue(true);
-    luigiCoreService.resetLuigi = jest.fn();
+    luigiCoreService.isFeatureToggleActive = vi.fn().mockReturnValue(true);
+    luigiCoreService.resetLuigi = vi.fn();
+    luigiCoreService.setCurrentLocale = vi.fn();
 
-    jest
-      .spyOn(configService, 'getPortalConfig')
-      .mockResolvedValue(portalConfig);
+    vi.spyOn(configService, 'getPortalConfig').mockResolvedValue(portalConfig);
 
     const entityConfig = { providers: [], entityContext: {} };
-    jest
-      .spyOn(configService, 'getEntityConfig')
-      .mockResolvedValue(entityConfig);
+    vi.spyOn(configService, 'getEntityConfig').mockResolvedValue(entityConfig);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('should create', () => {
@@ -61,13 +59,13 @@ describe('NavigationConfigService', () => {
             '/missing-mandatory-data/:extClassName',
         },
       });
-      jest.spyOn(envConfigService, 'getEnvConfig').mockResolvedValue(envConfig);
-      jest
-        .spyOn(configService, 'getPortalConfig')
-        .mockResolvedValue(portalConfig);
-      jest
-        .spyOn(luigiCoreService, 'setFeatureToggle')
-        .mockImplementation(() => {});
+      vi.spyOn(envConfigService, 'getEnvConfig').mockResolvedValue(envConfig);
+      vi.spyOn(configService, 'getPortalConfig').mockResolvedValue(
+        portalConfig,
+      );
+      vi.spyOn(luigiCoreService, 'setFeatureToggle').mockImplementation(
+        () => {},
+      );
     });
 
     it('should create the view groups correctly', async () => {

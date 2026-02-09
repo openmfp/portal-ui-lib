@@ -15,21 +15,20 @@ import { LuigiNodesService } from './luigi-nodes.service';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { mock } from 'jest-mock-extended';
+import { MockedObject } from 'vitest';
+import { MockProxy, mock } from 'vitest-mock-extended';
 
 describe('LuigiNodesService', () => {
   let service: LuigiNodesService;
   let configService: ConfigService;
-  let localConfigurationServiceMock: jest.Mocked<LocalConfigurationServiceImpl>;
-  let errorComponentConfig: jest.Mocked<ErrorComponentConfig>;
-  let luigiCoreService: jest.Mocked<LuigiCoreService>;
+  let localConfigurationServiceMock: MockedObject<LocalConfigurationServiceImpl>;
+  let errorComponentConfig: MockProxy<ErrorComponentConfig>;
+  let luigiCoreService: MockedObject<LuigiCoreService>;
 
   beforeEach(() => {
-    errorComponentConfig = mock<ErrorComponentConfig>({
-      handleEntityRetrievalError: jest.fn(),
-    });
+    errorComponentConfig = mock<ErrorComponentConfig>();
     luigiCoreService = mock<LuigiCoreService>({
-      showAlert: jest.fn(),
+      showAlert: vi.fn(),
     });
     localConfigurationServiceMock = mock();
     localConfigurationServiceMock.getLocalNodes.mockResolvedValue([]);
@@ -67,7 +66,7 @@ describe('LuigiNodesService', () => {
 
   describe('clearNodeCache', () => {
     it('should call the serviceProviderService.clearCache method', () => {
-      const serviceProviderServiceSpy = jest.spyOn(
+      const serviceProviderServiceSpy = vi.spyOn(
         configService,
         'clearEntityConfigCache',
       );
@@ -114,9 +113,9 @@ describe('LuigiNodesService', () => {
     };
 
     it('should successfully merge existing children with new entity children', async () => {
-      jest
-        .spyOn(configService, 'getEntityConfig')
-        .mockResolvedValue(mockEntityConfig);
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue(
+        mockEntityConfig,
+      );
 
       const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
@@ -131,9 +130,9 @@ describe('LuigiNodesService', () => {
 
     it('should handle 404 error and call error component config', async () => {
       const notFoundError = new HttpErrorResponse({ status: 404 });
-      jest
-        .spyOn(configService, 'getEntityConfig')
-        .mockRejectedValue(notFoundError);
+      vi.spyOn(configService, 'getEntityConfig').mockRejectedValue(
+        notFoundError,
+      );
 
       const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
@@ -144,10 +143,10 @@ describe('LuigiNodesService', () => {
 
     it('should handle other errors with 500 status', async () => {
       const genericError = new Error('Some error');
-      jest
-        .spyOn(configService, 'getEntityConfig')
-        .mockRejectedValue(genericError);
-      jest.spyOn(console, 'warn').mockImplementation();
+      vi.spyOn(configService, 'getEntityConfig').mockRejectedValue(
+        genericError,
+      );
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const result = await service.retrieveEntityChildren(mockEntityDefinition);
 
@@ -168,9 +167,9 @@ describe('LuigiNodesService', () => {
     it('should pass additional context to getEntityConfig', async () => {
       const additionalContext = { customKey: 'customValue' };
 
-      jest
-        .spyOn(configService, 'getEntityConfig')
-        .mockResolvedValue(mockEntityConfig);
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue(
+        mockEntityConfig,
+      );
       localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockResolvedValue(
         [...mockServiceProvider.nodes],
       );
@@ -187,9 +186,9 @@ describe('LuigiNodesService', () => {
     });
 
     it('should handle empty existing children', async () => {
-      jest
-        .spyOn(configService, 'getEntityConfig')
-        .mockResolvedValue(mockEntityConfig);
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue(
+        mockEntityConfig,
+      );
       localConfigurationServiceMock.replaceServerNodesWithLocalOnes.mockResolvedValue(
         [...mockServiceProvider.nodes],
       );
@@ -201,7 +200,7 @@ describe('LuigiNodesService', () => {
     });
 
     it('should handle other errors when retrieving configs for entity', async () => {
-      console.warn = jest.fn();
+      console.warn = vi.fn();
       const entityDefinition: EntityDefinition = {
         id: 'id',
         dynamicFetchId: 'someEntity',
@@ -210,7 +209,7 @@ describe('LuigiNodesService', () => {
       const parentEntityPath = 'parent';
       const additionalContext = { someContext: 'value' };
 
-      const serviceProviderServiceSpy = jest
+      const serviceProviderServiceSpy = vi
         .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new Error('Some other error'));
 
@@ -227,7 +226,7 @@ describe('LuigiNodesService', () => {
     });
 
     it('should handle other errors when retrieving configs for entity', async () => {
-      console.warn = jest.fn();
+      console.warn = vi.fn();
       const entityDefinition: EntityDefinition = {
         id: 'id',
         dynamicFetchId: 'someEntity',
@@ -236,7 +235,7 @@ describe('LuigiNodesService', () => {
       const parentEntityPath = 'parent';
       const additionalContext = { someContext: 'value' };
 
-      const serviceProviderServiceSpy = jest
+      const serviceProviderServiceSpy = vi
         .spyOn(configService, 'getEntityConfig')
         .mockRejectedValue(new Error('Some other error'));
 
@@ -296,19 +295,19 @@ describe('LuigiNodesService', () => {
         ],
       } as any;
 
-      jest
-        .spyOn(configService, 'getPortalConfig')
-        .mockResolvedValue(portalConfig);
+      vi.spyOn(configService, 'getPortalConfig').mockResolvedValue(
+        portalConfig,
+      );
 
-      jest.spyOn(configService, 'getEntityConfig').mockResolvedValue({
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue({
         providers: portalConfig.providers,
       } as any);
     });
 
     it('should handle errors when retrieving nodes', async () => {
-      const consoleWarnSpy = jest.spyOn(console, 'warn');
+      const consoleWarnSpy = vi.spyOn(console, 'warn');
       const errorMessage = 'Failed to retrieve nodes';
-      const serviceProviderServiceSpy = jest
+      const serviceProviderServiceSpy = vi
         .spyOn(configService, 'getPortalConfig')
         .mockRejectedValue(new Error(errorMessage));
 

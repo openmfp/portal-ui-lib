@@ -5,9 +5,10 @@ import {
   LuigiCoreService,
 } from '../../services';
 import { LogoutComponent } from './logout.component';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { mock } from 'jest-mock-extended';
+import { MockedObject } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
@@ -16,19 +17,19 @@ describe('LogoutComponent', () => {
   let mockRouter: Router;
   let mockLuigiCoreService: LuigiCoreService;
   let mockI18nService: I18nService;
-  let loginEventServiceMock: jest.Mocked<LoginEventService>;
+  let loginEventServiceMock: MockedObject<LoginEventService>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     mockRoute = {
       snapshot: { queryParams: { error: 'tokenExpired' } },
     } as any;
-    mockRouter = { navigate: jest.fn() } as any;
+    mockRouter = { navigate: vi.fn() } as any;
     mockLuigiCoreService = {
-      removeAuthData: jest.fn(),
-      ux: jest.fn(() => ({ hideAppLoadingIndicator: jest.fn() })),
+      removeAuthData: vi.fn(),
+      ux: vi.fn(() => ({ hideAppLoadingIndicator: vi.fn() })),
     } as any;
     mockI18nService = {
-      getTranslationAsync: jest.fn().mockResolvedValue('test translation'),
+      getTranslationAsync: vi.fn().mockResolvedValue('test translation'),
     } as any;
     loginEventServiceMock = mock<LoginEventService>();
 
@@ -40,8 +41,9 @@ describe('LogoutComponent', () => {
         { provide: I18nService, useValue: mockI18nService },
         { provide: LoginEventService, useValue: loginEventServiceMock },
       ],
-    }).compileComponents();
-  }));
+    });
+    await TestBed.compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LogoutComponent);

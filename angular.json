@@ -38,7 +38,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "project": "ng-package.json"
           },
@@ -53,9 +53,19 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular-builders/jest:run",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "./tsconfig.spec.json"
+            "runnerConfig": "vitest.config.ts",
+            "tsConfig": "./tsconfig.spec.json",
+            "coverage": true,
+            "coverageExclude": ["**/*.html"],
+            "coverageInclude": ["projects/lib/**/*.ts"],
+            "coverageThresholds": {
+              "statements": 95,
+              "branches": 90,
+              "functions": 95,
+              "lines": 95
+            }
           }
         },
         "lint": {
@@ -110,9 +120,19 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular-builders/jest:run",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "./tsconfig.spec.json"
+            "runnerConfig": "vitest.config.ts",
+            "tsConfig": "./tsconfig.spec.json",
+            "coverage": true,
+            "coverageExclude": ["**/*.html"],
+            "coverageInclude": ["projects/wc/src/**/*.ts"],
+            "coverageThresholds": {
+              "statements": 95,
+              "branches": 75,
+              "functions": 95,
+              "lines": 95
+            }
           }
         },
         "lint": {

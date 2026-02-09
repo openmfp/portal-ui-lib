@@ -1,16 +1,28 @@
 import * as wc from './wc';
-import { mock } from 'jest-mock-extended';
 import { Injector, Type } from '@angular/core';
+import * as angularElements from '@angular/elements';
+import { MockedFunction } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
-jest.mock('@angular/elements', () => ({
-  createCustomElement: jest.fn(),
+vi.mock('@angular/elements', () => ({
+  createCustomElement: vi.fn(),
 }));
 
-import * as angularElements from '@angular/elements';
-
 describe('Luigi WebComponents Utils', () => {
+  let originalCurrentScript: any;
+
+  beforeEach(() => {
+    originalCurrentScript = document.currentScript;
+    vi.clearAllMocks();
+  });
+
   afterEach(() => {
-    jest.restoreAllMocks();
+    Object.defineProperty(document, 'currentScript', {
+      value: originalCurrentScript,
+      writable: true,
+      configurable: true,
+    });
+    vi.restoreAllMocks();
   });
 
   it('registerLuigiWebComponent', () => {
@@ -20,22 +32,27 @@ describe('Luigi WebComponents Utils', () => {
     const src = 'src-of-the-script';
 
     const createCustomElementSpy = (
-      angularElements.createCustomElement as jest.MockedFunction<
+      angularElements.createCustomElement as MockedFunction<
         typeof angularElements.createCustomElement
       >
     ).mockReturnValue(element);
-    const _registerWebcomponent = jest.fn();
+    const _registerWebcomponent = vi.fn();
     // @ts-ignore
     window.Luigi = { _registerWebcomponent };
 
-    const getSrcSpy = jest.spyOn(wc, 'getSrc').mockReturnValue(src);
+    Object.defineProperty(document, 'currentScript', {
+      value: {
+        getAttribute: () => src,
+      },
+      writable: true,
+      configurable: true,
+    });
 
     wc.registerLuigiWebComponent(component, injector);
 
     expect(createCustomElementSpy).toHaveBeenCalledWith(component, {
       injector,
     });
-    expect(getSrcSpy).toHaveBeenCalled();
     expect(_registerWebcomponent).toHaveBeenCalledWith(src, element);
   });
 
@@ -47,21 +64,32 @@ describe('Luigi WebComponents Utils', () => {
       component2,
     };
     const injector = mock<Injector>();
+    const element = mock<angularElements.NgElementConstructor<any>>();
+    const createCustomElementSpy = (
+      angularElements.createCustomElement as MockedFunction<
+        typeof angularElements.createCustomElement
+      >
+    ).mockReturnValue(element);
+    const _registerWebcomponent = vi.fn();
+    // @ts-ignore
+    window.Luigi = { _registerWebcomponent };
 
-    const getSrcSpy = jest
-      .spyOn(wc, 'getSrc')
-      .mockReturnValue('http://localhost:12345/main.js#component1');
-
-    const registerLuigiWebComponentSpy = jest
-      .spyOn(wc, 'registerLuigiWebComponent')
-      .mockReturnValue(void 0);
+    Object.defineProperty(document, 'currentScript', {
+      value: {
+        getAttribute: () => 'http://localhost:12345/main.js#component1',
+      },
+      writable: true,
+      configurable: true,
+    });
 
     wc.registerLuigiWebComponents(components, injector);
 
-    expect(getSrcSpy).toHaveBeenCalled();
-    expect(registerLuigiWebComponentSpy).toHaveBeenCalledWith(
-      component1,
-      injector
+    expect(createCustomElementSpy).toHaveBeenCalledWith(component1, {
+      injector,
+    });
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#component1',
+      element,
     );
   });
 
@@ -73,19 +101,23 @@ describe('Luigi WebComponents Utils', () => {
       component2,
     };
     const injector = mock<Injector>();
+    const createCustomElementSpy = (
+      angularElements.createCustomElement as MockedFunction<
+        typeof angularElements.createCustomElement
+      >
+    ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
 
-    const getSrcSpy = jest
-      .spyOn(wc, 'getSrc')
-      .mockReturnValue('http://localhost:12345/main.js');
-
-    const registerLuigiWebComponentSpy = jest
-      .spyOn(wc, 'registerLuigiWebComponent')
-      .mockReturnValue(void 0);
+    Object.defineProperty(document, 'currentScript', {
+      value: {
+        getAttribute: () => 'http://localhost:12345/main.js',
+      },
+      writable: true,
+      configurable: true,
+    });
 
     wc.registerLuigiWebComponents(components, injector);
 
-    expect(getSrcSpy).toHaveBeenCalled();
-    expect(registerLuigiWebComponentSpy).not.toHaveBeenCalled();
+    expect(createCustomElementSpy).not.toHaveBeenCalled();
   });
 
   it('registerLuigiWebComponents no corresponding component', () => {
@@ -96,35 +128,26 @@ describe('Luigi WebComponents Utils', () => {
       component2,
     };
     const injector = mock<Injector>();
+    const createCustomElementSpy = (
+      angularElements.createCustomElement as MockedFunction<
+        typeof angularElements.createCustomElement
+      >
+    ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
 
-    const getSrcSpy = jest
-      .spyOn(wc, 'getSrc')
-      .mockReturnValue('http://localhost:12345/main.js#component7');
-
-    const registerLuigiWebComponentSpy = jest
-      .spyOn(wc, 'registerLuigiWebComponent')
-      .mockReturnValue(void 0);
+    Object.defineProperty(document, 'currentScript', {
+      value: {
+        getAttribute: () => 'http://localhost:12345/main.js#component7',
+      },
+      writable: true,
+      configurable: true,
+    });
 
     wc.registerLuigiWebComponents(components, injector);
 
-    expect(getSrcSpy).toHaveBeenCalled();
-    expect(registerLuigiWebComponentSpy).not.toHaveBeenCalled();
+    expect(createCustomElementSpy).not.toHaveBeenCalled();
   });
 
   describe('getSrc', () => {
-    let originalCurrentScript: any;
-
-    beforeEach(() => {
-      originalCurrentScript = document.currentScript;
-    });
-
-    afterEach(() => {
-      Object.defineProperty(document, 'currentScript', {
-        value: originalCurrentScript,
-        writable: true,
-      });
-    });
-
     it('should throw error when src attribute does not exist', () => {
       Object.defineProperty(document, 'currentScript', {
         value: {

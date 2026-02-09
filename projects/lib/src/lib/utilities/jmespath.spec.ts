@@ -1,15 +1,16 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { matchesJMESPath } from './jmespath';
 
 describe('matchesJMESPath', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return true for no query', () => {
     expect(matchesJMESPath({}, '')).toEqual(true);
   });
   it('should return true for error and log a warning', () => {
-    console.warn = jest.fn();
+    console.warn = vi.fn();
     expect(matchesJMESPath({}, 'invalid@query')).toEqual(false);
     expect(console.warn).toHaveBeenCalled();
   });
@@ -19,7 +20,7 @@ describe('matchesJMESPath', () => {
   });
 
   it('should return true if we match the context for a non-existing key', () => {
-    console.warn = jest.fn();
+    console.warn = vi.fn();
     expect(
       matchesJMESPath(
         {
@@ -34,7 +35,7 @@ describe('matchesJMESPath', () => {
   });
 
   it('should catch if a context value which should be an array or string is missing and we use contains', () => {
-    console.warn = jest.fn();
+    console.warn = vi.fn();
     expect(
       matchesJMESPath(
         {

@@ -1,21 +1,45 @@
 import { DevelopmentSettingsComponent } from '../components/development-settings/development-settings.component';
 import { FeatureToggleComponent } from '../components/feature-toggle/feature-toggle.component';
 import { GettingStartedComponent } from '../components/getting-started/getting-started.component';
-import * as wcUtils from '../utils/wc';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
-import { APP_INITIALIZER, Injector } from '@angular/core';
+import { APP_INITIALIZER } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-jest.mock('../utils/wc', () => ({
-  registerLuigiWebComponents: jest.fn(),
+vi.mock('@angular/elements', () => ({
+  createCustomElement: vi.fn().mockReturnValue(() => () => {}),
 }));
 
 describe('provideLuigiWebComponents', () => {
   let provider: any;
+  let originalCurrentScript: any;
+  let originalLuigi: any;
+
+  const setCurrentScript = (src: string) => {
+    Object.defineProperty(document, 'currentScript', {
+      value: {
+        getAttribute: () => src,
+      },
+      writable: true,
+      configurable: true,
+    });
+  };
 
   beforeEach(() => {
     provider = provideLuigiWebComponents();
-    jest.clearAllMocks();
+    originalCurrentScript = document.currentScript;
+    originalLuigi = (window as any).Luigi;
+    (window as any).Luigi = { _registerWebcomponent: vi.fn() };
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    Object.defineProperty(document, 'currentScript', {
+      value: originalCurrentScript,
+      writable: true,
+      configurable: true,
+    });
+    (window as any).Luigi = originalLuigi;
+    vi.restoreAllMocks();
   });
 
   it('should return provider object', () => {
@@ -25,58 +49,36 @@ describe('provideLuigiWebComponents', () => {
     expect(provider.multi).toBe(true);
   });
 
-  it('useFactory should be a function', () => {
-    expect(typeof provider.useFactory).toBe('function');
-  });
+  it('should register components and return undefined', () => {
+    setCurrentScript('http://localhost:12345/main.js#development-settings');
 
-  it('should return factory function that returns undefined', () => {
-    TestBed.configureTestingModule({
-      providers: [provideLuigiWebComponents()],
-    });
-
-    const factoryFn = TestBed.inject(APP_INITIALIZER)[0];
+    const factoryFn = TestBed.runInInjectionContext(() =>
+      provider.useFactory(),
+    );
     const returnedFn = factoryFn();
+
     expect(returnedFn).toBeUndefined();
-  });
-
-  it('should register web components with injector', () => {
-    TestBed.configureTestingModule({
-      providers: [provideLuigiWebComponents()],
-    });
-
-    const injector = TestBed.inject(Injector);
-    const factoryFn = TestBed.inject(APP_INITIALIZER)[0];
-
-    factoryFn();
-
-    expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledWith(
-      {
-        'development-settings': DevelopmentSettingsComponent,
-        'getting-started': GettingStartedComponent,
-        'feature-toggle': FeatureToggleComponent,
-      },
-      injector,
+    const [[registeredSrc]] = (window as any).Luigi._registerWebcomponent.mock
+      .calls;
+    expect(registeredSrc).toBe(
+      'http://localhost:12345/main.js#development-settings',
     );
   });
 
-  it('should call registerLuigiWebComponents with correct parameters', () => {
-    TestBed.configureTestingModule({
-      providers: [provideLuigiWebComponents()],
+  it('should register each component when hash matches', () => {
+    const components = {
+      'development-settings': DevelopmentSettingsComponent,
+      'getting-started': GettingStartedComponent,
+      'feature-toggle': FeatureToggleComponent,
+    };
+
+    Object.keys(components).forEach((hash) => {
+      setCurrentScript(`http://localhost:12345/main.js#${hash}`);
+      TestBed.runInInjectionContext(() => provider.useFactory());
     });
 
-    const injector = TestBed.inject(Injector);
-    const factoryFn = TestBed.inject(APP_INITIALIZER)[0];
-
-    factoryFn();
-
-    expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledTimes(1);
-    expect(wcUtils.registerLuigiWebComponents).toHaveBeenCalledWith(
-      {
-        'development-settings': DevelopmentSettingsComponent,
-        'getting-started': GettingStartedComponent,
-        'feature-toggle': FeatureToggleComponent,
-      },
-      injector,
+    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(
+      3,
     );
   });
 });

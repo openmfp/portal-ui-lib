@@ -3,12 +3,13 @@ import {
   provideNavigationTracker,
   track,
 } from './navigation-tracker.initializer';
+import { MockedObject } from 'vitest';
 
 describe('track', () => {
-  let navigationService: jest.Mocked<NavigationService>;
+  let navigationService: MockedObject<NavigationService>;
 
   beforeEach(() => {
-    navigationService = { track: jest.fn() } as any;
+    navigationService = { track: vi.fn() } as any;
   });
 
   it('calls track on navigationService', async () => {
