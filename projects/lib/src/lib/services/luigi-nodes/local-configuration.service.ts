@@ -44,7 +44,7 @@ export class LocalConfigurationServiceImpl {
     this.addLocalDevelopmentModeOnIndicator();
 
     if (this.cachedLocalNodes?.length) {
-      return this.cachedLocalNodes;
+      return [...this.cachedLocalNodes];
     }
 
     try {
@@ -70,7 +70,7 @@ export class LocalConfigurationServiceImpl {
         };
       });
 
-      return (this.cachedLocalNodes = result.nodes || []);
+      return [...(this.cachedLocalNodes = result.nodes || [])];
     } catch (e) {
       console.warn(`Failed to retrieve local luigi config.`, e);
       return [];
@@ -178,6 +178,7 @@ export class LocalConfigurationServiceImpl {
     const localEntityTypes = [...new Set(localNodes.map((n) => n.entityType))]
       .filter(Boolean)
       .join(',');
+
     console.debug(
       `Found '${serverLuigiNodes.length}' server nodes.
        Found '${localNodes.length}' local luigi nodes.
