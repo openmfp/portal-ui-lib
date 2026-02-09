@@ -1,8 +1,9 @@
 import { AuthEvent } from '../models';
+import { NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN } from '../injection-tokens';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { AuthService } from './portal';
-import { LocalStorageKeys } from './storage-service';
-import { Injectable } from '@angular/core';
+import { NavigationRedirectStrategy } from './navigation-redirect-strategy';
+import { Injectable, Inject } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
@@ -17,6 +18,8 @@ export class NavigationService {
     private router: Router,
     private authService: AuthService,
     private loginEventService: LoginEventService,
+    @Inject(NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN)
+    private navigationRedirectStrategy: NavigationRedirectStrategy,
   ) {}
 
   track() {
@@ -57,21 +60,18 @@ export class NavigationService {
   }
 
   private clearCurrentUrl() {
-    localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, '');
+    this.navigationRedirectStrategy.clearRedirectUrl();
   }
 
   private saveCurrentUrl(): void {
-    localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, this.currentUrl);
+    this.navigationRedirectStrategy.saveRedirectUrl(this.currentUrl);
   }
 
   private saveLastNavigationUrl(): void {
-    localStorage.setItem(
-      LocalStorageKeys.LAST_NAVIGATION_URL,
-      this.previousUrl,
-    );
+    this.navigationRedirectStrategy.saveLastNavigationUrl(this.previousUrl);
   }
 
   private getRedirectUrl(): string {
-    return localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL) || '/';
+    return this.navigationRedirectStrategy.getRedirectUrl();
   }
 }

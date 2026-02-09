@@ -34,6 +34,7 @@ The main features of this library are:
       - [The luigiAuthEventsCallbacksService Option](#the-luigiautheventscallbacksservice-option)
       - [The customMessageListeners Option](#the-custommessagelisteners-option)
       - [The customGlobalNodesService Option](#the-customglobalnodesservice-option)
+      - [The navigationRedirectStrategy Option](#the-navigationredirectstrategy-option)
     - [Listen and react to Authentication Events](#listen-and-react-to-authentication-events)
     - [Configure Proxy for Backend REST Calls](#configure-proxy-for-backend-rest-calls)
     - [Start your Project](#start-your-project)
@@ -630,6 +631,43 @@ In your `main.ts` you can provide your custom implementation like so:
 ```ts
 const portalOptions: PortalOptions = {
   customGlobalNodesService: CustomGlobalNodesServiceImpl,
+  // ... other portal options
+}
+```
+
+#### The navigationRedirectStrategy Option
+
+This option allows you to customize where and how the portal stores the URL to redirect the user to after login (for example after session expiry or logout). By default the library uses `localStorage`. You can provide your own implementation of `NavigationRedirectStrategy` to use session storage, a backend, or custom logic.
+
+```ts
+import { Injectable } from '@angular/core';
+import { NavigationRedirectStrategy } from '@openmfp/portal-ui-lib';
+
+@Injectable()
+export class CustomNavigationRedirectStrategy implements NavigationRedirectStrategy {
+  getRedirectUrl(): string {
+    return sessionStorage.getItem('returnUrl') || '/';
+  }
+
+  saveRedirectUrl(url: string): void {
+    sessionStorage.setItem('returnUrl', url);
+  }
+
+  saveLastNavigationUrl(url: string): void {
+    sessionStorage.setItem('returnUrl', url);
+  }
+
+  clearRedirectUrl(): void {
+    sessionStorage.removeItem('returnUrl');
+  }
+}
+```
+
+In your `main.ts` you can provide your custom implementation like so:
+
+```ts
+const portalOptions: PortalOptions = {
+  navigationRedirectStrategy: CustomNavigationRedirectStrategy,
   // ... other portal options
 }
 ```

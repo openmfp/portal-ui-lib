@@ -3,6 +3,7 @@ export * from './luigi-core.service';
 export * from './auth/session-refresh.service';
 export * from './i18n.service';
 export * from './login-event.service';
+export * from './navigation-redirect-strategy';
 export * from './request-headers.service';
 export * from './storage-service';
 export * from './theming.service';

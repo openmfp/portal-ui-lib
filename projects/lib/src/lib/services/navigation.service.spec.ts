@@ -1,4 +1,6 @@
+import { NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthEvent } from '../models';
+import { DefaultNavigationRedirectStrategy } from './navigation-redirect-strategy';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
@@ -41,6 +43,10 @@ describe('NavigationService', () => {
         { provide: Router, useValue: router },
         { provide: AuthService, useValue: authService },
         { provide: LoginEventService, useValue: loginEventService },
+        {
+          provide: NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN,
+          useClass: DefaultNavigationRedirectStrategy,
+        },
       ],
     });
 
