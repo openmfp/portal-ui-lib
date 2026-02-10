@@ -20,6 +20,7 @@ import {
   LUIGI_ROUTING_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
+  NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN,
   THEMING_SERVICE,
 } from './injection-tokens';
 import { ErrorComponentConfig } from './models';
@@ -38,6 +39,8 @@ import {
   LuigiExtendedGlobalContextConfigService,
   NodeChangeHookConfigService,
   NodeContextProcessingService,
+  NavigationRedirectStrategy,
+  DefaultNavigationRedirectStrategy,
   RoutingConfigService,
   StaticSettingsConfigService,
   ThemingService,
@@ -101,6 +104,9 @@ export interface PortalOptions {
 
   /** Service providing luigi routing configuration **/
   routingConfigService?: Type<RoutingConfigService>;
+
+  /** Strategy for storing and reading redirect URL after login **/
+  navigationRedirectStrategy?: Type<NavigationRedirectStrategy>;
 }
 
 export function providePortal(
@@ -233,6 +239,12 @@ const addOptionalProviders = (
       useClass: options.routingConfigService,
     });
   }
+
+  providers.push({
+    provide: NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN,
+    useClass:
+      options.navigationRedirectStrategy || DefaultNavigationRedirectStrategy,
+  });
 
   return providers;
 };
