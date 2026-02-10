@@ -653,10 +653,6 @@ export class CustomNavigationRedirectStrategy implements NavigationRedirectStrat
     sessionStorage.setItem('returnUrl', url);
   }
 
-  saveLastNavigationUrl(url: string): void {
-    sessionStorage.setItem('returnUrl', url);
-  }
-
   clearRedirectUrl(): void {
     sessionStorage.removeItem('returnUrl');
   }

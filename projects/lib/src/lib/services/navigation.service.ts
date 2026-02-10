@@ -1,18 +1,17 @@
-import { AuthEvent } from '../models';
-import { NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN } from '../injection-tokens';
-import { LoginEventService, LoginEventType } from './login-event.service';
-import { AuthService } from './portal';
-import { NavigationRedirectStrategy } from './navigation-redirect-strategy';
-import { Injectable, Inject } from '@angular/core';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { Inject, Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN } from '../injection-tokens';
+import { AuthEvent } from '../models';
+import { LoginEventService, LoginEventType } from './login-event.service';
+import { NavigationRedirectStrategy } from './navigation-redirect-strategy';
+import { AuthService } from './portal';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NavigationService {
-  private currentUrl: string;
-  private previousUrl: string;
+  private lastUrl: string = '/';
 
   constructor(
     private router: Router,
@@ -26,49 +25,36 @@ export class NavigationService {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.currentUrl = event.url;
-      });
-
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationStart))
-      .subscribe((event: NavigationStart) => {
-        this.previousUrl = event.url;
+        this.lastUrl = event.url;
       });
 
     this.authService.authEvents
-      .pipe(filter((event) => event === AuthEvent.AUTH_EXPIRED))
-      .subscribe({ next: () => this.saveCurrentUrl() });
-
-    this.authService.authEvents
-      .pipe(filter((event) => event === AuthEvent.LOGOUT))
-      .subscribe({
-        next: () => {
-          this.saveLastNavigationUrl();
-        },
+      .pipe(
+        filter(
+          (event) =>
+            event === AuthEvent.AUTH_EXPIRED || event === AuthEvent.LOGOUT,
+        ),
+      )
+      .subscribe(() => {
+        this.saveRedirectUrl();
       });
 
     this.loginEventService.loginEvents
       .pipe(filter((event) => event.type === LoginEventType.LOGIN_TRIGGERED))
-      .subscribe({
-        next: (event) => {
-          this.router.navigate([this.getRedirectUrl()], {
-            queryParams: event.queryParams,
-          });
-          this.clearCurrentUrl();
-        },
+      .subscribe((event) => {
+        this.router.navigate([this.getRedirectUrl()], {
+          queryParams: event.queryParams,
+        });
+        this.clearRedirectUrl();
       });
   }
 
-  private clearCurrentUrl() {
+  private saveRedirectUrl(): void {
+    this.navigationRedirectStrategy.saveRedirectUrl(this.lastUrl);
+  }
+
+  private clearRedirectUrl(): void {
     this.navigationRedirectStrategy.clearRedirectUrl();
-  }
-
-  private saveCurrentUrl(): void {
-    this.navigationRedirectStrategy.saveRedirectUrl(this.currentUrl);
-  }
-
-  private saveLastNavigationUrl(): void {
-    this.navigationRedirectStrategy.saveLastNavigationUrl(this.previousUrl);
   }
 
   private getRedirectUrl(): string {

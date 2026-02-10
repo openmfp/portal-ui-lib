@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 export interface NavigationRedirectStrategy {
   getRedirectUrl(): string;
   saveRedirectUrl(url: string): void;
-  saveLastNavigationUrl(url: string): void;
   clearRedirectUrl(): void;
 }
 
@@ -15,10 +14,6 @@ export class DefaultNavigationRedirectStrategy implements NavigationRedirectStra
   }
 
   saveRedirectUrl(url: string): void {
-    localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, url);
-  }
-
-  saveLastNavigationUrl(url: string): void {
     localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, url);
   }
 
