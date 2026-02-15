@@ -28,7 +28,7 @@
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
-    "@luigi-project/plugin-auth-oauth2": "^2.25.1",
+    "@luigi-project/plugin-auth-oauth2": "^2.27.0",
     "jmespath": "^0.16.0",
     "jwt-decode": "^4.0.0",
     "lodash.isequal": "^4.5.0",
