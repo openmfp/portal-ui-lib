@@ -76,7 +76,7 @@
     "@vitest/coverage-v8": "4.0.18",
     "cpx2": "8.0.0",
     "eslint": "9.39.2",
-    "jsdom": "28.0.0",
+    "jsdom": "28.1.0",
     "kubernetes-types": "1.30.0",
     "mkdirp": "3.0.1",
     "move-cli": "2.0.0",
