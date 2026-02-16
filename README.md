@@ -130,7 +130,7 @@ Below is an example:
 ```
 
 
-### Implement the Custom Service
+### Implement the Custom Services
 
 The library comes with a set of services that can be used to customize the portal behavior.
 Please visit the [Frontend configuration - Extended Guide](https://openmfp.org/documentation/extended-guide/frontend-configuration/)
