@@ -22,7 +22,7 @@ The main features of this library are:
     - [Angular Configuration](#angular-configuration)
   - [Import the Portal providers and Bootstrap the app with PortalComponent](#import-the-portal-providers-and-bootstrap-the-app-with-portalcomponent)
   - [Update index html file of the project](#update-index-html-file-of-the-project)
-  - [Implement the Custom Service](#implement-the-custom-service)
+  - [Implement the Custom Services](#implement-the-custom-services)
   - [Configure Proxy for Backend REST Calls](#configure-proxy-for-backend-rest-calls)
   - [Start your Project](#start-your-project)
   - [Local Extension Development](#local-extension-development)
