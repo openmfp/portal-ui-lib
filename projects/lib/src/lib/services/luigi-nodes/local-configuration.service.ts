@@ -9,6 +9,7 @@ import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesService } from '../portal';
 import { localDevelopmentSettingsLocalStorage } from '../storage-service';
+import { NodeUtilsService } from './node-utils.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
@@ -25,10 +26,12 @@ export class LocalConfigurationServiceImpl {
   private luigiConfigService = inject(LocalNodesService);
   private i18nService = inject(I18nService);
   private luigiCoreService = inject(LuigiCoreService);
+  private nodeUtilsService = inject(NodeUtilsService);
   private customLocalConfigurationService = inject<LocalConfigurationService>(
     LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
   );
+  private localNodesRead = false;
   private cachedLocalNodes: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
@@ -43,8 +46,8 @@ export class LocalConfigurationServiceImpl {
 
     this.addLocalDevelopmentModeOnIndicator();
 
-    if (this.cachedLocalNodes?.length) {
-      return [...this.cachedLocalNodes];
+    if (this.localNodesRead) {
+      return this.cachedLocalNodes;
     }
 
     try {
@@ -70,7 +73,8 @@ export class LocalConfigurationServiceImpl {
         };
       });
 
-      return [...(this.cachedLocalNodes = result.nodes || [])];
+      this.localNodesRead = true;
+      return (this.cachedLocalNodes = result.nodes || []);
     } catch (e) {
       console.warn(`Failed to retrieve local luigi config.`, e);
       return [];
@@ -133,7 +137,11 @@ export class LocalConfigurationServiceImpl {
     const localReplacingNodes: LuigiNode[] = [];
     const filteredServerNodes = serverLuigiNodes.filter((serverNode) => {
       const index = localNodes.findIndex((localNode) => {
-        return this.localNodeMatchesServerNode(localNode, serverNode);
+        return (
+          this.localNodeMatchesServerNode(localNode, serverNode) &&
+          this.nodeUtilsService.isVisible(serverNode) &&
+          this.nodeUtilsService.isVisible(localNode)
+        );
       });
       if (index !== -1) {
         const [localFoundNode] = localNodes.splice(index, 1);

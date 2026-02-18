@@ -148,13 +148,13 @@ describe('NodeSortingService', () => {
       const nodeList: LuigiNode[] = [
         {
           label: '1',
-          order: '2',
+          order: 2,
           category: 'c2',
           context: {} as NodeContext,
         },
         {
           label: '2',
-          order: '1',
+          order: 1,
           category: {
             label: 'c1',
           },
@@ -166,12 +166,12 @@ describe('NodeSortingService', () => {
         },
         {
           label: 'last-one',
-          order: '1000',
+          order: 1000,
           context: {} as NodeContext,
         },
         {
           label: '4',
-          order: '2',
+          order: 2,
           category: {
             label: 'c2',
           },
@@ -179,12 +179,12 @@ describe('NodeSortingService', () => {
         },
         {
           label: '5',
-          order: '3',
+          order: 3,
           context: {} as NodeContext,
         },
         {
           label: '6',
-          order: '0',
+          order: 0,
           context: {} as NodeContext,
         },
       ];
@@ -192,12 +192,12 @@ describe('NodeSortingService', () => {
       expect(nodeList).toEqual([
         {
           label: '6',
-          order: '0',
+          order: 0,
           context: {} as NodeContext,
         },
         {
           label: '2',
-          order: '1',
+          order: 1,
           category: {
             label: 'c1',
           },
@@ -205,13 +205,13 @@ describe('NodeSortingService', () => {
         },
         {
           label: '1',
-          order: '2',
+          order: 2,
           category: 'c2',
           context: {} as NodeContext,
         },
         {
           label: '4',
-          order: '2',
+          order: 2,
           category: {
             label: 'c2',
           },
@@ -219,17 +219,17 @@ describe('NodeSortingService', () => {
         },
         {
           label: '5',
-          order: '3',
+          order: 3,
           context: {} as NodeContext,
         },
         {
           label: '3',
-          order: '999',
+          order: 999,
           context: {} as NodeContext,
         },
         {
           label: 'last-one',
-          order: '1000',
+          order: 1000,
           context: {} as NodeContext,
         },
       ]);
@@ -337,11 +337,11 @@ describe('NodeSortingService', () => {
   });
 
   it('should sort nodes alphabetically by label if orders are equal', () => {
-    const nodeA = { label: 'alpha', order: '1' } as LuigiNode;
-    const nodeD = { order: '1', category: 'd' } as LuigiNode;
-    const nodeB = { label: 'beta', order: '1' } as LuigiNode;
-    const nodeC = { label: 'gamma', order: '1' } as LuigiNode;
-    const nodeE = { order: '1', category: 'd' } as LuigiNode;
+    const nodeA = { label: 'alpha', order: 1 } as LuigiNode;
+    const nodeD = { order: 1, category: 'd' } as LuigiNode;
+    const nodeB = { label: 'beta', order: 1 } as LuigiNode;
+    const nodeC = { label: 'gamma', order: 1 } as LuigiNode;
+    const nodeE = { order: 1, category: 'd' } as LuigiNode;
 
     const nodes = [nodeD, nodeC, nodeE, nodeA, nodeB];
     nodes.sort(service.nodeComparison);
@@ -351,21 +351,21 @@ describe('NodeSortingService', () => {
 
   it('should sort nodes correctly using sortNodes method', () => {
     const nodes = [
-      { label: 'gamma', order: '2' } as LuigiNode,
-      { label: 'alpha', order: '1' } as LuigiNode,
-      { label: 'beta', order: '2' } as LuigiNode,
-      { label: 'delta', order: '3' } as LuigiNode,
+      { label: 'gamma', order: 2 } as LuigiNode,
+      { label: 'alpha', order: 1 } as LuigiNode,
+      { label: 'beta', order: 2 } as LuigiNode,
+      { label: 'delta', order: 3 } as LuigiNode,
       { label: 'epsilon' } as LuigiNode, // default order '999'
     ];
 
     const sortedNodes = service.sortNodes(nodes);
 
     expect(sortedNodes).toEqual([
-      { label: 'alpha', order: '1' },
-      { label: 'beta', order: '2' },
-      { label: 'gamma', order: '2' },
-      { label: 'delta', order: '3' },
-      { label: 'epsilon', order: '999' },
+      { label: 'alpha', order: 1 },
+      { label: 'beta', order: 2 },
+      { label: 'gamma', order: 2 },
+      { label: 'delta', order: 3 },
+      { label: 'epsilon', order: 999 },
     ]);
   });
 });

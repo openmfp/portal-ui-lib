@@ -14,12 +14,12 @@ export class NodeSortingService {
   }
 
   nodeComparison(a: LuigiNode, b: LuigiNode) {
-    // set default order to the end if not defined
-    a.order = a.dxpOrder || a.order || '999';
-    b.order = b.dxpOrder || b.order || '999';
+    // set a default order to the end if not defined
+    a.order = a.dxpOrder ?? a.order ?? 999;
+    b.order = b.dxpOrder ?? b.order ?? 999;
 
-    const orderA = isNaN(parseFloat(a?.order)) ? 999 : parseFloat(a.order);
-    const orderB = isNaN(parseFloat(b?.order)) ? 999 : parseFloat(b.order);
+    const orderA = a.order;
+    const orderB = b.order;
 
     if (orderA < orderB) {
       return -1;
