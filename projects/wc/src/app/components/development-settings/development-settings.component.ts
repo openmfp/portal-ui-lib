@@ -9,7 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Button, Input, Label, Link, List, ListItemCustom, Switch } from '@fundamental-ngx/ui5-webcomponents';
+import { Button } from '@fundamental-ngx/ui5-webcomponents/button';
+import { Input } from '@fundamental-ngx/ui5-webcomponents/input';
+import { Label } from '@fundamental-ngx/ui5-webcomponents/label';
+import { Link } from '@fundamental-ngx/ui5-webcomponents/link';
+import { List } from '@fundamental-ngx/ui5-webcomponents/list';
+import { ListItemCustom } from '@fundamental-ngx/ui5-webcomponents/list-item-custom';
+import { Switch } from '@fundamental-ngx/ui5-webcomponents/switch';
 import { LuigiClient } from '@luigi-project/client/luigi-element';
 import {
   Config,
