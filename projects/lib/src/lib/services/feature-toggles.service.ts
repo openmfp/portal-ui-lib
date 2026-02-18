@@ -10,18 +10,22 @@ export class FeatureTogglesService {
   private luigiCoreService = inject(LuigiCoreService);
 
   public async initFeatureToggles() {
-    const { uiOptions } = await this.envConfigService.getEnvConfig();
-    const { featureToggles } = await this.configService.getPortalConfig();
+    try {
+      const { uiOptions } = await this.envConfigService.getEnvConfig();
+      const { featureToggles } = await this.configService.getPortalConfig();
 
-    if (uiOptions?.includes('enableFeatureToggleSetting')) {
-      const featureToggleSettings = featureToggleLocalStorage.read();
-      this.luigiCoreService.setFeatureToggles({
-        ...featureToggles,
-        ...featureToggleSettings,
-      });
-      return;
+      if (uiOptions?.includes('enableFeatureToggleSetting')) {
+        const featureToggleSettings = featureToggleLocalStorage.read();
+        this.luigiCoreService.setFeatureToggles({
+          ...featureToggles,
+          ...featureToggleSettings,
+        });
+        return;
+      }
+
+      this.luigiCoreService.setFeatureToggles(featureToggles);
+    } catch (e) {
+      console.error('Failed to initialize feature toggles', e);
     }
-
-    this.luigiCoreService.setFeatureToggles(featureToggles);
   }
 }

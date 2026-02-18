@@ -41,7 +41,7 @@ export class LifecycleHooksConfigService {
 
   private async constructLuigiConfiguration() {
     this.i18nService.afterInit();
-    void this.featureTogglesService.initFeatureToggles();
+    await this.featureTogglesService.initFeatureToggles();
 
     let childrenByEntity: Record<string, LuigiNode[]>;
     try {
