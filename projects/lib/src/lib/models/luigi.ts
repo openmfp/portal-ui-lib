@@ -115,8 +115,8 @@ export interface PortalLuigiNodeExtensions {
   isMissingMandatoryData?: boolean; // experimental
   extensionClassName?: string;
   defineEntity?: EntityDefinition;
-  order?: string;
-  dxpOrder?: string;
+  order?: number;
+  dxpOrder?: number;
   navSlot?: string;
   defineSlot?: string;
   configurationHint?: string; // experimental
