@@ -4,16 +4,16 @@ import {
   computeDynamicFetchContext,
   visibleForContext,
 } from '../../utilities/context';
-import { LuigiCoreService } from '../luigi-core.service';
 import { ConfigService } from '../portal';
 import { CustomNodeProcessingService } from './custom-node-processing.service';
+import { NavHeaderService } from './nav-header.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ChildrenNodesService {
-  private luigiCoreService = inject(LuigiCoreService);
+  private navHeaderService = inject(NavHeaderService);
   private configService = inject(ConfigService);
   private nodeUtilsService = inject(NodeUtilsService);
   private nodeSortingService = inject(NodeSortingService);
@@ -27,15 +27,7 @@ export class ChildrenNodesService {
     childrenNodes: LuigiNode[],
     ctx: any,
   ): Promise<LuigiNode[]> {
-    if (
-      entityNode.defineEntity?.useBack &&
-      this.luigiCoreService.isFeatureToggleActive('navheader-up') &&
-      entityNode.navHeader
-    ) {
-      entityNode.navHeader.showUpLink = true;
-    }
-
-    this.addNavigationHeader(entityNode);
+    this.navHeaderService.setupNavigationHeader(entityNode);
 
     if (!childrenNodes) {
       return [];
@@ -80,56 +72,5 @@ export class ChildrenNodesService {
         ),
     );
     return this.nodeSortingService.sortNodes(nodes);
-  }
-
-  addNavigationHeader(entityNode: LuigiNode) {
-    if (entityNode.defineEntity) {
-      if (!entityNode.navHeader) {
-        entityNode.navHeader = {};
-      }
-
-      entityNode.navHeader.renderer = (
-        containerElement: HTMLElement,
-        nodeItem: LuigiNode,
-        clickHandler: Function,
-        navHeader: any,
-      ) => {
-        if (!containerElement || !navHeader?.label) {
-          return;
-        }
-
-        const label = this.sanitizeString(navHeader.label);
-        const type = this.sanitizeString(
-          navHeader.type ??
-            this.getSideNavigationHeaderType(navHeader.context, nodeItem),
-        );
-        containerElement.classList.add('entity-nav-header');
-
-        containerElement.innerHTML = `
-            <ui5-text class="entity-nav-header-type">${type}</ui5-text>
-            <ui5-title class="entity-nav-header-label" level="H6" size="H6">${label}</ui5-title>
-        `;
-      };
-    }
-  }
-
-  private getSideNavigationHeaderType(
-    nodeContext: Record<string, any> = {},
-    nodeItem: LuigiNode,
-  ): string {
-    const dynamicFetchId = nodeItem.defineEntity?.dynamicFetchId || '';
-    let type = (nodeContext.entityContext?.[dynamicFetchId] || {}).type;
-    if (!type || typeof type !== 'string') {
-      type = nodeItem.defineEntity?.label || dynamicFetchId || 'Extension';
-    }
-    type = type.replace(/Id/i, '');
-    return type.at(0).toUpperCase() + type.slice(1);
-  }
-
-  private sanitizeString(inputString: string): string {
-    // Prevent XSS attacks by removing any tags
-    const tempSpan = document.createElement('span');
-    tempSpan.textContent = inputString;
-    return tempSpan.innerHTML;
   }
 }
