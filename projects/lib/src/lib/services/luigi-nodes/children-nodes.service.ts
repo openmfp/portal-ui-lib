@@ -99,10 +99,9 @@ export class ChildrenNodesService {
         }
 
         const label = this.sanitizeString(navHeader.label);
-        const type = this.getSideNavigationHeaderType(
-          navHeader.context,
-          nodeItem,
-        );
+        const type =
+          navHeader.type ??
+          this.getSideNavigationHeaderType(navHeader.context, nodeItem);
         containerElement.classList.add('entity-nav-header');
 
         containerElement.innerHTML = `
