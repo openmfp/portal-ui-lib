@@ -1,28 +1,25 @@
-import { Inject, Injectable, Optional } from '@angular/core';
 import {
   LUIGI_APP_SWITCHER_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_NODE_CHANGE_HOOK_SERVICE_INJECTION_TOKEN,
-  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN
+  LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
-import { ClientEnvironment, LuigiNode } from '../../models';
-import { LuigiCoreService } from '../luigi-core.service';
+import { LuigiNode } from '../../models';
+import { buildViewGroups } from '../../utilities/build-view-groups';
 import { IntentNavigationService } from '../luigi-nodes/intent-navigation.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
 import { NodesProcessingService } from '../luigi-nodes/nodes-processing.service';
-import { ConfigService } from '../portal';
-import { featureToggleLocalStorage } from '../storage-service';
+import { EnvConfigService } from '../portal';
 import { AppSwitcherConfigService } from './app-switcher-config.service';
-import { HeaderBarService } from './luigi-breadcrumb-config.service';
 import { GlobalContextConfigService } from './global-context-config.service';
+import { HeaderBarService } from './luigi-breadcrumb-config.service';
 import { NodeChangeHookConfigService } from './node-change-hook-config.service';
 import { UserProfileConfigService } from './user-profile-config.service';
-import { buildViewGroups } from '../../utilities/build-view-groups';
+import { Inject, Injectable, Optional } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NavigationConfigService {
   constructor(
-    private configService: ConfigService,
-    private luigiCoreService: LuigiCoreService,
+    private envConfigService: EnvConfigService,
     private luigiNodesService: LuigiNodesService,
     private intentNavigationService: IntentNavigationService,
     private navigationGlobalContextConfigService: GlobalContextConfigService,
@@ -37,21 +34,16 @@ export class NavigationConfigService {
     private nodeChangeHookConfigService: NodeChangeHookConfigService,
     private nodesProcessingService: NodesProcessingService,
     private headerBarService: HeaderBarService,
-  ) {
-  }
+  ) {}
 
-  async getNavigationConfig(
-    childrenByEntity: Record<string, LuigiNode[]>,
-    envConfig: ClientEnvironment
-  ) {
+  async getNavigationConfig(childrenByEntity: Record<string, LuigiNode[]>) {
+    const envConfig = await this.envConfigService.getEnvConfig();
     const allNodes = Object.values(childrenByEntity).reduce(
       (accumulator, value) => accumulator.concat(value),
-      []
+      [],
     );
-
-    const portalConfig = await this.configService.getPortalConfig();
-    this.initFeatureToggles(portalConfig.featureToggles, envConfig);
-    const context = await this.navigationGlobalContextConfigService.getGlobalContext();
+    const context =
+      await this.navigationGlobalContextConfigService.getGlobalContext();
     const luigiNodes =
       await this.nodesProcessingService.processNodes(childrenByEntity);
 
@@ -67,24 +59,13 @@ export class NavigationConfigService {
       validWebcomponentUrls: envConfig.validWebcomponentUrls,
       intentMapping: this.intentNavigationService.buildIntentMappings(allNodes),
       nodeChangeHook: function (prevNode, nextNode, ctx) {
-        this.nodeChangeHookConfigService?.nodeChangeHook(prevNode, nextNode, ctx.currentContext);
+        this.nodeChangeHookConfigService?.nodeChangeHook(
+          prevNode,
+          nextNode,
+          ctx.currentContext,
+        );
       }.bind(this),
-      breadcrumbs:
-        await this.headerBarService.getConfig(),
+      breadcrumbs: await this.headerBarService.getConfig(),
     };
   }
-
-  private initFeatureToggles(configFeatureToggles: Record<string, boolean>, envConfig: ClientEnvironment) {
-    if (envConfig.uiOptions?.includes('enableFeatureToggleSetting')) {
-      const featureToggleSettings = featureToggleLocalStorage.read();
-      this.luigiCoreService.setFeatureToggles({
-        ...configFeatureToggles,
-        ...featureToggleSettings,
-      });
-      return;
-    }
-
-    this.luigiCoreService.setFeatureToggles(configFeatureToggles);
-  }
-
 }

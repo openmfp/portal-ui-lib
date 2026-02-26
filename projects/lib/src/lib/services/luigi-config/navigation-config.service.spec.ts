@@ -86,10 +86,7 @@ describe('NavigationConfigService', () => {
       };
 
       // Act
-      const navigation = await service.getNavigationConfig(
-        childrenByEntity,
-        envConfig,
-      );
+      const navigation = await service.getNavigationConfig(childrenByEntity);
 
       // Assert
       expect(navigation.viewGroupSettings).toEqual({

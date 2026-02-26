@@ -54,6 +54,7 @@ export interface LuigiCustomMessage extends Record<string, any> {
 
 export interface EntityDefinition {
   id: string;
+  type?: string;
   dynamicFetchId?: string;
   contextKey?: string;
   additionalContextKeys?: string[];
@@ -115,8 +116,8 @@ export interface PortalLuigiNodeExtensions {
   isMissingMandatoryData?: boolean; // experimental
   extensionClassName?: string;
   defineEntity?: EntityDefinition;
-  order?: string;
-  dxpOrder?: string;
+  order?: number;
+  dxpOrder?: number;
   navSlot?: string;
   defineSlot?: string;
   configurationHint?: string; // experimental
@@ -170,7 +171,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   icon?: string;
   link?: string;
   urlSuffix?: string;
-  navHeader?: any;
+  navHeader?: NavHeader;
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   virtualTree?: boolean;
@@ -198,6 +199,16 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   titleResolver?: any;
   globalNav?: boolean;
   parent?: LuigiNode;
+}
+
+export interface NavHeader {
+  label: string;
+  type?: string;
+  icon?: string;
+  useTitleResolver?: boolean;
+  renderer?: Function;
+  context?: Record<string, any>;
+  showUpLink?: boolean;
 }
 
 export interface IntentSpecification {

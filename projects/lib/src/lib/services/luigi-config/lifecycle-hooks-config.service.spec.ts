@@ -2,6 +2,7 @@ import {
   LUIGI_GLOBAL_SEARCH_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
 } from '../../injection-tokens';
+import { FeatureTogglesService } from '../feature-toggles.service';
 import { I18nService } from '../i18n.service';
 import { LuigiCoreService } from '../luigi-core.service';
 import { LuigiNodesService } from '../luigi-nodes/luigi-nodes.service';
@@ -21,6 +22,7 @@ import { mock } from 'vitest-mock-extended';
 describe('LifecycleHooksConfigService', () => {
   let service: LifecycleHooksConfigService;
   let i18nServiceMock: MockedObject<I18nService>;
+  let featureTogglesServiceMock: MockedObject<FeatureTogglesService>;
   let luigiNodesServiceMock: MockedObject<LuigiNodesService>;
   let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
   let routingConfigServiceMock: MockedObject<RoutingConfigServiceImpl>;
@@ -36,6 +38,7 @@ describe('LifecycleHooksConfigService', () => {
     i18nServiceMock = mock();
     envConfigServiceMock = mock();
     authConfigServiceMock = mock();
+    featureTogglesServiceMock = mock();
     customMessageListenersServiceMock = mock();
     luigiNodesServiceMock = { retrieveChildrenByEntity: vi.fn() } as any;
     luigiCoreServiceMock = {
@@ -62,6 +65,7 @@ describe('LifecycleHooksConfigService', () => {
       providers: [
         LifecycleHooksConfigService,
         { provide: EnvConfigService, useValue: envConfigServiceMock },
+        { provide: FeatureTogglesService, useValue: featureTogglesServiceMock },
         {
           provide: CustomMessageListenersService,
           useValue: customMessageListenersServiceMock,
