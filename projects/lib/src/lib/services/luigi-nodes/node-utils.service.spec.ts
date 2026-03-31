@@ -39,6 +39,14 @@ describe('NodeUtilsService', () => {
       expect(service.isVisible(node)).toBe(true);
     });
 
+    it('should return true if visibleForFeatureToggles is an empty array', () => {
+      const node: LuigiNode = {
+        visibleForFeatureToggles: [],
+        context: {} as NodeContext,
+      };
+      expect(service.isVisible(node)).toBe(true);
+    });
+
     it('should return true if all feature toggles are active', () => {
       const node: LuigiNode = {
         visibleForFeatureToggles: ['feature1', 'feature2'],
