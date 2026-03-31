@@ -15,7 +15,7 @@ export class NodeUtilsService {
   }
 
   isVisible(node: LuigiNode): boolean {
-    if (!node.visibleForFeatureToggles) {
+    if (!node.visibleForFeatureToggles || node.visibleForFeatureToggles.length === 0) {
       return true;
     }
     return node.visibleForFeatureToggles.some((ft) => {
