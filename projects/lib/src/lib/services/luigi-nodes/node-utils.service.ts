@@ -18,7 +18,7 @@ export class NodeUtilsService {
     if (!node.visibleForFeatureToggles) {
       return true;
     }
-    return node.visibleForFeatureToggles.every((ft) => {
+    return node.visibleForFeatureToggles.some((ft) => {
       if (ft.startsWith('!')) {
         return !this.luigiCoreService.isFeatureToggleActive(ft.slice(1));
       }
