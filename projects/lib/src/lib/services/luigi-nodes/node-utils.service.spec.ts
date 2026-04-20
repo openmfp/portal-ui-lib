@@ -118,7 +118,7 @@ describe('NodeUtilsService', () => {
       expect(service.isVisible(node)).toBe(true);
 
       mockLuigiCoreService.isFeatureToggleActive.mockImplementation(
-        (ft) => ft === 'feature1',
+        (ft) => ft === 'feature2',
       );
 
       expect(service.isVisible(node)).toBe(true);
