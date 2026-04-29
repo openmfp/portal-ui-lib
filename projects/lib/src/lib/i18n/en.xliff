@@ -307,12 +307,12 @@
     <!-- PLUGIN TEXT -->
     <unit id="PLUGIN_PAGE_CAN_NOT_BE_SHOWN">
       <segment>
-        <target>The extension '{extensionLabel}' can't be embedded in the Portal</target>
+        <target>The extension '{extensionLabel}' is configured to display external content that cannot be shown inside the Portal</target>
       </segment>
     </unit>
     <unit id="PLUGIN_PAGE_CAN_NOT_BE_SHOWN_UPDATE">
       <segment>
-        <target>The extension '{extensionLabel}' is outdated and can't be embedded in the Portal</target>
+        <target>The extension '{extensionLabel}' is outdated and configured to display external content that cannot be shown inside the Portal</target>
       </segment>
     </unit>
     <unit id="PLUGIN_PAGE_NEED_EXTENSION_UPDATE">

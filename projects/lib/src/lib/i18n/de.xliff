@@ -307,12 +307,12 @@
     <!-- PLUGIN TEXT -->
     <unit id="PLUGIN_PAGE_CAN_NOT_BE_SHOWN">
       <segment>
-        <target>Die Erweiterung '{extensionLabel}' kann nicht im Portal eingebettet werden</target>
+        <target>Die Erweiterung '{extensionLabel}' ist so konfiguriert, dass sie externen Inhalt anzeigt, der im Portal nicht angezeigt werden kann</target>
       </segment>
     </unit>
     <unit id="PLUGIN_PAGE_CAN_NOT_BE_SHOWN_UPDATE">
       <segment>
-        <target>Die Erweiterung '{extensionLabel}' ist veraltet und kann nicht im Portal eingebettet werden</target>
+        <target>Die Erweiterung '{extensionLabel}' ist veraltet und so konfiguriert, dass sie externen Inhalt anzeigt, der im Portal nicht angezeigt werden kann</target>
       </segment>
     </unit>
     <unit id="PLUGIN_PAGE_NEED_EXTENSION_UPDATE">
