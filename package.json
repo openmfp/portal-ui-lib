@@ -76,7 +76,7 @@
     "@typescript-eslint/eslint-plugin": "8.59.4",
     "@typescript-eslint/parser": "8.59.4",
     "@vitest/coverage-v8": "4.1.6",
-    "cpx2": "8.0.2",
+    "cpx2": "9.0.0",
     "eslint": "9.39.4",
     "jsdom": "29.1.1",
     "kubernetes-types": "1.30.0",
