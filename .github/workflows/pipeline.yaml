@@ -13,7 +13,7 @@ jobs:
     concurrency:
       group: ${{ github.ref }}
       cancel-in-progress: false
-    uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@main
+    uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@c7c73e39a8e5658cd0d7bca30868ab3a39ecc31c # main
     secrets: inherit
     with:
       publishFromDist: true
