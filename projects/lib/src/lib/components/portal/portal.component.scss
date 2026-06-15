@@ -19,7 +19,7 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
 }
 
 .entity-nav-header {
-  padding-left: var(--fdNavigation_Padding_X);
+  padding-left: 1rem;
   padding-right: var(--fdNavigation_Padding_X);
   padding-top: var(--fdNavigation_Padding_X) !important;;
   padding-bottom: 1.25rem !important;
@@ -37,4 +37,8 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
 // wrapping text in the about section of user settings
 .fd-container.fd-form-layout-grid-container .fd-row .fd-col {
   white-space: inherit !important;
+}
+
+#app:not(.vega) .lui-breadcrumb-container {
+  position: static !important;
 }
