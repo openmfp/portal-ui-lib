@@ -1,6 +1,6 @@
-import { Inject, Injectable, Optional } from '@angular/core';
 import { HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiNode } from '../../models';
+import { Inject, Injectable, Optional } from '@angular/core';
 
 export interface NodeItem extends LuigiNode {
   node?: LuigiNode;
@@ -19,7 +19,7 @@ export interface LuigiBreadcrumb {
   ) => HTMLElement;
 }
 
-export type RendererFn = LuigiBreadcrumb['renderer']
+export type RendererFn = LuigiBreadcrumb['renderer'];
 
 export interface HeaderBarConfig extends Omit<LuigiBreadcrumb, 'renderer'> {
   rightRenderers: RendererFn[];
@@ -30,41 +30,50 @@ export interface HeaderBarConfigService {
   getConfig(): Promise<HeaderBarConfig>;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class HeaderBarService {
-  constructor(@Optional() @Inject(HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN) private headerBarConfig: HeaderBarConfigService) {
-  }
+  constructor(
+    @Optional()
+    @Inject(HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN)
+    private headerBarConfig: HeaderBarConfigService,
+  ) {}
 
   public async getConfig(): Promise<LuigiBreadcrumb | undefined> {
     if (!this.headerBarConfig) {
-      return undefined
+      return undefined;
     }
 
-    const { leftRenderers, rightRenderers, ...rest } = await this.headerBarConfig.getConfig();
+    const { leftRenderers, rightRenderers, ...rest } =
+      await this.headerBarConfig.getConfig();
     return {
       ...rest,
       renderer: (containerElement, nodeItems, clickHandler) => {
-        containerElement.style.display = 'flex';
-        containerElement.style.position = 'static';
-        containerElement.style.height = 'min-content';
+        containerElement.style['padding-left'] = '0.25rem';
 
         const parrent = containerElement.parentElement;
-        if(parrent) {
+        if (parrent) {
           this.setParrentStyles(parrent);
         }
 
-        const {rightContainer, leftContainer} = this.createRendererContainers()
+        const { rightContainer, leftContainer } =
+          this.createRendererContainers();
 
         containerElement.appendChild(leftContainer);
         containerElement.appendChild(rightContainer);
 
-        this.executeRenderes(leftContainer, leftRenderers, [nodeItems, clickHandler])
-        this.executeRenderes(rightContainer, rightRenderers, [nodeItems, clickHandler])
+        this.executeRenderes(leftContainer, leftRenderers, [
+          nodeItems,
+          clickHandler,
+        ]);
+        this.executeRenderes(rightContainer, rightRenderers, [
+          nodeItems,
+          clickHandler,
+        ]);
 
-        return containerElement
+        return containerElement;
       },
     };
-  };
+  }
 
   private setParrentStyles(parrent: HTMLElement): void {
     parrent.style.display = 'flex';
@@ -73,16 +82,23 @@ export class HeaderBarService {
     parrent.style.marginTop = '0';
   }
 
-  private executeRenderes(rootContainer: HTMLElement, renderers: RendererFn[], params: [NodeItem[], (item: NodeItem) => void]): void {
+  private executeRenderes(
+    rootContainer: HTMLElement,
+    renderers: RendererFn[],
+    params: [NodeItem[], (item: NodeItem) => void],
+  ): void {
     renderers.forEach((renderer) => {
       const rendererContainer = document.createElement('div');
       rootContainer.appendChild(rendererContainer);
 
-      renderer(rendererContainer, ...params)
-    })
+      renderer(rendererContainer, ...params);
+    });
   }
 
-  private createRendererContainers(): {rightContainer: HTMLDivElement, leftContainer: HTMLDivElement} {
+  private createRendererContainers(): {
+    rightContainer: HTMLDivElement;
+    leftContainer: HTMLDivElement;
+  } {
     const rightContainer = document.createElement('div');
     const leftContainer = document.createElement('div');
 
@@ -95,6 +111,6 @@ export class HeaderBarService {
     leftContainer.style.gap = '1em';
     leftContainer.style.flexGrow = '1';
 
-    return {rightContainer, leftContainer}
+    return { rightContainer, leftContainer };
   }
 }

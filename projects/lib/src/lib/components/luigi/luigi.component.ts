@@ -4,6 +4,7 @@ import {
   LuigiCoreService,
   StaticSettingsConfigServiceImpl,
 } from '../../services';
+import { FeatureTogglesService } from '../../services/feature-toggles.service';
 import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecycle-hooks-config.service';
 import { RoutingConfigServiceImpl } from '../../services/luigi-config/routing-config.service';
 import { Component, OnInit, inject } from '@angular/core';
@@ -19,8 +20,11 @@ export class LuigiComponent implements OnInit {
   private routingConfigService = inject(RoutingConfigServiceImpl);
   private authConfigService = inject(AuthConfigService);
   private staticSettingsConfigService = inject(StaticSettingsConfigServiceImpl);
+  private featureTogglesService = inject(FeatureTogglesService);
 
   async ngOnInit(): Promise<void> {
+    await this.featureTogglesService.initFeatureToggles();
+
     try {
       this.luigiCoreService.setConfig({
         auth: await this.authConfigService.getAuthConfig(),

@@ -29,9 +29,7 @@ export class StaticSettingsConfigServiceImpl implements StaticSettingsConfigServ
     const favicon = 'assets/images/favicon.ico';
 
     let designConfig: Record<string, unknown> = {
-      btpToolLayout: false,
-      profileType: 'vega',
-      sideNav: { style: 'vega' },
+      btpToolLayout: true,
     };
     if (this.luigiCoreService.isFeatureToggleActive('vega-design')) {
       designConfig = {
