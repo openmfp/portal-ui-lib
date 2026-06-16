@@ -49,6 +49,8 @@ export class HeaderBarService {
       ...rest,
       renderer: (containerElement, nodeItems, clickHandler) => {
         containerElement.style['padding-left'] = '0.25rem';
+        containerElement.style.display = 'flex';
+        containerElement.style.height = 'min-content';
 
         const parrent = containerElement.parentElement;
         if (parrent) {
