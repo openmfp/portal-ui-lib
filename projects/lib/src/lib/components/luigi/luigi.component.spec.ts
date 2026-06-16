@@ -3,6 +3,7 @@ import {
   LuigiCoreService,
   StaticSettingsConfigServiceImpl,
 } from '../../services';
+import { FeatureTogglesService } from '../../services/feature-toggles.service';
 import { AuthConfigService } from '../../services/luigi-config/auth-config.service';
 import { LifecycleHooksConfigService } from '../../services/luigi-config/lifecycle-hooks-config.service';
 import { RoutingConfigServiceImpl } from '../../services/luigi-config/routing-config.service';
@@ -19,9 +20,15 @@ describe('LuigiComponent', () => {
   let routingConfigService: MockedObject<RoutingConfigServiceImpl>;
   let lifecycleHooksConfigService: MockedObject<LifecycleHooksConfigService>;
   let staticSettingsConfigService: MockedObject<StaticSettingsConfigServiceImpl>;
+  let featureTogglesService: MockedObject<FeatureTogglesService>;
 
   beforeEach(() => {
     staticSettingsConfigService = mock();
+    staticSettingsConfigService.getStaticSettingsConfig.mockResolvedValue(
+      { settings: 's' } as any,
+    );
+    featureTogglesService = mock();
+    featureTogglesService.initFeatureToggles.mockResolvedValue(undefined);
     authService = {
       getAuthData: vi.fn().mockReturnValue({ user: 'u' }),
     } as any;
@@ -50,6 +57,7 @@ describe('LuigiComponent', () => {
           provide: LifecycleHooksConfigService,
           useValue: lifecycleHooksConfigService,
         },
+        { provide: FeatureTogglesService, useValue: featureTogglesService },
       ],
     });
 
@@ -58,16 +66,21 @@ describe('LuigiComponent', () => {
 
   it('should set auth data and config on init', async () => {
     await component.ngOnInit();
+    expect(featureTogglesService.initFeatureToggles).toHaveBeenCalled();
     expect(luigiCoreService.setAuthData).toHaveBeenCalledWith({ user: 'u' });
     expect(authConfigService.getAuthConfig).toHaveBeenCalled();
     expect(routingConfigService.getInitialRoutingConfig).toHaveBeenCalled();
     expect(
       lifecycleHooksConfigService.getLifecycleHooksConfig,
     ).toHaveBeenCalled();
+    expect(
+      staticSettingsConfigService.getStaticSettingsConfig,
+    ).toHaveBeenCalled();
     expect(luigiCoreService.setConfig).toHaveBeenCalledWith({
       auth: { auth: 'config' },
       routing: { route: 'r' },
       lifecycleHooks: { hook: 'h' },
+      settings: { settings: 's' },
     });
   });
 

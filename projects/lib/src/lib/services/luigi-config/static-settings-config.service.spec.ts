@@ -1,5 +1,6 @@
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
 import { IframeService } from './iframe.service';
 import {
   StaticSettingsConfigService,
@@ -14,6 +15,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
   let service: StaticSettingsConfigServiceImpl;
   let iframeServiceMock: MockedObject<IframeService>;
   let i18nServiceMock: MockedObject<I18nService>;
+  let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
   let customStaticSettingsConfigServiceMock: MockedObject<StaticSettingsConfigService>;
 
   let interceptFunction;
@@ -21,16 +23,19 @@ describe('StaticSettingsConfigServiceImpl', () => {
   beforeEach(() => {
     iframeServiceMock = mock();
     i18nServiceMock = mock();
+    luigiCoreServiceMock = mock();
     customStaticSettingsConfigServiceMock = mock();
     interceptFunction = () => {};
     iframeServiceMock.iFrameCreationInterceptor.mockReturnValue(
       interceptFunction,
     );
+    luigiCoreServiceMock.isFeatureToggleActive.mockReturnValue(false);
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
         { provide: IframeService, useValue: iframeServiceMock },
         { provide: I18nService, useValue: i18nServiceMock },
+        { provide: LuigiCoreService, useValue: luigiCoreServiceMock },
         {
           provide: LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
           useValue: customStaticSettingsConfigServiceMock,

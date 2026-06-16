@@ -10,6 +10,30 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { MockedObject } from 'vitest';
 
+/**
+ * Build a Map-backed in-memory Storage. Used as a stub for `localStorage`
+ * because Node 26's experimental web-storage implementation requires the
+ * `--localstorage-file` flag to be set on the runner, which our vitest
+ * pipeline doesn't pass — so `globalThis.localStorage` is `undefined` here.
+ */
+function createMemoryStorage(): Storage {
+  const store = new Map<string, string>();
+  return {
+    get length() {
+      return store.size;
+    },
+    clear: () => store.clear(),
+    getItem: (k) => (store.has(k) ? store.get(k)! : null),
+    key: (i) => Array.from(store.keys())[i] ?? null,
+    removeItem: (k) => {
+      store.delete(k);
+    },
+    setItem: (k, v) => {
+      store.set(k, String(v));
+    },
+  };
+}
+
 describe('NavigationService', () => {
   let service: NavigationService;
   let router: MockedObject<Router>;
@@ -18,11 +42,15 @@ describe('NavigationService', () => {
   let routerEvents: Subject<any>;
   let authEvents: Subject<AuthEvent>;
   let loginEvents: Subject<any>;
+  let memoryStorage: Storage;
 
   beforeEach(() => {
     routerEvents = new Subject<any>();
     authEvents = new Subject<AuthEvent>();
     loginEvents = new Subject<any>();
+
+    memoryStorage = createMemoryStorage();
+    vi.stubGlobal('localStorage', memoryStorage);
 
     router = {
       events: routerEvents.asObservable(),
@@ -51,11 +79,12 @@ describe('NavigationService', () => {
     });
 
     service = TestBed.inject(NavigationService);
-    localStorage.clear();
+    memoryStorage.clear();
   });
 
   afterEach(() => {
-    localStorage.clear();
+    memoryStorage.clear();
+    vi.unstubAllGlobals();
   });
 
   it('should be created', () => {
@@ -72,7 +101,7 @@ describe('NavigationService', () => {
       routerEvents.next(navigationEndEvent);
 
       authEvents.next(AuthEvent.AUTH_EXPIRED);
-      expect(localStorage.getItem('openmfp.navigation.lastUrl')).toBe(
+      expect(memoryStorage.getItem('openmfp.navigation.lastUrl')).toBe(
         '/test-url',
       );
     });
@@ -82,13 +111,13 @@ describe('NavigationService', () => {
       routerEvents.next(navigationEndEvent);
       authEvents.next(AuthEvent.AUTH_EXPIRED);
 
-      expect(localStorage.getItem('openmfp.navigation.lastUrl')).toBe(
+      expect(memoryStorage.getItem('openmfp.navigation.lastUrl')).toBe(
         '/test-url',
       );
     });
 
     it('should navigate to saved URL and clear it on LOGIN_TRIGGERED', () => {
-      localStorage.setItem('openmfp.navigation.lastUrl', '/saved-url');
+      memoryStorage.setItem('openmfp.navigation.lastUrl', '/saved-url');
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
@@ -98,7 +127,7 @@ describe('NavigationService', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/saved-url'], {
         queryParams: { param: 'value' },
       });
-      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
+      expect(memoryStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         '',
       );
     });
@@ -121,14 +150,17 @@ describe('NavigationService', () => {
     });
 
     it('should clear current URL from localStorage', () => {
-      localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, '/test-url');
+      memoryStorage.setItem(
+        LocalStorageKeys.LAST_NAVIGATION_URL,
+        '/test-url',
+      );
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
         queryParams: {},
       });
 
-      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
+      expect(memoryStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         '',
       );
     });
@@ -138,14 +170,14 @@ describe('NavigationService', () => {
       routerEvents.next(navigationEndEvent);
       authEvents.next(AuthEvent.AUTH_EXPIRED);
 
-      expect(localStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
+      expect(memoryStorage.getItem(LocalStorageKeys.LAST_NAVIGATION_URL)).toBe(
         '/test-url',
       );
     });
 
     it('should get redirect URL from localStorage or return root', () => {
       const savedUrl = '/saved-url';
-      localStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, savedUrl);
+      memoryStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, savedUrl);
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
