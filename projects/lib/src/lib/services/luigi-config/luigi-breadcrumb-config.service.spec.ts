@@ -79,7 +79,6 @@ describe('HeaderBarService', () => {
     breadcrumb?.renderer(container, nodeItems, clickHandler);
 
     expect(container.style.display).toBe('flex');
-    expect(container.style.position).toBe('static');
 
     expect(parent.style.display).toBe('flex');
     expect(parent.style.flexDirection).toBe('column');

@@ -1,6 +1,7 @@
 import { LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import { LuigiStaticSettings } from '../../models';
 import { I18nService } from '../i18n.service';
+import { LuigiCoreService } from '../luigi-core.service';
 import { IframeService } from './iframe.service';
 import { Injectable, inject } from '@angular/core';
 
@@ -11,9 +12,7 @@ export interface StaticSettingsConfigService {
 @Injectable({
   providedIn: 'root',
 })
-export class StaticSettingsConfigServiceImpl
-  implements StaticSettingsConfigService
-{
+export class StaticSettingsConfigServiceImpl implements StaticSettingsConfigService {
   private customStaticSettingsConfigService =
     inject<StaticSettingsConfigService>(
       LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN as any,
@@ -23,10 +22,22 @@ export class StaticSettingsConfigServiceImpl
     );
   private i18nService = inject(I18nService);
   private iframeService = inject(IframeService);
+  private luigiCoreService = inject(LuigiCoreService);
 
   async getStaticSettingsConfig(): Promise<LuigiStaticSettings> {
     const logo = 'assets/images/logo.png';
     const favicon = 'assets/images/favicon.ico';
+
+    let designConfig: Record<string, unknown> = {
+      btpToolLayout: true,
+    };
+    if (this.luigiCoreService.isFeatureToggleActive('vega-design')) {
+      designConfig = {
+        btpToolLayout: false,
+        profileType: 'vega',
+        sideNav: { style: 'vega' },
+      };
+    }
 
     return {
       header: {
@@ -39,7 +50,7 @@ export class StaticSettingsConfigServiceImpl
         btpToolLayout: true,
         globalNav: true,
       },
-      btpToolLayout: true,
+
       responsiveNavigation: 'Fiori3',
       featureToggles: {
         queryStringParam: 'ft',
@@ -49,6 +60,7 @@ export class StaticSettingsConfigServiceImpl
       },
       iframeCreationInterceptor: this.iframeService.iFrameCreationInterceptor(),
       customTranslationImplementation: this.i18nService,
+      ...designConfig,
       ...(await this.customStaticSettingsConfigService?.getStaticSettingsConfig()),
     };
   }
