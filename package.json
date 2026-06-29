@@ -46,7 +46,7 @@
     "@angular/router": "^20.3.14 || ^21.1.2 || ^21.2.0",
     "@fundamental-ngx/ui5-webcomponents": "^0.58.1 || ^0.59.1",
     "@luigi-project/client": "^2.27.0",
-    "@luigi-project/client-support-angular": "^20.0.1 || ^21.1.0",
+    "@luigi-project/client-support-angular": "^20.0.1 || ^21.1.0 || ^22.0.0",
     "@luigi-project/core": "^2.27.0",
     "@luigi-project/plugin-auth-oauth2": "^2.27.0",
     "apollo-angular": "^13.0.0",
