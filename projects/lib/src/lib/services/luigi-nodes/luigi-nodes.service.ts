@@ -48,7 +48,11 @@ export class LuigiNodesService {
     try {
       const portalConfig = await this.configService.getPortalConfig();
       const serverLuigiNodes: LuigiNode[] = portalConfig.providers.flatMap(
-        (p) => p.nodes,
+        (p) =>
+          p.nodes.map((node) => ({
+            ...node,
+            context: { ...node.context, ...p.nodeContext },
+          })),
       );
       const luigiNodes =
         await this.localConfigurationService.replaceServerNodesWithLocalOnes(
@@ -80,8 +84,13 @@ export class LuigiNodesService {
         additionalContext,
       );
 
-      return configsForEntity.providers.flatMap((p) => p.nodes);
-    } catch (e) {
+      return configsForEntity.providers.flatMap((p) =>
+        p.nodes.map((node) => ({
+          ...node,
+          context: { ...node.context, ...p.nodeContext },
+        })),
+      );
+    } catch (e: any) {
       errorCode = e.status || 500;
       console.warn(
         `Could not retrieve nodes for entity: ${entityType}, error: `,
@@ -116,7 +125,7 @@ export class LuigiNodesService {
     return [];
   }
 
-  nodePolicyResolver(nodeToCheckPermissionFor): boolean {
+  nodePolicyResolver(nodeToCheckPermissionFor: LuigiNode): boolean {
     const mockPermissions = ['projectMember'];
     const permissions = nodeToCheckPermissionFor.requiredPolicies;
     return (

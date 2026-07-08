@@ -6,6 +6,7 @@ export interface ServiceProvider {
   displayName: string;
   creationTimestamp: string;
   nodes: LuigiNode[];
+  nodeContext?: Record<string, any>;
 }
 
 export interface EntityConfig {

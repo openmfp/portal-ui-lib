@@ -128,6 +128,45 @@ describe('LuigiNodesService', () => {
       );
     });
 
+    it('should merge nodeContext into each node context when nodeContext is provided', async () => {
+      const nodeContext = {
+        permissions: [{ resource: 'Foo', actions: ['create'] }],
+      };
+      const providerWithNodeContext: ServiceProvider = {
+        ...mockServiceProvider,
+        nodeContext,
+      } as any;
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue({
+        providers: [providerWithNodeContext],
+        entityContext: {},
+      });
+
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
+
+      expect(result.length).toBe(2);
+      result.forEach((node) => {
+        expect(node.context).toMatchObject(nodeContext);
+      });
+    });
+
+    it('should return nodes unchanged when nodeContext is undefined', async () => {
+      const providerWithoutNodeContext: ServiceProvider = {
+        ...mockServiceProvider,
+        nodeContext: undefined,
+      } as any;
+      vi.spyOn(configService, 'getEntityConfig').mockResolvedValue({
+        providers: [providerWithoutNodeContext],
+        entityContext: {},
+      });
+
+      const result = await service.retrieveEntityChildren(mockEntityDefinition);
+
+      expect(result.length).toBe(2);
+      result.forEach((node, i) => {
+        expect(node.context).toEqual(mockServiceProvider.nodes[i].context);
+      });
+    });
+
     it('should handle 404 error and call error component config', async () => {
       const notFoundError = new HttpErrorResponse({ status: 404 });
       vi.spyOn(configService, 'getEntityConfig').mockRejectedValue(
@@ -345,6 +384,63 @@ describe('LuigiNodesService', () => {
         const childrenByEntity = await service.retrieveChildrenByEntity();
 
         expect(childrenByEntity['home'].length).toBe(3);
+      });
+    });
+
+    describe('nodeContext merging', () => {
+      it('should merge nodeContext into each node context when provider has nodeContext', async () => {
+        const nodeContext = {
+          permissions: [{ resource: 'Foo', actions: ['create'] }],
+        };
+        const nodesWithContext = [
+          createNodeWithEntityType('home', 'x'),
+          createNodeWithEntityType('home', 'y'),
+        ];
+        const portalConfig: PortalConfig = {
+          providers: [
+            {
+              viewGroup: 'bar',
+              nodes: nodesWithContext,
+              nodeContext,
+              creationTimestamp: '2022-05-17T11:37:17Z',
+            } as any,
+          ],
+        } as any;
+        vi.spyOn(configService, 'getPortalConfig').mockResolvedValue(
+          portalConfig,
+        );
+
+        const childrenByEntity = await service.retrieveChildrenByEntity();
+
+        const homeNodes = childrenByEntity['home'];
+        homeNodes.forEach((node) => {
+          expect(node.context).toMatchObject(nodeContext);
+        });
+      });
+
+      it('should return nodes unchanged when provider nodeContext is undefined', async () => {
+        const nodesWithContext = [
+          createNodeWithEntityType('home', 'p'),
+        ];
+        const portalConfig: PortalConfig = {
+          providers: [
+            {
+              viewGroup: 'baz',
+              nodes: nodesWithContext,
+              nodeContext: undefined,
+              creationTimestamp: '2022-05-17T11:37:17Z',
+            } as any,
+          ],
+        } as any;
+        vi.spyOn(configService, 'getPortalConfig').mockResolvedValue(
+          portalConfig,
+        );
+
+        const childrenByEntity = await service.retrieveChildrenByEntity();
+
+        const homeNodes = childrenByEntity['home'];
+        expect(homeNodes.length).toBe(1);
+        expect(homeNodes[0].context).toEqual(nodesWithContext[0].context);
       });
     });
   });
