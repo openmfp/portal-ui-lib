@@ -51,7 +51,7 @@ export class LuigiNodesService {
         (p) =>
           p.nodes.map((node) => ({
             ...node,
-            context: { ...node.context, ...(p.nodeContext ?? {}) },
+            context: { ...node.context, ...p.nodeContext },
           })),
       );
       const luigiNodes =
@@ -87,7 +87,7 @@ export class LuigiNodesService {
       return configsForEntity.providers.flatMap((p) =>
         p.nodes.map((node) => ({
           ...node,
-          context: { ...node.context, ...(p.nodeContext ?? {}) },
+          context: { ...node.context, ...p.nodeContext },
         })),
       );
     } catch (e: any) {
