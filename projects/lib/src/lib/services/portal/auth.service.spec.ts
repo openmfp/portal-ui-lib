@@ -91,12 +91,12 @@ describe('AuthService', () => {
       expect(token).toBe('mock_token');
     });
 
-    it('should return an empty object if no auth data', () => {
+    it('should return undefined if no auth data', () => {
       vi.spyOn(service, 'getAuthData').mockReturnValue(undefined as any);
 
       const token = service.getToken();
 
-      expect(token).toEqual({});
+      expect(token).toBeUndefined();
     });
   });
 

@@ -59,12 +59,8 @@ export class AuthService {
     }
   };
 
-  getToken = (): any => {
-    const auth = this.getAuthData();
-    if (auth) {
-      return auth.idToken;
-    }
-    return {};
+  getToken = (): string | undefined => {
+    return this.getAuthData()?.idToken;
   };
 
   private getUser(): UserTokenData {
