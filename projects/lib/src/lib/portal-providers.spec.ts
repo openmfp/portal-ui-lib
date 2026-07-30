@@ -1,7 +1,9 @@
 import * as tokens from './injection-tokens';
 import { PortalOptions, providePortal } from './portal-providers';
 import { CustomMessageListener } from './services';
+import { PreserveQueryParamsUrlHandlingStrategy } from './utilities';
 import * as http from '@angular/common/http';
+import { UrlHandlingStrategy } from '@angular/router';
 
 class MockCustomListener1 implements CustomMessageListener {
   messageId(): string {
@@ -149,6 +151,15 @@ describe('Provide Portal', () => {
     expect(providersArg).toContainEqual({
       provide: tokens.HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
       useClass: {},
+    });
+  });
+
+  it('should register a UrlHandlingStrategy that preserves query params', () => {
+    const providers = readProviders();
+
+    expect(providers).toContainEqual({
+      provide: UrlHandlingStrategy,
+      useClass: PreserveQueryParamsUrlHandlingStrategy,
     });
   });
 
