@@ -46,7 +46,10 @@ import {
   ThemingService,
   UserProfileConfigService,
 } from './services';
-import { CustomReuseStrategy } from './utilities';
+import {
+  CustomReuseStrategy,
+  PreserveQueryParamsUrlHandlingStrategy,
+} from './utilities';
 import { provideHttpClient } from '@angular/common/http';
 import {
   EnvironmentProviders,
@@ -54,7 +57,11 @@ import {
   Type,
   makeEnvironmentProviders,
 } from '@angular/core';
-import { RouteReuseStrategy, provideRouter } from '@angular/router';
+import {
+  RouteReuseStrategy,
+  UrlHandlingStrategy,
+  provideRouter,
+} from '@angular/router';
 
 export interface PortalOptions {
   /** Service containing and providing the luigi settings configuration **/
@@ -120,6 +127,10 @@ export function providePortal(
     provideLanguageServices(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
+    {
+      provide: UrlHandlingStrategy,
+      useClass: PreserveQueryParamsUrlHandlingStrategy,
+    },
     ...addOptionalProviders(options),
   ];
 
