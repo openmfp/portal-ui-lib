@@ -91,7 +91,7 @@ describe('SessionRefreshService', () => {
       );
     });
 
-    it('should not successfully refresh the session', async () => {
+    it('should signal expiry and drop stale auth data when the refresh fails', async () => {
       //Arrange
       const globalCtx = {} as LuigiGlobalContext;
       globalContextConfigServiceMock.getGlobalContext.mockResolvedValue(
@@ -104,6 +104,10 @@ describe('SessionRefreshService', () => {
 
       // Assert
       expect(authService.refresh).toHaveBeenCalled();
+      expect(authService.authEvent).toHaveBeenCalledWith(
+        AuthEvent.AUTH_EXPIRED,
+      );
+      expect(luigiCoreService.removeAuthData).toHaveBeenCalledTimes(1);
       expect(authService.authEvent).not.toHaveBeenCalledWith(
         AuthEvent.AUTH_REFRESHED,
       );
@@ -128,6 +132,7 @@ describe('SessionRefreshService', () => {
       // Act & Assert
       await expect(service.refresh()).rejects.toThrow('Refresh failed');
       expect(authService.authEvent).not.toHaveBeenCalled();
+      expect(luigiCoreService.removeAuthData).not.toHaveBeenCalled();
       expect(luigiCoreService.setAuthData).not.toHaveBeenCalled();
       expect(luigiCoreService.setGlobalContext).not.toHaveBeenCalled();
     });
