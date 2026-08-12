@@ -1,5 +1,6 @@
 import { LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN } from '../../injection-tokens';
 import {
+  Config,
   ContentConfiguration,
   LocalDevelopmentSettings,
   LuigiNode,
@@ -211,7 +212,7 @@ export class LocalConfigurationServiceImpl {
     const initialConfigurations: ContentConfiguration[] =
       localDevelopmentSettings.configs
         .filter(
-          (config): config is { data: ContentConfiguration } =>
+          (config): config is Config & { data: ContentConfiguration } =>
             !!config.data && config.active !== false,
         )
         .map((config) => config.data);
@@ -220,7 +221,7 @@ export class LocalConfigurationServiceImpl {
       await Promise.allSettled(
         localDevelopmentSettings.configs
           .filter(
-            (config): config is { url: string } =>
+            (config): config is Config & { url: string } =>
               !!config.url && config.active !== false,
           )
           .map((config) =>

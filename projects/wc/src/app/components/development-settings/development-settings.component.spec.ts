@@ -378,6 +378,7 @@ describe('DevelopmentSettingsComponent', () => {
       component.toggleUrl(0);
       expect(component.configs()[0].active).toBe(false);
       expect(component.configs()[1].active).toBe(true);
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
   });
 
