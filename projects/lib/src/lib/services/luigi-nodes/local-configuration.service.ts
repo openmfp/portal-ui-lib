@@ -211,14 +211,18 @@ export class LocalConfigurationServiceImpl {
     const initialConfigurations: ContentConfiguration[] =
       localDevelopmentSettings.configs
         .filter(
-          (config): config is { data: ContentConfiguration } => !!config.data,
+          (config): config is { data: ContentConfiguration } =>
+            !!config.data && config.active !== false,
         )
         .map((config) => config.data);
 
     const configurations = (
       await Promise.allSettled(
         localDevelopmentSettings.configs
-          .filter((config): config is { url: string } => !!config.url)
+          .filter(
+            (config): config is { url: string } =>
+              !!config.url && config.active !== false,
+          )
           .map((config) =>
             lastValueFrom(this.http.get<ContentConfiguration>(config.url)).then(
               (contentConfiguration: ContentConfiguration) =>

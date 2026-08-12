@@ -48,11 +48,12 @@ File: `projects/wc/src/app/components/development-settings/development-settings.
 ```ts
 toggleUrl(index: number) {
   this.configs.update((configs) =>
-    configs.map((c, i) => i === index ? { ...c, active: !c.active } : c)
+    configs.map((c, i) => i === index ? { ...c, active: c.active === false } : c)
   );
   this.saveDevelopmentSettings();
 }
 ```
+// `c.active === false` treats undefined as active: undefined→false, false→true
 
 ---
 
