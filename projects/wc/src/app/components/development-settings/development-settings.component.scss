@@ -73,6 +73,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 9px 16px;
+
+  ui5-switch {
+    padding-right: 10px;
+  }
 }
 
 .list-item-text {
