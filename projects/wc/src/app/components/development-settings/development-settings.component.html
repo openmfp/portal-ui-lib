@@ -68,7 +68,7 @@
                   [checked]="item.active !== false"
                   (change)="toggleUrl(ind)"
                 ></ui5-switch>
-                <span class="list-item-text">{{ item.url }}</span>
+                <span class="list-item-text" [class.list-item-text--inactive]="item.active === false">{{ item.url }}</span>
                 <ui5-button
                   class="remove-button"
                   design="Transparent"

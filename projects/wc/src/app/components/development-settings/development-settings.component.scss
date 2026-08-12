@@ -81,4 +81,8 @@
 
 .list-item-text {
   flex: 1;
+
+  &--inactive {
+    color: var(--sapContent_DisabledTextColor, #a9a9a9);
+  }
 }
