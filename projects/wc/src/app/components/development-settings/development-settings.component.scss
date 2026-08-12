@@ -1,8 +1,14 @@
+:host {
+  display: block;
+}
+
 .container {
   padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .explanation {
@@ -42,7 +48,8 @@
   font-weight: 400;
   margin-bottom: -0.125rem;
   color: var(--sapContent_LabelColor, #4a4a4a);
-  text-wrap: nowrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .field-control {
@@ -59,12 +66,22 @@
 .config-list-item {
   width: 100%;
   padding: 0;
+  height: auto;
+  --_ui5_list_item_base_height: 0px;
 }
 
 .config-list-item::part(native-li) {
   padding: 0;
   background: transparent;
   border: none;
+  height: auto;
+  block-size: auto;
+}
+
+.config-list-item::part(content) {
+  overflow: visible;
+  height: auto;
+  block-size: auto;
 }
 
 .list-item-row {
@@ -75,12 +92,19 @@
   padding: 9px 16px;
 
   ui5-switch {
+    flex-shrink: 0;
     padding-right: 10px;
+  }
+
+  .remove-button {
+    flex-shrink: 0;
   }
 }
 
 .list-item-text {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
 
   &--inactive {
     color: var(--sapContent_DisabledTextColor, #a9a9a9);
