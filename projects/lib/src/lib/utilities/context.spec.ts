@@ -36,6 +36,81 @@ describe('visibleForContext', () => {
 
     expect(result).toBe(false);
   });
+
+  it('should return true when visibleForEntityContext is empty object', () => {
+    const ctx = { entityContext: { type: 'admin' } };
+    const node = { visibleForEntityContext: {} } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(true);
+  });
+
+  it('should return true when visibleForEntityContext is null', () => {
+    const ctx = { entityContext: { type: 'admin' } };
+    const node = { visibleForEntityContext: null } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(true);
+  });
+
+  it('should return true when visibleForEntityContext is undefined', () => {
+    const ctx = { entityContext: { type: 'admin' } };
+    const node = {} as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(true);
+  });
+
+  it('should return false when entityContext is null', () => {
+    const ctx = { entityContext: null };
+    const node = {
+      visibleForEntityContext: { type: 'admin' },
+    } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(false);
+  });
+
+  it('should return false when entityContext is undefined', () => {
+    const ctx = {};
+    const node = {
+      visibleForEntityContext: { type: 'admin' },
+    } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(false);
+  });
+
+  it('should match nested objects in visibleForEntityContext', () => {
+    const ctx = { entityContext: { settings: { theme: 'dark', lang: 'en' } } };
+    const node = {
+      visibleForEntityContext: { settings: { theme: 'dark' } },
+    } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(true);
+  });
+
+  it('should return false when nested objects do not match', () => {
+    const ctx = { entityContext: { settings: { theme: 'light' } } };
+    const node = {
+      visibleForEntityContext: { settings: { theme: 'dark' } },
+    } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(false);
+  });
+
+  it('should compare array values directly (not as objects)', () => {
+    const ctx = { entityContext: { tags: ['a', 'b'] } };
+    const node = {
+      visibleForEntityContext: { tags: ['a', 'b'] },
+    } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(false);
+  });
+
+  it('should match when source has null value and object has null', () => {
+    const ctx = { entityContext: { value: null } };
+    const node = {
+      visibleForEntityContext: { value: null },
+    } as any as LuigiNode;
+
+    expect(visibleForContext(ctx, node)).toBe(true);
+  });
 });
 
 describe('computeFetchContext', () => {
@@ -100,6 +175,29 @@ describe('computeFetchContext', () => {
 
     expect(result.get('project')).toStrictEqual({
       project: 'proj1',
+      user: 'user1',
+    });
+  });
+
+  it('should include additionalContextKeys when present in context', () => {
+    const entityNode = {
+      defineEntity: {
+        contextKey: 'projectId',
+        additionalContextKeys: ['region'],
+        dynamicFetchId: 'project',
+      },
+    } as LuigiNode;
+    const ctx = {
+      projectId: 'proj1',
+      region: 'eu',
+      userId: 'user1',
+    } as any as LuigiGlobalContext;
+
+    const result = computeDynamicFetchContext(entityNode, ctx);
+
+    expect(result.get('project')).toStrictEqual({
+      project: 'proj1',
+      region: 'eu',
       user: 'user1',
     });
   });

@@ -1,6 +1,20 @@
 import { LuigiNode } from '../models';
 import { matchesJMESPath } from './jmespath';
-import isMatch from 'lodash.ismatch';
+
+function isMatch(object: any, source: Record<string, any>): boolean {
+  if (source == null || Object.keys(source).length === 0) return true;
+  if (object == null) return false;
+  for (const key of Object.keys(source)) {
+    const srcVal = source[key];
+    const objVal = object[key];
+    if (srcVal !== null && typeof srcVal === 'object' && !Array.isArray(srcVal)) {
+      if (!isMatch(objVal, srcVal)) return false;
+    } else if (objVal !== srcVal) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export const visibleForContext = (ctx: any, node: LuigiNode): boolean => {
   // visibleForEntityContext is deprecated
