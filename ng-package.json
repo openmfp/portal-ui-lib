@@ -16,6 +16,6 @@
     "@luigi-project/plugin-auth-oauth2",
     "lodash.isequal",
     "lodash.ismatch",
-    "jmespath"
+    "@jmespath-community/jmespath"
   ]
 }
