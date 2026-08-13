@@ -1,0 +1,26 @@
+<div class="fd-page">
+  <link rel="stylesheet" href="/fundamental-styles/fundamental-styles.css" />
+  <div class="fd-page__content">
+    <div class="fd-container fd-container--centered">
+      <div class="content">
+        <span
+          [class]="'error-screen-icon ' + icon()"
+          data-e2e="error-icon"
+        ></span>
+
+        <div class="info" data-e2e="error-title">{{ title() }}</div>
+        <div class="hint" data-e2e="error-subtitle">{{ subtitle() }}</div>
+
+        <p class="fd-has-text-align-center">
+          <button
+            class="fd-button fd-button--action-bar fd-button--l"
+            (click)="goHome()"
+            data-e2e="error-go-home-button"
+          >
+            {{ buttonText() }}
+          </button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

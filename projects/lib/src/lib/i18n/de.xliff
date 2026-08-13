@@ -501,5 +501,41 @@
         <target>Feature Toggle ist über Query-Parameter aktiviert</target>
       </segment>
     </unit>
+    <!--ERROR SCREENS-->
+    <unit id="ERROR_NOT_FOUND_TITLE">
+      <segment>
+        <target>Seite nicht gefunden</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_NOT_FOUND_SUBTITLE">
+      <segment>
+        <target>Die gesuchte Seite existiert nicht.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_NOT_AUTHORIZED_TITLE">
+      <segment>
+        <target>Zugriff verweigert</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_NOT_AUTHORIZED_SUBTITLE">
+      <segment>
+        <target>Sie haben keine Berechtigung, auf diese Seite zuzugreifen.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_UNEXPECTED_TITLE">
+      <segment>
+        <target>Unerwarteter Fehler</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_UNEXPECTED_SUBTITLE">
+      <segment>
+        <target>Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_GO_HOME_BUTTON">
+      <segment>
+        <target>Zur Startseite</target>
+      </segment>
+    </unit>
   </file>
 </xliff>

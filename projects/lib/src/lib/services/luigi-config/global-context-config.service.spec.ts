@@ -37,9 +37,6 @@ describe('GlobalContextConfigService', () => {
     });
 
     globalContextConfigService = TestBed.inject(GlobalContextConfigService);
-
-    delete (window as any).location;
-    window.location = { origin: 'https://example.com' } as any;
   });
 
   it('should be created', () => {

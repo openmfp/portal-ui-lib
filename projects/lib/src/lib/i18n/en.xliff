@@ -505,5 +505,41 @@
         <target>Feature toggle is enabled by query parameter</target>
        </segment>
      </unit>
+    <!--ERROR SCREENS-->
+    <unit id="ERROR_NOT_FOUND_TITLE">
+      <segment>
+        <target>Page Not Found</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_NOT_FOUND_SUBTITLE">
+      <segment>
+        <target>The page you are looking for does not exist.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_NOT_AUTHORIZED_TITLE">
+      <segment>
+        <target>Access Denied</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_NOT_AUTHORIZED_SUBTITLE">
+      <segment>
+        <target>You do not have permission to access this page.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_UNEXPECTED_TITLE">
+      <segment>
+        <target>Unexpected Error</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_UNEXPECTED_SUBTITLE">
+      <segment>
+        <target>An unexpected error occurred. Please try again later.</target>
+      </segment>
+    </unit>
+    <unit id="ERROR_GO_HOME_BUTTON">
+      <segment>
+        <target>Go Home</target>
+      </segment>
+    </unit>
   </file>
 </xliff>
