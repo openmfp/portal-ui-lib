@@ -7,7 +7,7 @@ import { IframeService } from './iframe.service';
 describe('IframeService', () => {
   let service: IframeService;
   let luigiCoreService: LuigiCoreService;
-  let interceptor;
+  let interceptor: any;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

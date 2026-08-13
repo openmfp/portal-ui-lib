@@ -62,9 +62,10 @@ export class FeatureToggleComponent {
     const featureToggleSettings = featureToggleLocalStorage.read();
     this.LuigiClient()
       .getActiveFeatureToggles()
-      .forEach((ft: string) => {
-        if (!featureToggleSettings[ft]) {
-          featureToggleSettings[ft] = true;
+      .forEach((ft: String) => {
+        const featureToggle = ft.toString();
+        if (!featureToggleSettings[featureToggle]) {
+          featureToggleSettings[featureToggle] = true;
         }
       });
 

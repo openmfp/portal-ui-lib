@@ -219,7 +219,7 @@ describe('LocalConfigurationServiceImpl', () => {
       },
     ] as LuigiNode[];
 
-    let getLocalNodesSpy;
+    let getLocalNodesSpy: any;
     beforeEach(() => {
       getLocalNodesSpy = vi.spyOn(service, 'getLocalNodes');
     });
@@ -421,10 +421,10 @@ describe('LocalConfigurationServiceImpl', () => {
   });
 
   describe('Local development ', () => {
-    let mockQuerySelector;
-    let mockCreateElement;
-    let originalQuerySelector;
-    let originalCreateElement;
+    let mockQuerySelector: any;
+    let mockCreateElement: any;
+    let originalQuerySelector: any;
+    let originalCreateElement: any;
 
     beforeEach(() => {
       originalQuerySelector = document.querySelector;

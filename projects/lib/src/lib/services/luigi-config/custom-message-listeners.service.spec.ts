@@ -74,7 +74,7 @@ describe('CustomMessageListenersService', () => {
       customMessageListenersService.getMessageListeners();
     const testMessage = { data: 'test' };
     const testMf = {};
-    const testMfNodes = [];
+    const testMfNodes: any[] = [];
 
     messageListeners.customMessagesListeners['ProjectCreatedListener'](
       testMessage,

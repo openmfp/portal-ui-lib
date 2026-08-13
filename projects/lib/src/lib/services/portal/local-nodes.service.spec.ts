@@ -55,7 +55,7 @@ describe('LocalNodesService', () => {
 
   it('should get the luigi nodes from configurations', async () => {
     // Arrange
-    const expectedResponse = [];
+    const expectedResponse: any[] = [];
 
     // Act
     const getLuigiDataFromConfigurationsPromise =

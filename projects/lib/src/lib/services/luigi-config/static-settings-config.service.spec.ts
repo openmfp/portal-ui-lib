@@ -18,7 +18,7 @@ describe('StaticSettingsConfigServiceImpl', () => {
   let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
   let customStaticSettingsConfigServiceMock: MockedObject<StaticSettingsConfigService>;
 
-  let interceptFunction;
+  let interceptFunction: (...args: any[]) => void;
 
   beforeEach(() => {
     iframeServiceMock = mock();

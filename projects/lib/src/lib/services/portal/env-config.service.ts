@@ -8,7 +8,7 @@ import { lastValueFrom, tap } from 'rxjs';
 })
 export class EnvConfigService {
   private http = inject(HttpClient);
-  private envConfigCache: ClientEnvironment;
+  private envConfigCache!: ClientEnvironment;
 
   public async getEnvConfig(): Promise<ClientEnvironment> {
     if (this.envConfigCache) {

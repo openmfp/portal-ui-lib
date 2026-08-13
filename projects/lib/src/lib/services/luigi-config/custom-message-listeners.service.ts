@@ -39,7 +39,7 @@ export class CustomMessageListenersService {
     const result: MessageListeners = { customMessagesListeners: {} };
     for (const listener of this.listeners) {
       const obj = {
-        [listener.messageId()]: (msg, mf, mfNodes) => {
+        [listener.messageId()]: (msg: any, mf: any, mfNodes: any) => {
           listener.onCustomMessageReceived(msg, mf, mfNodes);
         },
       };

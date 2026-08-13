@@ -19,7 +19,12 @@ export class IframeService {
   }
 
   public iFrameCreationInterceptor() {
-    return (iframe, viewGroup: string, navigationNode, microFrontendType) => {
+    return (
+      iframe: any,
+      viewGroup: string,
+      navigationNode: any,
+      microFrontendType: any,
+    ) => {
       this.applyIframePermissions(iframe, navigationNode, viewGroup);
     };
   }
