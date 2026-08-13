@@ -19,6 +19,7 @@ export class ErrorScreenComponent implements OnInit {
   buttonText = signal<string>('');
   icon = signal<string>('');
   code = signal<string>('');
+  message = signal<string>('');
   expandedByDefault = signal<boolean>(false);
   errorDetailsLabel = signal<string>('');
 
@@ -35,6 +36,7 @@ export class ErrorScreenComponent implements OnInit {
     this.icon.set(data['icon'] ?? '');
     this.expandedByDefault.set(data['expandedByDefault'] ?? false);
     this.code.set(this.route.snapshot.queryParams['code'] ?? '');
+    this.message.set(this.route.snapshot.queryParams['message'] ?? '');
     const [title, subtitle, buttonText, errorDetailsLabel] = await Promise.all([
       this.i18nService.getTranslationAsync(data['titleKey']),
       this.i18nService.getTranslationAsync(data['subtitleKey']),

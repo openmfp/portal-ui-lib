@@ -11,14 +11,19 @@
         <div class="info" data-e2e="error-title">{{ title() }}</div>
         <div class="hint" data-e2e="error-subtitle">{{ subtitle() }}</div>
 
-        @if (code()) {
+        @if (code() || message()) {
           <details
             class="error-details"
             [attr.open]="expandedByDefault() ? '' : null"
             data-e2e="error-details"
           >
             <summary data-e2e="error-details-toggle">{{ errorDetailsLabel() }}</summary>
-            <span data-e2e="error-code">{{ code() }}</span>
+            @if (code()) {
+              <span data-e2e="error-code">{{ code() }}</span>
+            }
+            @if (message()) {
+              <span data-e2e="error-message">{{ message() }}</span>
+            }
           </details>
         }
 

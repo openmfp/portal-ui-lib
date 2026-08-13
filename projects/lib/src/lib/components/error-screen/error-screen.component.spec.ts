@@ -268,7 +268,32 @@ describe('ErrorScreenComponent', () => {
       expect(component.code()).toBe('ERR_NOT_FOUND');
     });
 
-    it('should have empty code when no query param provided', async () => {
+    it('should display message when ?message= query param is provided', async () => {
+      buildTestBed(UNEXPECTED_DATA, { message: 'Database connection failed' });
+      await TestBed.compileComponents();
+      fixture = TestBed.createComponent(ErrorScreenComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      await component.ngOnInit();
+
+      expect(component.message()).toBe('Database connection failed');
+    });
+
+    it('should display both code and message when both params are provided', async () => {
+      buildTestBed(UNEXPECTED_DATA, { code: '500', message: 'Internal Server Error' });
+      await TestBed.compileComponents();
+      fixture = TestBed.createComponent(ErrorScreenComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      await component.ngOnInit();
+
+      expect(component.code()).toBe('500');
+      expect(component.message()).toBe('Internal Server Error');
+    });
+
+    it('should have empty code and message when no query params provided', async () => {
       buildTestBed(UNEXPECTED_DATA);
       await TestBed.compileComponents();
       fixture = TestBed.createComponent(ErrorScreenComponent);
@@ -278,6 +303,7 @@ describe('ErrorScreenComponent', () => {
       await component.ngOnInit();
 
       expect(component.code()).toBe('');
+      expect(component.message()).toBe('');
     });
   });
 
