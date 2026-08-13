@@ -18,6 +18,9 @@ export class ErrorScreenComponent implements OnInit {
   subtitle = signal<string>('');
   buttonText = signal<string>('');
   icon = signal<string>('');
+  code = signal<string>('');
+  expandedByDefault = signal<boolean>(false);
+  errorDetailsLabel = signal<string>('');
 
   constructor(
     private route: ActivatedRoute,
@@ -30,14 +33,18 @@ export class ErrorScreenComponent implements OnInit {
     this.luigiCoreService.ux().hideAppLoadingIndicator();
     const data = this.route.snapshot.data;
     this.icon.set(data['icon'] ?? '');
-    const [title, subtitle, buttonText] = await Promise.all([
+    this.expandedByDefault.set(data['expandedByDefault'] ?? false);
+    this.code.set(this.route.snapshot.queryParams['code'] ?? '');
+    const [title, subtitle, buttonText, errorDetailsLabel] = await Promise.all([
       this.i18nService.getTranslationAsync(data['titleKey']),
       this.i18nService.getTranslationAsync(data['subtitleKey']),
       this.i18nService.getTranslationAsync('ERROR_GO_HOME_BUTTON'),
+      this.i18nService.getTranslationAsync('ERROR_DETAILS_LABEL'),
     ]);
     this.title.set(title);
     this.subtitle.set(subtitle);
     this.buttonText.set(buttonText);
+    this.errorDetailsLabel.set(errorDetailsLabel);
   }
 
   goHome(): void {

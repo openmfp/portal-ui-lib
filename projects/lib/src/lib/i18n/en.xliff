@@ -541,5 +541,10 @@
         <target>Go Home</target>
       </segment>
     </unit>
+    <unit id="ERROR_DETAILS_LABEL">
+      <segment>
+        <target>Error details</target>
+      </segment>
+    </unit>
   </file>
 </xliff>

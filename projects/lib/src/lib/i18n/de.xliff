@@ -537,5 +537,10 @@
         <target>Zur Startseite</target>
       </segment>
     </unit>
+    <unit id="ERROR_DETAILS_LABEL">
+      <segment>
+        <target>Fehlerdetails</target>
+      </segment>
+    </unit>
   </file>
 </xliff>

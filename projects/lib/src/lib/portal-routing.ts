@@ -28,6 +28,7 @@ export const portalRouts: Routes = [
       icon: 'sap-icon--alert',
       titleKey: 'ERROR_UNEXPECTED_TITLE',
       subtitleKey: 'ERROR_UNEXPECTED_SUBTITLE',
+      expandedByDefault: true,
     },
   },
   { path: '', component: LuigiComponent },
