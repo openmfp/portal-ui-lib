@@ -15,23 +15,7 @@ import {
 } from '../storage-service';
 import { ThemingService } from '../theming.service';
 import { Injectable, inject } from '@angular/core';
-
-function isEqual(a: unknown, b: unknown): boolean {
-  if (a === b) return true;
-  if (a == null || b == null) return false;
-  if (typeof a !== 'object' || typeof b !== 'object') return false;
-  if (Array.isArray(a) !== Array.isArray(b)) return false;
-  if (Array.isArray(a)) {
-    if (a.length !== (b as unknown[]).length) return false;
-    return a.every((val, i) => isEqual(val, (b as unknown[])[i]));
-  }
-  const objA = a as Record<string, unknown>;
-  const objB = b as Record<string, unknown>;
-  const keysA = Object.keys(objA);
-  const keysB = Object.keys(objB);
-  if (keysA.length !== keysB.length) return false;
-  return keysA.every(key => key in objB && isEqual(objA[key], objB[key]));
-}
+import { isEqual } from '../../utilities/comparison';
 
 export interface UserSettings {
   frame_userAccount?: any;
