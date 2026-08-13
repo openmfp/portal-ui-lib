@@ -15,7 +15,10 @@ import {
 } from '../storage-service';
 import { ThemingService } from '../theming.service';
 import { Injectable, inject } from '@angular/core';
-import isEqual from 'lodash.isequal';
+
+function isEqual(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
 
 export interface UserSettings {
   frame_userAccount?: any;

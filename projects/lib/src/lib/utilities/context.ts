@@ -1,6 +1,35 @@
 import { LuigiNode } from '../models';
 import { matchesJMESPath } from './jmespath';
-import isMatch from 'lodash.ismatch';
+
+function deepEqual(a: any, b: any): boolean {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (typeof a !== 'object' || typeof b !== 'object') return false;
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+  if (Array.isArray(a)) {
+    if (a.length !== b.length) return false;
+    return a.every((val: any, i: number) => deepEqual(val, b[i]));
+  }
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every(key => deepEqual(a[key], b[key]));
+}
+
+function isMatch(object: any, source: Record<string, any>): boolean {
+  if (source == null || Object.keys(source).length === 0) return true;
+  if (object == null) return false;
+  for (const key of Object.keys(source)) {
+    const srcVal = source[key];
+    const objVal = object[key];
+    if (srcVal !== null && typeof srcVal === 'object' && !Array.isArray(srcVal)) {
+      if (!isMatch(objVal, srcVal)) return false;
+    } else if (!deepEqual(objVal, srcVal)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export const visibleForContext = (ctx: any, node: LuigiNode): boolean => {
   // visibleForEntityContext is deprecated
