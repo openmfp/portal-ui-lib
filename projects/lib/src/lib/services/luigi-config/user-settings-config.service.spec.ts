@@ -240,6 +240,40 @@ describe('UserSettingsConfigService', () => {
       });
       expect(globalThis.location.reload).toHaveBeenCalled();
     });
+
+    it('should not reload when settings are equal but properties are in different order', async () => {
+      const childrenByEntity = {};
+      const result = await service.getUserSettings(childrenByEntity);
+
+      const newSettings = {
+        frame_development: {
+          localDevelopmentSettings: {
+            isActive: true,
+            configs: [],
+            serviceProviderConfig: { url: 'http://localhost' },
+          },
+        },
+      } as UserSettingsValues;
+      const previousSettings = {
+        frame_development: {
+          localDevelopmentSettings: {
+            serviceProviderConfig: { url: 'http://localhost' },
+            configs: [],
+            isActive: true,
+          },
+        },
+      } as UserSettingsValues;
+
+      vi.spyOn(localDevelopmentSettingsLocalStorage, 'read').mockReturnValue({
+        isActive: true,
+        configs: [],
+        serviceProviderConfig: {},
+      });
+      globalThis.location.reload = vi.fn();
+
+      await result.storeUserSettings(newSettings, previousSettings);
+      expect(globalThis.location.reload).not.toHaveBeenCalled();
+    });
   });
 
   describe('Theme handling', () => {
