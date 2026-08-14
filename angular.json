@@ -86,34 +86,30 @@
       "prefix": "wc",
       "architect": {
         "build": {
-          "builder": "ngx-build-plus:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist-wc/assets",
-            "singleBundle": true,
+            "outputPath": {
+              "base": "dist-wc",
+              "browser": "assets"
+            },
+            "browser": "projects/wc/src/main.ts",
+            "tsConfig": "projects/wc/tsconfig.app.json",
+            "index": false,
             "outputHashing": "none",
-            "index": "",
-            "main": "projects/wc/src/main.ts",
             "assets": ["projects/wc/src/assets"],
-            "scripts": []
+            "inlineStyleLanguage": "scss"
           },
           "configurations": {
             "production": {
               "optimization": true,
-              "buildOptimizer": true,
               "sourceMap": false,
               "extractLicenses": false,
-              "vendorChunk": false,
-              "namedChunks": false,
               "tsConfig": "projects/wc/tsconfig.app.prod.json"
             },
             "development": {
-              "aot": true,
               "optimization": false,
-              "buildOptimizer": false,
               "sourceMap": true,
               "extractLicenses": false,
-              "namedChunks": true,
-              "vendorChunk": true,
               "tsConfig": "projects/wc/tsconfig.app.json"
             }
           },
