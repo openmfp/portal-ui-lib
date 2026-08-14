@@ -15,6 +15,9 @@ export default [
       },
     },
     rules: {
+      // Allow explicit `any` — used pervasively for third-party Luigi/DOM
+      // callback signatures and dynamic config maps.
+      '@typescript-eslint/no-explicit-any': 'off',
       // Preserve the library's historical selector prefixes (was `.eslintrc.json`).
       '@angular-eslint/directive-selector': [
         'error',
