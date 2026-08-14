@@ -24,7 +24,7 @@ export const registerLuigiWebComponents = (
   if (!hash || !components[hash]) {
     return;
   }
-  return registerLuigiWebComponent(components[hash], injector);
+  registerLuigiWebComponent(components[hash], injector);
 };
 
 export const getSrc = () => {

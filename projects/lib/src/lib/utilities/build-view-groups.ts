@@ -1,7 +1,13 @@
-import { LuigiNode } from '../models';
+import { LuigiNode, LuigiNodeIFramePermissions } from '../models';
 
 export const buildViewGroups = (nodes: LuigiNode[]) => {
-  const viewGroups = {};
+  const viewGroups: Record<
+    string,
+    {
+      preloadUrl?: string;
+      requiredIFramePermissions?: LuigiNodeIFramePermissions;
+    }
+  > = {};
   nodes.forEach((node) => {
     if (node.viewGroup && node._preloadUrl) {
       viewGroups[node.viewGroup] = {

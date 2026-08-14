@@ -36,7 +36,9 @@ export class LuigiComponent implements OnInit {
       });
       this.luigiCoreService.setAuthData(this.authService.getAuthData());
     } catch (e) {
-      console.error(`Luigi Component init failed: ${e.toString()}`);
+      console.error(
+        `Luigi Component init failed: ${e instanceof Error ? e.toString() : String(e)}`,
+      );
     }
   }
 }

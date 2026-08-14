@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { ActivatedRouteSnapshot, DetachedRouteHandle } from '@angular/router';
 import { CustomReuseStrategy } from './custom-reuse-strategy';
+import { ActivatedRouteSnapshot, DetachedRouteHandle } from '@angular/router';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CustomReuseStrategy', () => {
   let strategy: CustomReuseStrategy;
@@ -45,7 +45,9 @@ describe('CustomReuseStrategy', () => {
 
     it('should return false when one route config is undefined', () => {
       const TestComponent = class {};
-      const future = { routeConfig: undefined } as unknown as ActivatedRouteSnapshot;
+      const future = {
+        routeConfig: undefined,
+      } as unknown as ActivatedRouteSnapshot;
       const curr = {
         routeConfig: { component: TestComponent },
       } as ActivatedRouteSnapshot;

@@ -293,10 +293,10 @@ describe('NodesProcessingService', () => {
       vi.spyOn(luigiNodesService, 'retrieveEntityChildren').mockImplementation(
         (
           _entityDefinition: EntityDefinition,
-          additionalContext: Record<string, string>,
+          additionalContext?: Record<string, string>,
         ) => {
           return Promise.resolve(
-            subsubchildren[additionalContext['subsub']] || [],
+            subsubchildren[additionalContext?.['subsub'] ?? ''] || [],
           );
         },
       );

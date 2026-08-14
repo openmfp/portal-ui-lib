@@ -2,7 +2,7 @@
   <div class="content">
     <div class="left-side">
       <div class="platform-mesh-logo">
-        <img [src]="logo" alt="logo" class="logo">
+        <img [src]="logo" alt="logo" class="logo" />
         <span class="platform-mesh-text">{{ header }}</span>
       </div>
       <div class="platform-mesh-content">
@@ -14,12 +14,7 @@
     <div class="right-side">
       <div class="pill-group">
         @for (item of links; track item.title) {
-          <a
-            class="pill"
-            [href]="item.link"
-            target="_blank"
-            rel="noopener"
-          >
+          <a class="pill" [href]="item.link" target="_blank" rel="noopener">
             <span>{{ item.title }}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -25,7 +25,7 @@ import {
 } from '@openmfp/portal-ui-lib';
 
 @Component({
-  selector: 'development-settings',
+  selector: 'wc-development-settings',
   standalone: true,
   templateUrl: './development-settings.component.html',
   styleUrl: './development-settings.component.scss',

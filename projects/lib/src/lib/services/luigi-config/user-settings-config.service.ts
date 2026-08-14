@@ -3,6 +3,7 @@ import {
   LocalDevelopmentSettings,
   LuigiNode,
   LuigiUserSettings,
+  LuigiUserSettingsGroup,
 } from '../../models';
 import { DependenciesVersionsService } from '../dependencies-versions.service';
 import { I18nService } from '../i18n.service';
@@ -195,7 +196,7 @@ export class UserSettingsConfigService {
   }
 
   private getGroupsFromUserSettings(luigiUserSettings: LuigiUserSettings[]) {
-    const settingsGroups = {};
+    const settingsGroups: Record<string, LuigiUserSettingsGroup> = {};
     luigiUserSettings.forEach((userConfig) => {
       if (userConfig?.groups) {
         Object.keys(userConfig.groups).forEach((groupId) => {

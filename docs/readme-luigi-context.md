@@ -15,8 +15,8 @@ The `portalContext` field in the context provides API URLs to often used service
 
 ## Entity Context
 
-The `entityContext` field in the context provides information about the current entity. 
-For example, when the user navigates to a `project` (or a sub entity such as `project.component`) 
+The `entityContext` field in the context provides information about the current entity.
+For example, when the user navigates to a `project` (or a sub entity such as `project.component`)
 information about the project is provided. Currently, information about a project and a component are provided. Structure:
 
 ```json
@@ -36,7 +36,6 @@ information about the project is provided. Currently, information about a projec
     }
 }
 ```
-
 
 ### Component
 
