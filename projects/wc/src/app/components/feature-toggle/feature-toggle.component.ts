@@ -1,7 +1,20 @@
 import { KeyValuePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+  computed,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Button } from '@fundamental-ngx/ui5-webcomponents/button';
 import { Input } from '@fundamental-ngx/ui5-webcomponents/input';
 import { Label } from '@fundamental-ngx/ui5-webcomponents/label';
@@ -62,9 +75,10 @@ export class FeatureToggleComponent {
     const featureToggleSettings = featureToggleLocalStorage.read();
     this.LuigiClient()
       .getActiveFeatureToggles()
-      .forEach((ft: string) => {
-        if (!featureToggleSettings[ft]) {
-          featureToggleSettings[ft] = true;
+      .forEach((ft: String) => {
+        const featureToggle = ft.toString();
+        if (!featureToggleSettings[featureToggle]) {
+          featureToggleSettings[featureToggle] = true;
         }
       });
 

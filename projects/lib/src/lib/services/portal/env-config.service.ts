@@ -1,6 +1,6 @@
+import { ClientEnvironment } from '../../models';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { ClientEnvironment } from '../../models';
 import { lastValueFrom, tap } from 'rxjs';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { lastValueFrom, tap } from 'rxjs';
 })
 export class EnvConfigService {
   private http = inject(HttpClient);
-  private envConfigCache: ClientEnvironment;
+  private envConfigCache!: ClientEnvironment;
 
   public async getEnvConfig(): Promise<ClientEnvironment> {
     if (this.envConfigCache) {
@@ -18,7 +18,7 @@ export class EnvConfigService {
     await lastValueFrom(
       this.http
         .get<ClientEnvironment>('/rest/envconfig')
-        .pipe(tap((result) => (this.envConfigCache = result)))
+        .pipe(tap((result) => (this.envConfigCache = result))),
     );
 
     return this.envConfigCache;

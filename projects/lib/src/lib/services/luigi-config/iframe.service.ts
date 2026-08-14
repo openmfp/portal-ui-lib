@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
 import { LuigiNode } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,12 @@ export class IframeService {
   }
 
   public iFrameCreationInterceptor() {
-    return (iframe, viewGroup: string, navigationNode, microFrontendType) => {
+    return (
+      iframe: any,
+      viewGroup: string,
+      navigationNode: any,
+      microFrontendType: any,
+    ) => {
       this.applyIframePermissions(iframe, navigationNode, viewGroup);
     };
   }
@@ -27,13 +32,13 @@ export class IframeService {
   private applyIframePermissions(
     iframe: Element,
     node: LuigiNode,
-    viewGroup: string
+    viewGroup: string,
   ): void {
     let permissions = node?.requiredIFramePermissions;
 
     if (!permissions && viewGroup) {
       const viewGroupSettings = this.luigiCoreService.getConfigValue(
-        'navigation.viewGroupSettings'
+        'navigation.viewGroupSettings',
       );
       const viewGroupConfig =
         (viewGroupSettings && viewGroupSettings[viewGroup]) || {};
@@ -66,7 +71,7 @@ export class IframeService {
         if (
           this.isIFrameSandboxPermissionAllowed(
             permission,
-            this.getIframeSrc(iframe)
+            this.getIframeSrc(iframe),
           )
         ) {
           // sandbox permission are separated by whitespace

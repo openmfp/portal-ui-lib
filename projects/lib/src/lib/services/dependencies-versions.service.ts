@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -9,13 +9,13 @@ export class DependenciesVersionsService {
   read(): Promise<Record<string, string>> {
     return firstValueFrom(
       this.httpClient.get<Record<string, string>>(
-        '/assets/dependencies-versions.json'
-      )
+        '/assets/dependencies-versions.json',
+      ),
     );
   }
 
   transformVersionsConfig(
-    versionsConfig: Record<string, string>
+    versionsConfig: Record<string, string>,
   ): Record<string, any> {
     return Object.entries(versionsConfig).reduce(
       (acc, [key, value]) => {
@@ -32,7 +32,7 @@ export class DependenciesVersionsService {
 
         return acc;
       },
-      {} as Record<string, any>
+      {} as Record<string, any>,
     );
   }
 }

@@ -1,64 +1,54 @@
-
 @font-face {
   font-family: '72';
-  src: url('/fundamental-styles/72-Light-full.woff')
-  format('woff');
+  src: url('/fundamental-styles/72-Light-full.woff') format('woff');
   font-weight: 300;
   font-style: normal;
 }
 @font-face {
   font-family: '72';
-  src: url('/fundamental-styles/72-Light-full.woff2')
-  format('woff2');
+  src: url('/fundamental-styles/72-Light-full.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: '72';
-  src: url('/fundamental-styles/72-Bold-full.woff')
-  format('woff');
+  src: url('/fundamental-styles/72-Bold-full.woff') format('woff');
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
   font-family: '72';
-  src: url('/fundamental-styles/72-Bold-full.woff2')
-  format('woff2');
+  src: url('/fundamental-styles/72-Bold-full.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: '72';
-  src: url('/fundamental-styles/72-Regular-full.woff')
-  format('woff');
+  src: url('/fundamental-styles/72-Regular-full.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: '72';
-  src: url('/fundamental-styles/72-Regular-full.woff2')
-  format('woff2');
+  src: url('/fundamental-styles/72-Regular-full.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'SAP-icons';
-  src: url('/fundamental-styles/SAP-icons.woff')
-  format('woff');
+  src: url('/fundamental-styles/SAP-icons.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'SAP-icons';
-  src: url('/fundamental-styles/SAP-icons.woff2')
-  format('woff2');
+  src: url('/fundamental-styles/SAP-icons.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
-
 
 body {
   margin: 0;
@@ -72,7 +62,7 @@ body {
   text-align: center;
 }
 a.fd-button {
-  color: #FFF;
+  color: #fff;
 }
 .fd-page {
   margin-top: 32px;
@@ -86,7 +76,8 @@ a.fd-button {
 .fd-has-text-align-center {
   text-align: center;
 }
-.info, .hint {
+.info,
+.hint {
   text-align: center;
   margin: 0;
 }

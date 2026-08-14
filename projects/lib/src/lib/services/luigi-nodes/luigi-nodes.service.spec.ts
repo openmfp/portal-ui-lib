@@ -419,9 +419,7 @@ describe('LuigiNodesService', () => {
       });
 
       it('should return nodes unchanged when provider nodeContext is undefined', async () => {
-        const nodesWithContext = [
-          createNodeWithEntityType('home', 'p'),
-        ];
+        const nodesWithContext = [createNodeWithEntityType('home', 'p')];
         const portalConfig: PortalConfig = {
           providers: [
             {

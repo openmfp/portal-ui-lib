@@ -230,7 +230,9 @@ export class NodesProcessingService {
         dynamicRetrievedChildren = [...staticChildren, ...serverAndLocalNodes];
         staticRetrievedChildren = staticChildren;
 
-        this.updateLuigiConfigWithDynamicRetrievedNodes(dynamicRetrievedChildren);
+        this.updateLuigiConfigWithDynamicRetrievedNodes(
+          dynamicRetrievedChildren,
+        );
       } catch (error) {
         dynamicRetrievedChildren = staticChildren;
         staticRetrievedChildren = undefined;

@@ -65,7 +65,7 @@ export class NodeSortingService {
 
   sortNodes(nodes: LuigiNode[]): LuigiNode[] {
     const entityRootNodes: LuigiNode[] = [];
-    const slottedChildrenMap = {};
+    const slottedChildrenMap: Record<string, LuigiNode[]> = {};
     const otherChildren: LuigiNode[] = [];
     const slotNodes: LuigiNode[] = [];
     let defaultSlot;

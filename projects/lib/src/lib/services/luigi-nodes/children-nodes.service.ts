@@ -33,7 +33,7 @@ export class ChildrenNodesService {
       return [];
     }
 
-    const entityContext = {};
+    const entityContext: Record<string, any> = {};
 
     const fetchContext = computeDynamicFetchContext(entityNode, ctx);
     await Promise.all(

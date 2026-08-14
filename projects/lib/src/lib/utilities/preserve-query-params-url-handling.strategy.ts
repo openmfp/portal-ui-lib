@@ -1,8 +1,6 @@
 import { UrlHandlingStrategy, UrlTree } from '@angular/router';
 
-export class PreserveQueryParamsUrlHandlingStrategy
-  implements UrlHandlingStrategy
-{
+export class PreserveQueryParamsUrlHandlingStrategy implements UrlHandlingStrategy {
   shouldProcessUrl(url: UrlTree): boolean {
     return true;
   }
