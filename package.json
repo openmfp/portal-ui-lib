@@ -13,10 +13,10 @@
     "build": "npm run build:lib && npm run build:wc",
     "build:dev": "npm run build:lib && npm run build:wc:dev",
     "build:lib": "ng build lib && npm run xliff2json",
-    "build:wc": "ng build wc && npm run build:wc:rename && npm run build:wc:copy",
-    "build:wc:rename": "move-cli dist-wc/assets/main.js dist-wc/assets/openmfp-portal-ui-wc.js",
+    "build:wc": "ng build wc && npm run build:wc:bundle && npm run build:wc:copy",
+    "build:wc:bundle": "node scripts/bundle-wc.mjs",
     "build:wc:copy": "cpx \"dist-wc/**/*\" dist",
-    "build:wc:dev": "ng build wc --configuration development && npm run build:wc:rename && npm run build:wc:copy",
+    "build:wc:dev": "ng build wc --configuration development && npm run build:wc:bundle && npm run build:wc:copy",
     "build:watch": "mkdirp dist && nodemon --ignore dist --ignore dist-wc --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build:dev && cd dist && yalc publish --push --sig\"",
     "watch": "npm run build --watch --configuration development",
     "test": "ng test --watch=false",
@@ -56,12 +56,12 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "22.1.3",
     "@angular-eslint/builder": "^22.1.0",
     "@angular-eslint/eslint-plugin": "^22.1.0",
     "@angular-eslint/eslint-plugin-template": "^22.1.0",
     "@angular-eslint/schematics": "^22.1.0",
     "@angular-eslint/template-parser": "^22.1.0",
+    "@angular/build": "22.1.3",
     "@angular/cdk": "22.1.2",
     "@angular/cli": "22.1.3",
     "@angular/common": "22.1.1",
@@ -85,13 +85,12 @@
     "@typescript-eslint/parser": "8.66.0",
     "@vitest/coverage-v8": "4.1.10",
     "cpx2": "9.0.0",
+    "esbuild": "0.28.1",
     "eslint": "9.39.5",
     "jsdom": "30.0.1",
     "kubernetes-types": "1.30.0",
     "mkdirp": "3.0.1",
-    "move-cli": "2.0.0",
     "ng-packagr": "22.1.1",
-    "ngx-build-plus": "20.0.0",
     "nodemon": "3.1.14",
     "prettier": "3.9.6",
     "rimraf": "6.1.3",
@@ -104,6 +103,7 @@
   "overrides": {
     "@openmfp/eslint-config-typescript": {
       "angular-eslint": "^22.1.0"
-    }
+    },
+    "image-size": "npm:empty-npm-package@1.0.0"
   }
 }
