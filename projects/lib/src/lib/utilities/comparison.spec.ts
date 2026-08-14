@@ -61,6 +61,12 @@ describe('deepEqual', () => {
     expect(deepEqual({ x: { y: 1 } }, { x: { y: 1 } })).toBe(true);
     expect(deepEqual({ x: { y: 1 } }, { x: { y: 2 } })).toBe(false);
   });
+
+  it('should return false for non-plain objects with different state', () => {
+    expect(deepEqual(new Date(0), new Date(1))).toBe(false);
+    expect(deepEqual(new Date(0), {})).toBe(false);
+    expect(deepEqual(/abc/, /def/)).toBe(false);
+  });
 });
 
 describe('isEqual', () => {
@@ -105,5 +111,21 @@ describe('isMatch', () => {
   it('should match null values in source', () => {
     expect(isMatch({ val: null }, { val: null })).toBe(true);
     expect(isMatch({ val: 1 }, { val: null })).toBe(false);
+  });
+
+  it('should return false when source key does not exist in object', () => {
+    expect(isMatch({}, { flag: undefined })).toBe(false);
+    expect(isMatch({ other: 1 }, { missing: 'x' })).toBe(false);
+  });
+
+  it('should do partial unordered array matching', () => {
+    expect(isMatch({ tags: ['admin', 'auditor'] }, { tags: ['admin'] })).toBe(true);
+    expect(isMatch({ tags: ['auditor', 'admin'] }, { tags: ['admin'] })).toBe(true);
+    expect(isMatch({ tags: ['user'] }, { tags: ['admin'] })).toBe(false);
+  });
+
+  it('should match when source array is a subset regardless of order', () => {
+    expect(isMatch({ items: [1, 2, 3] }, { items: [3, 1] })).toBe(true);
+    expect(isMatch({ items: [1, 2] }, { items: [3] })).toBe(false);
   });
 });
