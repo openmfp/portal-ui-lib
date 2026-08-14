@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { matchesJMESPath, transformLegacyBacktickLiterals } from './jmespath';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('transformLegacyBacktickLiterals', () => {
   it('should return expression unchanged when no backticks present', () => {

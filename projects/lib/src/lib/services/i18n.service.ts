@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
 import { LuigiCoreService } from './luigi-core.service';
 import { EnvConfigService } from './portal';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +33,7 @@ export class I18nService {
   getTranslation(
     key: string,
     interpolations?: Record<string, string>,
-    locale?: string
+    locale?: string,
   ) {
     let result = this.getInternalTranslation(key, interpolations, locale);
     // fallback language
@@ -42,7 +42,7 @@ export class I18nService {
         key,
         this.translationTable,
         this.fallbackLanguage,
-        interpolations
+        interpolations,
       );
     }
     return result ? result : key;
@@ -60,7 +60,7 @@ export class I18nService {
   async getTranslationAsync(
     key: string,
     interpolations?: Record<string, string>,
-    locale?: string
+    locale?: string,
   ): Promise<string> {
     return new Promise((res) => {
       let result = this.getInternalTranslation(key, interpolations, locale);
@@ -75,7 +75,7 @@ export class I18nService {
               key,
               this.translationTable,
               this.fallbackLanguage,
-              interpolations
+              interpolations,
             );
             res(result ? result : key);
           });
@@ -84,7 +84,7 @@ export class I18nService {
             key,
             this.translationTable,
             this.fallbackLanguage,
-            interpolations
+            interpolations,
           );
           res(result ? result : key);
         }
@@ -107,7 +107,7 @@ export class I18nService {
     key: string,
     translationTable: any,
     locale: string,
-    interpolations?: Record<string, string>
+    interpolations?: Record<string, string>,
   ) {
     if (translationTable[locale]) {
       const translation =
@@ -135,7 +135,7 @@ export class I18nService {
       Object.keys(interpolations).forEach((item) => {
         value = value.replace(
           new RegExp('{' + item + '}', 'gi'),
-          interpolations[item]
+          interpolations[item],
         );
       });
       return value;
@@ -189,7 +189,7 @@ export class I18nService {
   private getInternalTranslation(
     key: string,
     interpolations?: Record<string, string>,
-    locale?: string
+    locale?: string,
   ): string {
     if (!key) return '';
     this.currentLanguage =
@@ -200,7 +200,7 @@ export class I18nService {
       key,
       this.translationTable,
       this.currentLanguage,
-      interpolations
+      interpolations,
     );
   }
 

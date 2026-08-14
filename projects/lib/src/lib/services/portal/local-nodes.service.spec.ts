@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { provideHttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
+import { LuigiCoreService } from '../luigi-core.service';
 import { LocalNodesService } from './local-nodes.service';
+import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { LuigiCoreService } from '../luigi-core.service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('LocalNodesService', () => {
   let service: LocalNodesService;
