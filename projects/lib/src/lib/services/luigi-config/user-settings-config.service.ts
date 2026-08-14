@@ -246,6 +246,7 @@ export class UserSettingsConfigService {
       viewUrl: '/assets/openmfp-portal-ui-wc.js#development-settings',
       webcomponent: {
         selfRegistered: true,
+        type: 'module',
       },
       context: {
         translationTable: this.i18nService.translationTable,
@@ -320,6 +321,7 @@ export class UserSettingsConfigService {
       viewUrl: '/assets/openmfp-portal-ui-wc.js#feature-toggle',
       webcomponent: {
         selfRegistered: true,
+        type: 'module',
       },
       context: {
         translationTable: this.i18nService.translationTable,

@@ -31,9 +31,7 @@ describe('bootstrap', () => {
     } as any);
     authService.refresh.mockResolvedValue(undefined);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(envConfigService.getEnvConfig).toHaveBeenCalled();
     expect(authService.refresh).toHaveBeenCalled();
@@ -45,9 +43,7 @@ describe('bootstrap', () => {
       clientId: 'client-123',
     } as any);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(envConfigService.getEnvConfig).toHaveBeenCalled();
     expect(authService.refresh).not.toHaveBeenCalled();
@@ -59,9 +55,7 @@ describe('bootstrap', () => {
       clientId: '',
     } as any);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(envConfigService.getEnvConfig).toHaveBeenCalled();
     expect(authService.refresh).not.toHaveBeenCalled();
@@ -73,9 +67,7 @@ describe('bootstrap', () => {
       clientId: '',
     } as any);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(envConfigService.getEnvConfig).toHaveBeenCalled();
     expect(authService.refresh).not.toHaveBeenCalled();
@@ -87,9 +79,7 @@ describe('bootstrap', () => {
       clientId: 'client-123',
     } as any);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(authService.refresh).not.toHaveBeenCalled();
   });
@@ -100,9 +90,7 @@ describe('bootstrap', () => {
       clientId: null,
     } as any);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(authService.refresh).not.toHaveBeenCalled();
   });
@@ -114,9 +102,7 @@ describe('bootstrap', () => {
     const error = new Error('Config error');
     envConfigService.getEnvConfig.mockRejectedValue(error);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error bootstrapping the app:',
@@ -138,9 +124,7 @@ describe('bootstrap', () => {
     } as any);
     authService.refresh.mockRejectedValue(error);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error bootstrapping the app:',
@@ -156,9 +140,7 @@ describe('bootstrap', () => {
       clientId: undefined,
     } as any);
 
-    await TestBed.runInInjectionContext(async () => {
-      await bootstrap();
-    });
+    await bootstrap(authService, envConfigService);
 
     expect(authService.refresh).not.toHaveBeenCalled();
   });

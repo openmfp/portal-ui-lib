@@ -191,6 +191,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   isolateView?: boolean;
   webcomponent?: {
     selfRegistered: boolean;
+    type?: 'module';
   };
   children?:
     | LuigiNode[]

@@ -28,7 +28,8 @@ export const registerLuigiWebComponents = (
 };
 
 export const getSrc = () => {
-  const src = document.currentScript?.getAttribute('src');
+  const src =
+    document.currentScript?.getAttribute('src') ?? import.meta.url;
   if (!src) {
     throw new Error('Not defined src of currentScript.');
   }
