@@ -1,6 +1,5 @@
 import { EntityDefinition } from './luigi';
 
-
 export interface PortalContext extends Record<string, any> {}
 
 export interface EntityContext extends Record<string, any> {}

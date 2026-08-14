@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
 import { CustomMessageListener } from './custom-message-listener';
 import { CustomMessageListenersService } from './custom-message-listeners.service';
 import { ReloadLuigiConfigListener } from './custom-message-listeners/reload-luigi-config.listener';
 import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('CustomMessageListenersService', () => {
   let customMessageListenersService: CustomMessageListenersService;
@@ -74,7 +74,7 @@ describe('CustomMessageListenersService', () => {
       customMessageListenersService.getMessageListeners();
     const testMessage = { data: 'test' };
     const testMf = {};
-    const testMfNodes = [];
+    const testMfNodes: any[] = [];
 
     messageListeners.customMessagesListeners['ProjectCreatedListener'](
       testMessage,

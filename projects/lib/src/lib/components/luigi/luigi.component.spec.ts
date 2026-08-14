@@ -24,9 +24,9 @@ describe('LuigiComponent', () => {
 
   beforeEach(() => {
     staticSettingsConfigService = mock();
-    staticSettingsConfigService.getStaticSettingsConfig.mockResolvedValue(
-      { settings: 's' } as any,
-    );
+    staticSettingsConfigService.getStaticSettingsConfig.mockResolvedValue({
+      settings: 's',
+    } as any);
     featureTogglesService = mock();
     featureTogglesService.initFeatureToggles.mockResolvedValue(undefined);
     authService = {

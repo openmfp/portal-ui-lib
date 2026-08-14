@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { LuigiNode } from '../models';
 import { buildViewGroups } from './build-view-groups';
+import { describe, expect, it } from 'vitest';
 
 describe('buildViewGroups', () => {
   it('should build view group settings for nodes with preload urls', () => {

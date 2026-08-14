@@ -1,25 +1,27 @@
 <div>
   @let textTable = texts();
   <div class="container">
-      <div>
-        <div class="explanation">{{ textTable.explanation }}</div>
-        <ui5-link
-          class="line-height-normal"
-          target="_blank"
-          href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
-        >
-          {{ textTable.link }}
-        </ui5-link>
-      </div>
+    <div>
+      <div class="explanation">{{ textTable.explanation }}</div>
+      <ui5-link
+        class="line-height-normal"
+        target="_blank"
+        href="https://github.com/openmfp/portal-ui-lib/blob/main/README.md#Local-Application-Development"
+      >
+        {{ textTable.link }}
+      </ui5-link>
+    </div>
 
-      <div class="is-active-switch">
-        <h4 class="line-height-normal">{{ textTable.isDevelopmentModeActive }}</h4>
-        <ui5-switch
-          class="switch-active"
-          [checked]="isActive()"
-          (change)="switchIsActive()"
-        ></ui5-switch>
-      </div>
+    <div class="is-active-switch">
+      <h4 class="line-height-normal">
+        {{ textTable.isDevelopmentModeActive }}
+      </h4>
+      <ui5-switch
+        class="switch-active"
+        [checked]="isActive()"
+        (change)="switchIsActive()"
+      ></ui5-switch>
+    </div>
 
     <div class="config-input">
       <h4 class="line-height-normal">{{ textTable.urlsInput.title }}</h4>
@@ -55,11 +57,7 @@
       </div>
       <div class="config-list">
         <ui5-list class="config-list-wrapper" separators="Inner">
-          @for (
-            item of configs();
-            track item;
-            let ind = $index
-          ) {
+          @for (item of configs(); track item; let ind = $index) {
             <ui5-li-custom class="config-list-item">
               <div class="list-item-row">
                 <span class="list-item-text">{{ item.url }}</span>
@@ -81,43 +79,38 @@
       <h4 class="line-height-normal">
         {{ textTable.serviceProviderConfig.title }}
       </h4>
-      <ui5-label
-        class="line-height-normal field-label"
-        for="input-key"
-      >
+      <ui5-label class="line-height-normal field-label" for="input-key">
         {{ textTable.serviceProviderConfig.explanation }}
       </ui5-label>
       <br />
       <div [formGroup]="serviceProviderForm">
-        <ui5-label
-          class="line-height-normal field-label"
-          for="input-key"
-        >
+        <ui5-label class="line-height-normal field-label" for="input-key">
           {{ textTable.serviceProviderConfig.keyInput.label }}
         </ui5-label>
         <ui5-input
           class="line-height-normal field-control"
           id="input-key"
           type="Text"
-          placeholder="{{ textTable.serviceProviderConfig.keyInput.placeholder }}"
+          placeholder="{{
+            textTable.serviceProviderConfig.keyInput.placeholder
+          }}"
           aria-required="true"
           [formControl]="serviceProviderForm.controls.key"
         ></ui5-input>
         <br />
-        <ui5-label
-          class="line-height-normal field-label"
-          for="input-value"
-        >
+        <ui5-label class="line-height-normal field-label" for="input-value">
           {{ textTable.serviceProviderConfig.valueInput.label }}
         </ui5-label>
         <ui5-input
           class="line-height-normal field-control"
           id="input-value"
           type="Text"
-          placeholder="{{ textTable.serviceProviderConfig.valueInput.placeholder }}"
+          placeholder="{{
+            textTable.serviceProviderConfig.valueInput.placeholder
+          }}"
           aria-required="true"
           [formControl]="serviceProviderForm.controls.value"
-          ></ui5-input>
+        ></ui5-input>
       </div>
       <div class="config-input-buttons">
         <ui5-button
@@ -135,9 +128,7 @@
         <ui5-button
           design="Transparent"
           class="compact-button"
-          (click)="
-            serviceProviderForm.reset()
-          "
+          (click)="serviceProviderForm.reset()"
         >
           {{ textTable.clearButton }}
         </ui5-button>
@@ -145,9 +136,7 @@
       <div class="config-list">
         <ui5-list class="config-list-wrapper" separators="Inner">
           @for (
-            item of Object.entries(
-              serviceProviderConfig()
-            );
+            item of Object.entries(serviceProviderConfig());
             track item[0];
             let ind = $index
           ) {

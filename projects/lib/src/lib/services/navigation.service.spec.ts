@@ -1,7 +1,7 @@
 import { NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthEvent } from '../models';
-import { DefaultNavigationRedirectStrategy } from './navigation-redirect-strategy';
 import { LoginEventService, LoginEventType } from './login-event.service';
+import { DefaultNavigationRedirectStrategy } from './navigation-redirect-strategy';
 import { NavigationService } from './navigation.service';
 import { AuthService } from './portal';
 import { LocalStorageKeys } from './storage-service';
@@ -150,10 +150,7 @@ describe('NavigationService', () => {
     });
 
     it('should clear current URL from localStorage', () => {
-      memoryStorage.setItem(
-        LocalStorageKeys.LAST_NAVIGATION_URL,
-        '/test-url',
-      );
+      memoryStorage.setItem(LocalStorageKeys.LAST_NAVIGATION_URL, '/test-url');
 
       loginEvents.next({
         type: LoginEventType.LOGIN_TRIGGERED,
