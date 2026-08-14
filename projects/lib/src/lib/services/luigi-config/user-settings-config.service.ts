@@ -16,7 +16,7 @@ import {
 } from '../storage-service';
 import { ThemingService } from '../theming.service';
 import { Injectable, inject } from '@angular/core';
-import isEqual from 'lodash.isequal';
+import { isEqual } from '../../utilities/comparison';
 
 export interface UserSettings {
   frame_userAccount?: any;
