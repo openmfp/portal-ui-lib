@@ -64,11 +64,11 @@
           ) {
             <ui5-li-custom class="config-list-item">
               <div class="list-item-row">
+                <span class="list-item-text" [class.list-item-text--inactive]="item.active === false" title="{{ item.url }}">{{ item.url }}</span>
                 <ui5-switch
                   [checked]="item.active !== false"
                   (change)="toggleUrl(ind)"
                 ></ui5-switch>
-                <span class="list-item-text" [class.list-item-text--inactive]="item.active === false" title="{{ item.url }}">{{ item.url }}</span>
                 <ui5-button
                   class="remove-button"
                   design="Transparent"
@@ -78,6 +78,7 @@
                 ></ui5-button>
               </div>
             </ui5-li-custom>
+
           }
         </ui5-list>
       </div>
