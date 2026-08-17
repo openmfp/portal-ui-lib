@@ -31,7 +31,7 @@ describe('provideLuigiWebComponents', () => {
     expect(provideLuigiWebComponents()).toBeDefined();
   });
 
-  it('should register the component matching the source hash', () => {
+  it('should register all web components on initialization', () => {
     Object.defineProperty(document, 'currentScript', {
       value: {
         getAttribute: () => 'http://localhost:12345/main.js#development-settings',
@@ -45,6 +45,6 @@ describe('provideLuigiWebComponents', () => {
     });
     TestBed.inject(EnvironmentInjector);
 
-    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(1);
+    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(3);
   });
 });

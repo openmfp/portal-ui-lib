@@ -58,7 +58,33 @@ describe('Luigi WebComponents Utils', () => {
     expect(_registerWebcomponent).toHaveBeenCalledWith(src, element);
   });
 
-  it('registerLuigiWebComponents', () => {
+  it('registerLuigiWebComponent with explicit url', () => {
+    const component = mock<Type<any>>();
+    const injector = mock<Injector>();
+    const element = mock<angularElements.NgElementConstructor<any>>();
+
+    (
+      angularElements.createCustomElement as MockedFunction<
+        typeof angularElements.createCustomElement
+      >
+    ).mockReturnValue(element);
+    const _registerWebcomponent = vi.fn();
+    // @ts-ignore
+    window.Luigi = { _registerWebcomponent };
+
+    wc.registerLuigiWebComponent(
+      component,
+      injector,
+      'http://localhost:12345/main.js#explicit',
+    );
+
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#explicit',
+      element,
+    );
+  });
+
+  it('registerLuigiWebComponents registers every component under its own url hash', () => {
     const component1 = mock<Type<any>>();
     const component2 = mock<Type<any>>();
     const components = {
@@ -83,52 +109,41 @@ describe('Luigi WebComponents Utils', () => {
     expect(createCustomElementSpy).toHaveBeenCalledWith(component1, {
       injector,
     });
+    expect(createCustomElementSpy).toHaveBeenCalledWith(component2, {
+      injector,
+    });
     expect(_registerWebcomponent).toHaveBeenCalledWith(
       'http://localhost:12345/main.js#component1',
       element,
     );
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#component2',
+      element,
+    );
   });
 
-  it('registerLuigiWebComponents no hash', () => {
+  it('registerLuigiWebComponents derives the base url when the current src has no hash', () => {
     const component1 = mock<Type<any>>();
-    const component2 = mock<Type<any>>();
-    const components = {
-      component1,
-      component2,
-    };
+    const components = { component1 };
     const injector = mock<Injector>();
-    const createCustomElementSpy = (
+    const element = mock<angularElements.NgElementConstructor<any>>();
+    (
       angularElements.createCustomElement as MockedFunction<
         typeof angularElements.createCustomElement
       >
-    ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
+    ).mockReturnValue(element);
+    const _registerWebcomponent = vi.fn();
+    // @ts-ignore
+    window.Luigi = { _registerWebcomponent };
 
     setCurrentScript('http://localhost:12345/main.js');
 
     wc.registerLuigiWebComponents(components, injector);
 
-    expect(createCustomElementSpy).not.toHaveBeenCalled();
-  });
-
-  it('registerLuigiWebComponents no corresponding component', () => {
-    const component1 = mock<Type<any>>();
-    const component2 = mock<Type<any>>();
-    const components = {
-      component1,
-      component2,
-    };
-    const injector = mock<Injector>();
-    const createCustomElementSpy = (
-      angularElements.createCustomElement as MockedFunction<
-        typeof angularElements.createCustomElement
-      >
-    ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
-
-    setCurrentScript('http://localhost:12345/main.js#component7');
-
-    wc.registerLuigiWebComponents(components, injector);
-
-    expect(createCustomElementSpy).not.toHaveBeenCalled();
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#component1',
+      element,
+    );
   });
 
   describe('getSrc', () => {
