@@ -11,6 +11,14 @@ vi.mock('@angular/elements', () => ({
 describe('Luigi WebComponents Utils', () => {
   let originalCurrentScript: any;
 
+  const setCurrentScript = (src: string | null) => {
+    Object.defineProperty(document, 'currentScript', {
+      value: { getAttribute: () => src },
+      writable: true,
+      configurable: true,
+    });
+  };
+
   beforeEach(() => {
     originalCurrentScript = document.currentScript;
     vi.clearAllMocks();
@@ -40,13 +48,7 @@ describe('Luigi WebComponents Utils', () => {
     // @ts-ignore
     window.Luigi = { _registerWebcomponent };
 
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => src,
-      },
-      writable: true,
-      configurable: true,
-    });
+    setCurrentScript(src);
 
     wc.registerLuigiWebComponent(component, injector);
 
@@ -74,13 +76,7 @@ describe('Luigi WebComponents Utils', () => {
     // @ts-ignore
     window.Luigi = { _registerWebcomponent };
 
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => 'http://localhost:12345/main.js#component1',
-      },
-      writable: true,
-      configurable: true,
-    });
+    setCurrentScript('http://localhost:12345/main.js#component1');
 
     wc.registerLuigiWebComponents(components, injector);
 
@@ -107,13 +103,7 @@ describe('Luigi WebComponents Utils', () => {
       >
     ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
 
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => 'http://localhost:12345/main.js',
-      },
-      writable: true,
-      configurable: true,
-    });
+    setCurrentScript('http://localhost:12345/main.js');
 
     wc.registerLuigiWebComponents(components, injector);
 
@@ -134,13 +124,7 @@ describe('Luigi WebComponents Utils', () => {
       >
     ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
 
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => 'http://localhost:12345/main.js#component7',
-      },
-      writable: true,
-      configurable: true,
-    });
+    setCurrentScript('http://localhost:12345/main.js#component7');
 
     wc.registerLuigiWebComponents(components, injector);
 
@@ -148,57 +132,16 @@ describe('Luigi WebComponents Utils', () => {
   });
 
   describe('getSrc', () => {
-    it('should throw error when src attribute does not exist', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: {
-          getAttribute: () => null,
-        },
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
+    it('should return the currentScript src when present', () => {
+      setCurrentScript('http://localhost:12345/main.js#component1');
+      expect(wc.getSrc()).toBe('http://localhost:12345/main.js#component1');
     });
 
-    it('should throw error when currentScript is null', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: null,
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
-    });
-
-    it('should throw error when currentScript is undefined', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: undefined,
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
-    });
-
-    it('should throw error when getAttribute returns empty string', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: {
-          getAttribute: () => '',
-        },
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
-    });
-
-    it('should get src', () => {
-      const src = 'http://localhost:12345/main.js#component1';
-
-      Object.defineProperty(document, 'currentScript', {
-        value: {
-          getAttribute: () => src,
-        },
-        writable: true,
-      });
-
-      expect(wc.getSrc()).toEqual(src);
+    it('should fall back to import.meta.url when currentScript has no src', () => {
+      setCurrentScript(null);
+      const src = wc.getSrc();
+      expect(src).toBeTruthy();
+      expect(typeof src).toBe('string');
     });
   });
 });
