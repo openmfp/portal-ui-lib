@@ -86,7 +86,7 @@
     "@vitest/coverage-v8": "4.1.10",
     "cpx2": "9.0.0",
     "esbuild": "0.28.2",
-    "eslint": "9.39.5",
+    "eslint": "10.8.1",
     "jsdom": "30.0.1",
     "kubernetes-types": "1.30.0",
     "mkdirp": "3.0.1",
