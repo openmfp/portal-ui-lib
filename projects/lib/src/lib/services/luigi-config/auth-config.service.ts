@@ -49,30 +49,30 @@ export class AuthConfigService {
       },
       disableAutoLogin: false,
       events: {
-        onAuthSuccessful: (settings, authData) => {
+        onAuthSuccessful: (settings: any, authData: any) => {
           this.authService.authEvent(AuthEvent.AUTH_SUCCESSFUL);
           this.luigiAuthEventsCallbacksService?.onAuthSuccessful(
             settings,
             authData,
           );
         },
-        onAuthError: (settings, err) => {
+        onAuthError: (settings: any, err: any) => {
           this.authService.authEvent(AuthEvent.AUTH_ERROR);
           this.luigiAuthEventsCallbacksService?.onAuthError(settings, err);
         },
-        onAuthExpired: (settings) => {
+        onAuthExpired: (settings: any) => {
           this.authService.authEvent(AuthEvent.AUTH_EXPIRED);
           this.luigiAuthEventsCallbacksService?.onAuthExpired(settings);
         },
-        onLogout: (settings) => {
+        onLogout: (settings: any) => {
           this.authService.authEvent(AuthEvent.LOGOUT);
           this.luigiAuthEventsCallbacksService?.onLogout(settings);
         },
-        onAuthExpireSoon: (settings) => {
+        onAuthExpireSoon: (settings: any) => {
           this.authService.authEvent(AuthEvent.AUTH_EXPIRE_SOON);
           this.luigiAuthEventsCallbacksService?.onAuthExpireSoon(settings);
         },
-        onAuthConfigError: (settings, err) => {
+        onAuthConfigError: (settings: any, err: any) => {
           this.authService.authEvent(AuthEvent.AUTH_CONFIG_ERROR);
           this.luigiAuthEventsCallbacksService?.onAuthConfigError(
             settings,

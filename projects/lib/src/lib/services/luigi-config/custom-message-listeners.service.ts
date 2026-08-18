@@ -1,7 +1,7 @@
-import { Inject, Injectable, Optional } from '@angular/core';
 import { LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN } from '../../injection-tokens';
 import { CustomMessageListener } from './custom-message-listener';
 import { ReloadLuigiConfigListener } from './custom-message-listeners/reload-luigi-config.listener';
+import { Inject, Injectable, Optional } from '@angular/core';
 
 export interface MessageListener {
   (msg: any, mf: any, mfNodes: any): void;
@@ -26,9 +26,12 @@ export class CustomMessageListenersService {
     private messageListeners: ReloadLuigiConfigListener,
     @Optional()
     @Inject(LUIGI_CUSTOM_MESSAGE_LISTENERS_INJECTION_TOKEN)
-    private customMessageListeners: CustomMessageListener[]
+    private customMessageListeners: CustomMessageListener[],
   ) {
-    this.listeners = [this.messageListeners, ...(this.customMessageListeners || []).filter((l) => !!l)];
+    this.listeners = [
+      this.messageListeners,
+      ...(this.customMessageListeners || []).filter((l) => !!l),
+    ];
   }
 
   /**
@@ -39,7 +42,7 @@ export class CustomMessageListenersService {
     const result: MessageListeners = { customMessagesListeners: {} };
     for (const listener of this.listeners) {
       const obj = {
-        [listener.messageId()]: (msg, mf, mfNodes) => {
+        [listener.messageId()]: (msg: any, mf: any, mfNodes: any) => {
           listener.onCustomMessageReceived(msg, mf, mfNodes);
         },
       };

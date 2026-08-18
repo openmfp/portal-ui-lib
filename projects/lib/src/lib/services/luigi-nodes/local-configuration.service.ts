@@ -32,7 +32,7 @@ export class LocalConfigurationServiceImpl {
     { optional: true },
   );
   private localNodesRead = false;
-  private cachedLocalNodes: LuigiNode[];
+  private cachedLocalNodes!: LuigiNode[];
 
   public async getLocalNodes(): Promise<LuigiNode[]> {
     const localDevelopmentSettings =

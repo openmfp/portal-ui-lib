@@ -27,9 +27,7 @@ export interface UserProfileConfigService {
   getProfile(): Promise<UserProfile>;
 }
 
-export class DefaultUserProfileConfigService
-  implements UserProfileConfigService
-{
+export class DefaultUserProfileConfigService implements UserProfileConfigService {
   async getProfile(): Promise<UserProfile> {
     return {
       items: [],

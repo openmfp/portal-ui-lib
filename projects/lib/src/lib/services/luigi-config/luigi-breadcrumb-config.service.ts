@@ -47,7 +47,7 @@ export class HeaderBarService {
       await this.headerBarConfig.getConfig();
     return {
       ...rest,
-      renderer: (containerElement, nodeItems, clickHandler) => {
+      renderer: (containerElement: any, nodeItems: any, clickHandler: any) => {
         containerElement.style['padding-left'] = '0.25rem';
         containerElement.style.display = 'flex';
         containerElement.style.height = 'min-content';

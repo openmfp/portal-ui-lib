@@ -1,10 +1,10 @@
 import { AuthService, EnvConfigService } from '../services';
 import { inject, provideAppInitializer } from '@angular/core';
 
-export async function bootstrap() {
-  const authService = inject(AuthService);
-  const envConfigService = inject(EnvConfigService);
-
+export async function bootstrap(
+  authService: AuthService,
+  envConfigService: EnvConfigService,
+) {
   try {
     const { oauthServerUrl, clientId } = await envConfigService.getEnvConfig();
 
@@ -18,4 +18,7 @@ export async function bootstrap() {
   }
 }
 
-export const provideBootstrap = () => provideAppInitializer(() => bootstrap());
+export const provideBootstrap = () =>
+  provideAppInitializer(() =>
+    bootstrap(inject(AuthService), inject(EnvConfigService)),
+  );

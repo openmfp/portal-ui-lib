@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { LuigiIntent, LuigiNode } from '../../models';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +43,7 @@ export class IntentNavigationService {
           }
         });
         intentElement.pathSegment = this.removeDuplicateSlash(
-          entityPath + '/' + intentElement.relativePath
+          entityPath + '/' + intentElement.relativePath,
         );
       }
     }

@@ -2,6 +2,8 @@
  * Public API Surface of lib
  */
 
+/// <reference path="./types.d.ts" />
+
 export * from './lib/portal-providers';
 export * from './lib/injection-tokens';
 export * from './lib/components/portal/portal.component';

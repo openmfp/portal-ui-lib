@@ -8,11 +8,11 @@ describe('NodeSortingService', () => {
   let service: NodeSortingService;
   let luigiCoreService: LuigiCoreService;
 
-  let entityDefinitionNode1;
-  let entityDefinitionNode2;
-  let entityExtensionNodesWithCategories;
-  let entityExtensionNodes1;
-  let entityExtensionNodes2;
+  let entityDefinitionNode1: any;
+  let entityDefinitionNode2: any;
+  let entityExtensionNodesWithCategories: any;
+  let entityExtensionNodes1: any;
+  let entityExtensionNodes2: any;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

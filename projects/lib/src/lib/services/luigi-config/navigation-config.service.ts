@@ -58,13 +58,13 @@ export class NavigationConfigService {
       nodeAccessibilityResolver: this.luigiNodesService.nodePolicyResolver,
       validWebcomponentUrls: envConfig.validWebcomponentUrls,
       intentMapping: this.intentNavigationService.buildIntentMappings(allNodes),
-      nodeChangeHook: function (prevNode, nextNode, ctx) {
+      nodeChangeHook: (prevNode: any, nextNode: any, ctx: any) => {
         this.nodeChangeHookConfigService?.nodeChangeHook(
           prevNode,
           nextNode,
           ctx.currentContext,
         );
-      }.bind(this),
+      },
       breadcrumbs: await this.headerBarService.getConfig(),
     };
   }

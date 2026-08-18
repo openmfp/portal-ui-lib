@@ -169,7 +169,7 @@ describe('GettingStartedComponent', () => {
         fixture.debugElement.nativeElement.querySelectorAll('.pill svg');
       expect(svgIcons.length).toBe(4);
 
-      svgIcons.forEach((icon) => {
+      svgIcons.forEach((icon: any) => {
         expect(icon.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg');
         expect(icon.getAttribute('height')).toBe('14');
         expect(icon.getAttribute('width')).toBe('14');

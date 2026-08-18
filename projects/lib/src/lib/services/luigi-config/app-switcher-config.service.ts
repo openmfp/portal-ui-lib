@@ -4,7 +4,7 @@ import { NodeUtilsService } from '../luigi-nodes/node-utils.service';
 import { Injectable, inject } from '@angular/core';
 
 export interface AppSwitcherConfigService {
-  getAppSwitcher(luigiNodes: LuigiNode[]);
+  getAppSwitcher(luigiNodes: LuigiNode[]): any;
 }
 
 interface NodeConfig {
@@ -25,11 +25,11 @@ export class AppSwitcherConfigServiceImpl implements AppSwitcherConfigService {
   private luigiCoreService = inject(LuigiCoreService);
   private nodeUtilsService = inject(NodeUtilsService);
 
-  getAppSwitcher(luigiNodes: LuigiNode[]) {
+  getAppSwitcher(luigiNodes: LuigiNode[]): any {
     return {
       keepMainTitle: true,
       showSubTitle: false,
-      itemRenderer: (item: any, slot: HTMLElement, appSwitcherApiObj) => {
+      itemRenderer: (item: any, slot: HTMLElement, appSwitcherApiObj: any) => {
         const a = document.createElement('a');
         a.setAttribute('class', 'fd-menu__link');
         a.addEventListener('click', (e) => {

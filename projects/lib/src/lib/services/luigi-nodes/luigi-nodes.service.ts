@@ -27,7 +27,7 @@ export class LuigiNodesService {
   private getChildrenByEntity(
     allChildren: LuigiNode[],
   ): Record<string, LuigiNode[]> {
-    const childrenByEntity = {
+    const childrenByEntity: Record<string, LuigiNode[]> = {
       home: [],
     };
     for (const child of allChildren) {

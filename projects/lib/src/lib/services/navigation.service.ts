@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
 import { NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthEvent } from '../models';
 import { LoginEventService, LoginEventType } from './login-event.service';
 import { NavigationRedirectStrategy } from './navigation-redirect-strategy';
 import { AuthService } from './portal';
+import { Inject, Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',

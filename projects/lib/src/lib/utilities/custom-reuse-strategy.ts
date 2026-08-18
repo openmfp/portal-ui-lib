@@ -12,7 +12,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
 
   store(
     route: ActivatedRouteSnapshot,
-    handle: DetachedRouteHandle | null
+    handle: DetachedRouteHandle | null,
   ): void {
     // Optional: Store the detached route here if needed
   }
@@ -29,7 +29,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
 
   shouldReuseRoute(
     future: ActivatedRouteSnapshot,
-    curr: ActivatedRouteSnapshot
+    curr: ActivatedRouteSnapshot,
   ): boolean {
     return (
       future.routeConfig === curr.routeConfig ||

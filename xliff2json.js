@@ -34,7 +34,7 @@ try {
           fs.writeFileSync(
             targetDir + `${newFilename}.json`,
             JSON.stringify(res),
-            'utf-8'
+            'utf-8',
           );
         });
       });

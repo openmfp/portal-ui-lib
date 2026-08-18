@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { EnvConfigService } from './env-config.service';
 import { provideHttpClient } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { EnvConfigService } from './env-config.service';
+import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('EnvConfigService', () => {
   let service: EnvConfigService;

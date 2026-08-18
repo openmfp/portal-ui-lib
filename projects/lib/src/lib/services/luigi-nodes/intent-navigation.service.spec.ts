@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LuigiNode } from '../../models/luigi';
 import { IntentNavigationService } from './intent-navigation.service';
 import { TestBed } from '@angular/core/testing';
 import { NodeContext } from '@openmfp/portal-ui-lib';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Intent Navigation functions', () => {
   let service: IntentNavigationService;

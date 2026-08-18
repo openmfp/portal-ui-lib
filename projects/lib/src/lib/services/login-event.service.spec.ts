@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { TestBed } from '@angular/core/testing';
 import {
+  LoginEvent,
   LoginEventService,
   LoginEventType,
-  LoginEvent,
 } from './login-event.service';
-import { firstValueFrom, Observable } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { Observable, firstValueFrom } from 'rxjs';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('LoginEventService', () => {
   let service: LoginEventService;

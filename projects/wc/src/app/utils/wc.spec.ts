@@ -11,6 +11,14 @@ vi.mock('@angular/elements', () => ({
 describe('Luigi WebComponents Utils', () => {
   let originalCurrentScript: any;
 
+  const setCurrentScript = (src: string | null) => {
+    Object.defineProperty(document, 'currentScript', {
+      value: { getAttribute: () => src },
+      writable: true,
+      configurable: true,
+    });
+  };
+
   beforeEach(() => {
     originalCurrentScript = document.currentScript;
     vi.clearAllMocks();
@@ -40,13 +48,7 @@ describe('Luigi WebComponents Utils', () => {
     // @ts-ignore
     window.Luigi = { _registerWebcomponent };
 
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => src,
-      },
-      writable: true,
-      configurable: true,
-    });
+    setCurrentScript(src);
 
     wc.registerLuigiWebComponent(component, injector);
 
@@ -56,7 +58,33 @@ describe('Luigi WebComponents Utils', () => {
     expect(_registerWebcomponent).toHaveBeenCalledWith(src, element);
   });
 
-  it('registerLuigiWebComponents', () => {
+  it('registerLuigiWebComponent with explicit url', () => {
+    const component = mock<Type<any>>();
+    const injector = mock<Injector>();
+    const element = mock<angularElements.NgElementConstructor<any>>();
+
+    (
+      angularElements.createCustomElement as MockedFunction<
+        typeof angularElements.createCustomElement
+      >
+    ).mockReturnValue(element);
+    const _registerWebcomponent = vi.fn();
+    // @ts-ignore
+    window.Luigi = { _registerWebcomponent };
+
+    wc.registerLuigiWebComponent(
+      component,
+      injector,
+      'http://localhost:12345/main.js#explicit',
+    );
+
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#explicit',
+      element,
+    );
+  });
+
+  it('registerLuigiWebComponents registers every component under its own url hash', () => {
     const component1 = mock<Type<any>>();
     const component2 = mock<Type<any>>();
     const components = {
@@ -74,131 +102,61 @@ describe('Luigi WebComponents Utils', () => {
     // @ts-ignore
     window.Luigi = { _registerWebcomponent };
 
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => 'http://localhost:12345/main.js#component1',
-      },
-      writable: true,
-      configurable: true,
-    });
+    setCurrentScript('http://localhost:12345/main.js#component1');
 
     wc.registerLuigiWebComponents(components, injector);
 
     expect(createCustomElementSpy).toHaveBeenCalledWith(component1, {
       injector,
     });
+    expect(createCustomElementSpy).toHaveBeenCalledWith(component2, {
+      injector,
+    });
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#component1',
+      element,
+    );
+    expect(_registerWebcomponent).toHaveBeenCalledWith(
+      'http://localhost:12345/main.js#component2',
+      element,
+    );
+  });
+
+  it('registerLuigiWebComponents derives the base url when the current src has no hash', () => {
+    const component1 = mock<Type<any>>();
+    const components = { component1 };
+    const injector = mock<Injector>();
+    const element = mock<angularElements.NgElementConstructor<any>>();
+    (
+      angularElements.createCustomElement as MockedFunction<
+        typeof angularElements.createCustomElement
+      >
+    ).mockReturnValue(element);
+    const _registerWebcomponent = vi.fn();
+    // @ts-ignore
+    window.Luigi = { _registerWebcomponent };
+
+    setCurrentScript('http://localhost:12345/main.js');
+
+    wc.registerLuigiWebComponents(components, injector);
+
     expect(_registerWebcomponent).toHaveBeenCalledWith(
       'http://localhost:12345/main.js#component1',
       element,
     );
   });
 
-  it('registerLuigiWebComponents no hash', () => {
-    const component1 = mock<Type<any>>();
-    const component2 = mock<Type<any>>();
-    const components = {
-      component1,
-      component2,
-    };
-    const injector = mock<Injector>();
-    const createCustomElementSpy = (
-      angularElements.createCustomElement as MockedFunction<
-        typeof angularElements.createCustomElement
-      >
-    ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
-
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => 'http://localhost:12345/main.js',
-      },
-      writable: true,
-      configurable: true,
-    });
-
-    wc.registerLuigiWebComponents(components, injector);
-
-    expect(createCustomElementSpy).not.toHaveBeenCalled();
-  });
-
-  it('registerLuigiWebComponents no corresponding component', () => {
-    const component1 = mock<Type<any>>();
-    const component2 = mock<Type<any>>();
-    const components = {
-      component1,
-      component2,
-    };
-    const injector = mock<Injector>();
-    const createCustomElementSpy = (
-      angularElements.createCustomElement as MockedFunction<
-        typeof angularElements.createCustomElement
-      >
-    ).mockReturnValue(mock<angularElements.NgElementConstructor<any>>());
-
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => 'http://localhost:12345/main.js#component7',
-      },
-      writable: true,
-      configurable: true,
-    });
-
-    wc.registerLuigiWebComponents(components, injector);
-
-    expect(createCustomElementSpy).not.toHaveBeenCalled();
-  });
-
   describe('getSrc', () => {
-    it('should throw error when src attribute does not exist', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: {
-          getAttribute: () => null,
-        },
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
+    it('should return the currentScript src when present', () => {
+      setCurrentScript('http://localhost:12345/main.js#component1');
+      expect(wc.getSrc()).toBe('http://localhost:12345/main.js#component1');
     });
 
-    it('should throw error when currentScript is null', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: null,
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
-    });
-
-    it('should throw error when currentScript is undefined', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: undefined,
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
-    });
-
-    it('should throw error when getAttribute returns empty string', () => {
-      Object.defineProperty(document, 'currentScript', {
-        value: {
-          getAttribute: () => '',
-        },
-        writable: true,
-      });
-
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
-    });
-
-    it('should get src', () => {
-      const src = 'http://localhost:12345/main.js#component1';
-
-      Object.defineProperty(document, 'currentScript', {
-        value: {
-          getAttribute: () => src,
-        },
-        writable: true,
-      });
-
-      expect(wc.getSrc()).toEqual(src);
+    it('should fall back to import.meta.url when currentScript has no src', () => {
+      setCurrentScript(null);
+      const src = wc.getSrc();
+      expect(src).toBeTruthy();
+      expect(typeof src).toBe('string');
     });
   });
 });

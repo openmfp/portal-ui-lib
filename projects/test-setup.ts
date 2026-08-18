@@ -1,7 +1,3 @@
-import { setupTestBed } from '@analogjs/vitest-angular/setup-testbed';
-
-setupTestBed();
-
 function createMemoryStorage(): Storage {
   const store = new Map<string, string>();
   return {

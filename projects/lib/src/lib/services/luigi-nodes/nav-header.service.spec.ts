@@ -253,9 +253,14 @@ describe('NavHeaderService', () => {
         };
         service.setupNavigationHeader(entityNode);
 
-        entityNode.navHeader!.renderer!(containerElement, entityNode, () => {}, {
-          label: 'Test Label',
-        });
+        entityNode.navHeader!.renderer!(
+          containerElement,
+          entityNode,
+          () => {},
+          {
+            label: 'Test Label',
+          },
+        );
 
         expect(containerElement.innerHTML).toContain('Test');
       });
@@ -266,9 +271,14 @@ describe('NavHeaderService', () => {
         };
         service.setupNavigationHeader(entityNode);
 
-        entityNode.navHeader!.renderer!(containerElement, entityNode, () => {}, {
-          label: 'Test Label',
-        });
+        entityNode.navHeader!.renderer!(
+          containerElement,
+          entityNode,
+          () => {},
+          {
+            label: 'Test Label',
+          },
+        );
 
         expect(containerElement.innerHTML).toContain('Extension');
       });

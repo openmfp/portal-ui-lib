@@ -1,8 +1,5 @@
-import { DevelopmentSettingsComponent } from '../components/development-settings/development-settings.component';
-import { FeatureToggleComponent } from '../components/feature-toggle/feature-toggle.component';
-import { GettingStartedComponent } from '../components/getting-started/getting-started.component';
 import { provideLuigiWebComponents } from './luigi-wc-initializer';
-import { APP_INITIALIZER } from '@angular/core';
+import { EnvironmentInjector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 vi.mock('@angular/elements', () => ({
@@ -10,22 +7,10 @@ vi.mock('@angular/elements', () => ({
 }));
 
 describe('provideLuigiWebComponents', () => {
-  let provider: any;
   let originalCurrentScript: any;
   let originalLuigi: any;
 
-  const setCurrentScript = (src: string) => {
-    Object.defineProperty(document, 'currentScript', {
-      value: {
-        getAttribute: () => src,
-      },
-      writable: true,
-      configurable: true,
-    });
-  };
-
   beforeEach(() => {
-    provider = provideLuigiWebComponents();
     originalCurrentScript = document.currentScript;
     originalLuigi = (window as any).Luigi;
     (window as any).Luigi = { _registerWebcomponent: vi.fn() };
@@ -42,43 +27,24 @@ describe('provideLuigiWebComponents', () => {
     vi.restoreAllMocks();
   });
 
-  it('should return provider object', () => {
-    expect(provider).toBeDefined();
-    expect(provider.provide).toBe(APP_INITIALIZER);
-    expect(provider.useFactory).toBeDefined();
-    expect(provider.multi).toBe(true);
+  it('should return environment providers', () => {
+    expect(provideLuigiWebComponents()).toBeDefined();
   });
 
-  it('should register components and return undefined', () => {
-    setCurrentScript('http://localhost:12345/main.js#development-settings');
-
-    const factoryFn = TestBed.runInInjectionContext(() =>
-      provider.useFactory(),
-    );
-    const returnedFn = factoryFn();
-
-    expect(returnedFn).toBeUndefined();
-    const [[registeredSrc]] = (window as any).Luigi._registerWebcomponent.mock
-      .calls;
-    expect(registeredSrc).toBe(
-      'http://localhost:12345/main.js#development-settings',
-    );
-  });
-
-  it('should register each component when hash matches', () => {
-    const components = {
-      'development-settings': DevelopmentSettingsComponent,
-      'getting-started': GettingStartedComponent,
-      'feature-toggle': FeatureToggleComponent,
-    };
-
-    Object.keys(components).forEach((hash) => {
-      setCurrentScript(`http://localhost:12345/main.js#${hash}`);
-      TestBed.runInInjectionContext(() => provider.useFactory());
+  it('should register all web components on initialization', () => {
+    Object.defineProperty(document, 'currentScript', {
+      value: {
+        getAttribute: () => 'http://localhost:12345/main.js#development-settings',
+      },
+      writable: true,
+      configurable: true,
     });
 
-    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(
-      3,
-    );
+    TestBed.configureTestingModule({
+      providers: [provideLuigiWebComponents()],
+    });
+    TestBed.inject(EnvironmentInjector);
+
+    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(3);
   });
 });

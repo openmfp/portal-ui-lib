@@ -2,7 +2,7 @@ import { DevelopmentSettingsComponent } from '../components/development-settings
 import { FeatureToggleComponent } from '../components/feature-toggle/feature-toggle.component';
 import { GettingStartedComponent } from '../components/getting-started/getting-started.component';
 import { registerLuigiWebComponents } from '../utils/wc';
-import { APP_INITIALIZER, Injector, inject } from '@angular/core';
+import { Injector, inject, provideAppInitializer } from '@angular/core';
 
 function initializeWC() {
   const injector = inject(Injector);
@@ -14,14 +14,7 @@ function initializeWC() {
     },
     injector,
   );
-
-  return () => undefined;
 }
 
-const provider = {
-  provide: APP_INITIALIZER,
-  useFactory: initializeWC,
-  multi: true,
-};
-
-export const provideLuigiWebComponents = () => provider;
+export const provideLuigiWebComponents = () =>
+  provideAppInitializer(initializeWC);

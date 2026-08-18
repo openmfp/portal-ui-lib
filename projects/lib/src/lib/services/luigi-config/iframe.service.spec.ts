@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TestBed } from '@angular/core/testing';
 import { LuigiNode, NodeContext } from '../../models';
 import { LuigiCoreService } from '../luigi-core.service';
 import { IframeService } from './iframe.service';
+import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('IframeService', () => {
   let service: IframeService;
   let luigiCoreService: LuigiCoreService;
-  let interceptor;
+  let interceptor: any;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -48,10 +48,10 @@ describe('IframeService', () => {
       interceptor(frame, undefined, node, undefined);
 
       expect(frame.getAttribute('allow')).toBe(
-        'clipboard-read; clipboard-write;'
+        'clipboard-read; clipboard-write;',
       );
       expect(frame.getAttribute('sandbox')).toBe(
-        'allow-top-navigation allow-forms'
+        'allow-top-navigation allow-forms',
       );
     });
 
@@ -67,17 +67,17 @@ describe('IframeService', () => {
       interceptor(frame2, undefined, node, undefined);
 
       expect(frame.getAttribute('allow')).toBe(
-        'somethingWithoutSemicolon; clipboard-read; clipboard-write;'
+        'somethingWithoutSemicolon; clipboard-read; clipboard-write;',
       );
       expect(frame.getAttribute('sandbox')).toBe(
-        'nospace allow-top-navigation allow-forms'
+        'nospace allow-top-navigation allow-forms',
       );
 
       expect(frame2.getAttribute('allow')).toBe(
-        'somethingWithSemicolon; clipboard-read; clipboard-write;'
+        'somethingWithSemicolon; clipboard-read; clipboard-write;',
       );
       expect(frame2.getAttribute('sandbox')).toBe(
-        'space allow-top-navigation allow-forms'
+        'space allow-top-navigation allow-forms',
       );
     });
 
@@ -110,29 +110,29 @@ describe('IframeService', () => {
       interceptor(frame, 'vg1', undefined, undefined);
 
       expect(frame.getAttribute('allow')).toBe(
-        'vg-clipboard-read; vg-clipboard-write;'
+        'vg-clipboard-read; vg-clipboard-write;',
       );
       expect(frame.getAttribute('sandbox')).toBe(
-        'vg-allow-top-navigation vg-allow-forms'
+        'vg-allow-top-navigation vg-allow-forms',
       );
 
       interceptor(frame2, 'vg1', node, undefined);
 
       expect(frame2.getAttribute('allow')).toBe(
-        'clipboard-read; clipboard-write;'
+        'clipboard-read; clipboard-write;',
       );
       expect(frame2.getAttribute('sandbox')).toBe(
-        'allow-top-navigation allow-forms'
+        'allow-top-navigation allow-forms',
       );
 
       node.requiredIFramePermissions = undefined;
       interceptor(frame3, 'vg1', node, undefined);
 
       expect(frame3.getAttribute('allow')).toBe(
-        'vg-clipboard-read; vg-clipboard-write;'
+        'vg-clipboard-read; vg-clipboard-write;',
       );
       expect(frame3.getAttribute('sandbox')).toBe(
-        'vg-allow-top-navigation vg-allow-forms'
+        'vg-allow-top-navigation vg-allow-forms',
       );
     });
   });
@@ -150,20 +150,20 @@ describe('IframeService', () => {
       interceptor(iframe, 'vg1', undefined, undefined);
 
       expect(iframe.getAttribute('src')).toEqual(
-        'https://foo.bar/#/bla/blub?x=y'
+        'https://foo.bar/#/bla/blub?x=y',
       );
     });
 
     it('should not do anything if theme param already present in hash', () => {
       iframe.setAttribute(
         'src',
-        'https://foo.bar/?sap-theme=t1#/bla/blub?x=y&sap-theme=t2'
+        'https://foo.bar/?sap-theme=t1#/bla/blub?x=y&sap-theme=t2',
       );
 
       interceptor(iframe, 'vg1', undefined, undefined);
 
       expect(iframe.getAttribute('src')).toEqual(
-        'https://foo.bar/?sap-theme=t1#/bla/blub?x=y&sap-theme=t2'
+        'https://foo.bar/?sap-theme=t1#/bla/blub?x=y&sap-theme=t2',
       );
     });
   });

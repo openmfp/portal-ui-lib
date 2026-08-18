@@ -184,8 +184,8 @@ describe('ConfigService', () => {
       try {
         await configsPromise;
       } catch (e) {
-        expect(e.status).toEqual(error403.status);
-        expect(e.statusText).toEqual('Forbidden');
+        expect((e as any).status).toEqual(error403.status);
+        expect((e as any).statusText).toEqual('Forbidden');
       }
     });
 
