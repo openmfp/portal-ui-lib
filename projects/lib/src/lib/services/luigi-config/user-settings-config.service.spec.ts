@@ -36,7 +36,12 @@ describe('UserSettingsConfigService', () => {
       uiOptions: ['enableFeatureToggleSetting'],
     } as ClientEnvironment);
 
-    vi.spyOn(window.location, 'reload').mockImplementation(() => {});
+    const originalLocation = window.location;
+    delete (window as any).location;
+    window.location = {
+      ...originalLocation,
+      reload: vi.fn(),
+    } as any;
 
     dependenciesVersionsService.read.mockResolvedValue({});
     luigiCoreServiceMock.getActiveFeatureToggleList.mockReturnValue([]);

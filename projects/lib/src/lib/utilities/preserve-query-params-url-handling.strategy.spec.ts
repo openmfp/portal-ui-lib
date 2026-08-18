@@ -1,6 +1,6 @@
 import { PreserveQueryParamsUrlHandlingStrategy } from './preserve-query-params-url-handling.strategy';
 import { UrlTree } from '@angular/router';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('PreserveQueryParamsUrlHandlingStrategy', () => {
   let strategy: PreserveQueryParamsUrlHandlingStrategy;
@@ -30,12 +30,12 @@ describe('PreserveQueryParamsUrlHandlingStrategy', () => {
 
   describe('merge', () => {
     const setLocationSearch = (search: string) => {
-      window.history.pushState({}, '', search || '/');
+      Object.defineProperty(window, 'location', {
+        value: { ...window.location, search, href: `http://x${search}` },
+        writable: true,
+        configurable: true,
+      });
     };
-
-    afterEach(() => {
-      window.history.pushState({}, '', '/');
-    });
 
     it('injects the live location.search params when the router built none', () => {
       setLocationSearch('?q=foo&page=2&owner=me');

@@ -64,18 +64,33 @@ describe('ConfigService', () => {
     });
 
     it('should handle 403 error', async () => {
-      const assignSpy = vi
-        .spyOn(window.location, 'assign')
-        .mockImplementation(() => {});
+      const mockLocation = {
+        assign: vi.fn(),
+        href: '',
+        pathname: '',
+        search: '',
+        hash: '',
+        host: '',
+        hostname: '',
+        port: '',
+        protocol: '',
+        origin: '',
+        reload: vi.fn(),
+        replace: vi.fn(),
+        toString: vi.fn(),
+      } as any;
+
+      delete (window as any).location;
+      window.location = mockLocation;
 
       const configPromise = service.getPortalConfig();
       const testRequest = httpTestingController.expectOne('/rest/config');
       testRequest.flush({}, { status: 403, statusText: 'Forbidden' });
 
       await expect(configPromise).rejects.toBeTruthy();
-      expect(assignSpy).toHaveBeenCalledWith('/logout?error=invalidToken');
-
-      assignSpy.mockRestore();
+      expect(window.location.assign).toHaveBeenCalledWith(
+        '/logout?error=invalidToken',
+      );
     });
 
     it('should get the luigi nodes only once', async () => {
