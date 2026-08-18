@@ -1,0 +1,134 @@
+
+@font-face {
+  font-family: '72';
+  src: url('/fundamental-styles/72-Light-full.woff')
+  format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: '72';
+  src: url('/fundamental-styles/72-Light-full.woff2')
+  format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: '72';
+  src: url('/fundamental-styles/72-Bold-full.woff')
+  format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: '72';
+  src: url('/fundamental-styles/72-Bold-full.woff2')
+  format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: '72';
+  src: url('/fundamental-styles/72-Regular-full.woff')
+  format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: '72';
+  src: url('/fundamental-styles/72-Regular-full.woff2')
+  format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SAP-icons';
+  src: url('/fundamental-styles/SAP-icons.woff')
+  format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SAP-icons';
+  src: url('/fundamental-styles/SAP-icons.woff2')
+  format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+body {
+  margin: 0;
+}
+
+.error-screen-icon::before {
+  font-size: 150px;
+  color: #a0a0a0;
+}
+.fd-container--centered {
+  text-align: center;
+}
+a.fd-button {
+  color: #FFF;
+}
+.fd-page {
+  margin-top: 32px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.content {
+  width: 100%;
+}
+.fd-has-text-align-center {
+  text-align: center;
+}
+.info, .hint {
+  text-align: center;
+  margin: 0;
+}
+.info {
+  padding-top: 30px;
+  font-size: 36px;
+}
+.hint {
+  font-size: 18px;
+  color: #6f7275;
+  padding-bottom: 30px;
+}
+
+.error-details {
+  text-align: center;
+  margin: 0 auto 20px;
+  color: #6f7275;
+  font-size: 14px;
+  cursor: pointer;
+
+  summary {
+    list-style: none;
+    padding: 6px 12px;
+    display: inline-block;
+
+    &::marker,
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '▶\00a0';
+    }
+  }
+
+  &[open] summary::before {
+    content: '▼\00a0';
+  }
+
+  span {
+    display: block;
+    margin-top: 6px;
+    font-family: monospace;
+  }
+}
