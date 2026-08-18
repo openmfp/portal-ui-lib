@@ -13,7 +13,7 @@ export class GettingStartedComponent {
   public links: { title: string; link: string }[] = (
     this.luigiCoreService.config.settings?.links ?? []
   ).concat([
-    { title: 'OpemMFP', link: 'https://openmfp.org/' },
+    { title: 'OpenMFP', link: 'https://openmfp.org/' },
     { title: 'OpenMFP GitHub', link: 'https://github.com/openmfp' },
   ]);
   public header = this.luigiCoreService.config.settings?.header?.title;
