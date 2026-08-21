@@ -49,7 +49,7 @@ describe('GettingStartedComponent', () => {
       expect(component.links).toEqual([
         { title: 'Test Link 1', link: 'https://test1.com' },
         { title: 'Test Link 2', link: 'https://test2.com' },
-        { title: 'OpemMFP', link: 'https://openmfp.org/' },
+        { title: 'OpenMFP', link: 'https://openmfp.org/' },
         { title: 'OpenMFP GitHub', link: 'https://github.com/openmfp' },
       ]);
     });
@@ -62,7 +62,7 @@ describe('GettingStartedComponent', () => {
       fixture.detectChanges();
 
       expect(component.links).toEqual([
-        { title: 'OpemMFP', link: 'https://openmfp.org/' },
+        { title: 'OpenMFP', link: 'https://openmfp.org/' },
         { title: 'OpenMFP GitHub', link: 'https://github.com/openmfp' },
       ]);
     });
@@ -75,7 +75,7 @@ describe('GettingStartedComponent', () => {
       fixture.detectChanges();
 
       expect(component.links).toEqual([
-        { title: 'OpemMFP', link: 'https://openmfp.org/' },
+        { title: 'OpenMFP', link: 'https://openmfp.org/' },
         { title: 'OpenMFP GitHub', link: 'https://github.com/openmfp' },
       ]);
     });
@@ -88,7 +88,7 @@ describe('GettingStartedComponent', () => {
       fixture.detectChanges();
 
       expect(component.links).toEqual([
-        { title: 'OpemMFP', link: 'https://openmfp.org/' },
+        { title: 'OpenMFP', link: 'https://openmfp.org/' },
         { title: 'OpenMFP GitHub', link: 'https://github.com/openmfp' },
       ]);
     });
@@ -155,7 +155,7 @@ describe('GettingStartedComponent', () => {
       expect(links[2].href).toBe('https://openmfp.org/');
       expect(links[2].target).toBe('_blank');
       expect(links[2].rel).toBe('noopener');
-      expect(links[2].textContent.trim()).toBe('OpemMFP');
+      expect(links[2].textContent.trim()).toBe('OpenMFP');
 
       // Check default GitHub link
       expect(links[3].href).toBe('https://github.com/openmfp');
@@ -227,7 +227,7 @@ describe('GettingStartedComponent', () => {
       fixture.detectChanges();
 
       expect(component.links).toEqual([
-        { title: 'OpemMFP', link: 'https://openmfp.org/' },
+        { title: 'OpenMFP', link: 'https://openmfp.org/' },
         { title: 'OpenMFP GitHub', link: 'https://github.com/openmfp' },
       ]);
       expect(component.header).toBeUndefined();
