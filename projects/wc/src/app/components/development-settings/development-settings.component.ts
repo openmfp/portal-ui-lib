@@ -54,9 +54,11 @@ export class DevelopmentSettingsComponent implements OnInit {
   protected readonly defaultConfig = [
     {
       url: 'http://localhost:4200/assets/content-configuration-global.json',
+      active: true,
     },
     {
       url: 'http://localhost:4200/assets/content-configuration.json',
+      active: true,
     },
   ];
   public isActive = signal<boolean>(false);
@@ -105,13 +107,20 @@ export class DevelopmentSettingsComponent implements OnInit {
       this.errors.set([...this.errors(), 'pattern']);
     } else if (url && !this.configs().find((e) => e.url === url)) {
       this.errors.set([]);
-      this.configs.update((configs) => [...configs, { url }]);
+      this.configs.update((configs) => [...configs, { url, active: true }]);
       this.saveDevelopmentSettings();
     }
   }
 
   removeUrl(index: number) {
     this.configs.update((configs) => configs.filter((_, i) => i !== index));
+    this.saveDevelopmentSettings();
+  }
+
+  toggleUrl(index: number) {
+    this.configs.update((configs) =>
+      configs.map((c, i) => (i === index ? { ...c, active: c.active === false } : c)),
+    );
     this.saveDevelopmentSettings();
   }
 

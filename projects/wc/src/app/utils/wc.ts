@@ -1,6 +1,28 @@
 import { Injector, Type } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
 
+/**
+ * Holds the WC script src captured synchronously in main.ts before the async
+ * Angular bootstrap. document.currentScript is only valid during synchronous
+ * script execution — by the time APP_INITIALIZER runs it is already null.
+ */
+let _capturedSrc: string | undefined;
+
+/**
+ * Call this at the top of main.ts (before createApplication) to capture the
+ * script src while document.currentScript is still available.
+ */
+export const setCapturedSrc = (src: string | null | undefined): void => {
+  if (src) {
+    _capturedSrc = src;
+  }
+};
+
+/** @internal — only for unit tests */
+export const resetCapturedSrc = (): void => {
+  _capturedSrc = undefined;
+};
+
 export const registerLuigiWebComponent = (
   component: Type<any>,
   injector: Injector,
@@ -27,10 +49,8 @@ export const registerLuigiWebComponents = (
   });
 };
 
-export const getSrc = () => {
-  const src = document.currentScript?.getAttribute('src') ?? import.meta.url;
-  if (!src) {
-    throw new Error('Not defined src of currentScript.');
-  }
-  return src;
+export const getSrc = (): string => {
+  // Fallback chain: currentScript.src → capturedSrc → import.meta.url
+  // import.meta.url is always defined in ES modules, so this will always return a valid string
+  return document.currentScript?.getAttribute('src') ?? _capturedSrc ?? import.meta.url;
 };

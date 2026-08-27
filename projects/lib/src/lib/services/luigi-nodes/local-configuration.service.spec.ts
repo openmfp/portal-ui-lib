@@ -394,6 +394,42 @@ describe('LocalConfigurationServiceImpl', () => {
       ).toHaveBeenCalled();
     });
 
+    it('should exclude url configs with active: false from fetching', async () => {
+      httpClient.get = vi.fn().mockReturnValue(of({}));
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        { nodes: [] },
+      );
+      localDevelopmentSettingsLocalStorage.read = vi.fn().mockReturnValue({
+        isActive: true,
+        serviceProviderConfig: {},
+        configs: [
+          { url: 'http://active.test', active: true },
+          { url: 'http://inactive.test', active: false },
+        ],
+      });
+
+      await service.getLocalNodes();
+
+      expect(httpClient.get).toHaveBeenCalledWith('http://active.test');
+      expect(httpClient.get).not.toHaveBeenCalledWith('http://inactive.test');
+    });
+
+    it('should include url configs without active field (backward compat)', async () => {
+      httpClient.get = vi.fn().mockReturnValue(of({}));
+      luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
+        { nodes: [] },
+      );
+      localDevelopmentSettingsLocalStorage.read = vi.fn().mockReturnValue({
+        isActive: true,
+        serviceProviderConfig: {},
+        configs: [{ url: 'http://legacy.test' }],
+      });
+
+      await service.getLocalNodes();
+
+      expect(httpClient.get).toHaveBeenCalledWith('http://legacy.test');
+    });
+
     it('should return an empty array for a dev environment if the request fails', async () => {
       luigiDataConfigServiceMock.getLuigiNodesFromConfigurations.mockResolvedValue(
         { nodes: [] },

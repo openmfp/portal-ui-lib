@@ -30,6 +30,7 @@ describe('Luigi WebComponents Utils', () => {
       writable: true,
       configurable: true,
     });
+    wc.resetCapturedSrc();
     vi.restoreAllMocks();
   });
 
@@ -155,6 +156,63 @@ describe('Luigi WebComponents Utils', () => {
     it('should fall back to import.meta.url when currentScript has no src', () => {
       setCurrentScript(null);
       const src = wc.getSrc();
+      expect(src).toBeTruthy();
+      expect(typeof src).toBe('string');
+    });
+
+    it('should return capturedSrc when currentScript is null', () => {
+      const src = 'http://localhost:4200/assets/openmfp-portal-ui-wc.js#development-settings';
+
+      Object.defineProperty(document, 'currentScript', {
+        value: null,
+        writable: true,
+        configurable: true,
+      });
+
+      wc.setCapturedSrc(src);
+
+      expect(wc.getSrc()).toEqual(src);
+    });
+
+    it('should prefer currentScript.src over capturedSrc', () => {
+      const currentScriptSrc = 'http://localhost:3000/assets/openmfp-portal-ui-wc.js#development-settings';
+      const capturedSrc = 'http://localhost:4200/assets/openmfp-portal-ui-wc.js#development-settings';
+
+      Object.defineProperty(document, 'currentScript', {
+        value: { getAttribute: () => currentScriptSrc },
+        writable: true,
+        configurable: true,
+      });
+
+      wc.setCapturedSrc(capturedSrc);
+
+      expect(wc.getSrc()).toEqual(currentScriptSrc);
+    });
+
+    it('should fall back to import.meta.url when both currentScript and capturedSrc are not set', () => {
+      Object.defineProperty(document, 'currentScript', {
+        value: null,
+        writable: true,
+        configurable: true,
+      });
+
+      const src = wc.getSrc();
+      // import.meta.url is always defined in ES modules, so we expect a valid string
+      expect(src).toBeTruthy();
+      expect(typeof src).toBe('string');
+    });
+
+    it('should fall back to import.meta.url when setCapturedSrc is called with null', () => {
+      Object.defineProperty(document, 'currentScript', {
+        value: null,
+        writable: true,
+        configurable: true,
+      });
+
+      wc.setCapturedSrc(null);
+
+      const src = wc.getSrc();
+      // import.meta.url is always defined in ES modules, so we expect a valid string
       expect(src).toBeTruthy();
       expect(typeof src).toBe('string');
     });

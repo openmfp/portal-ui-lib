@@ -142,9 +142,11 @@ describe('DevelopmentSettingsComponent', () => {
       expect(component.configs()).toEqual([
         {
           url: 'http://localhost:4200/assets/content-configuration-global.json',
+          active: true,
         },
         {
           url: 'http://localhost:4200/assets/content-configuration.json',
+          active: true,
         },
       ]);
       expect(component.serviceProviderConfig()).toEqual({});
@@ -159,6 +161,7 @@ describe('DevelopmentSettingsComponent', () => {
 
       expect(component.configs()).toContainEqual({
         url: validUrl,
+        active: true,
       });
       expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
@@ -195,7 +198,7 @@ describe('DevelopmentSettingsComponent', () => {
       component.addUrl(validUrl);
 
       expect(component['errors']()).toEqual([]);
-      expect(component.configs()).toContainEqual({ url: validUrl });
+      expect(component.configs()).toContainEqual({ url: validUrl, active: true });
       expect(component.LuigiClient().publishEvent).toHaveBeenCalledTimes(1);
     });
   });
@@ -342,6 +345,40 @@ describe('DevelopmentSettingsComponent', () => {
       expect(translations.serviceProviderConfig.valueInput.placeholder).toBe(
         'translated_LOCAL_DEVELOPMENT_SETTINGS_SERVICE_PROVIDER_VALUE_INPUT_PLACEHOLDER',
       );
+    });
+  });
+
+  describe('toggleUrl', () => {
+    it('should deactivate an active URL (active: true)', () => {
+      component.configs.set([{ url: 'https://test.com', active: true }]);
+      component.toggleUrl(0);
+      expect(component.configs()[0].active).toBe(false);
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
+    });
+
+    it('should activate an inactive URL (active: false)', () => {
+      component.configs.set([{ url: 'https://test.com', active: false }]);
+      component.toggleUrl(0);
+      expect(component.configs()[0].active).toBe(true);
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
+    });
+
+    it('should deactivate a URL with no active field (undefined treated as active)', () => {
+      component.configs.set([{ url: 'https://test.com' }]);
+      component.toggleUrl(0);
+      expect(component.configs()[0].active).toBe(false);
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
+    });
+
+    it('should only toggle the URL at the given index', () => {
+      component.configs.set([
+        { url: 'https://one.com', active: true },
+        { url: 'https://two.com', active: true },
+      ]);
+      component.toggleUrl(0);
+      expect(component.configs()[0].active).toBe(false);
+      expect(component.configs()[1].active).toBe(true);
+      expect(component.LuigiClient().publishEvent).toHaveBeenCalled();
     });
   });
 
