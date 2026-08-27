@@ -189,17 +189,20 @@ describe('Luigi WebComponents Utils', () => {
       expect(wc.getSrc()).toEqual(currentScriptSrc);
     });
 
-    it('should still throw when both currentScript and capturedSrc are not set', () => {
+    it('should fall back to import.meta.url when both currentScript and capturedSrc are not set', () => {
       Object.defineProperty(document, 'currentScript', {
         value: null,
         writable: true,
         configurable: true,
       });
 
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
+      const src = wc.getSrc();
+      // import.meta.url is always defined in ES modules, so we expect a valid string
+      expect(src).toBeTruthy();
+      expect(typeof src).toBe('string');
     });
 
-    it('should not set capturedSrc when src is null', () => {
+    it('should fall back to import.meta.url when setCapturedSrc is called with null', () => {
       Object.defineProperty(document, 'currentScript', {
         value: null,
         writable: true,
@@ -208,7 +211,10 @@ describe('Luigi WebComponents Utils', () => {
 
       wc.setCapturedSrc(null);
 
-      expect(() => wc.getSrc()).toThrow('Not defined src of currentScript.');
+      const src = wc.getSrc();
+      // import.meta.url is always defined in ES modules, so we expect a valid string
+      expect(src).toBeTruthy();
+      expect(typeof src).toBe('string');
     });
   });
 });

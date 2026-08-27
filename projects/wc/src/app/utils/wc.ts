@@ -49,10 +49,8 @@ export const registerLuigiWebComponents = (
   });
 };
 
-export const getSrc = () => {
-  const src = document.currentScript?.getAttribute('src') ?? _capturedSrc ?? import.meta.url;
-  if (!src) {
-    throw new Error('Not defined src of currentScript.');
-  }
-  return src;
+export const getSrc = (): string => {
+  // Fallback chain: currentScript.src → capturedSrc → import.meta.url
+  // import.meta.url is always defined in ES modules, so this will always return a valid string
+  return document.currentScript?.getAttribute('src') ?? _capturedSrc ?? import.meta.url;
 };
