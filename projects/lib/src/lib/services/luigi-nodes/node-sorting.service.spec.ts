@@ -255,6 +255,35 @@ describe('NodeSortingService', () => {
       expect(entityDefinitionNode1.children[4].label).toEqual('secondnode');
     });
 
+    it('should preserve an ordered category for children appended to a slot', () => {
+      const orderedCategory = {
+        id: 'openkcm',
+        label: 'OpenKCM',
+        order: 900,
+      };
+      const slotNode = {
+        defineSlot: 'openkcm',
+        category: orderedCategory,
+        _entityRootChild: true,
+      } as LuigiNode;
+      const nodes = [
+        { label: 'Marketplace', order: 700, _entityRootChild: true },
+        slotNode,
+        { label: 'OpenControlPlane', order: 890 },
+        { label: 'OpenKCM child', order: 1, navSlot: 'openkcm' },
+      ] as LuigiNode[];
+
+      const sorted = service.sortNodes(nodes);
+
+      expect(sorted.map((item) => item.label)).toEqual([
+        'Marketplace',
+        undefined,
+        'OpenKCM child',
+        'OpenControlPlane',
+      ]);
+      expect(sorted[2].category).toEqual(orderedCategory);
+    });
+
     it('should sort nodes correctly', async () => {
       service.markEntityRootChildren(entityDefinitionNode1.children);
       const nodeList = [

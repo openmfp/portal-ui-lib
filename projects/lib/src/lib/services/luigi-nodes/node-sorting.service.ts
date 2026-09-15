@@ -46,6 +46,11 @@ export class NodeSortingService {
     const slotIndex = nodes.indexOf(slotNode);
 
     if (slotNode.category) {
+      const orderedCategory =
+        typeof slotNode.category !== 'string' &&
+        slotNode.category.order !== undefined
+          ? slotNode.category
+          : undefined;
       const cat =
         (slotNode.category as LuigiNodeCategory).id ||
         (slotNode.category as LuigiNodeCategory).label ||
@@ -54,7 +59,7 @@ export class NodeSortingService {
           : undefined);
       if (cat) {
         children.forEach((node) => {
-          node.category = cat;
+          node.category = orderedCategory ?? cat;
         });
       }
     }
