@@ -5,7 +5,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class NodeSortingService {
-  constructor() {}
+  nodeOrder(node: LuigiNode) {
+    node.order = node.dxpOrder ?? node.order ?? 999;
+    return node.order;
+  }
 
   markEntityRootChildren(nodes: LuigiNode[]) {
     nodes.forEach((child) => {
@@ -14,12 +17,8 @@ export class NodeSortingService {
   }
 
   nodeComparison(a: LuigiNode, b: LuigiNode) {
-    // set a default order to the end if not defined
-    a.order = a.dxpOrder ?? a.order ?? 999;
-    b.order = b.dxpOrder ?? b.order ?? 999;
-
-    const orderA = a.order;
-    const orderB = b.order;
+    const orderA = (a.order = a.dxpOrder ?? a.order ?? 999);
+    const orderB = (b.order = b.dxpOrder ?? b.order ?? 999);
 
     if (orderA < orderB) {
       return -1;
@@ -63,6 +62,69 @@ export class NodeSortingService {
     nodes.splice(slotIndex + 1, 0, ...children);
   }
 
+  categoryOrder(node: LuigiNode) {
+    if (node.category && typeof node.category !== 'string') {
+      return node.category.order;
+    }
+
+    return undefined;
+  }
+
+  navigationLabel(node: LuigiNode) {
+    if (node.category && typeof node.category !== 'string') {
+      return node.category.label;
+    }
+
+    return typeof node.category === 'string'
+      ? node.category
+      : (node.label ?? '');
+  }
+
+  categoryKey(node: LuigiNode) {
+    if (!node.category) {
+      return undefined;
+    }
+
+    if (typeof node.category === 'string') {
+      return node.category;
+    }
+
+    return node.category.id ?? node.category.label;
+  }
+
+  navigationComparison(a: LuigiNode, b: LuigiNode) {
+    const categoryA = this.categoryKey(a);
+    const categoryB = this.categoryKey(b);
+
+    if (categoryA && categoryA === categoryB) {
+      return this.nodeComparison(a, b);
+    }
+
+    const categoryOrderA = this.categoryOrder(a);
+    const categoryOrderB = this.categoryOrder(b);
+
+    if (categoryA && categoryOrderA === undefined) {
+      if (categoryB && categoryOrderB === undefined) {
+        return this.nodeComparison(a, b);
+      }
+
+      return 1;
+    }
+
+    if (categoryB && categoryOrderB === undefined) {
+      return -1;
+    }
+
+    const orderA = categoryOrderA ?? this.nodeOrder(a);
+    const orderB = categoryOrderB ?? this.nodeOrder(b);
+
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
+    return this.navigationLabel(a).localeCompare(this.navigationLabel(b));
+  }
+
   sortNodes(nodes: LuigiNode[]): LuigiNode[] {
     const entityRootNodes: LuigiNode[] = [];
     const slottedChildrenMap: Record<string, LuigiNode[]> = {};
@@ -90,7 +152,9 @@ export class NodeSortingService {
 
     const sortedNodes = [...entityRootNodes];
 
-    const sortedOther = otherChildren.sort(this.nodeComparison);
+    const sortedOther = otherChildren.sort(
+      this.navigationComparison.bind(this),
+    );
 
     if (slotNodes.length > 0) {
       slotNodes.forEach((slotNode) => {
@@ -102,7 +166,9 @@ export class NodeSortingService {
           this.appendChildrenToSlot(
             sortedNodes,
             slotNode,
-            slottedChildrenMap[slotNode.defineSlot].sort(this.nodeComparison),
+            slottedChildrenMap[slotNode.defineSlot].sort(
+              this.navigationComparison.bind(this),
+            ),
           );
           delete slottedChildrenMap[slotNode.defineSlot];
         }
@@ -113,7 +179,9 @@ export class NodeSortingService {
     for (const slotId in slottedChildrenMap) {
       if (Object.prototype.hasOwnProperty.call(slottedChildrenMap, slotId)) {
         const unassignedSlotChildren = slottedChildrenMap[slotId];
-        sortedOther.push(...unassignedSlotChildren.sort(this.nodeComparison));
+        sortedOther.push(
+          ...unassignedSlotChildren.sort(this.navigationComparison.bind(this)),
+        );
       }
     }
 
@@ -123,13 +191,16 @@ export class NodeSortingService {
       sortedNodes.push(...sortedOther);
     }
 
-    // move nodes without categories to top
-    const singleNodes: LuigiNode[] = [];
-    const catNodes: LuigiNode[] = [];
+    const orderedNodes: LuigiNode[] = [];
+    const unorderedCategoryNodes: LuigiNode[] = [];
     sortedNodes.forEach((node) => {
-      (node.category ? catNodes : singleNodes).push(node);
+      if (node.category && this.categoryOrder(node) === undefined) {
+        unorderedCategoryNodes.push(node);
+      } else {
+        orderedNodes.push(node);
+      }
     });
 
-    return [...singleNodes, ...catNodes];
+    return [...orderedNodes, ...unorderedCategoryNodes];
   }
 }

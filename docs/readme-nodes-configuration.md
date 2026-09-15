@@ -382,9 +382,7 @@ The following section explains Portal-specific parameters related to entity type
 
 - **navSlot** - the id of the slot to which a navigation node should be added.
 
-- **order** - a number that is used for ordering the node within the entity child list or a particular slot, if defined. This property can also be applied to a category.
-
-  > NOTE: Nodes without a category are always sorted on top.
+- **order** - a number that orders the node within the entity child list or a specified slot. The order also applies to a category. An ordered category and nodes without a category share one ordered list. A category without an order appears after them.
 
 ### Title Resolver and Navigation Header
 

@@ -23,7 +23,9 @@ describe('NodeSortingService', () => {
   beforeEach(() => {
     service = TestBed.inject(NodeSortingService);
     luigiCoreService = TestBed.inject(LuigiCoreService);
-    vi.spyOn(luigiCoreService, 'getConfigValue').mockImplementation(() => {});
+    vi.spyOn(luigiCoreService, 'getConfigValue').mockImplementation(
+      () => undefined,
+    );
   });
   beforeEach(() => {
     entityDefinitionNode1 = {
@@ -333,6 +335,40 @@ describe('NodeSortingService', () => {
       'ex2_thirdnode',
       'somenodeafterdefaultslot',
       'ex2_fifthnode',
+    ]);
+  });
+
+  it('should place a node between ordered categories', () => {
+    const nodes = [
+      {
+        label: 'OpenKCM child',
+        order: 1,
+        category: { id: 'openkcm', label: 'OpenKCM', order: 900 },
+      } as LuigiNode,
+      {
+        label: 'OpenKCM second child',
+        order: 2,
+        category: { id: 'openkcm', label: 'OpenKCM', order: 900 },
+      } as LuigiNode,
+      { label: 'Marketplace', order: 700 } as LuigiNode,
+      { label: 'OpenControlPlane', order: 890 } as LuigiNode,
+      {
+        label: 'Workspace child',
+        order: 1,
+        category: { id: 'workspace', label: 'Workspace', order: 500 },
+      } as LuigiNode,
+      { label: 'Dashboard', order: 100 } as LuigiNode,
+    ];
+
+    const sorted = service.sortNodes(nodes);
+
+    expect(sorted.map((item) => item.label)).toEqual([
+      'Dashboard',
+      'Workspace child',
+      'Marketplace',
+      'OpenControlPlane',
+      'OpenKCM child',
+      'OpenKCM second child',
     ]);
   });
 
