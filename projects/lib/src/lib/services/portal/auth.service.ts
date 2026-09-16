@@ -6,7 +6,7 @@ import {
   UserTokenData,
 } from '../../models';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { Observable, Subject, lastValueFrom } from 'rxjs';
 
@@ -14,10 +14,10 @@ import { Observable, Subject, lastValueFrom } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
   private authEventSubject = new Subject<AuthEvent>();
   private authData!: AuthData;
-
-  constructor(private http: HttpClient) {}
+  private refreshPromise?: Promise<AuthTokenData | undefined>;
 
   get authEvents(): Observable<AuthEvent> {
     return this.authEventSubject.asObservable();
@@ -28,12 +28,20 @@ export class AuthService {
   }
 
   public async refresh(): Promise<AuthTokenData | undefined> {
-    const response = await lastValueFrom(
-      this.http.post<AuthTokenData | undefined>('/rest/auth/refresh', {}),
-    );
+    if (!this.refreshPromise) {
+      this.refreshPromise = lastValueFrom(
+        this.http.post<AuthTokenData | undefined>('/rest/auth/refresh', {}),
+      )
+        .then((response) => {
+          this.setAuthData(response);
+          return response;
+        })
+        .finally(() => {
+          this.refreshPromise = undefined;
+        });
+    }
 
-    this.setAuthData(response);
-    return response;
+    return this.refreshPromise;
   }
 
   private setAuthData(authTokenData: AuthTokenData | undefined): void {
@@ -54,7 +62,7 @@ export class AuthService {
   private parseJwt = (token: string): any => {
     try {
       return jwtDecode(token);
-    } catch (Error) {
+    } catch {
       return null;
     }
   };

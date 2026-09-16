@@ -46,11 +46,12 @@ import {
   ThemingService,
   UserProfileConfigService,
 } from './services';
+import { configAuthInterceptor } from './services/auth/config-auth.interceptor';
 import {
   CustomReuseStrategy,
   PreserveQueryParamsUrlHandlingStrategy,
 } from './utilities';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   EnvironmentProviders,
   Provider,
@@ -120,7 +121,7 @@ export function providePortal(
   options: PortalOptions = {},
 ): EnvironmentProviders {
   const providers: (Provider | EnvironmentProviders)[] = [
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([configAuthInterceptor])),
     provideBootstrap(),
     provideSessionRefresh(),
     provideNavigationTracker(),

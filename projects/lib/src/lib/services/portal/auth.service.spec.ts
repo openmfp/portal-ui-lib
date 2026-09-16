@@ -6,7 +6,8 @@ import {
 } from '../../models';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom, of, take, toArray } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { Observable, Subject, firstValueFrom, of, take, toArray } from 'rxjs';
 import { MockedObject } from 'vitest';
 
 describe('AuthService', () => {
@@ -19,7 +20,10 @@ describe('AuthService', () => {
       get: vi.fn(),
     } as any;
 
-    service = new AuthService(httpClientMock);
+    TestBed.configureTestingModule({
+      providers: [{ provide: HttpClient, useValue: httpClientMock }],
+    });
+    service = TestBed.inject(AuthService);
   });
 
   it('should be created', () => {
@@ -57,6 +61,25 @@ describe('AuthService', () => {
         {},
       );
       expect(service.getAuthData()).toBeUndefined();
+    });
+
+    it('shares one request while session recovery is in progress', async () => {
+      const response = new Subject<AuthTokenData>();
+      httpClientMock.post.mockReturnValue(response);
+
+      const firstRefresh = service.refresh();
+      const secondRefresh = service.refresh();
+
+      expect(httpClientMock.post).toHaveBeenCalledOnce();
+      response.next({
+        access_token: 'mock_access_token',
+        id_token: 'mock_id_token',
+        expires_in: '3600',
+      });
+      response.complete();
+
+      await Promise.all([firstRefresh, secondRefresh]);
+      expect(service.getToken()).toBe('mock_id_token');
     });
   });
 
@@ -258,7 +281,9 @@ describe('AuthService', () => {
         service.authEvents.pipe(take(3), toArray()),
       );
 
-      expectedEvents.forEach((event) => service.authEvent(event));
+      expectedEvents.forEach((event) => {
+        service.authEvent(event);
+      });
 
       const events = await eventsPromise;
       expect(events).toEqual(expectedEvents);
