@@ -87,7 +87,7 @@
     "cpx2": "9.0.3",
     "esbuild": "0.28.2",
     "eslint": "10.10.0",
-    "jsdom": "30.0.1",
+    "jsdom": "30.1.0",
     "kubernetes-types": "1.30.0",
     "mkdirp": "3.0.1",
     "ng-packagr": "22.1.1",
