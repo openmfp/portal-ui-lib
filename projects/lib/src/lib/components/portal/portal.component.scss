@@ -39,6 +39,6 @@ $fd-icons-path: '~fiori-fundamentals/scss/icons/';
   white-space: inherit !important;
 }
 
-#app:not(.vega) .lui-breadcrumb-container {
+#app .lui-breadcrumb-container {
   position: static !important;
 }
