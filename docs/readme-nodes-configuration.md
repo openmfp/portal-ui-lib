@@ -266,6 +266,8 @@ Further Portal specific parameters are supported on node level:
 
 - **configurationMissing** - allows to show a "configuration missing" page based on the [context](./readme-luigi-context.md). In this field, a [JMESPath](https://jmespath.org/specification.html) query can be defined. When it evaluates to `true`, the "configuration missing" page will be shown, otherwise the normal page.
 
+- **networkVisibility** - if set to `internal`, the node is replaced by a "VPN needed" page when the user is not on the corporate network. See [the `no-vpn` web component](./readme-web-components-customizations.md#the-no-vpn-web-component).
+
 - **configurationHint** - Allows to customise the "configuration missing" page with an extension specific hint.
 
 - **configurationLink** - Allows to customise the "configuration missing" page with an extension specific link.

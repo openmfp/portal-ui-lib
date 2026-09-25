@@ -4,32 +4,55 @@ This document describes the web components shipped by `@openmfp/portal-ui-lib` t
 
 ## The `no-vpn` Web Component
 
-When a Luigi node declares `networkVisibility: 'internal'` and the user is not on the corporate network, the portal converts that node so it renders the `no-vpn` web component instead of the unreachable extension UI. The node also receives an informative `VPN` status badge when it does not already have one.
+When a Luigi node declares `networkVisibility: 'internal'` and the user is not on the corporate network, the portal converts that node so it renders the `no-vpn` web component instead of the unreachable extension UI.
 
-The component is registered as the Luigi web component `no-vpn` and is served from the portal web component bundle:
+The converted node:
 
-```
-viewUrl: '/assets/openmfp-portal-ui-wc.js#no-vpn'
-webcomponent: { selfRegistered: true, type: 'module' }
-```
+- renders the `no-vpn` web component from the portal web component bundle:
 
-It renders a title, a description, and a Retry button. The Retry button reloads the portal page, which re-runs the network check and recomputes the navigation nodes.
+  ```
+  viewUrl: '/assets/openmfp-portal-ui-wc.js#no-vpn'
+  webcomponent: { selfRegistered: true, type: 'module' }
+  ```
 
-The conversion applies to top-level global nodes, to children of non-entity nodes, and to children of entity nodes (including dynamically fetched ones). Compound children are not converted.
+- has no children, so none of the extension's sub-pages are reachable;
+- receives an informative `VPN` status badge when it does not already have one.
 
-### Reachability check via `VPN_CHECK_URL`
+The conversion applies to top-level global nodes, to children of non-entity nodes, and to children of entity nodes, including dynamically fetched ones. Compound children are not converted.
 
-The behavior is driven by the backend environment variable `VPN_CHECK_URL`, exposed to the client through `GET /rest/envconfig` as `vpnCheckUrl` (`portal-server-lib` maps `process.env.VPN_CHECK_URL` to this key, consistent with the other environment values).
+The page shows a title, a description, and a Retry button. Retry reloads the portal page, which runs the network check again and rebuilds the navigation nodes, so a user who has connected to the corporate network in the meantime sees the extension UI.
 
-- When `VPN_CHECK_URL` resolves to a reachable resource, `internal` nodes render normally.
-- When it resolves to an unreachable resource, `internal` nodes are converted to the `no-vpn` page.
-- When `VPN_CHECK_URL` is unset, the feature is off and `internal` nodes always render normally.
+### Network check via `VPN_CHECK_URL`
 
-The check is a `HEAD` request in `no-cors` mode, so the configured URL only needs to be reachable, not CORS-enabled.
+The behavior is driven by the backend environment variable `VPN_CHECK_URL`. `portal-server-lib` exposes it to the client through `GET /rest/envconfig` as `vpnCheckUrl`.
+
+The portal runs the check once, when it loads, before it builds the navigation nodes. It sends a `HEAD` request in `no-cors` mode to the configured URL:
+
+- When the request gets any HTTP response, including an error status such as `404` or `500`, the user counts as on the corporate network and `internal` nodes render normally.
+- When the request fails at the network level (for example the host name does not resolve or the connection is refused), `internal` nodes are converted to the `no-vpn` page.
+- When `VPN_CHECK_URL` is unset, or the environment configuration cannot be loaded, the feature is off and `internal` nodes always render normally.
+
+Because the request uses `no-cors`, the URL does not need to send CORS headers. Choose a URL that resolves only inside the corporate network.
+
+### Texts
+
+The texts come from the portal translations:
+
+| Key | English default |
+| --- | --- |
+| `VPN_NEEDED_PAGE_TITLE` | VPN Needed |
+| `VPN_NEEDED_PAGE_DESCRIPTION` | Connect to the corporate network to view this extension UI directly in the Portal. |
+| `VPN_NEEDED_PAGE_RETRY_BUTTON` | Retry |
+
+### Appearance
+
+The component uses UI5 web components (`ui5-button`, `ui5-icon`) and SAP theme CSS variables, so it follows the portal theme and needs no stylesheet or font assets from the host. The page takes only the height of its content, so it does not add a scrollbar to the content area.
+
+By default the page shows the `disconnected` UI5 icon above the texts.
 
 ### Adding an illustration
 
-The component ships without a bundled illustration. By default it shows the `disconnected` UI5 icon above the title, description, and Retry button. A host can replace the icon with its own illustration, served from the host's own domain, by setting these CSS custom properties. They supply the image for the responsive illustration sizes (scene → dialog → spot) as the available width shrinks:
+A host can replace the icon with its own illustration, served from the host's own domain, by setting these CSS custom properties:
 
 ```css
 :root {
@@ -39,12 +62,16 @@ The component ships without a bundled illustration. By default it shows the `dis
 }
 ```
 
-Set them on `:root` (or another ancestor of the Luigi web component container). Luigi registers the element under a generated `luigi-wc-*` tag name, so a selector on the Angular selector `wc-no-vpn` never matches. Custom properties inherit into the component's shadow DOM.
+- `scene` is the default illustration. Setting it is what switches the page from the icon to the illustration.
+- `dialog` and `spot` are optional smaller variants used as the available width shrinks. When they are not set, the page uses `scene` at those sizes.
+- The illustration sizes itself from its aspect ratio: 4:3 for `scene`, 1:1 for `dialog` and `spot`. No height needs to be set.
 
-Supplying only `--mfp-no-vpn-illustration-scene` is enough for a single, non-responsive illustration; `dialog` and `spot` fall back to it. The illustration box sizes itself from the aspect ratio (4:3 for scene, 1:1 for dialog and spot), so no height needs to be set.
+Set the properties on `:root` or on another ancestor of the Luigi content area. They are inherited into the component's shadow DOM. Do not target the component by the tag name `wc-no-vpn`: Luigi registers the element under a generated `luigi-wc-*` tag name, so such a selector never matches.
 
-The images are loaded as CSS background images, so they cannot read the portal's theme variables. An SVG that colors itself with `var(--sapContent_Illustrative_ColorN)` must include a fallback value, for example `fill="var(--sapContent_Illustrative_Color20, #89d1ff)"`, or it renders blank.
+The illustrations are loaded as CSS background images, which cannot read the portal's theme variables. An SVG that colors itself with `var(--sapContent_Illustrative_ColorN)` renders blank unless each variable has a fallback color, for example:
 
-### Styling
+```xml
+<rect fill="var(--sapContent_Illustrative_Color20, #89d1ff)" />
+```
 
-The component uses UI5 web components (`ui5-button`, `ui5-icon`) and SAP theme CSS variables, so it follows the portal theme and needs no additional stylesheet or font assets from the host.
+The fallback colors are fixed, so the illustration does not follow a theme switch such as dark mode.
