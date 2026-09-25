@@ -15,6 +15,7 @@ import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingService } from './node-context-processing.service';
 import { NodesProcessingService } from './nodes-processing.service';
+import { VPNService } from './vpn.service';
 import { TestBed } from '@angular/core/testing';
 import { MockedFunction } from 'vitest';
 
@@ -26,6 +27,7 @@ describe('NodesProcessingService', () => {
   let configService: ConfigService;
   let nodeContextProcessingService: NodeContextProcessingService;
   let customGlobalNodesService = { getCustomGlobalNodes: vi.fn() } as any;
+  let vpnService: VPNService;
   const entityName = 'myentity';
 
   const homeChildren: LuigiNode[] = [
@@ -57,6 +59,13 @@ describe('NodesProcessingService', () => {
           provide: LUIGI_NODES_CUSTOM_GLOBAL_SERVICE_INJECTION_TOKEN,
           useValue: customGlobalNodesService,
         },
+        {
+          provide: VPNService,
+          useValue: {
+            whenReady: vi.fn().mockResolvedValue(undefined),
+            applyNetworkVisibility: vi.fn((node) => node),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -65,6 +74,7 @@ describe('NodesProcessingService', () => {
     luigiNodesService = TestBed.inject(LuigiNodesService);
     localConfigurationService = TestBed.inject(LocalConfigurationServiceImpl);
     configService = TestBed.inject(ConfigService);
+    vpnService = TestBed.inject(VPNService);
     nodeContextProcessingService = TestBed.inject(
       LUIGI_CUSTOM_NODE_CONTEXT_PROCESSING_SERVICE_INJECTION_TOKEN as any,
     );
@@ -147,6 +157,58 @@ describe('NodesProcessingService', () => {
     expect(globalNode['globalNav']).toBe(true);
     expect(topNavNode['globalNav']).toBe(false);
     expect(customNode['globalNav']).toBe(false);
+  });
+
+  it('processNodes should await VPN readiness and apply network visibility to global nodes', async () => {
+    const globalNode: LuigiNode = {
+      pathSegment: 'g1',
+      entityType: 'global' as any,
+      context: {} as NodeContext,
+    };
+    const convertedNode: LuigiNode = {
+      pathSegment: 'g1',
+      entityType: 'global' as any,
+      context: {} as NodeContext,
+      children: [],
+    };
+    customGlobalNodesService.getCustomGlobalNodes = vi
+      .fn()
+      .mockResolvedValue([]);
+    vi.mocked(vpnService.applyNetworkVisibility).mockReturnValueOnce(
+      convertedNode,
+    );
+
+    const res = await service.processNodes({ global: [globalNode] });
+
+    expect(vpnService.whenReady).toHaveBeenCalled();
+    expect(vpnService.applyNetworkVisibility).toHaveBeenCalledWith(
+      expect.objectContaining({ pathSegment: 'g1', globalNav: true }),
+    );
+    expect(res).toHaveLength(1);
+    expect(res[0]).toBe(convertedNode);
+  });
+
+  it('processNodes should apply network visibility after the global node children provider is set', async () => {
+    const globalNode: LuigiNode = {
+      pathSegment: 'g1',
+      entityType: 'global' as any,
+      context: {} as NodeContext,
+      defineEntity: { id: 'internal-entity' },
+    };
+    let childrenAtConversion: LuigiNode['children'];
+    customGlobalNodesService.getCustomGlobalNodes = vi
+      .fn()
+      .mockResolvedValue([]);
+    vi.mocked(vpnService.applyNetworkVisibility).mockImplementationOnce(
+      (node) => {
+        childrenAtConversion = node.children;
+        return node;
+      },
+    );
+
+    await service.processNodes({ global: [globalNode] });
+
+    expect(childrenAtConversion).toBeTypeOf('function');
   });
 
   it('applyEntityChildrenRecursively should unset children for virtualTree nodes', () => {
@@ -513,6 +575,30 @@ describe('NodesProcessingService', () => {
         { pathSegment: 'entityChild1' },
       ]);
       expect(await rootChildren[0].children({})).toEqual([]);
+    });
+
+    it('should await VPN readiness and apply network visibility before custom processing', async () => {
+      const rootNode: LuigiNode = {
+        pathSegment: 'random',
+        context: {} as NodeContext,
+        children: [
+          {
+            pathSegment: 'directChild1',
+            context: {} as NodeContext,
+          },
+        ],
+      };
+
+      service.applyEntityChildrenRecursively(rootNode, {}, '');
+
+      // @ts-ignore
+      const rootChildren = await rootNode.children({});
+
+      expect(vpnService.whenReady).toHaveBeenCalled();
+      expect(vpnService.applyNetworkVisibility).toHaveBeenCalledWith(
+        expect.objectContaining({ pathSegment: 'directChild1' }),
+      );
+      expect(rootChildren).toMatchObject([{ pathSegment: 'directChild1' }]);
     });
 
     it('should handle compound children: merge entity context and filter', async () => {

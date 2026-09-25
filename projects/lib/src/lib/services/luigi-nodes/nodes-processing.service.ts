@@ -17,6 +17,7 @@ import { LocalConfigurationServiceImpl } from './local-configuration.service';
 import { LuigiNodesService } from './luigi-nodes.service';
 import { NodeContextProcessingServiceImpl } from './node-context-processing.service';
 import { NodeSortingService } from './node-sorting.service';
+import { VPNService } from './vpn.service';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +30,7 @@ export class NodesProcessingService {
   private localConfigurationService = inject(LocalConfigurationServiceImpl);
   private nodeSortingService = inject(NodeSortingService);
   private childrenNodesService = inject(ChildrenNodesService);
+  private vpnService = inject(VPNService);
   private customNodeProcessingService = inject<CustomNodeProcessingService>(
     LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
@@ -51,8 +53,13 @@ export class NodesProcessingService {
       this.applyEntityChildrenRecursively(node, childrenByEntity, '');
     });
 
-    globalNodes.sort(this.nodeSortingService.nodeComparison);
-    return globalNodes;
+    await this.vpnService.whenReady();
+    const processedGlobalNodes = globalNodes.map((node) =>
+      this.vpnService.applyNetworkVisibility(node),
+    );
+
+    processedGlobalNodes.sort(this.nodeSortingService.nodeComparison);
+    return processedGlobalNodes;
   }
 
   private isGlobalNavNode(node: LuigiNode) {
@@ -86,14 +93,17 @@ export class NodesProcessingService {
         );
       });
       node.children = (ctx: any) =>
-        Promise.all(
-          directChildren
-            .filter((child) => visibleForContext(ctx, child))
-            .map(
-              (child) =>
-                this.customNodeProcessingService?.processNode(ctx, child) ||
-                child,
-            ),
+        this.vpnService.whenReady().then(() =>
+          Promise.all(
+            directChildren
+              .filter((child) => visibleForContext(ctx, child))
+              .map((child) => this.vpnService.applyNetworkVisibility(child))
+              .map(
+                (child) =>
+                  this.customNodeProcessingService?.processNode(ctx, child) ||
+                  child,
+              ),
+          ),
         );
     }
 

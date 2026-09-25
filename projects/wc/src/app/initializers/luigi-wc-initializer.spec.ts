@@ -45,6 +45,6 @@ describe('provideLuigiWebComponents', () => {
     });
     TestBed.inject(EnvironmentInjector);
 
-    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(3);
+    expect((window as any).Luigi._registerWebcomponent).toHaveBeenCalledTimes(4);
   });
 });

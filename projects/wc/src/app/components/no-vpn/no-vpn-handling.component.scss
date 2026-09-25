@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+
+.page {
+  container-type: inline-size;
+  font-family: var(--sapFontFamily);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.no-vpn-illustration {
+  width: 20rem;
+  max-width: 100%;
+  aspect-ratio: 320 / 240;
+  background-image: var(--mfp-no-vpn-illustration-scene);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.no-vpn-icon {
+  width: 150px;
+  height: 150px;
+  color: var(--sapContent_NonInteractiveIconColor);
+}
+
+.info,
+.hint {
+  margin: 0;
+}
+
+.info {
+  font-size: 2rem;
+  color: var(--sapGroup_TitleTextColor);
+}
+
+.hint {
+  font-size: var(--sapFontLargeSize);
+  color: var(--sapContent_LabelColor);
+}
+
+@container (width < 22rem) {
+  .no-vpn-illustration {
+    width: 10rem;
+    aspect-ratio: 1;
+    background-image: var(--mfp-no-vpn-illustration-dialog, var(--mfp-no-vpn-illustration-scene));
+  }
+
+  .info {
+    font-size: 1.5rem;
+  }
+}
+
+@container (width < 21.938rem) {
+  .no-vpn-illustration {
+    width: 8rem;
+    aspect-ratio: 1;
+    background-image: var(--mfp-no-vpn-illustration-spot, var(--mfp-no-vpn-illustration-scene));
+  }
+
+  .info {
+    font-size: 1.25rem;
+  }
+}

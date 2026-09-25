@@ -335,6 +335,11 @@
            <target>Connect to the corporate network to view this extension UI directly in the Portal.</target>
         </segment>
       </unit>
+      <unit id="VPN_NEEDED_PAGE_RETRY_BUTTON">
+        <segment>
+           <target>Retry</target>
+        </segment>
+      </unit>
       <unit id="CONFIGURATION_MISSING_PAGE_TITLE">
         <segment>
           <target>Configuration Missing</target>
