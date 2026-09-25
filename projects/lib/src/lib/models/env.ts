@@ -18,6 +18,7 @@ export interface ClientEnvironment extends Record<string, any> {
   isLocal: boolean;
   developmentInstance: boolean;
   validWebcomponentUrls?: string;
+  vpnCheckUrl?: string;
   authData?: AuthTokenData;
   uiOptions?: string[];
 }

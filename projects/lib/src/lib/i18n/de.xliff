@@ -335,6 +335,11 @@
            <target>Stellen Sie eine Verbindung zum Unternehmensnetzwerk her, um diese Seite direkt in Portal anzuzeigen.</target>
         </segment>
       </unit>
+      <unit id="VPN_NEEDED_PAGE_RETRY_BUTTON">
+        <segment>
+           <target>Erneut versuchen</target>
+        </segment>
+      </unit>
       <unit id="CONFIGURATION_MISSING_PAGE_TITLE">
         <segment>
           <target>Konfiguration erforderlich</target>

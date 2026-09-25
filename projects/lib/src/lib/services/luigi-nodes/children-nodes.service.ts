@@ -9,6 +9,7 @@ import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { NavHeaderService } from './nav-header.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
+import { VPNService } from './vpn.service';
 import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
@@ -17,6 +18,7 @@ export class ChildrenNodesService {
   private configService = inject(ConfigService);
   private nodeUtilsService = inject(NodeUtilsService);
   private nodeSortingService = inject(NodeSortingService);
+  private vpnService = inject(VPNService);
   private customNodeProcessingService = inject<CustomNodeProcessingService>(
     LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN as any,
     { optional: true },
@@ -60,9 +62,12 @@ export class ChildrenNodesService {
         this.nodeUtilsService.retrieveGlobalHelpContext();
     });
 
+    await this.vpnService.whenReady();
+
     const nodes = await Promise.all(
       childrenNodes
         .filter((child) => visibleForContext(child.context, child))
+        .map((child) => this.vpnService.applyNetworkVisibility(child))
         .map(
           (child) =>
             this.customNodeProcessingService?.processNode(

@@ -6,6 +6,7 @@ import { CustomNodeProcessingService } from './custom-node-processing.service';
 import { NavHeaderService } from './nav-header.service';
 import { NodeSortingService } from './node-sorting.service';
 import { NodeUtilsService } from './node-utils.service';
+import { VPNService } from './vpn.service';
 import { TestBed } from '@angular/core/testing';
 import { Context } from '@luigi-project/client';
 import { MockedObject } from 'vitest';
@@ -17,6 +18,7 @@ describe('ChildrenNodesService', () => {
   let nodeSortingService: MockedObject<NodeSortingService>;
   let customNodeProcessingService: MockedObject<CustomNodeProcessingService>;
   let navHeaderService: MockedObject<NavHeaderService>;
+  let vpnService: MockedObject<VPNService>;
 
   beforeEach(() => {
     configService = {
@@ -39,6 +41,11 @@ describe('ChildrenNodesService', () => {
       setupNavigationHeader: vi.fn(),
     } as any;
 
+    vpnService = {
+      whenReady: vi.fn().mockResolvedValue(undefined),
+      applyNetworkVisibility: vi.fn((node) => node),
+    } as any;
+
     TestBed.configureTestingModule({
       providers: [
         ChildrenNodesService,
@@ -46,6 +53,7 @@ describe('ChildrenNodesService', () => {
         { provide: NodeUtilsService, useValue: nodeUtilsService },
         { provide: NodeSortingService, useValue: nodeSortingService },
         { provide: NavHeaderService, useValue: navHeaderService },
+        { provide: VPNService, useValue: vpnService },
         {
           provide: LUIGI_CUSTOM_NODE_PROCESSING_SERVICE_INJECTION_TOKEN,
           useValue: customNodeProcessingService,
@@ -135,6 +143,31 @@ describe('ChildrenNodesService', () => {
       );
 
       expect(result).toBeDefined();
+    });
+
+    it('should await VPN readiness and apply network visibility to entity children', async () => {
+      const entityNode = {
+        defineEntity: { id: 'test' },
+      } as LuigiNode;
+
+      const child = { context: {} } as LuigiNode;
+      const convertedChild = { context: {}, viewUrl: '#no-vpn' } as LuigiNode;
+
+      vpnService.applyNetworkVisibility.mockReturnValue(convertedChild);
+      customNodeProcessingService.processNode.mockImplementation(
+        async (ctx: Context, node: LuigiNode) => node,
+      );
+      nodeSortingService.sortNodes.mockImplementation((nodes) => nodes);
+
+      const result = await service.processChildrenForEntity(
+        entityNode,
+        [child],
+        {},
+      );
+
+      expect(vpnService.whenReady).toHaveBeenCalled();
+      expect(vpnService.applyNetworkVisibility).toHaveBeenCalledWith(child);
+      expect(result).toEqual([convertedChild]);
     });
   });
 });

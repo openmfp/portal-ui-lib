@@ -19,7 +19,7 @@ await build({
 
 for (const file of readdirSync(dist)) {
   if (file !== outName) {
-    rmSync(join(dist, file), { force: true });
+    rmSync(join(dist, file), { force: true, recursive: true });
   }
 }
 

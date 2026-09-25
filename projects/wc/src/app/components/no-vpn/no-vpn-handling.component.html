@@ -1,0 +1,26 @@
+<div class="page">
+  <div class="content">
+    @if (hasIllustration()) {
+      <div class="no-vpn-illustration" data-e2e="no-vpn-illustration"></div>
+    } @else {
+      <ui5-icon
+        class="no-vpn-icon"
+        name="disconnected"
+        data-e2e="no-vpn-icon"
+      ></ui5-icon>
+    }
+
+    <div class="info" data-e2e="no-vpn-title">{{ texts().title }}</div>
+    <div class="hint" data-e2e="no-vpn-description">
+      {{ texts().description }}
+    </div>
+
+    <ui5-button
+      design="Emphasized"
+      (click)="retry()"
+      data-e2e="no-vpn-retry-button"
+    >
+      {{ texts().retryButton }}
+    </ui5-button>
+  </div>
+</div>
