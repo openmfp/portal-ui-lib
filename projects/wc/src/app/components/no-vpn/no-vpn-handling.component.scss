@@ -1,7 +1,8 @@
+:host {
+  display: block;
+}
+
 .page {
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
   container-type: inline-size;
   font-family: var(--sapFontFamily);
 }
