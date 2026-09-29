@@ -141,7 +141,7 @@ describe('DevelopmentSettingsComponent', () => {
       expect(component.isActive()).toEqual(false);
       expect(component.configs()).toEqual([
         {
-          url: 'http://localhost:4200/assets/content-configuration-global.json',
+          url: 'http://localhost:4200/content-configuration.json',
           active: true,
         },
         {

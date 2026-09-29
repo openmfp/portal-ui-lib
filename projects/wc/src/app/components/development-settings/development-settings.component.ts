@@ -53,7 +53,7 @@ export class DevelopmentSettingsComponent implements OnInit {
   protected readonly Object = Object;
   protected readonly defaultConfig = [
     {
-      url: 'http://localhost:4200/assets/content-configuration-global.json',
+      url: 'http://localhost:4200/content-configuration.json',
       active: true,
     },
     {
