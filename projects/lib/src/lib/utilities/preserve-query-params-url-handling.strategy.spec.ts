@@ -80,5 +80,25 @@ describe('PreserveQueryParamsUrlHandlingStrategy', () => {
 
       expect(result.queryParams).toEqual({ 'metadata.name': 'a/b c' });
     });
+
+    it('does not carry auth error params from location.search into the next navigation', () => {
+      setLocationSearch('?error=tokenExpired&errorDescription=expired&q=foo');
+      const newUrlPart = urlTree();
+      const wholeUrl = urlTree();
+
+      const result = strategy.merge(newUrlPart, wholeUrl);
+
+      expect(result.queryParams).toEqual({ q: 'foo' });
+    });
+
+    it('leaves query params empty when location.search holds only auth error params', () => {
+      setLocationSearch('?error=tokenExpired');
+      const newUrlPart = urlTree();
+      const wholeUrl = urlTree();
+
+      const result = strategy.merge(newUrlPart, wholeUrl);
+
+      expect(result.queryParams).toEqual({});
+    });
   });
 });
