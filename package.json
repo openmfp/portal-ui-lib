@@ -77,7 +77,7 @@
     "@fundamental-ngx/ui5-webcomponents": "0.64.1",
     "@openmfp/config-prettier": "0.9.3",
     "@openmfp/eslint-config-typescript": "0.7.15",
-    "@types/lodash": "4.17.25",
+    "@types/lodash": "4.17.26",
     "@types/lodash.isequal": "4.5.8",
     "@types/lodash.ismatch": "4.4.9",
     "@types/node": "24.19.2",
