@@ -1,9 +1,18 @@
 import * as tokens from './injection-tokens';
 import { PortalOptions, providePortal } from './portal-providers';
+import { AnalyticsTracker } from './models';
 import { CustomMessageListener } from './services';
 import { PreserveQueryParamsUrlHandlingStrategy } from './utilities';
 import * as http from '@angular/common/http';
 import { UrlHandlingStrategy } from '@angular/router';
+
+class MockAnalyticsTracker1 implements AnalyticsTracker {
+  initialize = vi.fn().mockResolvedValue(undefined);
+}
+
+class MockAnalyticsTracker2 implements AnalyticsTracker {
+  initialize = vi.fn().mockResolvedValue(undefined);
+}
 
 class MockCustomListener1 implements CustomMessageListener {
   messageId(): string {
@@ -173,5 +182,41 @@ describe('Provide Portal', () => {
     );
 
     expect(httpProviders).toBeDefined();
+  });
+
+  it('should register analytics trackers when provided', () => {
+    const providers = readProviders({
+      analyticsTrackers: [MockAnalyticsTracker1, MockAnalyticsTracker2],
+    });
+
+    const trackerProviders = providers.filter(
+      (provider: any) =>
+        provider?.provide === tokens.ANALYTICS_TRACKER_INJECTION_TOKEN,
+    );
+
+    expect(trackerProviders).toHaveLength(2);
+    expect(trackerProviders).toEqual([
+      {
+        provide: tokens.ANALYTICS_TRACKER_INJECTION_TOKEN,
+        useClass: MockAnalyticsTracker1,
+        multi: true,
+      },
+      {
+        provide: tokens.ANALYTICS_TRACKER_INJECTION_TOKEN,
+        useClass: MockAnalyticsTracker2,
+        multi: true,
+      },
+    ]);
+  });
+
+  it('should omit analytics trackers when not provided', () => {
+    const providers = readProviders();
+
+    const trackerProviders = providers.filter(
+      (provider: any) =>
+        provider?.provide === tokens.ANALYTICS_TRACKER_INJECTION_TOKEN,
+    );
+
+    expect(trackerProviders).toHaveLength(0);
   });
 });
