@@ -1,10 +1,12 @@
 import {
+  provideAnalyticsTracking,
   provideBootstrap,
   provideLanguageServices,
   provideNavigationTracker,
   provideSessionRefresh,
 } from './initializers';
 import {
+  ANALYTICS_TRACKER_INJECTION_TOKEN,
   ERROR_COMPONENT_CONFIG,
   HEADER_BAR_CONFIG_SERVICE_INJECTION_TOKEN,
   LOCAL_CONFIGURATION_SERVICE_INJECTION_TOKEN,
@@ -23,7 +25,7 @@ import {
   NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN,
   THEMING_SERVICE,
 } from './injection-tokens';
-import { ErrorComponentConfig } from './models';
+import { AnalyticsTracker, ErrorComponentConfig } from './models';
 import { portalRouts } from './portal-routing';
 import {
   AppSwitcherConfigService,
@@ -114,6 +116,9 @@ export interface PortalOptions {
 
   /** Strategy for storing and reading redirect URL after login **/
   navigationRedirectStrategy?: Type<NavigationRedirectStrategy>;
+
+  /** A set of classes implementing AnalyticsTracker to be initialized at app startup **/
+  analyticsTrackers?: Type<AnalyticsTracker>[];
 }
 
 export function providePortal(
@@ -124,6 +129,7 @@ export function providePortal(
     provideBootstrap(),
     provideSessionRefresh(),
     provideNavigationTracker(),
+    provideAnalyticsTracking(),
     provideLanguageServices(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
@@ -256,6 +262,14 @@ const addOptionalProviders = (
     useClass:
       options.navigationRedirectStrategy || DefaultNavigationRedirectStrategy,
   });
+
+  (options.analyticsTrackers || []).forEach((trackerClass) =>
+    providers.push({
+      provide: ANALYTICS_TRACKER_INJECTION_TOKEN,
+      multi: true,
+      useClass: trackerClass,
+    }),
+  );
 
   return providers;
 };
