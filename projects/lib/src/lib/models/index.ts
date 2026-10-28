@@ -7,5 +7,6 @@ export * from './error';
 export * from './local-development-settings';
 export * from './luigi';
 export * from './luigi-context';
+export * from './notifications';
 export * from './portal';
 export * from './user';

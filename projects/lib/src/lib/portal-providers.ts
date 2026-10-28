@@ -3,6 +3,7 @@ import {
   provideBootstrap,
   provideLanguageServices,
   provideNavigationTracker,
+  provideNotifications,
   provideSessionRefresh,
 } from './initializers';
 import {
@@ -23,9 +24,14 @@ import {
   LUIGI_STATIC_SETTINGS_CONFIG_SERVICE_INJECTION_TOKEN,
   LUIGI_USER_PROFILE_CONFIG_SERVICE_INJECTION_TOKEN,
   NAVIGATION_REDIRECT_STRATEGY_INJECTION_TOKEN,
+  NOTIFICATIONS_INITIALIZER_INJECTION_TOKEN,
   THEMING_SERVICE,
 } from './injection-tokens';
-import { AnalyticsTracker, ErrorComponentConfig } from './models';
+import {
+  AnalyticsTracker,
+  ErrorComponentConfig,
+  NotificationsInitializer,
+} from './models';
 import { portalRouts } from './portal-routing';
 import {
   AppSwitcherConfigService,
@@ -119,6 +125,8 @@ export interface PortalOptions {
 
   /** A set of classes implementing AnalyticsTracker to be initialized at app startup **/
   analyticsTrackers?: Type<AnalyticsTracker>[];
+
+  notificationsInitializers?: Type<NotificationsInitializer>[];
 }
 
 export function providePortal(
@@ -130,6 +138,7 @@ export function providePortal(
     provideSessionRefresh(),
     provideNavigationTracker(),
     provideAnalyticsTracking(),
+    provideNotifications(),
     provideLanguageServices(),
     provideRouter(portalRouts),
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
@@ -270,6 +279,14 @@ const addOptionalProviders = (
       useClass: trackerClass,
     }),
   );
+
+  for (const initializerClass of options.notificationsInitializers ?? []) {
+    providers.push({
+      provide: NOTIFICATIONS_INITIALIZER_INJECTION_TOKEN,
+      multi: true,
+      useClass: initializerClass,
+    });
+  }
 
   return providers;
 };
