@@ -1,6 +1,6 @@
 import * as tokens from './injection-tokens';
+import { AnalyticsTracker, NotificationsInitializer } from './models';
 import { PortalOptions, providePortal } from './portal-providers';
-import { AnalyticsTracker } from './models';
 import { CustomMessageListener } from './services';
 import { PreserveQueryParamsUrlHandlingStrategy } from './utilities';
 import * as http from '@angular/common/http';
@@ -11,6 +11,14 @@ class MockAnalyticsTracker1 implements AnalyticsTracker {
 }
 
 class MockAnalyticsTracker2 implements AnalyticsTracker {
+  initialize = vi.fn().mockResolvedValue(undefined);
+}
+
+class MockNotificationsInitializer1 implements NotificationsInitializer {
+  initialize = vi.fn().mockResolvedValue(undefined);
+}
+
+class MockNotificationsInitializer2 implements NotificationsInitializer {
   initialize = vi.fn().mockResolvedValue(undefined);
 }
 
@@ -219,4 +227,46 @@ describe('Provide Portal', () => {
 
     expect(trackerProviders).toHaveLength(0);
   });
+
+  it('should register notifications initializers as multi providers', () => {
+    const providers = readProviders({
+      notificationsInitializers: [
+        MockNotificationsInitializer1,
+        MockNotificationsInitializer2,
+      ],
+    });
+
+    const notificationProviders = providers.filter(
+      (provider: any) =>
+        provider?.provide === tokens.NOTIFICATIONS_INITIALIZER_INJECTION_TOKEN,
+    );
+
+    expect(notificationProviders).toEqual([
+      {
+        provide: tokens.NOTIFICATIONS_INITIALIZER_INJECTION_TOKEN,
+        useClass: MockNotificationsInitializer1,
+        multi: true,
+      },
+      {
+        provide: tokens.NOTIFICATIONS_INITIALIZER_INJECTION_TOKEN,
+        useClass: MockNotificationsInitializer2,
+        multi: true,
+      },
+    ]);
+  });
+
+  it.each([undefined, []])(
+    'should omit notifications providers when notificationsInitializers is %s',
+    (notificationsInitializers) => {
+      const providers = readProviders({ notificationsInitializers });
+
+      const notificationProviders = providers.filter(
+        (provider: any) =>
+          provider?.provide ===
+          tokens.NOTIFICATIONS_INITIALIZER_INJECTION_TOKEN,
+      );
+
+      expect(notificationProviders).toHaveLength(0);
+    },
+  );
 });
