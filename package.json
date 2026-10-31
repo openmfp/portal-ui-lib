@@ -97,7 +97,7 @@
     "typescript": "6.0.3",
     "vitest": "5.0.5",
     "vitest-mock-extended": "5.1.1",
-    "xliff": "6.4.0",
+    "xliff": "6.5.0",
     "yalc": "1.0.0-pre.53"
   },
   "overrides": {
