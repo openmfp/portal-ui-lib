@@ -15,10 +15,10 @@ export class NodeUtilsService {
   }
 
   isVisible(node: LuigiNode): boolean {
-    if (!node.visibleForFeatureToggles) {
+    if (!node.visibleForFeatureToggles || node.visibleForFeatureToggles.length === 0) {
       return true;
     }
-    return node.visibleForFeatureToggles.every((ft) => {
+    return node.visibleForFeatureToggles.some((ft) => {
       if (ft.startsWith('!')) {
         return !this.luigiCoreService.isFeatureToggleActive(ft.slice(1));
       }
