@@ -96,7 +96,7 @@
     "rimraf": "6.1.4",
     "typescript": "6.0.3",
     "vitest": "5.1.0",
-    "vitest-mock-extended": "6.0.0",
+    "vitest-mock-extended": "6.0.1",
     "xliff": "6.5.3",
     "yalc": "1.0.0-pre.53"
   },
